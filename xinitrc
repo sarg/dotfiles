@@ -1,3 +1,4 @@
+export LANG=ru_RU.UTF8
 export BROWSER=chromium
 xhost +
 xmodmap ~/.xmodmap

@@ -8,7 +8,7 @@ export PATH=~/devel/bin:$PATH
 
 # abbreviations
 alias g=git
-alias vim=gvim --remote-tab-silent
+alias vim="gvim --remote-tab-silent"
 alias v=vim
 alias pd=perldoc
 alias du='du -h'
