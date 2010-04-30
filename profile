@@ -47,3 +47,7 @@ function extract () {
         echo "Error: '$1' is not a valid file for extraction"
     fi
 }
+
+
+
+function cam() { mplayer tv://; mencoder -tv driver=v4l2:fps=25 -ovc lavc -lavcopts vcodec=mpeg4 -o `date +%F-%T`.avi tv:// }

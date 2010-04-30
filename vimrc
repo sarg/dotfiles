@@ -111,3 +111,5 @@ autocmd FileType css set omnifunc=csscomplete#CompleteCSS
 let g:fuf_autoPreview = 0
 let g:fuf_file_exclude = '\v\~$|\.(pyc)$|(^|[/\\])\.(hg|git|bzr)($|[/\\])'
 let g:fuf_previewHeight = 0
+
+language C

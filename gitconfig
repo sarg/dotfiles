@@ -27,3 +27,4 @@
     b = branch
     d = diff
     a = add
+    l = log --pretty=oneline
