@@ -31,7 +31,7 @@ modkey = "Mod4"
 -- Table of layouts to cover with awful.layout.inc, order matters.
 layouts =
 {
-    --awful.layout.suit.floating,
+    awful.layout.suit.floating,
     awful.layout.suit.tile,
 --    awful.layout.suit.tile.left,
 --    awful.layout.suit.tile.bottom,
@@ -77,8 +77,8 @@ vicious.register(batwidget, vicious.widgets.bat, 'B: $2% ', 15, 'BAT1')
 volwidget = widget({ type = 'textbox' })
 vicious.register(volwidget, vicious.widgets.volume, '| $2 $1% |', 15, 'Master')
 
-wifiwidget = widget({ type = 'textbox' })
-vicious.register(wifiwidget, vicious.widgets.wifi, '${rate} |', 15, 'wlan0')
+--wifiwidget = widget({ type = 'textbox' })
+--vicious.register(wifiwidget, vicious.widgets.wifi, '${rate} |', 15, 'wlan0')
 
 mytextclock = awful.widget.textclock({ align = "right" })
 
@@ -177,16 +177,16 @@ globalkeys = awful.util.table.join(
     awful.key({}, "XF86AudioLowerVolume", function () awful.util.spawn('amixer set Master 5-') vicious.force({volwidget}) end),
     awful.key({}, "XF86AudioRaiseVolume", function () awful.util.spawn('amixer set Master 5+') vicious.force({volwidget}) end),
     awful.key({}, "XF86AudioMute", function () awful.util.spawn('amixer set Master toggle') vicious.force({volwidget}) end),
-    awful.key({}, "XF86MonBrightnessUp", function () awful.util.spawn('xbacklight -set 100') end),
+    awful.key({}, "XF86MonBrightnessUp", function () awful.util.spawn('xbacklight + 20') end),
     awful.key({}, "XF86MonBrightnessDown", function () awful.util.spawn('xbacklight - 10') end),
     awful.key({}, "XF86RotateWindows", function () awful.util.spawn('xrandr --output VGA1 --auto --rotate normal --above LVDS1 --output LVDS1 --primary --auto') end),
 
     -- Moosic
-    awful.key({ modkey,           }, "x", function () awful.util.spawn('sh -c "/home/sarg/devel/bin/moosic play && echo pause > /home/sarg/.mplayer/pipe"') end),
-    awful.key({ modkey,           }, "c", function () awful.util.spawn('/home/sarg/devel/bin/moosic stop') end),
-    awful.key({ modkey,           }, "z", function () awful.util.spawn('/home/sarg/devel/bin/moosic prev') end),
-    awful.key({ modkey,           }, "v", function () awful.util.spawn('/home/sarg/devel/bin/moosic next') end),
-    awful.key({ modkey,           }, "/", function () moosic_menu_run() end),
+    awful.key({ modkey,           }, "x", function () awful.util.spawn('quodlibet --play-pause') end),
+    awful.key({ modkey,           }, "c", function () awful.util.spawn('quodlibet --stop') end),
+    awful.key({ modkey,           }, "z", function () awful.util.spawn('quodlibet --prev') end),
+    awful.key({ modkey,           }, "v", function () awful.util.spawn('quodlibet --next') end),
+    awful.key({ modkey,           }, "/", function () awful.util.spawn('quodlibet --toggle-window') end),
 
 
     awful.key({ modkey,           }, "p", function () focus_or_hide('Pidgin Buddy List', 'pidgin') end),

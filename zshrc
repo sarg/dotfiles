@@ -3,6 +3,11 @@ HISTSIZE=2000
 SAVEHIST=$HISTSIZE
 HISTFILE=~/.history
 
+tcsh-backward-delete-word () {
+  local WORDCHARS="${WORDCHARS:s#/#}"
+  zle backward-delete-word
+}
+zle -N tcsh-backward-delete-word
 
 # key bindings
 bindkey "\e[1~" beginning-of-line
@@ -17,7 +22,7 @@ bindkey "\e[5D" backward-word
 bindkey "\eOd" emacs-backward-word
 bindkey "\e\e[C" forward-word
 bindkey "\e\e[D" backward-word
-bindkey "^H" backward-delete-word
+bindkey "^W" tcsh-backward-delete-word
 # for rxvt
 bindkey "\e[8~" end-of-line
 bindkey "\e[7~" beginning-of-line
@@ -33,13 +38,14 @@ bindkey '^i' expand-or-complete-prefix
 
 eval `dircolors -b`
 
-source ~/.profile
+source ~/.zshprofile
 
 autoload -U compinit promptinit
 compinit
 promptinit
 
 prompt walters
+export PROMPT='%(!.%B%m#%b.%m$) '
 
 zstyle ':completion:*' use-cache on
 zstyle ':completion:*' cache-path ~/.zsh/cache
@@ -52,7 +58,6 @@ if [[ -e ~/.ssh/known_hosts ]]; then
     zstyle ':completion:*:hosts' hosts $hosts 
 fi
 
-
 setopt AUTO_LIST
 setopt AUTO_PUSHD
 setopt HIST_IGNORE_ALL_DUPS
@@ -61,3 +66,4 @@ setopt NO_GLOBAL_RCS
 
 setopt AUTOCD
 setopt EXTENDEDGLOB
+

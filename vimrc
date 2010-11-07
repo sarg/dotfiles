@@ -1,3 +1,10 @@
+filetype off
+call pathogen#runtime_append_all_bundles()
+filetype plugin indent on
+
+let g:ackprg="ack-grep -H --nocolor --nogroup --column"
+let mapleader = ","
+
 set nocompatible
 set nobackup
 set noswapfile 
@@ -12,6 +19,7 @@ set hlsearch
 set ttyfast
 set showcmd
 set showmatch
+set gdefault
 
 set expandtab
 set smarttab
@@ -31,6 +39,7 @@ set foldmethod=indent
 set listchars=tab:>\ 
 set list
 
+set cursorline
 set number
 set showbreak=+\
 set statusline=%<%f%h%m%r\ %b\ %{&encoding}\ 0x\ \ %l,%c%V\ %P 
@@ -54,13 +63,18 @@ filetype plugin on
 colorscheme Mustang
 set fileencodings=utf-8,koi8-r
 
+nmap <silent> ,/ :nohlsearch<CR>
+nnoremap ; :
+nnoremap j gj
+nnoremap k gk
+
 " tab switching
 map <C-n> gt
 map <C-p> gT 
-map <C-t> :tabnew<CR>:FufFile<CR>
-imap <C-t> <ESC>:tabnew<CR>:FufFile<CR>
+map <C-t> :tabnew<CR>:CommandT<CR>
+imap <C-t> <ESC>:tabnew<CR>:CommandT<CR>
 
-map <C-o> :FufFile<CR>
+map <C-o> :CommandT<CR>
 
 nmap <Tab> v>
 nmap <S-Tab> v<
@@ -72,6 +86,11 @@ cmap <C-e> <end>
 cnoremap <C-b> <left>
 cnoremap <C-d> <del>
 cnoremap <C-f> <right>
+
+inoremap jj <ESC>
+
+vnoremap < <gv
+vnoremap > >gv
 
 map <F2> :w<CR>
 map <F3> :wq<CR>
@@ -95,6 +114,8 @@ endf
 autocmd Filetype python :set smartindent cinwords=if,elif,else,for,while,try,except,finally,def,class
 autocmd FileType perl :cal s:perl_rc()
 
+set wildignore+=*.pyc
+
 let g:snippetsEmu_key = "<C-j>"
 
 set complete=""
@@ -108,8 +129,6 @@ autocmd FileType javascript set omnifunc=javascriptcomplete#CompleteJS
 autocmd FileType html set omnifunc=htmlcomplete#CompleteTags
 autocmd FileType css set omnifunc=csscomplete#CompleteCSS
 
-let g:fuf_autoPreview = 0
-let g:fuf_file_exclude = '\v\~$|\.(pyc)$|(^|[/\\])\.(hg|git|bzr)($|[/\\])'
-let g:fuf_previewHeight = 0
-
 language C
+
+let g:yankring_history_dir = '$HOME/.vim/'
