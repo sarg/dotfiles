@@ -1,0 +1,6 @@
+#[alias]
+#purge = !$HG status --no-status --unknown -0 | xargs -0 rm 
+[extensions]
+purge = 
+fetch = 
+shelve =

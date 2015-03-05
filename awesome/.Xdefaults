@@ -1,0 +1,13 @@
+URxvt.buffered: true
+URxvt.background: black
+URxvt.foreground: white
+URxvt.cursorColor: green
+URxvt.underlineColor: yellow
+URxvt.font: -*-terminus-medium-*-*-*-14-*-*-*-*-*-koi8-r
+URxvt*scrollBar: false
+URxvt*tinting: grey
+#URxvt*transparent: true
+URxvt*shading: 55
+URxvt*termName: xterm-color
+
+Vim*font: -*-terminus-medium-*-*-*-14-*-*-*-*-*-koi8-r
