@@ -228,6 +228,10 @@ globalkeys = awful.util.table.join(
             end
         end),
 
+    -- Volume
+    awful.key({ modkey, "Control" }, "Left",   function () awful.util.spawn("amixer -D pulse sset Master 5%-") end),
+    awful.key({ modkey, "Control" }, "Right",   function () awful.util.spawn("amixer -D pulse sset Master 5%+") end),
+
     -- Standard program
     awful.key({ modkey,           }, "Return", function () awful.util.spawn(terminal) end),
     awful.key({ modkey,           }, "l",      function () awful.util.spawn("slock") end),
