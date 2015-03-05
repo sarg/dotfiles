@@ -8,3 +8,4 @@ antigen theme jreese
 antigen apply
 
 alias agrep=ack-grep
+alias g=git
