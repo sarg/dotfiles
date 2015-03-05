@@ -139,14 +139,6 @@ mytasklist.buttons = awful.util.table.join(
                                                       theme = { width = 250 }
                                                   })
                                               end
-                                          end),
-                     awful.button({ }, 4, function ()
-                                              awful.client.focus.byidx(1)
-                                              if client.focus then client.focus:raise() end
-                                          end),
-                     awful.button({ }, 5, function ()
-                                              awful.client.focus.byidx(-1)
-                                              if client.focus then client.focus:raise() end
                                           end))
 
 for s = 1, screen.count() do
