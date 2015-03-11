@@ -1,4 +1,4 @@
-source antigen.zsh
+source ~/.dotfiles/antigen/antigen.zsh
 
 antigen use oh-my-zsh
 antigen bundle command-not-found
