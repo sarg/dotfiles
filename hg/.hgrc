@@ -1,6 +1,8 @@
 #[alias]
 #purge = !$HG status --no-status --unknown -0 | xargs -0 rm 
 [extensions]
+rebase =
 purge = 
 fetch = 
 shelve =
+transplant =

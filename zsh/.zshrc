@@ -10,6 +10,7 @@ antigen apply
 alias agrep=ack-grep
 alias g=git
 
+export PATH=~/devel/bin:$PATH
 
 {
   local -a _ssh_hosts _ssh_users
