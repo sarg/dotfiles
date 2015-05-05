@@ -1,8 +1,0 @@
-clear lock
-clear mod4
-add mod4 = Super_L
-add Control = Caps_Lock
-
-keycode 125 = XF86MonBrightnessUp
-keycode 126 = XF86MonBrightnessDown
-keycode 131 = XF86RotateWindows
