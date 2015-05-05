@@ -1,3 +1,6 @@
 [submodule "antigen"]
 	path = antigen
 	url = https://github.com/zsh-users/antigen.git
+[submodule "awesome/.config/awesome/redshift"]
+	path = awesome/.config/awesome/redshift
+	url = git://github.com/YoRyan/awesome-redshift.git

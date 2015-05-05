@@ -429,3 +429,7 @@ client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_n
 
 awful.util.spawn_with_shell('xsetroot -solid black')
 -- }}}
+
+local redshift = require("redshift")
+-- 1 for dim, 0 for not dimmed
+redshift.init(1)
