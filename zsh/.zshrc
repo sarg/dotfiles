@@ -32,3 +32,5 @@ export PATH=~/devel/bin:$PATH
   _ssh_users=()
   zstyle ':completion:*:(ssh|scp)*:users' users $_ssh_users
 }
+
+chpwd() ls
