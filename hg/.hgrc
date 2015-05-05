@@ -6,3 +6,4 @@ purge =
 fetch = 
 shelve =
 transplant =
+strip =
