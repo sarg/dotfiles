@@ -427,7 +427,8 @@ end)
 client.connect_signal("focus", function(c) c.border_color = beautiful.border_focus end)
 client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
 
-awful.util.spawn_with_shell('xsetroot -solid black')
+awful.util.spawn('xsetroot -solid black')
+awful.util.spawn('setxkbmap us,ru')
 -- }}}
 
 local redshift = require("redshift")
