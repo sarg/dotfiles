@@ -28,3 +28,5 @@
     d = diff
     a = add
     l = log --pretty=oneline
+[push]
+	default = simple

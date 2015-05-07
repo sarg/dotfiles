@@ -45,7 +45,7 @@ end
 beautiful.init("/usr/share/awesome/themes/default/theme.lua")
 
 -- This is used later as the default terminal and editor to run.
-terminal = "rxvt"
+terminal = "urxvt"
 editor = os.getenv("EDITOR") or "editor"
 editor_cmd = terminal .. " -e " .. editor
 
@@ -427,7 +427,8 @@ end)
 client.connect_signal("focus", function(c) c.border_color = beautiful.border_focus end)
 client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
 
-awful.util.spawn_with_shell('xsetroot -solid black')
+awful.util.spawn('xsetroot -solid black')
+awful.util.spawn('setxkbmap us,ru')
 -- }}}
 
 local redshift = require("redshift")
