@@ -100,6 +100,22 @@ menubar.utils.terminal = terminal -- Set the terminal for applications that requ
 -- Create a textclock widget
 mytextclock = awful.widget.textclock()
 
+-- Keyboard layout widget
+kbdwidget = wibox.widget.textbox()
+kbdcole = "</span>"
+kbdwidget.border_width = 0
+kbdwidget.border_color = beautiful.fg_normal
+kbdwidget:set_markup(" EN ")
+dbus.request_name("session", "ru.gentoo.kbdd")
+dbus.add_match("session", "interface='ru.gentoo.kbdd',member='layoutChanged'")
+dbus.connect_signal("ru.gentoo.kbdd", function(...)
+local data = {...}
+local layout = data[2]
+lts = {[0] = " EN", [1] = " RU"}
+kbdwidget:set_markup (lts[layout].." ")
+end
+)
+
 -- Create a wibox for each screen and add it
 mywibox = {}
 mypromptbox = {}
@@ -170,6 +186,7 @@ for s = 1, screen.count() do
     -- Widgets that are aligned to the right
     local right_layout = wibox.layout.fixed.horizontal()
     if s == 1 then right_layout:add(wibox.widget.systray()) end
+    right_layout:add(kbdwidget)
     right_layout:add(mytextclock)
     right_layout:add(mylayoutbox[s])
 
@@ -327,6 +344,11 @@ clientbuttons = awful.util.table.join(
     awful.button({ modkey }, 3, awful.mouse.client.resize))
 
 -- Set keys
+-- load the 'run or raise' function
+local ror = require("aweror")
+
+-- generate and add the 'run or raise' key bindings to the globalkeys table
+globalkeys = awful.util.table.join(globalkeys, ror.genkeys(modkey))
 root.keys(globalkeys)
 -- }}}
 
@@ -428,8 +450,18 @@ end)
 client.connect_signal("focus", function(c) c.border_color = beautiful.border_focus end)
 client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
 
-awful.util.spawn('xsetroot -solid black')
-awful.util.spawn('setxkbmap us,ru')
+function run_once(cmd)
+    findme = cmd
+    firstspace = cmd:find(" ")
+    if firstspace then
+        findme = cmd:sub(0, firstspace-1)
+    end
+    awful.util.spawn_with_shell("pgrep -u $USER -x " .. findme .. " > /dev/null || (" .. cmd .. ")")
+end
+
+run_once('xsetroot -solid black')
+run_once('setxkbmap us,ru')
+run_once('kbdd &')
 -- }}}
 
 local redshift = require("redshift")
