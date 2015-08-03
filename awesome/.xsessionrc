@@ -1,1 +1,3 @@
-export PATH=$HOME/devel/bin:$PATH
+#!/bin/sh
+export PATH="$HOME/devel/bin:$PATH"
+export NO_AT_BRIDGE=1

@@ -3,13 +3,15 @@ URxvt.background: white
 URxvt.foreground: black
 URxvt.cursorColor: green
 URxvt.underlineColor: yellow
+URxvt.urgentOnBell: true
 URxvt.font: xft:courier:pixelsize=16
 URxvt.letterSpace: -2
 URxvt*scrollBar: false
 URxvt*tinting: grey
 URxvt*termName: rxvt
-#URxvt*transparent: true
+!!URxvt*transparent: true
 URxvt*shading: 55
+URxvt.perl-ext-common: selection-to-clipboard
 
 Vim*font: xft:courier:pixelsize=16
 
