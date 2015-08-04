@@ -46,7 +46,8 @@ beautiful.init("/usr/share/awesome/themes/sky/theme.lua")
 
 -- This is used later as the default terminal and editor to run.
 terminal = "urxvt"
-editor = os.getenv("EDITOR") or "editor"
+browser = "chromium-browser" or os.getenv("BROWSER")
+editor = "vim" or os.getenv("EDITOR")
 editor_cmd = terminal .. " -e " .. editor
 
 -- Default modkey.
