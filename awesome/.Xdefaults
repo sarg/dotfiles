@@ -3,11 +3,10 @@ URxvt.background: white
 URxvt.foreground: black
 URxvt.cursorColor: green
 URxvt.underlineColor: yellow
-URxvt.font: xft:courier:pixelsize=16
+URxvt.font: xft:Nimbus Mono L:pixelsize=16
 URxvt.letterSpace: -2
 URxvt*scrollBar: false
 URxvt*tinting: grey
-URxvt*termName: rxvt
 #URxvt*transparent: true
 URxvt*shading: 55
 
