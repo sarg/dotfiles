@@ -7,11 +7,12 @@ URxvt.font: xft:Nimbus Mono L:pixelsize=16
 URxvt.letterSpace: -2
 URxvt*scrollBar: false
 URxvt*tinting: grey
-#URxvt*transparent: true
+URxvt.urgentOnBell: true
+!!URxvt*transparent: true
 URxvt*shading: 55
+URxvt.perl-ext-common: selection-to-clipboard
 
 Vim*font: xft:courier:pixelsize=16
-
 
 *background: #002b36
 *foreground: #657b83
