@@ -58,3 +58,8 @@ function extract () {
 }
 
 chpwd() ls
+
+bindkey "^[[A" history-beginning-search-backward
+bindkey "^[[B" history-beginning-search-forward
+bindkey "^[Od" emacs-backward-word
+bindkey "^[Oc" emacs-forward-word
