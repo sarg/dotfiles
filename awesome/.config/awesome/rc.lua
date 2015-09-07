@@ -417,6 +417,6 @@ run_once('hsetroot -solid black')
 run_once('kbdd &')
 -- }}}
 
---local redshift = require("redshift")
+local redshift = require("redshift")
 -- 1 for dim, 0 for not dimmed
---redshift.init(1)
+redshift.init(1)

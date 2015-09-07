@@ -63,3 +63,9 @@ bindkey "^[[A" history-beginning-search-backward
 bindkey "^[[B" history-beginning-search-forward
 bindkey "^[Od" emacs-backward-word
 bindkey "^[Oc" emacs-forward-word
+
+function deploy_puppet() {
+	ansible test.srg-it.ru -s -U puppet -a 'sh -c "cd /etc/puppet; hg pull -u"'
+}
+
+alias changeADPass='smbpasswd -U trofimovSI -r srg-eco.loc'
