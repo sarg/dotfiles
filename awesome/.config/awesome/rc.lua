@@ -402,7 +402,7 @@ function run_once(cmd)
 end
 
 run_once('xsetroot -solid black')
-run_once('setxkbmap us,ru')
+run_once('setxkbmap us,ru -option ctrl:nocaps')
 run_once('kbdd &')
 -- }}}
 
