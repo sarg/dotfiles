@@ -69,3 +69,10 @@ function deploy_puppet() {
 }
 
 alias changeADPass='smbpasswd -U trofimovSI -r srg-eco.loc'
+function ssh () { 
+	if [ "$#" -eq 1 -a  "${@#*srg-it.ru}" != "$@"  ]; then
+		/usr/bin/ssh -t "$@" tmux new -A 
+	else
+		/usr/bin/ssh "$@"
+	fi
+}
