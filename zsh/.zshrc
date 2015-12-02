@@ -4,6 +4,7 @@ antigen use oh-my-zsh
 antigen bundle command-not-found
 antigen bundle mafredri/zsh-async
 antigen bundle sindresorhus/pure
+antigen bundle zsh-users/zsh-completions src
 antigen bundle zsh-users/zsh-syntax-highlighting
 #antigen theme simple
 
@@ -65,13 +66,13 @@ bindkey "^[Od" emacs-backward-word
 bindkey "^[Oc" emacs-forward-word
 
 function deploy_puppet() {
-	ansible test.srg-it.ru -s -U puppet -a 'sh -c "cd /etc/puppet; hg pull -u"'
+	ansible test.srg-it.ru -s -U puppet -a 'sh -c "cd /etc/puppet; hg pull -u; librarian-puppet update"'
 }
 
 alias changeADPass='smbpasswd -U trofimovSI -r srg-eco.loc'
 function ssh () { 
 	if [ "$#" -eq 1 -a  "${@#*srg-it.ru}" != "$@"  ]; then
-		/usr/bin/ssh -t "$@" tmux new -A 
+		/usr/bin/ssh -t "$@" tmux new -A -s default
 	else
 		/usr/bin/ssh "$@"
 	fi
