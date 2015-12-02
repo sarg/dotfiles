@@ -13,5 +13,6 @@
 
 table5={
    ["w"]={browser,"Chromium-browser"}, 
-   ["t"]={"urxvt -name urxvt_ror", "urxvt_ror", "instance"}
+   ["t"]={"urxvt -name urxvt_ror", "urxvt_ror", "instance"},
+   ["i"]={"Telegram", "Telegram"}
 }

@@ -88,7 +88,7 @@ end
 tags = {}
 for s = 1, screen.count() do
     -- Each screen has its own tag table.
-    tags[s] = awful.tag({ 1, 2, 3, 4 }, s, layouts[1])
+    tags[s] = awful.tag({ 1, 2, 3, 'b' }, s, layouts[1])
 end
 -- }}}
 
@@ -347,6 +347,10 @@ awful.rules.rules = {
                      raise = true,
                      keys = clientkeys,
                      buttons = clientbuttons } },
+    { rule = { class = "Telegram" },
+      properties = { skip_taskbar = true, floating = true } },
+    { rule = { class = "Chromium-browser" },
+      properties = { skip_taskbar = true, tag = tags[1][4] } },
     { rule = { class = "Chromium-browser", role = "pop-up" },
       properties = { floating = true } },
     { rule = { role = "bubble" },
@@ -389,8 +393,14 @@ client.connect_signal("manage", function (c, startup)
     end
 end)
 
-client.connect_signal("focus", function(c) c.border_color = beautiful.border_focus end)
-client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
+client.connect_signal("focus", function(c) 
+	c.border_color = beautiful.border_focus 
+	--c.opacity = 1
+end)
+client.connect_signal("unfocus", function(c) 
+	c.border_color = beautiful.border_normal 
+	--c.opacity = 0.3
+end)
 
 function run_once(cmd)
     findme = cmd
@@ -401,8 +411,9 @@ function run_once(cmd)
     awful.util.spawn_with_shell("pgrep -u $USER -x " .. findme .. " > /dev/null || (" .. cmd .. ")")
 end
 
-run_once('xsetroot -solid black')
-run_once('setxkbmap us,ru -option ctrl:nocaps')
+run_once('setxkbmap us,ru -option ctrl:nocaps -option grp:alt_shift_toggle')
+run_once('compton -i 0.3 -f -D 10 -I 0.07 -O 0.07 -b')
+run_once('hsetroot -solid black')
 run_once('kbdd &')
 -- }}}
 

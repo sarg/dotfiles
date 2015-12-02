@@ -1,3 +1,4 @@
 #!/bin/sh
 export PATH="$HOME/devel/bin:$PATH"
 export NO_AT_BRIDGE=1
+export QT_GRAPHICSSYSTEM=native

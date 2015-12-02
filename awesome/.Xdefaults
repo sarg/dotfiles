@@ -3,9 +3,9 @@ URxvt.background: white
 URxvt.foreground: black
 URxvt.cursorColor: green
 URxvt.underlineColor: yellow
-URxvt.font: xft:Droid Sans Mono:size=9,xft:DejaVu Sans:size=9
+URxvt.font: xft:Hack:size=9,xft:DejaVu Sans:size=9
 URxvt*skipBuiltinGlyphs: true
-URxvt.letterSpace: -1
+URxvt.letterSpace: -2
 URxvt*scrollBar: false
 URxvt*tinting: grey
 URxvt.urgentOnBell: true
