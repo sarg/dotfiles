@@ -12,7 +12,7 @@
 -- for browsers, or the file name for emacs).
 
 table5={
-   ["w"]={browser,"Chromium-browser"}, 
+   ["w"]={browser,"chromium-browser"}, 
    ["t"]={"urxvt -name urxvt_ror", "urxvt_ror", "instance"},
    ["i"]={"Telegram", "Telegram"}
 }

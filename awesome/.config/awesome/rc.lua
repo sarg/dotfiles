@@ -415,6 +415,7 @@ run_once('setxkbmap us,ru -option ctrl:nocaps -option grp:alt_shift_toggle')
 run_once('compton -i 0.3 -f -D 10 -I 0.07 -O 0.07 -b')
 run_once('hsetroot -solid black')
 run_once('kbdd &')
+run_once('unclutter &')
 -- }}}
 
 local redshift = require("redshift")

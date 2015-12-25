@@ -65,15 +65,9 @@ bindkey "^[[B" history-beginning-search-forward
 bindkey "^[Od" emacs-backward-word
 bindkey "^[Oc" emacs-forward-word
 
-function deploy_puppet() {
-	ansible test.srg-it.ru -s -U puppet -a 'sh -c "cd /etc/puppet; hg pull -u; librarian-puppet update"'
+function whiteboard() {
+	convert "$1" -morphology Convolve DoG:15,100,0 -negate -normalize -blur 0x1 -channel RBG -level 60%,91%,0.1 "$2"
 }
 
-alias changeADPass='smbpasswd -U trofimovSI -r srg-eco.loc'
-function ssh () { 
-	if [ "$#" -eq 1 -a  "${@#*srg-it.ru}" != "$@"  ]; then
-		/usr/bin/ssh -t "$@" tmux new -A -s default
-	else
-		/usr/bin/ssh "$@"
-	fi
-}
+# Local config
+[[ -f ~/.zshrc.local ]] && source ~/.zshrc.local

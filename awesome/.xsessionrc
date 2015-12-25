@@ -1,4 +1,6 @@
 #!/bin/sh
+eval `gnome-keyring-daemon --start`
+export SSH_AUTH_SOCK
 export PATH="$HOME/devel/bin:$PATH"
 export NO_AT_BRIDGE=1
 export QT_GRAPHICSSYSTEM=native
