@@ -196,22 +196,24 @@ root.buttons(awful.util.table.join(
 ))
 -- }}}
 
+local function move(dir)
+  local f = function()
+              awful.client.focus.bydirection(dir)
+              if client.focus then client.focus:raise() end
+             end
+  return f
+end
+
 -- {{{ Key bindings
 globalkeys = awful.util.table.join(
     awful.key({ modkey,           }, "Escape", awful.tag.history.restore),
     awful.key({ modkey            }, "`", function () scratch.drop("urxvt", "bottom") end),
     awful.key({ modkey            }, "i", function () scratch.drop("Telegram", "center", "center", 0.6, 0.5, true) end),
 
-    awful.key({ modkey,           }, "d",
-        function ()
-            awful.client.focus.byidx( 1)
-            if client.focus then client.focus:raise() end
-        end),
-    awful.key({ modkey,           }, "a",
-        function ()
-            awful.client.focus.byidx(-1)
-            if client.focus then client.focus:raise() end
-        end),
+    awful.key({ modkey,           }, "w", move("up")),
+    awful.key({ modkey,           }, "d", move("right")),
+    awful.key({ modkey,           }, "a", move("left")),
+    awful.key({ modkey,           }, "s", move("down")),
 
     -- Layout manipulation
     awful.key({ modkey,           }, "u", awful.client.urgent.jumpto),
