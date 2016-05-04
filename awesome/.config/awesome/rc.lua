@@ -197,11 +197,22 @@ root.buttons(awful.util.table.join(
 -- }}}
 
 local function move(dir)
-  local f = function()
-              awful.client.focus.bydirection(dir)
-              if client.focus then client.focus:raise() end
-             end
-  return f
+  return function()
+      awful.client.focus.bydirection(dir)
+      --if awful.layout.get(client.screen)
+--	 awful.client.focus.byidx(-1)
+--      end
+      if client.focus then client.focus:raise() end
+  end
+end
+
+local vol_notify_id
+function set_volume(val)
+  return function()
+    awful.util.spawn("pactl set-sink-volume 0 " .. val)
+    -- TODO: get current volume
+    vol_notify_id = naughty.notify({ text = "[--" .. val .. " --]", timeout = 1, replaces_id = vol_notify_id  }).id
+  end
 end
 
 -- {{{ Key bindings
@@ -226,8 +237,8 @@ globalkeys = awful.util.table.join(
         end),
 
     -- Volume
-    awful.key({ modkey, "Control" }, "Left",   function () awful.util.spawn("amixer -D pulse sset Master 5%-") end),
-    awful.key({ modkey, "Control" }, "Right",   function () awful.util.spawn("amixer -D pulse sset Master 5%+") end),
+    awful.key({ modkey, "Control" }, "Left",   set_volume("+10%")) ,
+    awful.key({ modkey, "Control" }, "Right",   set_volume("-10%")),
 
     -- Standard program
     awful.key({ modkey,           }, "Return", function () awful.util.spawn(terminal) end),
@@ -356,6 +367,9 @@ awful.rules.rules = {
 	      c:geometry(geo)
 	      awful.placement.centered(c,nil)
       end
+    },
+    { rule = { class = "Firefox" },
+      callback = awful.client.setmaster
     },
     { rule = { class = "Chromium-browser" },
       properties = { skip_taskbar = true, tag = tags[1][4] } },
