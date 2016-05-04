@@ -7,4 +7,4 @@ Apply with stow.
     cd .dotfiles
     git submodule init
     sudo apt-get install stow
-    stow apply zsh awesome git
+    stow zsh awesome git

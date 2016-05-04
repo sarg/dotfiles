@@ -1,1 +1,3 @@
 config/*
+xmonad/.xmonad/xmonad*
+!xmonad/.xmonad/xmonad.hs
