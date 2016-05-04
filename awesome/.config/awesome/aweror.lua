@@ -36,7 +36,9 @@ function aweror.run_or_raise(cmd, properties)
          n = n + 1
          matched_clients[n] = c
          if c == focused then
-            findex = n
+	    c.minimized = true
+	    return
+--            findex = n
          end
       end
    end

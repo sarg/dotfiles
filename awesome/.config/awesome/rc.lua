@@ -12,6 +12,9 @@ local beautiful = require("beautiful")
 local naughty = require("naughty")
 local menubar = require("menubar")
 
+local scratch = require("scratch")
+
+
 -- Load Debian menu entries
 require("debian.menu")
 
@@ -63,7 +66,7 @@ local layouts =
     awful.layout.suit.max,
     awful.layout.suit.floating,
 --    awful.layout.suit.tile,
-    awful.layout.suit.tile.left,
+    awful.layout.suit.tile.right,
 --    awful.layout.suit.tile.bottom,
 --    awful.layout.suit.tile.top,
 --    awful.layout.suit.fair,
@@ -88,7 +91,14 @@ end
 tags = {}
 for s = 1, screen.count() do
     -- Each screen has its own tag table.
-    tags[s] = awful.tag({ 1, 2, 3, 'b' }, s, layouts[1])
+    tags[s] = awful.tag({ 1, 2, 3, 'b' }, s, 
+    	{
+		layouts[3],
+		layouts[1],
+		layouts[1],
+		layouts[1]
+	}
+    )
 end
 -- }}}
 
@@ -103,7 +113,6 @@ mytextclock = awful.widget.textclock()
 
 -- Keyboard layout widget
 kbdwidget = wibox.widget.textbox()
-kbdcole = "</span>"
 kbdwidget.border_width = 0
 kbdwidget.border_color = beautiful.fg_normal
 kbdwidget:set_markup(" EN ")
@@ -119,8 +128,8 @@ end
 
 -- Create a wibox for each screen and add it
 mywibox = {}
-mypromptbox = {}
 mylayoutbox = {}
+mypromptbox = awful.widget.prompt()
 mytaglist = {}
 mytaglist.buttons = awful.util.table.join(
                     awful.button({ }, 1, awful.tag.viewonly)
@@ -146,8 +155,6 @@ mytasklist.buttons = awful.util.table.join(
 					  )
 
 for s = 1, screen.count() do
-    -- Create a promptbox for each screen
-    mypromptbox[s] = awful.widget.prompt()
     -- Create an imagebox widget which will contains an icon indicating which layout we're using.
     -- We need one layoutbox per screen.
     mylayoutbox[s] = awful.widget.layoutbox(s)
@@ -162,15 +169,15 @@ for s = 1, screen.count() do
 
     -- Widgets that are aligned to the left
     local left_layout = wibox.layout.fixed.horizontal()
+    left_layout:add(mylayoutbox[s])
     left_layout:add(mytaglist[s])
-    left_layout:add(mypromptbox[s])
+    left_layout:add(mypromptbox)
 
     -- Widgets that are aligned to the right
     local right_layout = wibox.layout.fixed.horizontal()
     if s == 1 then right_layout:add(wibox.widget.systray()) end
     right_layout:add(kbdwidget)
     right_layout:add(mytextclock)
-    right_layout:add(mylayoutbox[s])
 
     -- Now bring it all together (with the tasklist in the middle)
     local layout = wibox.layout.align.horizontal()
@@ -191,9 +198,9 @@ root.buttons(awful.util.table.join(
 
 -- {{{ Key bindings
 globalkeys = awful.util.table.join(
-    awful.key({ modkey,           }, "Left",   awful.tag.viewprev       ),
-    awful.key({ modkey,           }, "Right",  awful.tag.viewnext       ),
     awful.key({ modkey,           }, "Escape", awful.tag.history.restore),
+    awful.key({ modkey            }, "`", function () scratch.drop("urxvt", "bottom") end),
+    awful.key({ modkey            }, "i", function () scratch.drop("Telegram", "center", "center", 0.6, 0.5, true) end),
 
     awful.key({ modkey,           }, "d",
         function ()
@@ -207,10 +214,6 @@ globalkeys = awful.util.table.join(
         end),
 
     -- Layout manipulation
-    awful.key({ modkey, "Shift"   }, "j", function () awful.client.swap.byidx(  1)    end),
-    awful.key({ modkey, "Shift"   }, "k", function () awful.client.swap.byidx( -1)    end),
-    awful.key({ modkey, "Control" }, "j", function () awful.screen.focus_relative( 1) end),
-    awful.key({ modkey, "Control" }, "k", function () awful.screen.focus_relative(-1) end),
     awful.key({ modkey,           }, "u", awful.client.urgent.jumpto),
     awful.key({ modkey,           }, "Tab",
         function ()
@@ -227,23 +230,17 @@ globalkeys = awful.util.table.join(
     -- Standard program
     awful.key({ modkey,           }, "Return", function () awful.util.spawn(terminal) end),
     awful.key({                   }, "Print", function () awful.util.spawn("gnome-screenshot -a") end),
-    awful.key({ modkey,           }, "l",      function () awful.util.spawn("dm-tool lock") end),
+    awful.key({                   }, "KP_Subtract",      function () awful.util.spawn("dm-tool lock") end),
     awful.key({ modkey, "Control" }, "r", awesome.restart),
     awful.key({ modkey, "Shift"   }, "q", awesome.quit),
 
-    awful.key({ modkey,           }, "l",     function () awful.tag.incmwfact( 0.05)    end),
-    awful.key({ modkey,           }, "h",     function () awful.tag.incmwfact(-0.05)    end),
-    awful.key({ modkey, "Shift"   }, "h",     function () awful.tag.incnmaster( 1)      end),
-    awful.key({ modkey, "Shift"   }, "l",     function () awful.tag.incnmaster(-1)      end),
-    awful.key({ modkey, "Control" }, "h",     function () awful.tag.incncol( 1)         end),
-    awful.key({ modkey, "Control" }, "l",     function () awful.tag.incncol(-1)         end),
     awful.key({ modkey,           }, "space", function () awful.layout.inc(layouts,  1) end),
     awful.key({ modkey, "Shift"   }, "space", function () awful.layout.inc(layouts, -1) end),
 
     awful.key({ modkey, "Control" }, "n", awful.client.restore),
 
     -- Prompt
-    awful.key({ modkey },            "r",     function () mypromptbox[mouse.screen]:run() end),
+    awful.key({ modkey },            "r",     function () mypromptbox:run() end),
 
     awful.key({ modkey }, "x",
               function ()
@@ -344,28 +341,28 @@ awful.rules.rules = {
                      border_color = beautiful.border_normal,
 		     size_hints_honor = false,
                      focus = awful.client.focus.filter,
+		     callback = awful.client.setslave,
                      raise = true,
                      keys = clientkeys,
                      buttons = clientbuttons } },
     { rule = { class = "Telegram" },
-      properties = { skip_taskbar = true, floating = true } },
+      properties = { skip_taskbar = true, floating = true, width = 1024, height = 600 },
+      callback = function(c)
+	      local geo = screen[mouse.screen].geometry
+	      geo.width = geo.width * 0.6
+	      geo.height = geo.height * 0.5
+	      c:geometry(geo)
+	      awful.placement.centered(c,nil)
+      end
+    },
     { rule = { class = "Chromium-browser" },
       properties = { skip_taskbar = true, tag = tags[1][4] } },
     { rule = { class = "Chromium-browser", role = "pop-up" },
       properties = { floating = true } },
     { rule = { role = "bubble" },
       properties = { floating = true } },
-    { rule = { class = "MPlayer" },
-      properties = { floating = true } },
     { rule = { instance = "crx_pkgdgajoinhkfldibdaledjikboognnl" },
       properties = { floating = true } },
-    { rule = { class = "pinentry" },
-      properties = { floating = true } },
-    { rule = { class = "gimp" },
-      properties = { floating = true } },
-    -- Set Firefox to always map on tags number 2 of screen 1.
-    -- { rule = { class = "Firefox" },
-    --   properties = { tag = tags[1][2] } },
 }
 -- }}}
 
@@ -383,7 +380,7 @@ client.connect_signal("manage", function (c, startup)
     if not startup then
         -- Set the windows at the slave,
         -- i.e. put it at the end of others instead of setting it master.
-        -- awful.client.setslave(c)
+        awful.client.setslave(c)
 
         -- Put windows in a smart way, only if they does not set an initial position.
         if not c.size_hints.user_position and not c.size_hints.program_position then
@@ -412,8 +409,8 @@ function run_once(cmd)
 end
 
 run_once('setxkbmap us,ru -option ctrl:nocaps -option grp:alt_shift_toggle')
-run_once('compton -i 0.3 -f -D 10 -I 0.07 -O 0.07 -b')
-run_once('hsetroot -solid black')
+--run_once('compton -i 0.3 -f -D 10 -I 0.07 -O 0.07 -b')
+run_once('hsetroot -solid \'#000000\'')
 run_once('kbdd &')
 run_once('unclutter &')
 -- }}}
@@ -421,3 +418,4 @@ run_once('unclutter &')
 local redshift = require("redshift")
 -- 1 for dim, 0 for not dimmed
 redshift.init(1)
+
