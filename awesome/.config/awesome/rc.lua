@@ -203,9 +203,15 @@ end
 local vol_notify_id
 function set_volume(val)
   return function()
-    awful.util.spawn("pactl set-sink-volume 0 " .. val)
+    awful.util.spawn("pulseaudio-ctl " .. val)
     -- TODO: get current volume
-    vol_notify_id = naughty.notify({ text = "[--" .. val .. " --]", timeout = 1, replaces_id = vol_notify_id  }).id
+    local fd = io.popen("pulseaudio-ctl full-status")
+    local status = fd:read("*all")
+    fd:close()
+
+    local volume = tonumber(string.match(status, "^%d+")) or 0
+
+    vol_notify_id = naughty.notify({ text = "[" .. volume .. "%]", timeout = 5, replaces_id = vol_notify_id, font = "fixed"  }).id
   end
 end
 
@@ -231,8 +237,8 @@ globalkeys = awful.util.table.join(
         end),
 
     -- Volume
-    awful.key({ modkey, "Control" }, "Left",   set_volume("+10%")) ,
-    awful.key({ modkey, "Control" }, "Right",   set_volume("-10%")),
+    awful.key({ modkey, "Control" }, "Up",   set_volume("up")) ,
+    awful.key({ modkey, "Control" }, "Down",   set_volume("down")),
 
     -- Standard program
     awful.key({ modkey,           }, "Return", function () awful.util.spawn(terminal) end),
