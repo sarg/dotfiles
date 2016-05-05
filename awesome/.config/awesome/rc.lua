@@ -379,6 +379,8 @@ awful.rules.rules = {
       properties = { floating = true } },
     { rule = { instance = "crx_pkgdgajoinhkfldibdaledjikboognnl" },
       properties = { floating = true } },
+    { rule = { class = "pavucontrol" },
+      properties = { floating = true } },
 }
 -- }}}
 
