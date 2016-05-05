@@ -363,8 +363,10 @@ awful.rules.rules = {
     },
 --    { rule = { class = "Chromium-browser" },
 --      properties = { skip_taskbar = true, tag = tags[1][4] } },
---    { rule = { class = "Chromium-browser", role = "pop-up" },
---      properties = { floating = true } },
+    { rule = { class = "Chromium-browser", role = "pop-up" },
+      properties = { floating = true },
+      callback = awful.placement.centered
+    },
     { rule = { role = "bubble" },
       properties = { floating = true } },
     { rule = { instance = "crx_pkgdgajoinhkfldibdaledjikboognnl" },
