@@ -10,7 +10,6 @@ local wibox = require("wibox")
 local beautiful = require("beautiful")
 -- Notification library
 local naughty = require("naughty")
-local menubar = require("menubar")
 
 local scratch = require("scratch")
 
@@ -100,11 +99,6 @@ for s = 1, screen.count() do
 	}
     )
 end
--- }}}
-
--- {{{ Menu
--- Menubar configuration
-menubar.utils.terminal = terminal -- Set the terminal for applications that require it
 -- }}}
 
 -- {{{ Wibox
@@ -253,17 +247,7 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey, "Control" }, "n", awful.client.restore),
 
     -- Prompt
-    awful.key({ modkey },            "r",     function () mypromptbox:run() end),
-
-    awful.key({ modkey }, "x",
-              function ()
-                  awful.prompt.run({ prompt = "Run Lua code: " },
-                  mypromptbox[mouse.screen].widget,
-                  awful.util.eval, nil,
-                  awful.util.getdir("cache") .. "/history_eval")
-              end),
-    -- Menubar
-    awful.key({ modkey }, "p", function() menubar.show() end)
+    awful.key({ modkey },            "r",     function () mypromptbox:run() end)
 )
 
 clientkeys = awful.util.table.join(
@@ -355,7 +339,7 @@ awful.rules.rules = {
 		     size_hints_honor = false,
                      focus = awful.client.focus.filter,
 		     callback = awful.client.setslave,
-                     raise = true,
+		     --raise = true,
                      keys = clientkeys,
                      buttons = clientbuttons } },
     { rule = { class = "Telegram" },
@@ -371,16 +355,18 @@ awful.rules.rules = {
     { rule = { class = "Firefox" },
       callback = awful.client.setmaster
     },
-    { rule = { class = "Chromium-browser" },
-      properties = { skip_taskbar = true, tag = tags[1][4] } },
-    { rule = { class = "Chromium-browser", role = "pop-up" },
-      properties = { floating = true } },
+--    { rule = { class = "Chromium-browser" },
+--      properties = { skip_taskbar = true, tag = tags[1][4] } },
+--    { rule = { class = "Chromium-browser", role = "pop-up" },
+--      properties = { floating = true } },
     { rule = { role = "bubble" },
       properties = { floating = true } },
     { rule = { instance = "crx_pkgdgajoinhkfldibdaledjikboognnl" },
       properties = { floating = true } },
     { rule = { class = "pavucontrol" },
       properties = { floating = true } },
+      { rule = { class = "jetbrains-idea" },
+      callback = awful.client.setmaster },
 }
 -- }}}
 
@@ -398,7 +384,7 @@ client.connect_signal("manage", function (c, startup)
     if not startup then
         -- Set the windows at the slave,
         -- i.e. put it at the end of others instead of setting it master.
-        awful.client.setslave(c)
+        --awful.client.setslave(c)
 
         -- Put windows in a smart way, only if they does not set an initial position.
         if not c.size_hints.user_position and not c.size_hints.program_position then
