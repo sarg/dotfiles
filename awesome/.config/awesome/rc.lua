@@ -14,9 +14,6 @@ local naughty = require("naughty")
 local scratch = require("scratch")
 
 
--- Load Debian menu entries
-require("debian.menu")
-
 -- {{{ Error handling
 -- Check if awesome encountered an error during startup and fell back to
 -- another config (This code will only ever execute for the fallback config)
@@ -44,7 +41,9 @@ end
 
 -- {{{ Variable definitions
 -- Themes define colours, icons, font and wallpapers.
-beautiful.init("/usr/share/awesome/themes/sky/theme.lua")
+beautiful.init("/usr/share/awesome/themes/zenburn/theme.lua")
+beautiful.border_width = 3
+beautiful.border_focus = '#fa3321'
 
 -- This is used later as the default terminal and editor to run.
 terminal = "urxvt"
@@ -90,14 +89,17 @@ end
 tags = {}
 for s = 1, screen.count() do
     -- Each screen has its own tag table.
-    tags[s] = awful.tag({ 1, 2, 3, 'b' }, s, 
+    tags[s] = awful.tag({ 'code', 'term', 'web', 'mail', 'b' }, s, 
     	{
+		layouts[3],
 		layouts[3],
 		layouts[1],
 		layouts[1],
 		layouts[1]
 	}
     )
+
+    awful.tag.setnmaster(3, tags[s][2])
 end
 -- }}}
 
@@ -204,7 +206,6 @@ local vol_notify_id
 function set_volume(val)
   return function()
     awful.util.spawn("pulseaudio-ctl " .. val)
-    -- TODO: get current volume
     local fd = io.popen("pulseaudio-ctl full-status")
     local status = fd:read("*all")
     fd:close()
@@ -243,7 +244,7 @@ globalkeys = awful.util.table.join(
     -- Standard program
     awful.key({ modkey,           }, "Return", function () awful.util.spawn(terminal) end),
     awful.key({                   }, "Print", function () awful.util.spawn("gnome-screenshot -a") end),
-    awful.key({                   }, "KP_Subtract",      function () awful.util.spawn("dm-tool lock") end),
+    awful.key({                   }, "KP_Subtract",      function () awful.util.spawn("xdg-screensaver lock") end),
     awful.key({ modkey, "Control" }, "r", awesome.restart),
     awful.key({ modkey, "Shift"   }, "q", awesome.quit),
 
@@ -348,19 +349,6 @@ awful.rules.rules = {
 		     --raise = true,
                      keys = clientkeys,
                      buttons = clientbuttons } },
-    { rule = { class = "Telegram" },
-      properties = { skip_taskbar = true, floating = true, width = 1024, height = 600 },
-      callback = function(c)
-	      local geo = screen[mouse.screen].geometry
-	      geo.width = geo.width * 0.6
-	      geo.height = geo.height * 0.5
-	      c:geometry(geo)
-	      awful.placement.centered(c,nil)
-      end
-    },
-    { rule = { class = "Firefox" },
-      callback = awful.client.setmaster
-    },
 --    { rule = { class = "Chromium-browser" },
 --      properties = { skip_taskbar = true, tag = tags[1][4] } },
     { rule = { class = "Chromium-browser", role = "pop-up" },
@@ -369,10 +357,10 @@ awful.rules.rules = {
     },
     { rule = { role = "bubble" },
       properties = { floating = true } },
-    { rule = { instance = "crx_pkgdgajoinhkfldibdaledjikboognnl" },
-      properties = { floating = true } },
-    { rule = { class = "pavucontrol" },
-      properties = { floating = true } },
+    { rule = { class = "Evolution" },
+      properties = { border_width = 0, tag = tags[1][4] } },
+    { rule = { class = "Pavucontrol" },
+      properties = { floating = true, callback = awful.placement.centered } },
       { rule = { class = "jetbrains-idea" },
       callback = awful.client.setmaster },
 }
@@ -403,7 +391,7 @@ client.connect_signal("manage", function (c, startup)
 end)
 
 client.connect_signal("focus", function(c) 
-	c.border_color = beautiful.border_focus 
+	c.border_color = beautiful.border_focus
 	--c.opacity = 1
 end)
 client.connect_signal("unfocus", function(c) 

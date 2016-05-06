@@ -12,5 +12,5 @@
 -- for browsers, or the file name for emacs).
 
 table5={
-   ["w"]={browser,"chromium-browser"}, 
+   ["e"]={browser,"chromium-browser"}, 
 }
