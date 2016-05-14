@@ -332,6 +332,8 @@ for i = 1, 9 do
                   end))
 end
 
+root.keys(globalkeys)
+
 clientbuttons = awful.util.table.join(
     awful.button({ }, 1, function (c) client.focus = c; c:raise() end),
     awful.button({ modkey }, 1, awful.mouse.client.move),
@@ -356,8 +358,8 @@ awful.rules.rules = {
       properties = { floating = true },
       callback = awful.placement.centered
     },
-    { rule = { role = "bubble" },
-      properties = { floating = true } },
+    --{ rule = { role = "bubble" },
+    --properties = { floating = true } },
     { rule = { class = "Evolution" },
       properties = { border_width = 0, tag = tags[1][4] } },
     { rule = { class = "Pavucontrol" },
