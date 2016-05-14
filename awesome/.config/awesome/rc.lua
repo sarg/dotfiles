@@ -41,10 +41,10 @@ end
 
 -- {{{ Variable definitions
 -- Themes define colours, icons, font and wallpapers.
-beautiful.init("/usr/share/awesome/themes/zenburn/theme.lua")
+config_dir = awful.util.getdir("config")
+beautiful.init(config_dir .. "/themes/brown/theme.lua")
 beautiful.border_width = 3
 beautiful.border_focus = '#fa3321'
-beautiful.set_font
 
 -- This is used later as the default terminal and editor to run.
 terminal = "urxvt"
@@ -423,4 +423,3 @@ run_once('unclutter &')
 local redshift = require("redshift")
 -- 1 for dim, 0 for not dimmed
 redshift.init(1)
-
