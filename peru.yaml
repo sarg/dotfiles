@@ -1,6 +1,8 @@
 imports:
   awesome-brown-theme: awesome/.config/awesome/themes
+  awesome-redshift: awesome/.config/awesome/redshift
   font-hack: fonts/.local/share/fonts
+  antigen: antigen
 
 git module awesome-brown-theme:
   url: https://github.com/mikar/awesome-themes
@@ -13,3 +15,13 @@ git module font-hack:
   reup: master
   export: build/ttf
   rev: 66afd78f9177b988ef0f26f08a52eb8c4883801c
+
+git module awesome-redshift:
+  url: https://github.com/YoRyan/awesome-redshift
+  reup: master
+  rev: 2eade4072761ac40b3569d56a085068d3382dcda
+
+git module antigen:
+  url: https://github.com/zsh-users/antigen.git
+  reup: master
+  rev: 1359b9966689e5afb666c2c31f5ca177006ce710
