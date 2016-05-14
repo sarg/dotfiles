@@ -196,11 +196,12 @@ root.buttons(awful.util.table.join(
 -- }}}
 
 local function move(dir)
-  return function()
+   return function()
+      local oldclient = client.focus
       awful.client.focus.bydirection(dir)
-      --if awful.layout.get(client.screen)
---	 awful.client.focus.byidx(-1)
---      end
+      if client.focus == oldclient then
+         awful.client.focus.byidx(-1)
+      end
       if client.focus then client.focus:raise() end
   end
 end
