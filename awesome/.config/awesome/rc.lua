@@ -241,6 +241,12 @@ globalkeys = awful.util.table.join(
                 client.focus:raise()
             end
         end),
+    awful.key({ modkey, "Shift"   }, "q", awesome.quit),
+
+    awful.key({ modkey,           }, "space", function () awful.layout.inc(layouts,  1) end),
+    awful.key({ modkey, "Shift"   }, "space", function () awful.layout.inc(layouts, -1) end),
+
+    awful.key({ modkey, "Control" }, "n", awful.client.restore),
 
     -- Volume
     awful.key({ modkey, "Control" }, "Up",   set_volume("up")) ,
@@ -251,13 +257,12 @@ globalkeys = awful.util.table.join(
     awful.key({                   }, "Print", function () awful.util.spawn("gnome-screenshot -a") end),
     awful.key({                   }, "KP_Subtract",      function () awful.util.spawn("xdg-screensaver lock") end),
     awful.key({ modkey, "Control" }, "r", awesome.restart),
-    awful.key({ modkey, "Shift"   }, "q", awesome.quit),
-
-    awful.key({ modkey,           }, "space", function () awful.layout.inc(layouts,  1) end),
-    awful.key({ modkey, "Shift"   }, "space", function () awful.layout.inc(layouts, -1) end),
-
-    awful.key({ modkey, "Control" }, "n", awful.client.restore),
-
+    awful.key({ modkey,           }, "e", function()
+          awful.client.run_or_raise('firefox', function (c)
+                                       return awful.rules.match(c, {class = 'Firefox'})
+          end)
+    end),
+    
     -- Prompt
     awful.key({ modkey },            "r",     function () mypromptbox:run() end)
 )
@@ -331,15 +336,6 @@ clientbuttons = awful.util.table.join(
     awful.button({ }, 1, function (c) client.focus = c; c:raise() end),
     awful.button({ modkey }, 1, awful.mouse.client.move),
     awful.button({ modkey }, 3, awful.mouse.client.resize))
-
--- Set keys
--- load the 'run or raise' function
-local ror = require("aweror")
-
--- generate and add the 'run or raise' key bindings to the globalkeys table
-globalkeys = awful.util.table.join(globalkeys, ror.genkeys(modkey))
-root.keys(globalkeys)
--- }}}
 
 -- {{{ Rules
 -- Rules to apply to new clients (through the "manage" signal).
