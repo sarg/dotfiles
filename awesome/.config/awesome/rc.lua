@@ -44,6 +44,7 @@ end
 beautiful.init("/usr/share/awesome/themes/zenburn/theme.lua")
 beautiful.border_width = 3
 beautiful.border_focus = '#fa3321'
+beautiful.set_font
 
 -- This is used later as the default terminal and editor to run.
 terminal = "urxvt"

@@ -1,0 +1,15 @@
+imports:
+  awesome-brown-theme: awesome/.config/awesome/themes
+  font-hack: fonts/.local/share/fonts
+
+git module awesome-brown-theme:
+  url: https://github.com/mikar/awesome-themes
+  reup: master
+  rev: 328f604fd29823fcfe9ffca865585682a310e835
+  pick: brown
+
+git module font-hack:
+  url: https://github.com/chrissimpkins/Hack
+  reup: master
+  export: build/ttf
+  rev: 66afd78f9177b988ef0f26f08a52eb8c4883801c
