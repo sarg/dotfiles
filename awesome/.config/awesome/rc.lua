@@ -236,7 +236,7 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey,           }, "u", awful.client.urgent.jumpto),
     awful.key({ modkey,           }, "Tab",
         function ()
-            awful.client.focus.history.previous()
+           awful.client.focus.history.previous()
             if client.focus then
                 client.focus:raise()
             end
@@ -411,9 +411,10 @@ function run_once(cmd)
     awful.util.spawn_with_shell("pgrep -u $USER -x " .. findme .. " > /dev/null || (" .. cmd .. ")")
 end
 
-run_once('setxkbmap us,ru -option ctrl:nocaps -option grp:alt_shift_toggle')
+awful.util.spawn('setxkbmap us,ru -option caps:swapescape -option grp:alt_shift_toggle')
+awful.util.spawn_with_shell('~/.local/bin/spacectrl.sh')
 --run_once('compton -i 0.3 -f -D 10 -I 0.07 -O 0.07 -b')
-run_once('hsetroot -solid \'#000000\'')
+awful.util.spawn('hsetroot -solid \'#000000\'')
 run_once('kbdd &')
 run_once('unclutter &')
 -- }}}
