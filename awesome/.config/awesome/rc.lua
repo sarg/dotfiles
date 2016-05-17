@@ -90,12 +90,11 @@ end
 tags = {}
 for s = 1, screen.count() do
     -- Each screen has its own tag table.
-    tags[s] = awful.tag({ 'code', 'term', 'web', 'mail', 'b' }, s, 
+    tags[s] = awful.tag({ 'code', 'term', 'mail', 'b' }, s, 
     	{
 		layouts[3],
 		layouts[3],
-		layouts[1],
-		layouts[1],
+                layouts[1],
 		layouts[1]
 	}
     )
@@ -361,7 +360,7 @@ awful.rules.rules = {
     --{ rule = { role = "bubble" },
     --properties = { floating = true } },
     { rule = { class = "Evolution" },
-      properties = { border_width = 0, tag = tags[1][4] } },
+      properties = { border_width = 0, tag = tags[1][3] } },
     { rule = { class = "Pavucontrol" },
       properties = { floating = true, callback = awful.placement.centered } },
       { rule = { class = "jetbrains-idea" },
