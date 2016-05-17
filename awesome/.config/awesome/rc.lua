@@ -10,8 +10,9 @@ local wibox = require("wibox")
 local beautiful = require("beautiful")
 -- Notification library
 local naughty = require("naughty")
-
+local bashets = require("bashets")
 local scratch = require("scratch")
+local pomodoro = require("pomodoro")
 
 
 -- {{{ Error handling
@@ -122,6 +123,15 @@ kbdwidget:set_markup (lts[layout].." ")
 end
 )
 
+local taskwidget = wibox.widget.textbox()
+bashets.register("/usr/local/bin/task | tail -n1", {
+                    widget = taskwidget,
+                    format = "$1",
+                    update_time = 10
+})
+
+ 
+
 -- Create a wibox for each screen and add it
 mywibox = {}
 mylayoutbox = {}
@@ -150,6 +160,9 @@ mytasklist.buttons = awful.util.table.join(
                                           end)
 					  )
 
+pomodoro.prefixes = { work = "<span size='large' color='darkred'></span>", short_break = "", long_break = "", away = "", free_time = "" }
+pomodoro.widget:set_font(beautiful.font)
+
 for s = 1, screen.count() do
     -- Create an imagebox widget which will contains an icon indicating which layout we're using.
     -- We need one layoutbox per screen.
@@ -174,6 +187,8 @@ for s = 1, screen.count() do
 
     -- Widgets that are aligned to the right
     local right_layout = wibox.layout.fixed.horizontal()
+    right_layout:add(taskwidget)
+    right_layout:add(pomodoro.widget)
     if s == 1 then right_layout:add(wibox.widget.systray()) end
     right_layout:add(kbdwidget)
     right_layout:add(mytextclock)
@@ -254,7 +269,7 @@ globalkeys = awful.util.table.join(
     -- Standard program
     awful.key({ modkey,           }, "Return", function () awful.util.spawn(terminal) end),
     awful.key({                   }, "Print", function () awful.util.spawn("gnome-screenshot -a") end),
-    awful.key({                   }, "KP_Subtract",      function () awful.util.spawn("xdg-screensaver lock") end),
+    awful.key({                   }, "KP_Subtract",      function () awful.util.spawn("i3lock -c 000000") end),
     awful.key({ modkey, "Control" }, "r", awesome.restart),
     awful.key({ modkey,           }, "e", function()
           awful.client.run_or_raise('firefox', function (c)
@@ -268,7 +283,7 @@ globalkeys = awful.util.table.join(
 
 clientkeys = awful.util.table.join(
     awful.key({ modkey,           }, "f",      function (c) c.fullscreen = not c.fullscreen  end),
-    awful.key({ modkey, "Control" }, "c",      function (c) c:kill()                         end),
+    awful.key({ modkey,           }, "c",      function (c) c:kill()                         end),
     awful.key({ modkey, "Control" }, "space",  awful.client.floating.toggle                     ),
     awful.key({ modkey, "Control" }, "Return", function (c) c:swap(awful.client.getmaster()) end),
     awful.key({ modkey,           }, "o",      awful.client.movetoscreen                        ),
