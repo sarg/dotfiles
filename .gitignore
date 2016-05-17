@@ -1,6 +1,6 @@
 config/*
 .peru/
 awesome/.config/awesome/themes/
-fonts/
+fonts/.local
 xmonad/.xmonad/xmonad*
 !xmonad/.xmonad/xmonad.hs

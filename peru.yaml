@@ -1,7 +1,8 @@
 imports:
   awesome-brown-theme: awesome/.config/awesome/themes
   awesome-redshift: awesome/.config/awesome/redshift
-  font-hack: fonts/.local/share/fonts
+  font-pomicons: fonts/.local/share
+#  font-hack: fonts/.local/share/fonts
   antigen: antigen
 
 git module awesome-brown-theme:
@@ -10,11 +11,17 @@ git module awesome-brown-theme:
   rev: 328f604fd29823fcfe9ffca865585682a310e835
   pick: brown
 
-git module font-hack:
-  url: https://github.com/chrissimpkins/Hack
+git module font-pomicons:
+  url: https://github.com/gabrielelana/pomicons.git
   reup: master
-  export: build/ttf
-  rev: 66afd78f9177b988ef0f26f08a52eb8c4883801c
+  pick: fonts
+  rev: bb0a57947c4a78b3d4afa8d483a58fdcb8d1fb1b
+
+#git module font-hack:
+#  url: https://github.com/chrissimpkins/Hack
+  #reup: master
+  #export: build/ttf
+  #rev: 66afd78f9177b988ef0f26f08a52eb8c4883801c
 
 git module awesome-redshift:
   url: https://github.com/YoRyan/awesome-redshift
