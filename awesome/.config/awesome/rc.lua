@@ -410,7 +410,6 @@ function run_once(cmd)
     awful.util.spawn_with_shell("pgrep -u $USER -x " .. findme .. " > /dev/null || (" .. cmd .. ")")
 end
 
-awful.util.spawn('setxkbmap us,ru -option caps:swapescape -option grp:alt_shift_toggle')
 awful.util.spawn_with_shell('~/.local/bin/spacectrl.sh')
 --run_once('compton -i 0.3 -f -D 10 -I 0.07 -O 0.07 -b')
 awful.util.spawn('hsetroot -solid \'#000000\'')

@@ -1,3 +1,6 @@
+#!/bin/sh
+
+setxkbmap us,ru -option grp:alt_shift_toggle
 # Map an unused modifier's keysym to the spacebar's keycode and make it a
 # control modifier. It needs to be an existing key so that emacs won't
 # spazz out when you press it. Hyper_L is a good candidate.
@@ -12,3 +15,5 @@ xmodmap -e "keycode any = space"
 
 # Finally use xcape to cause the space bar to generate a space when tapped.
 run-this-one xcape -t 200 -e "$spare_modifier=space"
+
+xmodmap -e 'clear Lock' -e 'keycode 0x42 = Escape'
