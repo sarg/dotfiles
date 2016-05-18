@@ -426,7 +426,7 @@ function run_once(cmd)
     awful.util.spawn_with_shell("pgrep -u $USER -x " .. findme .. " > /dev/null || (" .. cmd .. ")")
 end
 
-awful.util.spawn_with_shell('~/.local/bin/spacectrl.sh')
+awful.util.spawn_with_shell('~/.local/bin/keymap.sh')
 --run_once('compton -i 0.3 -f -D 10 -I 0.07 -O 0.07 -b')
 awful.util.spawn('hsetroot -solid \'#000000\'')
 run_once('kbdd &')
