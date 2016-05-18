@@ -238,7 +238,7 @@ end
 -- {{{ Key bindings
 globalkeys = awful.util.table.join(
     awful.key({ modkey,           }, "Escape", awful.tag.history.restore),
-    awful.key({ modkey            }, "`", function () scratch.drop("urxvt", "bottom") end),
+    awful.key({ modkey            }, "`", function () scratch.drop("urxvt -name drop", "bottom") end),
     awful.key({ modkey            }, "i", function () scratch.drop("Telegram", "center", "center", 0.6, 0.5, true) end),
 
     awful.key({ modkey,           }, "w", move("up")),
@@ -373,7 +373,8 @@ awful.rules.rules = {
       callback = awful.placement.centered
     },
     --{ rule = { role = "bubble" },
-    --properties = { floating = true } },
+    --properties = { floating = true } },'
+    { rule = { instance = "urxvt" }, properties = { tag = tags[1][2] }, callback = awful.client.jumpto },
     { rule = { class = "Evolution" },
       properties = { border_width = 0, tag = tags[1][3] } },
     { rule = { class = "Pavucontrol" },
