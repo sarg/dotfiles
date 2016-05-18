@@ -124,10 +124,11 @@ end
 )
 
 local taskwidget = wibox.widget.textbox()
-bashets.register("/usr/local/bin/task | tail -n1", {
+bashets.register("/usr/bin/task +ACTIVE export | jq '.description' -r", {
                     widget = taskwidget,
+		    separator = '\-1',
                     format = "$1",
-                    update_time = 10
+                    update_time = 1
 })
 
  
