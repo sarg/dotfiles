@@ -122,6 +122,14 @@ kbdwidget:set_markup (lts[layout].." ")
 end
 )
 
+local taskwidget = wibox.widget.textbox()
+bashets.register("/usr/bin/task +ACTIVE export | jq '.description' -r", {
+                    widget = taskwidget,
+		    separator = '\-1',
+                    format = "$1",
+                    update_time = 1
+})
+
 -- Create a wibox for each screen and add it
 mywibox = {}
 mylayoutbox = {}
@@ -411,7 +419,7 @@ function run_once(cmd)
     awful.util.spawn_with_shell("pgrep -u $USER -x " .. findme .. " > /dev/null || (" .. cmd .. ")")
 end
 
-awful.util.spawn_with_shell('~/.local/bin/spacectrl.sh')
+awful.util.spawn_with_shell('~/.local/bin/keymap.sh')
 --run_once('compton -i 0.3 -f -D 10 -I 0.07 -O 0.07 -b')
 awful.util.spawn('hsetroot -solid \'#000000\'')
 run_once('kbdd &')
