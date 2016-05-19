@@ -12,6 +12,7 @@ local beautiful = require("beautiful")
 local naughty = require("naughty")
 local scratch = require("scratch")
 local pomodoro = require("pomodoro")
+local bashets = require("bashets")
 
 
 -- {{{ Error handling
@@ -123,12 +124,13 @@ end
 )
 
 local taskwidget = wibox.widget.textbox()
-bashets.register("/usr/bin/task +ACTIVE export | jq '.description' -r", {
+bashets.register("/usr/local/bin/task +ACTIVE export rc.json.array=off | jq '.description' -r", {
                     widget = taskwidget,
 		    separator = '\-1',
                     format = "$1",
                     update_time = 1
 })
+
 
 -- Create a wibox for each screen and add it
 mywibox = {}
@@ -185,6 +187,7 @@ for s = 1, screen.count() do
 
     -- Widgets that are aligned to the right
     local right_layout = wibox.layout.fixed.horizontal()
+    right_layout:add(taskwidget)
     right_layout:add(pomodoro.widget)
     if s == 1 then right_layout:add(wibox.widget.systray()) end
     right_layout:add(kbdwidget)
@@ -242,6 +245,7 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey,           }, "d", move("right")),
     awful.key({ modkey,           }, "a", move("left")),
     awful.key({ modkey,           }, "s", move("down")),
+    awful.key({ modkey, }, "F8", function() awful.util.spawn('select_task.py') end),
 
     -- Layout manipulation
     awful.key({ modkey,           }, "u", awful.client.urgent.jumpto),
@@ -265,7 +269,7 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey,           }, "Return", function () awful.util.spawn(terminal) end),
     awful.key({                   }, "Print", function () awful.util.spawn("gnome-screenshot -a") end),
     awful.key({                   }, "KP_Subtract",      function () awful.util.spawn("i3lock -c 000000") end),
-    awful.key({ modkey, "Control" }, "r", awesome.restart),
+    awful.key({ modkey,  }, "F12", awesome.restart),
     awful.key({ modkey,           }, "e", function()
           awful.client.run_or_raise('firefox', function (c)
                                        return awful.rules.match(c, {class = 'Firefox'})
@@ -419,7 +423,7 @@ function run_once(cmd)
     awful.util.spawn_with_shell("pgrep -u $USER -x " .. findme .. " > /dev/null || (" .. cmd .. ")")
 end
 
-awful.util.spawn_with_shell('~/.local/bin/keymap.sh')
+awful.util.spawn_with_shell('keymap.sh')
 --run_once('compton -i 0.3 -f -D 10 -I 0.07 -O 0.07 -b')
 awful.util.spawn('hsetroot -solid \'#000000\'')
 run_once('kbdd &')
@@ -429,3 +433,4 @@ run_once('unclutter &')
 local redshift = require("redshift")
 -- 1 for dim, 0 for not dimmed
 redshift.init(1)
+bashets.start()
