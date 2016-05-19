@@ -10,7 +10,6 @@ local wibox = require("wibox")
 local beautiful = require("beautiful")
 -- Notification library
 local naughty = require("naughty")
-local bashets = require("bashets")
 local scratch = require("scratch")
 local pomodoro = require("pomodoro")
 
@@ -123,15 +122,6 @@ kbdwidget:set_markup (lts[layout].." ")
 end
 )
 
-local taskwidget = wibox.widget.textbox()
-bashets.register("/usr/local/bin/task | tail -n1", {
-                    widget = taskwidget,
-                    format = "$1",
-                    update_time = 10
-})
-
- 
-
 -- Create a wibox for each screen and add it
 mywibox = {}
 mylayoutbox = {}
@@ -187,7 +177,6 @@ for s = 1, screen.count() do
 
     -- Widgets that are aligned to the right
     local right_layout = wibox.layout.fixed.horizontal()
-    right_layout:add(taskwidget)
     right_layout:add(pomodoro.widget)
     if s == 1 then right_layout:add(wibox.widget.systray()) end
     right_layout:add(kbdwidget)
@@ -238,7 +227,7 @@ end
 -- {{{ Key bindings
 globalkeys = awful.util.table.join(
     awful.key({ modkey,           }, "Escape", awful.tag.history.restore),
-    awful.key({ modkey            }, "`", function () scratch.drop("urxvt -name drop", "bottom") end),
+    awful.key({ modkey            }, "y", function () scratch.drop("urxvt -name drop", "bottom") end),
     awful.key({ modkey            }, "i", function () scratch.drop("Telegram", "center", "center", 0.6, 0.5, true) end),
 
     awful.key({ modkey,           }, "w", move("up")),
@@ -260,8 +249,6 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey,           }, "space", function () awful.layout.inc(layouts,  1) end),
     awful.key({ modkey, "Shift"   }, "space", function () awful.layout.inc(layouts, -1) end),
 
-    awful.key({ modkey, "Control" }, "n", awful.client.restore),
-
     -- Volume
     awful.key({ modkey, "Control" }, "Up",   set_volume("up")) ,
     awful.key({ modkey, "Control" }, "Down",   set_volume("down")),
@@ -282,11 +269,9 @@ globalkeys = awful.util.table.join(
 )
 
 clientkeys = awful.util.table.join(
-    awful.key({ modkey,           }, "f",      function (c) c.fullscreen = not c.fullscreen  end),
     awful.key({ modkey,           }, "c",      function (c) c:kill()                         end),
     awful.key({ modkey, "Control" }, "space",  awful.client.floating.toggle                     ),
     awful.key({ modkey, "Control" }, "Return", function (c) c:swap(awful.client.getmaster()) end),
-    awful.key({ modkey,           }, "o",      awful.client.movetoscreen                        ),
     awful.key({ modkey,           }, "t",      function (c) c.ontop = not c.ontop            end),
     awful.key({ modkey,           }, "n",
         function (c)
