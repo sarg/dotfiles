@@ -245,7 +245,8 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey,           }, "d", move("right")),
     awful.key({ modkey,           }, "a", move("left")),
     awful.key({ modkey,           }, "s", move("down")),
-    awful.key({ modkey, }, "F8", function() awful.util.spawn('select_task.py') end),
+    awful.key({ modkey, }, "F8", function() awful.util.spawn_with_shell('task.py select') end),
+    awful.key({ modkey, }, "F7", function() awful.util.spawn_with_shell('task.py stop') end),
 
     -- Layout manipulation
     awful.key({ modkey,           }, "u", awful.client.urgent.jumpto),
