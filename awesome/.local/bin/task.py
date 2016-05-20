@@ -20,7 +20,7 @@ def commandSelect():
     dmenu.stdin.close()
     dmenu.wait()
         
-    nextTask = dmenu.stdout.read().decode('UTF-8')
+    nextTask = dmenu.stdout.read().decode('UTF-8').strip()
 
     if not nextTask:
         sys.exit(0)
