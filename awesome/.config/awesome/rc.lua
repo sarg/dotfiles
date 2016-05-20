@@ -405,6 +405,12 @@ client.connect_signal("manage", function (c, startup)
     end
 end)
 
+client.connect_signal("property::urgent", function (c)
+                         if c.class == "Firefox" then
+                            awful.client.urgent.jumpto(c)
+                         end
+end)
+
 client.connect_signal("focus", function(c) 
 	c.border_color = beautiful.border_focus
 	--c.opacity = 1
