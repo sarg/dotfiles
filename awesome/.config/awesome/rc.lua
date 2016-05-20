@@ -11,7 +11,6 @@ local beautiful = require("beautiful")
 -- Notification library
 local naughty = require("naughty")
 local scratch = require("scratch")
-local pomodoro = require("pomodoro")
 local bashets = require("bashets")
 
 
@@ -124,7 +123,7 @@ end
 )
 
 local taskwidget = wibox.widget.textbox()
-bashets.register("/usr/local/bin/task +ACTIVE export rc.json.array=off | jq '.description' -r", {
+bashets.register("/home/sarg/.local/bin/task.py current", {
                     widget = taskwidget,
 		    separator = '\-1',
                     format = "$1",
@@ -160,9 +159,6 @@ mytasklist.buttons = awful.util.table.join(
                                           end)
 					  )
 
-pomodoro.prefixes = { work = "<span size='large' color='darkred'></span>", short_break = "", long_break = "", away = "", free_time = "" }
-pomodoro.widget:set_font(beautiful.font)
-
 for s = 1, screen.count() do
     -- Create an imagebox widget which will contains an icon indicating which layout we're using.
     -- We need one layoutbox per screen.
@@ -188,7 +184,6 @@ for s = 1, screen.count() do
     -- Widgets that are aligned to the right
     local right_layout = wibox.layout.fixed.horizontal()
     right_layout:add(taskwidget)
-    right_layout:add(pomodoro.widget)
     if s == 1 then right_layout:add(wibox.widget.systray()) end
     right_layout:add(kbdwidget)
     right_layout:add(mytextclock)

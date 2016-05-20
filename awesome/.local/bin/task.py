@@ -37,7 +37,6 @@ def commandSelect():
     if active:
         active = active.get()
         if not active == task:
-            print("stopping")
             active.stop()
 
     if not task.active:
@@ -47,6 +46,12 @@ def commandStop():
     active = tw.tasks.filter('+ACTIVE')
     if active:
         active.get().stop()
+
+def commandCurrent():
+    active = tw.tasks.filter('+ACTIVE')
+    if active:
+        print(active.get()['description'])
+
 
 if len(sys.argv) != 2:
     print('%s command' % sys.argv[0])
@@ -58,3 +63,5 @@ if command == 'select':
     commandSelect()
 elif command == 'stop':
     commandStop()
+elif command == 'current':
+    commandCurrent()
