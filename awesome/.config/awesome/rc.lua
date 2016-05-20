@@ -267,9 +267,13 @@ globalkeys = awful.util.table.join(
     awful.key({                   }, "KP_Subtract",      function () awful.util.spawn("i3lock -c 000000") end),
     awful.key({ modkey,  }, "F12", awesome.restart),
     awful.key({ modkey,           }, "e", function()
-          awful.client.run_or_raise('firefox', function (c)
-                                       return awful.rules.match(c, {class = 'Firefox'})
-          end)
+	    if client.focus.class == 'Firefox' then
+		    awful.tag.history.restore()
+	    else
+		    awful.client.run_or_raise('firefox', function (c)
+			    return awful.rules.match(c, {class = 'Firefox'})
+		    end)
+	    end
     end),
     
     -- Prompt
