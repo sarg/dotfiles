@@ -14,7 +14,7 @@ tw = TaskWarrior(data_location = '~/.task')
 dmenu = Popen('dmenu -l 15', shell=True, stdin=PIPE, stdout=PIPE)
 pending_list = tw.tasks.pending()
 for i,t in enumerate(pending_list):
-    descr = '%d %s\n' % (i, t['description'].strip())
+    descr = '%d %s\n' % (i+1, t['description'].strip())
     dmenu.stdin.write(descr.encode('UTF-8'))
 
 dmenu.stdin.close()
