@@ -7,50 +7,73 @@ import pprint
 from tasklib import TaskWarrior
 from tasklib.task import Task
 from subprocess import *
+from threading import Timer
 
-tw = TaskWarrior(data_location = '~/.task')
+class Pomodoro:
+    def __init__(self):
+        self.timer = None
+        self.state = 'idle'
 
-def commandSelect():
-    dmenu = Popen('dmenu -l 15', shell=True, stdin=PIPE, stdout=PIPE)
-    pending_list = tw.tasks.pending()
-    for i,t in enumerate(pending_list):
-        descr = '%d %s\n' % (i+1, t['description'].strip())
-        dmenu.stdin.write(descr.encode('UTF-8'))
+    def expired(self):
+        print('expired')
+        self.start()
 
-    dmenu.stdin.close()
-    dmenu.wait()
-        
-    nextTask = dmenu.stdout.read().decode('UTF-8').strip()
+    def start(self):
+        timer = Timer(5, self.expired)
+        timer.start()
 
-    if not nextTask:
-        sys.exit(0)
+class CurrentTask:
 
-    m = re.search('^(\d+)', nextTask)
+    def __init__(self, tw):
+        self.tw = tw
 
-    if m:
-        task = pending_list[int(m.group(1))-1]
-    else:
-        task = Task(tw, description=nextTask)
-        task.save()
+    def select(self):
+        dmenu = Popen('dmenu -l 15', shell=True, stdin=PIPE, stdout=PIPE)
+        pending_list = self.tw.tasks.pending()
+        for i,t in enumerate(pending_list):
+            descr = '%d %s\n' % (i+1, t['description'].strip())
+            dmenu.stdin.write(descr.encode('UTF-8'))
 
-    active = tw.tasks.filter('+ACTIVE')
-    if active:
-        active = active.get()
-        if not active == task:
+        dmenu.stdin.close()
+        dmenu.wait()
+
+        nextTask = dmenu.stdout.read().decode('UTF-8').strip()
+
+        if not nextTask:
+            return
+
+        m = re.search('^(\d+)', nextTask)
+        if m:
+            task = pending_list[int(m.group(1))-1]
+        else:
+            task = Task(self.tw, description=nextTask)
+            task.save()
+
+            active = self.current()
+            if active and not active == task:
+                active.stop()
+
+            if not task.active:
+                task.start()
+
+    def stop(self):
+        active = self.current()
+        if active:
             active.stop()
 
-    if not task.active:
-        task.start()
+    def current(self):
+        active = self.tw.tasks.filter('+ACTIVE')
+        if active:
+            return active.get()
 
-def commandStop():
-    active = tw.tasks.filter('+ACTIVE')
-    if active:
-        active.get().stop()
+p = Pomodoro()
+current = CurrentTask(TaskWarrior())
 
-def commandCurrent():
-    active = tw.tasks.filter('+ACTIVE')
-    if active:
-        print(active.get()['description'])
+# on task changed
+#   start timer
+
+# after each pomodoro short break
+# on 4th pomodoro long break
 
 
 if len(sys.argv) != 2:
@@ -60,8 +83,8 @@ if len(sys.argv) != 2:
 command = sys.argv[1]
 
 if command == 'select':
-    commandSelect()
+    current.select()
 elif command == 'stop':
-    commandStop()
+    current.stop()
 elif command == 'current':
-    commandCurrent()
+    print(current.current())
