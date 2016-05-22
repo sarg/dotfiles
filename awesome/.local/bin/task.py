@@ -49,12 +49,12 @@ class CurrentTask:
             task = Task(self.tw, description=nextTask)
             task.save()
 
-            active = self.current()
-            if active and not active == task:
-                active.stop()
+        active = self.current()
+        if active and not active == task:
+            active.stop()
 
-            if not task.active:
-                task.start()
+        if not task.active:
+            task.start()
 
     def stop(self):
         active = self.current()
