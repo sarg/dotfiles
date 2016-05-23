@@ -17,5 +17,5 @@ add control = Control_L Control_R
 add mod1 = Alt_L Alt_R
 EOF
 
-xkbset -bell -feedback sticky -twokey latchlock
-xkbset exp 64 '=sticky' '=twokey' '=latchlock'
+#xkbset -bell -feedback sticky -twokey latchlock
+#xkbset exp 64 '=sticky' '=twokey' '=latchlock'
