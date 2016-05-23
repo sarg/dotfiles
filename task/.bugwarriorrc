@@ -1,0 +1,14 @@
+[general]
+annotation_comments = False
+targets = srgjira
+description_length = 60
+
+
+[srgjira]
+service = jira
+jira.base_uri = https://srgroup.atlassian.net
+jira.username = trofimovsi
+jira.password = @oracle:eval:cat ~/.srgjirapass
+jira.verify_ssl = False
+description_template = {{jiraid}}: {{jirasummary}}
+project_template = srg

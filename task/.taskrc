@@ -25,3 +25,15 @@ include /usr/share/taskwarrior/light-256.theme
 #include /usr/share/taskwarrior/dark-yellow-green.theme
 #include /usr/share/taskwarrior/dark-gray-256.theme
 
+# Bugwarrior UDAs
+uda.jiraurl.type=string
+uda.jiraurl.label=Jira URL
+uda.jiraestimate.type=numeric
+uda.jiraestimate.label=Estimate
+uda.jirasummary.type=string
+uda.jirasummary.label=Jira Summary
+uda.jiraid.type=string
+uda.jiraid.label=Jira Issue ID
+uda.jiradescription.type=string
+uda.jiradescription.label=Jira Description
+# END Bugwarrior UDAs
