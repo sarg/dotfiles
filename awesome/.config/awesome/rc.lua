@@ -233,6 +233,11 @@ function set_volume(val)
 end
 
 local firefoxPrev
+client.add_signal('unmanage', function(c)
+                    if c == firefoxPrev then
+                      firefoxPrev = nil 
+                    end
+end)
 
 -- {{{ Key bindings
 globalkeys = awful.util.table.join(
@@ -275,6 +280,7 @@ globalkeys = awful.util.table.join(
 	    if client.focus and client.focus.class == 'Firefox' then
         if firefoxPrev then
           awful.client.jumpto(firefoxPrev)
+          firefoxPrev = nil
         end
 	    else
         firefoxPrev = client.focus
