@@ -232,6 +232,8 @@ function set_volume(val)
   end
 end
 
+local firefoxPrev
+
 -- {{{ Key bindings
 globalkeys = awful.util.table.join(
     awful.key({ modkey,           }, "Escape", awful.tag.history.restore),
@@ -271,8 +273,11 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey,  }, "F12", awesome.restart),
     awful.key({ modkey,           }, "e", function()
 	    if client.focus and client.focus.class == 'Firefox' then
-		    awful.tag.history.restore()
+        if firefoxPrev then
+          awful.client.jumpto(firefoxPrev)
+        end
 	    else
+        firefoxPrev = client.focus
 		    awful.client.run_or_raise('firefox', function (c)
 			    return awful.rules.match(c, {class = 'Firefox'})
 		    end)
