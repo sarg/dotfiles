@@ -12,7 +12,7 @@ local beautiful = require("beautiful")
 local naughty = require("naughty")
 local scratch = require("scratch")
 local bashets = require("bashets")
-
+local hints = require("hints")
 
 -- {{{ Error handling
 -- Check if awesome encountered an error during startup and fell back to
@@ -45,6 +45,8 @@ config_dir = awful.util.getdir("config")
 beautiful.init(config_dir .. "/themes/brown/theme.lua")
 beautiful.border_width = 3
 beautiful.border_focus = '#fa3321'
+
+hints.init()
 
 -- This is used later as the default terminal and editor to run.
 terminal = "urxvt"
@@ -234,14 +236,15 @@ end
 globalkeys = awful.util.table.join(
     awful.key({ modkey,           }, "Escape", awful.tag.history.restore),
     awful.key({ modkey            }, "y", function () scratch.drop("urxvt -name drop", "bottom") end),
-    awful.key({ modkey            }, "i", function () scratch.drop("Telegram", "center", "center", 0.6, 0.5, true) end),
+    awful.key({ modkey            }, "i", function () scratch.drop("Telegram", "center", "center", 0.6, 0.5, true, mouse.screen, "Telegram") end),
 
-    awful.key({ modkey,           }, "w", move("up")),
-    awful.key({ modkey,           }, "d", move("right")),
-    awful.key({ modkey,           }, "a", move("left")),
-    awful.key({ modkey,           }, "s", move("down")),
+    awful.key({ modkey,           }, "k", move("up")),
+    awful.key({ modkey,           }, "l", move("right")),
+    awful.key({ modkey,           }, "h", move("left")),
+    awful.key({ modkey,           }, "j", move("down")),
     awful.key({ modkey, }, "F8", function() awful.util.spawn_with_shell('task.py select') end),
     awful.key({ modkey, }, "F7", function() awful.util.spawn_with_shell('task.py stop') end),
+    awful.key({ modkey, }, "u", function() hints.focus() end),
 
     -- Layout manipulation
     awful.key({ modkey,           }, "u", awful.client.urgent.jumpto),
