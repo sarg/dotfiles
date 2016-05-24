@@ -235,7 +235,7 @@ end
 -- {{{ Key bindings
 globalkeys = awful.util.table.join(
     awful.key({ modkey,           }, "Escape", awful.tag.history.restore),
-    awful.key({ modkey            }, "y", function () scratch.drop("urxvt -name drop", "bottom") end),
+    awful.key({ modkey            }, "y", function () scratch.drop("urxvt -name drop", "bottom", "center", 1, 0.5, true, mouse.screen, "drop") end),
     awful.key({ modkey            }, "i", function () scratch.drop("Telegram", "center", "center", 0.6, 0.5, true, mouse.screen, "Telegram") end),
 
     awful.key({ modkey,           }, "k", move("up")),

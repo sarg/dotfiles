@@ -41,13 +41,14 @@ local dropdown = {}
 
 -- Create a new window for the drop-down application when it doesn't
 -- exist, or toggle between hidden and visible states when it does
-function toggle(prog, vert, horiz, width, height, sticky, screen)
+function toggle(prog, vert, horiz, width, height, sticky, screen, check)
     vert   = vert   or "top"
     horiz  = horiz  or "center"
     width  = width  or 1
     height = height or 0.25
     sticky = sticky or false
     screen = screen or capi.mouse.screen
+    check  = check  or false
 
     -- Determine signal usage in this version of awesome
     local attach_signal = capi.client.connect_signal    or capi.client.add_signal
@@ -68,6 +69,10 @@ function toggle(prog, vert, horiz, width, height, sticky, screen)
 
     if not dropdown[prog][screen] then
         spawnw = function (c)
+            if check and not c.instance == check then
+              return
+            end
+
             dropdown[prog][screen] = c
 
             -- Scratchdrop clients are floaters
