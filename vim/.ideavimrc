@@ -1,11 +1,19 @@
 inoremap jk <Esc>
+
+# linenumbers
 set rnu
+
 nmap ; :
 
 let mapleader " "
+
+# goto actions
 nmap <leader>gg :action GotoDeclaration<cr>
 nmap <leader>gb :action Back<cr>
 nmap <leader>gf :action Forward<cr>
 
 nmap <leader>gt :action GotoFile<cr>
 nmap <leader>gc :action GotoClass<cr>
+
+# select paste in visual mode
+nnoremap gp `[v`]
