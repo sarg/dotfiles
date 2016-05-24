@@ -5,7 +5,7 @@ set rnu
 
 nmap ; :
 
-let mapleader " "
+let mapleader=" "
 
 # goto actions
 nmap <leader>gg :action GotoDeclaration<cr>
@@ -14,6 +14,8 @@ nmap <leader>gf :action Forward<cr>
 
 nmap <leader>gt :action GotoFile<cr>
 nmap <leader>gc :action GotoClass<cr>
+
+nmap <leader><space> :action emacsIDEAs.AceJumpWord<CR>
 
 # select paste in visual mode
 nnoremap gp `[v`]
