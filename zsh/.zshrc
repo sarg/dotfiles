@@ -12,6 +12,8 @@ antigen apply
 
 alias agrep=ack-grep
 alias g=git
+alias t=task
+alias em='emacsclient -nc'
 
 function extract () {
     if [[ -f "$1" ]]; then
