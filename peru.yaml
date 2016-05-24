@@ -4,6 +4,7 @@ imports:
   font-pomicons: fonts/.local/share
 #  font-hack: fonts/.local/share/fonts
   antigen: antigen
+  awesome-hints: awesome/.config/awesome/hints
 
 git module awesome-brown-theme:
   url: https://github.com/mikar/awesome-themes
@@ -32,3 +33,8 @@ git module antigen:
   url: https://github.com/zsh-users/antigen.git
   reup: master
   rev: 1359b9966689e5afb666c2c31f5ca177006ce710
+
+git module awesome-hints:
+  url: https://github.com/guotsuan/hints
+  reup: master
+  rev: f4843a30afdb9696e637abbfe120f215b8e33bf9
