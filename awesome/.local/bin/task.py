@@ -28,7 +28,7 @@ class CurrentTask:
         self.tw = tw
 
     def select(self):
-        dmenu = Popen('dmenu -l 15', shell=True, stdin=PIPE, stdout=PIPE)
+        dmenu = Popen('dmenu -i -l 50', shell=True, stdin=PIPE, stdout=PIPE)
         pending_list = self.tw.tasks.pending()
         for i,t in enumerate(pending_list):
             descr = '%d %s\n' % (i+1, t['description'].strip())
