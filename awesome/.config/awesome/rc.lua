@@ -270,6 +270,7 @@ globalkeys = awful.util.table.join(
     -- Volume
     awful.key({ modkey, "Control" }, "Up",   set_volume("up")) ,
     awful.key({ modkey, "Control" }, "Down",   set_volume("down")),
+    awful.key({ modkey,           }, "F1", function() awful.util.spawn('clementine -t') end),
 
     -- Standard program
     awful.key({ modkey,           }, "Return", function () awful.util.spawn(terminal) end),
