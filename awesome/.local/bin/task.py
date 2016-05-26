@@ -27,11 +27,25 @@ class CurrentTask:
     def __init__(self, tw):
         self.tw = tw
 
+    def todo(self):
+        dmenu = Popen('dmenu -i -l 50', shell=True, stdin=PIPE, stdout=PIPE)
+        pending_list = self.tw.tasks.pending().filter('+todo')
+        for i,t in enumerate(pending_list):
+            descr = '{:2d} {}\n'.format(i+1, t['description'].strip())
+            dmenu.stdin.write(descr.encode('UTF-8'))
+
+        dmenu.stdin.close()
+        dmenu.wait()
+
+        nextTask = dmenu.stdout.read().decode('UTF-8').strip()
+        task = Task(self.tw, description=nextTask, tags=['todo'])
+        task.save()
+
     def select(self):
         dmenu = Popen('dmenu -i -l 50', shell=True, stdin=PIPE, stdout=PIPE)
-        pending_list = self.tw.tasks.pending()
+        pending_list = self.tw.tasks.pending().filter('-todo')
         for i,t in enumerate(pending_list):
-            descr = '%d %s\n' % (i+1, t['description'].strip())
+            descr = '{:2d} {}\n'.format(i+1, t['description'].strip())
             dmenu.stdin.write(descr.encode('UTF-8'))
 
         dmenu.stdin.close()
@@ -88,3 +102,5 @@ elif command == 'stop':
     current.stop()
 elif command == 'current':
     print(current.current())
+elif command == 'todo':
+    print(current.todo())
