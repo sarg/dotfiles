@@ -4,6 +4,7 @@ import re
 import sys
 import json
 import pprint
+from datetime import date
 from tasklib import TaskWarrior
 from tasklib.task import Task
 from subprocess import *
@@ -44,8 +45,15 @@ class CurrentTask:
     def select(self):
         dmenu = Popen('dmenu -i -l 50', shell=True, stdin=PIPE, stdout=PIPE)
         pending_list = self.tw.tasks.pending().filter('-todo')
-        for i,t in enumerate(pending_list):
-            descr = '{:2d} {}\n'.format(i+1, t['description'].strip())
+
+        today = date.today()
+        modSort = lambda x: 0 if x.date() < today else 1
+
+        decorated = [ (modSort(t['modified']), t['project'] or '', t['created'], i, t) for i, t in enumerate(pending_list) ]
+        decorated.sort(reverse=True)
+
+        for i, t in enumerate(decorated):
+            descr = '{:2d} {}\n'.format(i+1, t[-1]['description'].strip())
             dmenu.stdin.write(descr.encode('UTF-8'))
 
         dmenu.stdin.close()
@@ -58,7 +66,7 @@ class CurrentTask:
 
         m = re.search('^(\d+)', nextTask)
         if m:
-            task = pending_list[int(m.group(1))-1]
+            task = decorated[int(m.group(1))-1][-1]
         else:
             task = Task(self.tw, description=nextTask)
             task.save()
@@ -79,7 +87,6 @@ class CurrentTask:
         active = self.current()
         if active:
             active.done()
-
 
     def current(self):
         active = self.tw.tasks.filter('+ACTIVE')
