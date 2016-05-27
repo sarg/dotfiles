@@ -39,6 +39,15 @@ local drop = {} -- module scratch.drop
 
 local dropdown = {}
 
+function hideClient(c)
+  c.hidden = true
+  local ctags = c:tags()
+  for i, t in pairs(ctags) do
+    ctags[i] = nil
+  end
+  c:tags(ctags)
+end
+
 -- Create a new window for the drop-down application when it doesn't
 -- exist, or toggle between hidden and visible states when it does
 function toggle(prog, vert, horiz, width, height, sticky, screen, check)
@@ -63,6 +72,15 @@ function toggle(prog, vert, horiz, width, height, sticky, screen, check)
                 if cl == c then
                     dropdown[prog][scr] = nil
                 end
+            end
+        end)
+
+        -- Hide on lost focus
+        attach_signal("unfocus", function (c)
+            for scr, cl in pairs(dropdown[prog]) do
+              if cl == c then
+                hideClient(c)
+              end
             end
         end)
     end
@@ -126,12 +144,7 @@ function toggle(prog, vert, horiz, width, height, sticky, screen, check)
             c:raise()
             capi.client.focus = c
         else -- Hide and detach tags if not
-            c.hidden = true
-            local ctags = c:tags()
-            for i, t in pairs(ctags) do
-                ctags[i] = nil
-            end
-            c:tags(ctags)
+          hideClient(c)
         end
     end
 end

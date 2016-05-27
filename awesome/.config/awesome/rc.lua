@@ -242,7 +242,10 @@ end)
 -- {{{ Key bindings
 globalkeys = awful.util.table.join(
     awful.key({ modkey,           }, "Escape", awful.tag.history.restore),
+
+    -- scratches
     awful.key({ modkey            }, "y", function () scratch.drop("urxvt -name drop", "bottom", "center", 1, 0.5, true, mouse.screen, "drop") end),
+    awful.key({ modkey,           }, "space", function () scratch.drop("urxvt -name drop", "bottom", "center", 1, 0.5, true, mouse.screen, "drop") end),
     awful.key({ modkey            }, "i", function () scratch.drop("Telegram", "center", "center", 0.6, 0.5, true, mouse.screen, "Telegram") end),
 
     awful.key({ modkey,           }, "k", move("up")),
@@ -265,8 +268,10 @@ globalkeys = awful.util.table.join(
         end),
     awful.key({ modkey, "Shift"   }, "q", awesome.quit),
 
-    awful.key({ modkey,           }, "space", function () awful.layout.inc(layouts,  1) end),
-    awful.key({ modkey, "Shift"   }, "space", function () awful.layout.inc(layouts, -1) end),
+    -- rarely used layout change keys
+    -- TODO: remove
+    awful.key({ modkey,           }, "\\", function () awful.layout.inc(layouts,  1) end),
+    awful.key({ modkey, "Shift"   }, "\\", function () awful.layout.inc(layouts, -1) end),
 
     -- Volume
     awful.key({ modkey, "Control" }, "Up",   set_volume("up")) ,
