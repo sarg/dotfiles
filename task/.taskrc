@@ -37,3 +37,4 @@ uda.jiraid.label=Jira Issue ID
 uda.jiradescription.type=string
 uda.jiradescription.label=Jira Description
 # END Bugwarrior UDAs
+report.next.sort=modified-
