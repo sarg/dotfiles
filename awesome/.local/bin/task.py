@@ -75,10 +75,40 @@ class CurrentTask:
         if active:
             active.stop()
 
+    def done(self):
+        active = self.current()
+        if active:
+            active.done()
+
+
     def current(self):
         active = self.tw.tasks.filter('+ACTIVE')
         if active:
             return active.get()
+
+    PAUSED = "PAUSED"
+
+    def pause(self):
+        active = self.current()
+        if not active: return
+
+        if active['description'] == self.PAUSED:
+            prev = self.tw.tasks.get(tags__contains = [self.PAUSED])
+            active.stop()
+            prev.start()
+        else:
+            pause_task = self.tw.tasks.filter(description = self.PAUSED)
+            if not pause_task:
+                pause_task = Task(self.tw, description=self.PAUSED)
+                pause_task.save()
+            else:
+                pause_task = pause_task.get()
+
+            active['tags'].add(self.PAUSED)
+            active.save()
+            active.stop()
+            pause_task.start()
+
 
 p = Pomodoro()
 current = CurrentTask(TaskWarrior())
@@ -103,4 +133,8 @@ elif command == 'stop':
 elif command == 'current':
     print(current.current())
 elif command == 'todo':
-    print(current.todo())
+    current.todo()
+elif command == 'pause':
+    current.pause()
+elif command == 'done':
+    current.done()

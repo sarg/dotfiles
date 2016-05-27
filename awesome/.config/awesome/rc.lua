@@ -252,8 +252,10 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey,           }, "l", move("right")),
     awful.key({ modkey,           }, "h", move("left")),
     awful.key({ modkey,           }, "j", move("down")),
+    awful.key({ modkey, }, "F9", function() awful.util.spawn_with_shell('task.py pause') end),
     awful.key({ modkey, }, "F8", function() awful.util.spawn_with_shell('task.py select') end),
     awful.key({ modkey, }, "F7", function() awful.util.spawn_with_shell('task.py stop') end),
+    awful.key({ modkey, "Shift"}, "F7", function() awful.util.spawn_with_shell('task.py done') end),
     awful.key({ modkey, }, "F6", function() awful.util.spawn_with_shell('task.py todo') end),
     awful.key({ modkey, }, "u", function() hints.focus() end),
 
