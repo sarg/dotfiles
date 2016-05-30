@@ -49,11 +49,32 @@ class CurrentTask:
         today = date.today()
         modSort = lambda x: 0 if x.date() < today else 1
 
-        decorated = [ (modSort(t['modified']), t['project'] or '', t['created'], i, t) for i, t in enumerate(pending_list) ]
-        decorated.sort(reverse=True)
+        # change sorting
+        # desired behaviour: active, today sorted by mod time, other tasks sorted by project and created
 
-        for i, t in enumerate(decorated):
-            descr = '{:2d} {}\n'.format(i+1, t[-1]['description'].strip())
+        active = [ e for e in pending_list if e.active ]
+
+        other = [ (t['project'] or '', t['created'], i, t) for i, t in enumerate(pending_list) if t['modified'].date() < today ]
+        other.sort(reverse = True)
+        other = [ e[-1] for e in other ]
+
+        todayList = [ (t['modified'], i, t) for i, t in enumerate(pending_list) if t['modified'].date() >= today and not t.active ]
+        todayList.sort(reverse = True)
+        todayList = [ e[-1] for e in todayList ]
+
+        sortedTaskList = active + todayList + other
+
+        i = 0
+        for t in active + todayList:
+            i = i+1
+            descr = '{:2d} {}\n'.format(i, t['description'].strip())
+            dmenu.stdin.write(descr.encode('UTF-8'))
+
+        dmenu.stdin.write(b'-----------\n')
+
+        for t in other:
+            i = i+1
+            descr = '{:2d} {}\n'.format(i, t['description'].strip())
             dmenu.stdin.write(descr.encode('UTF-8'))
 
         dmenu.stdin.close()
@@ -66,7 +87,7 @@ class CurrentTask:
 
         m = re.search('^(\d+)', nextTask)
         if m:
-            task = decorated[int(m.group(1))-1][-1]
+            task = sortedTaskList[int(m.group(1))-1][-1]
         else:
             task = Task(self.tw, description=nextTask)
             task.save()
