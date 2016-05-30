@@ -87,10 +87,16 @@ class CurrentTask:
 
         m = re.search('^(\d+)', nextTask)
         if m:
-            task = sortedTaskList[int(m.group(1))-1][-1]
+            task = sortedTaskList[int(m.group(1))-1]
         else:
-            task = Task(self.tw, description=nextTask)
-            task.save()
+            p = subprocess.Popen('task add {}'.format(nextTask), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            stdout, stderr = [x.decode('utf-8') for x in p.communicate()]
+            output = stdout.rstrip().split('\n')
+
+            id_lines = [l for l in output if l.startswith('Created task ')]
+            identifier = ( id_lines[0].split(' ')[2].rstrip('.') )
+
+            task = self.tw.tasks.get(id = identifier)
 
         active = self.current()
         if active and not active == task:
