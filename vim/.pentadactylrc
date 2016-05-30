@@ -1,6 +1,10 @@
+set guioptions+=n
+imap jk <ESC> 
 cmap <C-n> <Tab>
 cmap <C-p> <S-Tab>
 map <C-h> <nop>
-set hintkeys=asdghjkl
+set hintkeys=asdghjklut
 map -b j 5j
 map -b k 5k
+
+imap <C-m> <CR>
