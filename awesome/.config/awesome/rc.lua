@@ -48,12 +48,6 @@ beautiful.border_focus = '#fa3321'
 
 hints.init()
 
--- This is used later as the default terminal and editor to run.
-terminal = "urxvt"
-browser = "chromium-browser" or os.getenv("BROWSER")
-editor = "vim" or os.getenv("EDITOR")
-editor_cmd = terminal .. " -e " .. editor
-
 -- Default modkey.
 -- Usually, Mod4 is the key with a logo between Control and Alt.
 -- If you do not like this or do not have such a key,
@@ -66,40 +60,23 @@ local layouts =
 {
     awful.layout.suit.max,
     awful.layout.suit.floating,
---    awful.layout.suit.tile,
     awful.layout.suit.tile.right,
---    awful.layout.suit.tile.bottom,
---    awful.layout.suit.tile.top,
---    awful.layout.suit.fair,
---    awful.layout.suit.fair.horizontal,
---    awful.layout.suit.spiral,
---    awful.layout.suit.spiral.dwindle,
---    awful.layout.suit.max.fullscreen,
---    awful.layout.suit.magnifier
 }
--- }}}
-
--- {{{ Wallpaper
-if beautiful.wallpaper then
-    for s = 1, screen.count() do
-        gears.wallpaper.maximized(beautiful.wallpaper, s, true)
-    end
-end
 -- }}}
 
 -- {{{ Tags
 -- Define a tag table which hold all screen tags.
 tags = {}
 for s = 1, screen.count() do
-    -- Each screen has its own tag table.
-    tags[s] = awful.tag({ 'code', 'term', 'mail', 'b' }, s, 
-    	{
-		layouts[3],
-		layouts[3],
-                layouts[1],
-		layouts[1]
-	}
-    )
+  -- Each screen has its own tag table.
+  tags[s] = awful.tag({ 'code', 'term', 'mail', 'b' }, s, 
+    {
+      layouts[3],
+      layouts[3],
+      layouts[1],
+      layouts[1]
+    }
+  )
 
     awful.tag.setnmaster(3, tags[s][2])
 end
@@ -126,10 +103,10 @@ end
 
 local taskwidget = wibox.widget.textbox()
 bashets.register("/home/sarg/.local/bin/task.py current", {
-                    widget = taskwidget,
-		    separator = '\-1',
-                    format = "$1",
-                    update_time = 1
+                   widget = taskwidget,
+                   separator = '\-1',
+                   format = "$1",
+                   update_time = 1
 })
 
 
@@ -139,27 +116,27 @@ mylayoutbox = {}
 mypromptbox = awful.widget.prompt()
 mytaglist = {}
 mytaglist.buttons = awful.util.table.join(
-                    awful.button({ }, 1, awful.tag.viewonly)
-                    )
+  awful.button({ }, 1, awful.tag.viewonly)
+)
 mytasklist = {}
 mytasklist.buttons = awful.util.table.join(
-                     awful.button({ }, 1, function (c)
-                                              if c == client.focus then
-                                                  c.minimized = true
-                                              else
-                                                  -- Without this, the following
-                                                  -- :isvisible() makes no sense
-                                                  c.minimized = false
-                                                  if not c:isvisible() then
-                                                      awful.tag.viewonly(c:tags()[1])
-                                                  end
-                                                  -- This will also un-minimize
-                                                  -- the client, if needed
-                                                  client.focus = c
-                                                  c:raise()
-                                              end
-                                          end)
-					  )
+  awful.button({ }, 1, function (c)
+      if c == client.focus then
+        c.minimized = true
+      else
+        -- Without this, the following
+        -- :isvisible() makes no sense
+        c.minimized = false
+        if not c:isvisible() then
+          awful.tag.viewonly(c:tags()[1])
+        end
+        -- This will also un-minimize
+        -- the client, if needed
+        client.focus = c
+        c:raise()
+      end
+  end)
+)
 
 for s = 1, screen.count() do
     -- Create an imagebox widget which will contains an icon indicating which layout we're using.
@@ -170,7 +147,7 @@ for s = 1, screen.count() do
 
     -- Create a tasklist widget
     mytasklist[s] = awful.widget.tasklist(s, function(c, screen)
-	return awful.widget.tasklist.filter.minimizedcurrenttags(c, screen) or awful.widget.tasklist.filter.focused(c, screen)
+        return awful.widget.tasklist.filter.minimizedcurrenttags(c, screen) or awful.widget.tasklist.filter.focused(c, screen)
     end, 
     mytasklist.buttons)
 
@@ -219,6 +196,7 @@ local function move(dir)
 end
 
 local vol_notify_id
+
 function set_volume(val)
   return function()
     awful.util.spawn("pulseaudio-ctl " .. val)
@@ -234,9 +212,9 @@ end
 
 local firefoxPrev
 client.add_signal('unmanage', function(c)
-                    if c == firefoxPrev then
-                      firefoxPrev = nil 
-                    end
+  if c == firefoxPrev then
+    firefoxPrev = nil 
+  end
 end)
 
 -- {{{ Key bindings
@@ -280,10 +258,10 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey,           }, "F1", function() awful.util.spawn('clementine -t') end),
 
     -- Standard program
-    awful.key({ modkey,           }, "Return", function () awful.util.spawn(terminal) end),
+    awful.key({ modkey,           }, "Return", function () awful.util.spawn("urxvt") end),
     awful.key({                   }, "Print", function () awful.util.spawn("gnome-screenshot -a") end),
     awful.key({                   }, "KP_Subtract",      function () awful.util.spawn("xautolock -locknow") end),
-    awful.key({ modkey,  }, "F12", awesome.restart),
+    awful.key({ modkey,           }, "F12", awesome.restart),
     awful.key({ modkey,           }, "e", function()
 	    if client.focus and client.focus.class == 'Firefox' then
         if firefoxPrev then
@@ -375,31 +353,31 @@ clientbuttons = awful.util.table.join(
 -- {{{ Rules
 -- Rules to apply to new clients (through the "manage" signal).
 awful.rules.rules = {
-    -- All clients will match this rule.
-    { rule = { },
-      properties = { border_width = beautiful.border_width,
-                     border_color = beautiful.border_normal,
-		     size_hints_honor = false,
-                     focus = awful.client.focus.filter,
-		     callback = awful.client.setslave,
-		     --raise = true,
-                     keys = clientkeys,
-                     buttons = clientbuttons } },
---    { rule = { class = "Chromium-browser" },
---      properties = { skip_taskbar = true, tag = tags[1][4] } },
-    { rule = { class = "Chromium-browser", role = "pop-up" },
-      properties = { floating = true },
-      callback = awful.placement.centered
-    },
-    --{ rule = { role = "bubble" },
-    --properties = { floating = true } },'
-    { rule = { instance = "urxvt" }, properties = { tag = tags[1][2] }, callback = awful.client.jumpto },
-    { rule = { class = "Evolution" },
-      properties = { border_width = 0, tag = tags[1][3] } },
-    { rule = { class = "Pavucontrol" },
-      properties = { floating = true, callback = awful.placement.centered } },
-      { rule = { class = "jetbrains-idea" },
-      callback = awful.client.setmaster },
+  -- All clients will match this rule.
+  { rule = { },
+    properties = { border_width = beautiful.border_width,
+                   border_color = beautiful.border_normal,
+                   size_hints_honor = false,
+                   focus = awful.client.focus.filter,
+                   callback = awful.client.setslave,
+                   --raise = true,
+                   keys = clientkeys,
+                   buttons = clientbuttons } },
+  --    { rule = { class = "Chromium-browser" },
+  --      properties = { skip_taskbar = true, tag = tags[1][4] } },
+  { rule = { class = "Chromium-browser", role = "pop-up" },
+    properties = { floating = true },
+    callback = awful.placement.centered
+  },
+  --{ rule = { role = "bubble" },
+  --properties = { floating = true } },'
+  { rule = { instance = "urxvt" }, properties = { tag = tags[1][2] }, callback = awful.client.jumpto },
+  { rule = { class = "Evolution" },
+    properties = { border_width = 0, tag = tags[1][3] } },
+  { rule = { class = "Pavucontrol" },
+    properties = { floating = true, callback = awful.placement.centered } },
+  { rule = { class = "jetbrains-idea" },
+    callback = awful.client.setmaster },
 }
 -- }}}
 
