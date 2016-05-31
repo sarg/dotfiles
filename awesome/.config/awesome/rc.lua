@@ -262,6 +262,9 @@ globalkeys = awful.util.table.join(
     awful.key({                   }, "Print", function () awful.util.spawn("gnome-screenshot -a") end),
     awful.key({                   }, "KP_Subtract",      function () awful.util.spawn("xautolock -locknow") end),
     awful.key({ modkey,           }, "F12", awesome.restart),
+    awful.key({modkey, }, "o", function()
+        awful.client.run_or_raise('emacsclient -nc -a ""', function(c) return awful.rules.match(c, { class = "Emacs" }) end)
+    end),
     awful.key({ modkey,           }, "e", function()
 	    if client.focus and client.focus.class == 'Firefox' then
         if firefoxPrev then
@@ -285,12 +288,6 @@ clientkeys = awful.util.table.join(
     awful.key({ modkey, "Control" }, "space",  awful.client.floating.toggle                     ),
     awful.key({ modkey, "Control" }, "Return", function (c) c:swap(awful.client.getmaster()) end),
     awful.key({ modkey,           }, "t",      function (c) c.ontop = not c.ontop            end),
-    awful.key({ modkey,           }, "n",
-        function (c)
-            -- The client currently has the input focus, so it cannot be
-            -- minimized, since minimized clients can't have the focus.
-            c.minimized = true
-        end),
     awful.key({ modkey,           }, "m",
         function (c)
             c.maximized_horizontal = not c.maximized_horizontal
