@@ -108,6 +108,9 @@ class CurrentTask:
     def stop(self):
         active = self.current()
         if active:
+            if active['description'] == self.PAUSED:
+                self.pause(restart=False)
+
             active.stop()
 
     def done(self):
@@ -122,14 +125,18 @@ class CurrentTask:
 
     PAUSED = "PAUSED"
 
-    def pause(self):
+    def pause(self, restart=True):
         active = self.current()
         if not active: return
 
         if active['description'] == self.PAUSED:
             prev = self.tw.tasks.pending().get(tags__contains = [self.PAUSED])
             active.stop()
-            prev.start()
+            prev['tags'].remove(self.PAUSED)
+            prev.save()
+
+            if restart:
+                prev.start()
         else:
             pause_task = self.tw.tasks.pending().filter(description = self.PAUSED)
             if not pause_task:
@@ -138,9 +145,9 @@ class CurrentTask:
             else:
                 pause_task = pause_task.get()
 
+            active.stop()
             active['tags'].add(self.PAUSED)
             active.save()
-            active.stop()
             pause_task.start()
 
 
