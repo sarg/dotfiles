@@ -28,22 +28,30 @@ class CurrentTask:
     def __init__(self, tw):
         self.tw = tw
 
-    def todo(self):
+    def prompt(self, tasks):
         dmenu = Popen('dmenu -i -l 50', shell=True, stdin=PIPE, stdout=PIPE)
-        pending_list = self.tw.tasks.pending().filter('+todo')
-        for i,t in enumerate(pending_list):
-            descr = '{:2d} {}\n'.format(i+1, t['description'].strip())
+        for i,t in enumerate(tasks):
+            descr = t if isinstance(t, str) else '{:2d} {}\n'.format(i+1, t['description'].strip())
             dmenu.stdin.write(descr.encode('UTF-8'))
 
         dmenu.stdin.close()
         dmenu.wait()
 
         nextTask = dmenu.stdout.read().decode('UTF-8').strip()
-        task = Task(self.tw, description=nextTask, tags=['todo'])
-        task.save()
+        m = re.search('^(\d+)', nextTask)
+        return tasks[int(m.group(1))-1] if m else nextTask
+
+    def todo(self):
+        nextTask = self.prompt(self.tw.tasks.pending().filter('+todo'))
+        if isinstance(nextTask, str):
+            task = Task(self.tw, description=nextTask, tags=['todo'])
+            task.save()
+        else:
+            nextTask['tags'].remove('todo')
+            nextTask.save()
+            self.change(nextTask)
 
     def select(self):
-        dmenu = Popen('dmenu -i -l 50', shell=True, stdin=PIPE, stdout=PIPE)
         pending_list = self.tw.tasks.pending().filter('-todo')
 
         today = date.today()
@@ -64,32 +72,13 @@ class CurrentTask:
 
         sortedTaskList = active + todayList + other
 
-        i = 0
-        for t in active + todayList:
-            i = i+1
-            descr = '{:2d} {}\n'.format(i, t['description'].strip())
-            dmenu.stdin.write(descr.encode('UTF-8'))
+        task = self.prompt(active + todayList + ['-----------\n'] + other)
 
-        dmenu.stdin.write(b'-----------\n')
-
-        for t in other:
-            i = i+1
-            descr = '{:2d} {}\n'.format(i, t['description'].strip())
-            dmenu.stdin.write(descr.encode('UTF-8'))
-
-        dmenu.stdin.close()
-        dmenu.wait()
-
-        nextTask = dmenu.stdout.read().decode('UTF-8').strip()
-
-        if not nextTask:
+        if not task:
             return
 
-        m = re.search('^(\d+)', nextTask)
-        if m:
-            task = sortedTaskList[int(m.group(1))-1]
-        else:
-            p = subprocess.Popen('task add {}'.format(nextTask), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        if not isinstance(task, Task):
+            p = subprocess.Popen('task add {}'.format(task), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             stdout, stderr = [x.decode('utf-8') for x in p.communicate()]
             output = stdout.rstrip().split('\n')
 
@@ -98,12 +87,15 @@ class CurrentTask:
 
             task = self.tw.tasks.get(id = identifier)
 
+        self.change(task)
+
+    def change(self, nextTask):
         active = self.current()
-        if active and not active == task:
+        if active and not active == nextTask:
             active.stop()
 
-        if not task.active:
-            task.start()
+        if not nextTask.active:
+            nextTask.start()
 
     def stop(self):
         active = self.current()
