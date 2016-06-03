@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import re
+import datetime
 import random
 import dateutil
 import json
@@ -18,9 +19,10 @@ from tasklib.task import Task
 if not sys.stdin.isatty():
     inp = sys.stdin
 else:
-    inp = check_output('timew export :yesterday', shell=True).decode('UTF-8')
+    inp = check_output('timew export today', shell=True).decode('UTF-8')
 
-data = pd.read_json(inp, convert_dates = ['end', 'start']).dropna()
+data = pd.read_json(inp, convert_dates = ['end', 'start'])
+data['end'].fillna(np.datetime64(datetime.datetime.utcnow()), inplace=True)
 data['tags'] = data['tags'].apply(lambda r: next(filter(lambda x: re.match(r'^\w{8}-\w{4}-\w{4}', x), r)))
 
 tw = TaskWarrior()
@@ -30,9 +32,11 @@ data['period'] = data['end'] - data['start']
 
 bygroup = data.groupby('tags')
 totals = bygroup.aggregate({ 'period': np.sum, 'name': np.max}).reset_index()
+totals.sort_values('period', inplace=True)
 cycol = cycle('bgrcmk')
 
 def showOneTask(num, data, tag):
+    print(data, tag)
     xdata = [ (date2num(r[1]), date2num(r[2])-date2num(r[1])) for r in data[['start', 'end']].itertuples() ]
     plt.broken_barh(xdata, (num, 1), facecolors=next( cycol ), label=tag)
 
@@ -42,11 +46,11 @@ def formatPeriod(x):
     else:
         return '{}m'.format(x.components.minutes)
 
-for i, g in totals.iterrows():
+for i, (_, g) in enumerate(totals.iterrows()):
     showOneTask(i, bygroup.get_group(g['tags']), g['name'])
 
 plt.ylim(0, len(totals))
-yticks = totals.index + 0.5
+yticks = np.arange(len(totals)) + 0.5
 plt.yticks(yticks, totals['name'] + "\n" + totals['period'].apply(formatPeriod))
 plt.gca().xaxis_date(tz=dateutil.tz.tzlocal())
 
