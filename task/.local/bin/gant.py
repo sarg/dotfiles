@@ -23,7 +23,8 @@ else:
 
 data = pd.read_json(inp, convert_dates = ['end', 'start'])
 data['end'].fillna(np.datetime64(datetime.datetime.utcnow()), inplace=True)
-data['tags'] = data['tags'].apply(lambda r: next(filter(lambda x: re.match(r'^\w{8}-\w{4}-\w{4}', x), r)))
+data['tags'] = data['tags'].apply( lambda r: ( list(filter(lambda x: re.match(r'^\w{8}-\w{4}-\w{4}', x), r))[0:] + [None] )[0])
+data = data.dropna()
 
 tw = TaskWarrior()
 data['name'] = data['tags'].apply(lambda r: tw.tasks.get(uuid=r)['description'])
@@ -36,7 +37,6 @@ totals.sort_values('period', inplace=True)
 cycol = cycle('bgrcmk')
 
 def showOneTask(num, data, tag):
-    print(data, tag)
     xdata = [ (date2num(r[1]), date2num(r[2])-date2num(r[1])) for r in data[['start', 'end']].itertuples() ]
     plt.broken_barh(xdata, (num, 1), facecolors=next( cycol ), label=tag)
 
