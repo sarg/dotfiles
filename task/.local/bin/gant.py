@@ -30,12 +30,12 @@ tw = TaskWarrior()
 data['name'] = data['tags'].apply(lambda r: tw.tasks.get(uuid=r)['description'])
 data['period'] = data['end'] - data['start']
 
-start_points = data['start'].apply(date2num).tolist()
-end_points = data['end'].apply(date2num).tolist()
-all_points = [ (p, 's') for p in start_points ] + [ (p, 'e') for p in end_points ]
-all_points.sort(key=lambda l: l[0])
-
 def showGaps(height):
+    start_points = data['start'].apply(date2num).tolist()
+    end_points = data['end'].apply(date2num).tolist()
+    all_points = [ (p, 's') for p in start_points ] + [ (p, 'e') for p in end_points ]
+    all_points.sort(key=lambda l: l[0])
+
     in_gap = 0
     gaps = []
     curgap = None
@@ -48,10 +48,11 @@ def showGaps(height):
         if in_gap == 0:
             curgap = p[0]
         elif curgap:
-            gaps.append([ curgap, p[0] - curgap ])
+            if p[0] - curgap > 5e-5: # ignore small gaps
+                gaps.append([ curgap, p[0] - curgap ])
             curgap = None
 
-    plt.broken_barh(gaps, (0, height), facecolors='#00ff00', label='gaps')
+    plt.broken_barh(gaps, (0, height), facecolors='#00ff00', label='gaps', alpha=0.1, hatch='/')
 
 bygroup = data.groupby('tags')
 totals = bygroup.aggregate({ 'period': np.sum, 'name': np.max}).reset_index()
