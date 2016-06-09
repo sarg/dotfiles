@@ -28,8 +28,30 @@ data = data.dropna()
 
 tw = TaskWarrior()
 data['name'] = data['tags'].apply(lambda r: tw.tasks.get(uuid=r)['description'])
-
 data['period'] = data['end'] - data['start']
+
+start_points = data['start'].apply(date2num).tolist()
+end_points = data['end'].apply(date2num).tolist()
+all_points = [ (p, 's') for p in start_points ] + [ (p, 'e') for p in end_points ]
+all_points.sort(key=lambda l: l[0])
+
+def showGaps(height):
+    in_gap = 0
+    gaps = []
+    curgap = None
+    for p in all_points:
+        if (p[1] == 's'):
+            in_gap+=1
+        else:
+            in_gap-=1
+
+        if in_gap == 0:
+            curgap = p[0]
+        elif curgap:
+            gaps.append([ curgap, p[0] - curgap ])
+            curgap = None
+
+    plt.broken_barh(gaps, (0, height), facecolors='#00ff00', label='gaps')
 
 bygroup = data.groupby('tags')
 totals = bygroup.aggregate({ 'period': np.sum, 'name': np.max}).reset_index()
@@ -48,6 +70,8 @@ def formatPeriod(x):
 
 for i, (_, g) in enumerate(totals.iterrows()):
     showOneTask(i, bygroup.get_group(g['tags']), g['name'])
+
+showGaps(len(totals))
 
 plt.ylim(0, len(totals))
 yticks = np.arange(len(totals)) + 0.5
