@@ -6,6 +6,7 @@ import random
 import dateutil
 import json
 import matplotlib.pyplot as plt
+from matplotlib.widgets import Cursor
 import numpy as np
 from matplotlib.dates import *
 import sys
@@ -80,6 +81,7 @@ plt.ylim(0, len(totals))
 yticks = np.arange(len(totals)) + 0.5
 plt.yticks(yticks, totals['name'] + "\n" + totals['period'].apply(formatPeriod))
 plt.gca().xaxis_date(tz=dateutil.tz.tzlocal())
+plt.gca().grid(True, color='gray')
 
 #right = plt.gca().twinx()
 #right.set_ylim(0, len(totals))
@@ -87,4 +89,6 @@ plt.gca().xaxis_date(tz=dateutil.tz.tzlocal())
 #right.set_yticks(yticks)
 #right.set_yticklabels(totals['period'])
 
+
+cursor = Cursor(plt.gca(), useblit=True, color='red', linewidth=2)
 plt.show()
