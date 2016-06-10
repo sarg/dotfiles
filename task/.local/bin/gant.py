@@ -52,11 +52,13 @@ def showGaps(height):
                 gaps.append([ curgap, p[0] - curgap ])
             curgap = None
 
-    plt.broken_barh(gaps, (0, height), facecolors='#00ff00', label='gaps', alpha=0.1, hatch='/')
+    for g in gaps:
+        plt.axvspan(g[0], g[0] + g[1],  label='gaps', alpha=0.1, hatch='/')
 
 bygroup = data.groupby('tags')
 totals = bygroup.aggregate({ 'period': np.sum, 'name': np.max}).reset_index()
 totals.sort_values('period', inplace=True)
+totals.reset_index(drop=True, inplace=True)
 cycol = cycle('bgrcmk')
 
 def showOneTask(num, data, tag):
@@ -69,7 +71,7 @@ def formatPeriod(x):
     else:
         return '{}m'.format(x.components.minutes)
 
-for i, (_, g) in enumerate(totals.iterrows()):
+for i, g in totals.iterrows():
     showOneTask(i, bygroup.get_group(g['tags']), g['name'])
 
 showGaps(len(totals))
