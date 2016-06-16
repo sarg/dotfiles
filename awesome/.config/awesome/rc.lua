@@ -104,7 +104,7 @@ end
 local taskwidget = wibox.widget.textbox()
 bashets.register("/home/sarg/.local/bin/task.py current", {
                    widget = taskwidget,
-                   separator = '\-1',
+                   separator = '\0',
                    format = "$1",
                    update_time = 1
 })
@@ -211,6 +211,7 @@ function set_volume(val)
 end
 
 local firefoxPrev
+
 client.add_signal('unmanage', function(c)
   if c == firefoxPrev then
     firefoxPrev = nil 
@@ -262,6 +263,7 @@ globalkeys = awful.util.table.join(
     awful.key({                   }, "Print", function () awful.util.spawn("gnome-screenshot -a") end),
     awful.key({                   }, "KP_Subtract",      function () awful.util.spawn("xautolock -locknow") end),
     awful.key({ modkey,           }, "F12", awesome.restart),
+    awful.key({ }, "KP_Multiply", function() awful.util.spawn("gant.py") end),
     awful.key({modkey, }, "o", function()
         awful.client.run_or_raise('emacsclient -nc -a ""', function(c) return awful.rules.match(c, { class = "Emacs" }) end)
     end),
@@ -369,6 +371,7 @@ awful.rules.rules = {
   --{ rule = { role = "bubble" },
   --properties = { floating = true } },'
   { rule = { instance = "urxvt" }, properties = { tag = tags[1][2] }, callback = awful.client.jumpto },
+  { rule = { name = "GANT TIMEWARRIOR" }, { floating = true, callback = awful.placement.centered } },
   { rule = { class = "Evolution" },
     properties = { border_width = 0, tag = tags[1][3] } },
   { rule = { class = "Pavucontrol" },

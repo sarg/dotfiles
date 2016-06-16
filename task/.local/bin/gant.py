@@ -17,10 +17,10 @@ from itertools import cycle
 from tasklib import TaskWarrior
 from tasklib.task import Task
 
-if not sys.stdin.isatty():
-    inp = sys.stdin
-else:
-    inp = check_output('timew export today', shell=True).decode('UTF-8')
+#if not sys.stdin.isatty():
+#    inp = sys.stdin
+#else:
+inp = check_output('timew export today', shell=True).decode('UTF-8')
 
 data = pd.read_json(inp, convert_dates = ['end', 'start'])
 data['end'].fillna(np.datetime64(datetime.datetime.utcnow()), inplace=True)
@@ -91,4 +91,5 @@ plt.gca().grid(True, color='gray')
 
 
 cursor = Cursor(plt.gca(), useblit=True, color='red', linewidth=2)
+plt.gcf().canvas.set_window_title('GANT TIMEWARRIOR')
 plt.show()
