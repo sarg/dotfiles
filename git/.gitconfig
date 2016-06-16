@@ -30,3 +30,10 @@
     l = log --pretty=oneline
 [push]
 	default = simple
+
+[sendemail]
+    smtpEncryption = tls
+    smtpServer = smtp.gmail.com
+    smtpUser = sarg@sarg.org.ru
+    smtpServerPort = 587
+
