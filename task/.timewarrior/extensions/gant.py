@@ -17,12 +17,11 @@ from itertools import cycle
 from tasklib import TaskWarrior
 from tasklib.task import Task
 
-#if not sys.stdin.isatty():
-#    inp = sys.stdin
-#else:
-inp = check_output('timew export today', shell=True).decode('UTF-8')
+for l in sys.stdin:
+    if l == "\n":
+        break
 
-data = pd.read_json(inp, convert_dates = ['end', 'start'])
+data = pd.read_json(sys.stdin, convert_dates = ['end', 'start'])
 data['end'].fillna(np.datetime64(datetime.datetime.utcnow()), inplace=True)
 data['tags'] = data['tags'].apply( lambda r: ( list(filter(lambda x: re.match(r'^\w{8}-\w{4}-\w{4}', x), r))[0:] + [None] )[0])
 data = data.dropna()

@@ -263,7 +263,7 @@ globalkeys = awful.util.table.join(
     awful.key({                   }, "Print", function () awful.util.spawn("gnome-screenshot -a") end),
     awful.key({                   }, "KP_Subtract",      function () awful.util.spawn("xautolock -locknow") end),
     awful.key({ modkey,           }, "F12", awesome.restart),
-    awful.key({ }, "KP_Multiply", function() awful.util.spawn("gant.py") end),
+    awful.key({ }, "KP_Multiply", function() awful.util.spawn("timew gant today") end),
     awful.key({modkey, }, "o", function()
         awful.client.run_or_raise('emacsclient -nc -a ""', function(c) return awful.rules.match(c, { class = "Emacs" }) end)
     end),
