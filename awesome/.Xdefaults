@@ -11,6 +11,7 @@ URxvt*tinting: grey
 URxvt.urgentOnBell: true
 !!URxvt*transparent: true
 URxvt*shading: 55
+URxvt.iso14755: false
 URxvt.perl-ext-common: selection-to-clipboard
 
 *background: #002b36

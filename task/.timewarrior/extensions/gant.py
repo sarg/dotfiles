@@ -22,6 +22,9 @@ for l in sys.stdin:
         break
 
 data = pd.read_json(sys.stdin, convert_dates = ['end', 'start'])
+if 'end' not in data:
+    data['end'] = np.datetime64(datetime.datetime.utcnow())
+
 data['end'].fillna(np.datetime64(datetime.datetime.utcnow()), inplace=True)
 data['tags'] = data['tags'].apply( lambda r: ( list(filter(lambda x: re.match(r'^\w{8}-\w{4}-\w{4}', x), r))[0:] + [None] )[0])
 data = data.dropna()

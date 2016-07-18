@@ -1,10 +1,10 @@
 [general]
 annotation_comments = False
-targets = srgjira
+targets = srg
 description_length = 60
 
 
-[srgjira]
+[srg]
 service = jira
 jira.base_uri = https://srgroup.atlassian.net
 jira.username = trofimovsi
@@ -12,3 +12,12 @@ jira.password = @oracle:eval:cat ~/.srgjirapass
 jira.verify_ssl = False
 description_template = {{jiraid}}: {{jirasummary}}
 project_template = srg
+
+[tez]
+service = jira
+jira.base_uri = http://jira.tez-tour.com
+jira.username = s.i.trofimov
+jira.password = @oracle:eval:cat ~/.tezjirapass
+jira.verify_ssl = False
+description_template = {{jiraid}}: {{jirasummary}}
+project_template = tez

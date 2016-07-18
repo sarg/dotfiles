@@ -260,7 +260,7 @@ globalkeys = awful.util.table.join(
 
     -- Standard program
     awful.key({ modkey,           }, "Return", function () awful.util.spawn("urxvt") end),
-    awful.key({                   }, "Print", function () awful.util.spawn("gnome-screenshot -a") end),
+    awful.key({                   }, "Print", function () awful.util.spawn("maim -s") end),
     awful.key({                   }, "KP_Subtract",      function () awful.util.spawn("xautolock -locknow") end),
     awful.key({ modkey,           }, "F12", awesome.restart),
     awful.key({ }, "KP_Multiply", function() awful.util.spawn("timew gant today") end),
@@ -371,7 +371,7 @@ awful.rules.rules = {
   --{ rule = { role = "bubble" },
   --properties = { floating = true } },'
   { rule = { instance = "urxvt" }, properties = { tag = tags[1][2] }, callback = awful.client.jumpto },
-  { rule = { name = "GANT TIMEWARRIOR" }, { floating = true, callback = awful.placement.centered } },
+  { rule = { name = "GANT TIMEWARRIOR" }, properties = { floating = true, width = 2000 }, callback = awful.placement.centered },
   { rule = { class = "Evolution" },
     properties = { border_width = 0, tag = tags[1][3] } },
   { rule = { class = "Pavucontrol" },

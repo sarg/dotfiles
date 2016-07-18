@@ -30,6 +30,7 @@ values."
      emacs-lisp
      git
      markdown
+     mu4e
      ;; org
      ;; (shell :variables
      ;;        shell-default-height 30
@@ -253,6 +254,12 @@ explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
   (define-key key-translation-map [?\C-h] [?\C-?])
   (setq-default evil-escape-key-sequence "jk")
+
+  (setq mu4e-maildir "~/.mail"
+        mu4e-get-mail-command "mbsync -a"
+        ;;mu4e-html2text-command "html2text -utf8 -nobs -width 72"
+        mu4e-html2text-command "w3m -T text/html"
+        )
   )
 
 ;; Do not write anything past this comment. This is where Emacs will

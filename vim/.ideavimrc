@@ -1,3 +1,6 @@
+set gdefault
+set ignorecase
+
 inoremap jk <Esc>
 
 # linenumbers
@@ -8,14 +11,31 @@ nmap ; :
 let mapleader=" "
 
 # goto actions
-nmap <leader>gg :action GotoDeclaration<cr>
-nmap <leader>gb :action Back<cr>
-nmap <leader>gf :action Forward<cr>
+nnoremap <leader>gd :action GotoDeclaration<cr>
+nnoremap <leader>gi :action GotoImplementation<cr>
+nnoremap <leader>gl :action FileStructurePopup<cr>
+nnoremap <leader>gb :action Back<cr>
+nnoremap <leader>gf :action Forward<cr>
+nnoremap <leader>gc :action GotoClass<cr>
 
-nmap <leader>gt :action GotoFile<cr>
-nmap <leader>gc :action GotoClass<cr>
+nnoremap <leader>ff :action GotoFile<cr>
 
-nmap <leader><space> :action emacsIDEAs.AceJumpWord<CR>
+# actions
+nnoremap <leader>d :action CloseContent<CR>
 
 # select paste in visual mode
 nnoremap gp `[v`]
+
+# hybrid mode
+inoremap <c-b> <left>
+inoremap <c-f> <right>
+inoremap <c-a> <Esc>I
+inoremap <c-e> <End>
+
+# refactoring
+nnoremap <leader>riv :action IntroduceVariable<CR>
+nnoremap <leader>ric :action IntroduceConstant<CR>
+nnoremap <leader>rif :action IntroduceField<CR>
+
+# search
+nnoremap <leader><space> :action emacsIDEAs.AceJumpWord<CR>

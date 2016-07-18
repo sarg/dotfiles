@@ -1,7 +1,8 @@
 [ui]
 username = Sergey Trofimov <sarg@sarg.org.ru>
-#[alias]
+[alias]
 #purge = !$HG status --no-status --unknown -0 | xargs -0 rm 
+shortlog = log --template '{node|short} | {date|isodatesec} | {author|user}: {desc|strip|firstline}\n'
 [extensions]
 rebase =
 purge = 
