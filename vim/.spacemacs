@@ -255,9 +255,25 @@ you should place your code here."
   (define-key key-translation-map [?\C-h] [?\C-?])
   (setq-default evil-escape-key-sequence "jk")
 
+  ;; disable increased heading size in spacemacs-light theme
+  (setq spacemacs-theme-org-height nil)
+
   (setq mu4e-maildir "~/.mail"
         mu4e-get-mail-command "mbsync -a"
         ;;mu4e-html2text-command "html2text -utf8 -nobs -width 72"
         mu4e-html2text-command "w3m -T text/html"
         )
   )
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(evil-want-Y-yank-to-eol t)
+ '(hybrid-mode-enable-hjkl-bindings t))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
