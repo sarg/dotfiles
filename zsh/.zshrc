@@ -6,9 +6,12 @@ antigen bundle mafredri/zsh-async
 antigen bundle sindresorhus/pure
 antigen bundle zsh-users/zsh-completions src
 antigen bundle zsh-users/zsh-syntax-highlighting
+antigen bundle marzocchi/zsh-notify
 #antigen theme simple
 
 antigen apply
+
+zstyle ':notify:*' activate-terminal no
 
 alias agrep=ack-grep
 alias g=git
