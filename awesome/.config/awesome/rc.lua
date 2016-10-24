@@ -260,7 +260,7 @@ globalkeys = awful.util.table.join(
 
     -- Standard program
     awful.key({ modkey,           }, "Return", function () awful.util.spawn("urxvt") end),
-    awful.key({                   }, "Print", function () awful.util.spawn("maim -s") end),
+    awful.key({                   }, "Print", function () awful.util.spawn("screenshot.sh") end),
     awful.key({                   }, "KP_Subtract",      function () awful.util.spawn("xautolock -locknow") end),
     awful.key({ modkey,           }, "F12", awesome.restart),
     awful.key({ }, "KP_Multiply", function() awful.util.spawn("timew gant today") end),
@@ -432,7 +432,7 @@ end
 awful.util.spawn_with_shell('keymap.sh')
 --run_once('compton -i 0.3 -f -D 10 -I 0.07 -O 0.07 -b')
 awful.util.spawn('hsetroot -solid \'#000000\'')
-run_once('xautolock -locker "i3lock -c 000000" &')
+run_once('xautolock -locker lock.sh &')
 run_once('kbdd &')
 run_once('unclutter &')
 -- }}}
