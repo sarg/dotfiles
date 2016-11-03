@@ -20,8 +20,13 @@ nnoremap <leader>gc :action GotoClass<cr>
 
 nnoremap <leader>ff :action GotoFile<cr>
 
-# actions
-nnoremap <leader>d :action CloseContent<CR>
+# buffers
+nnoremap <leader>bd :action CloseContent<CR>
+nnoremap <leader>bm :action CloseAllEditorsButActive<CR>
+
+# windows
+nnoremap <leader>wv :action VimWindowSplitVertical<CR>
+nnoremap <leader>ws :action VimWindowSplitHorizontal<CR>
 
 # select paste in visual mode
 nnoremap gp `[v`]

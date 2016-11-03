@@ -45,7 +45,8 @@ values."
      git
      markdown
      mu4e
-     org
+     (org :variables
+          org-directory "~/Sync/org")
      ;; (shell :variables
      ;;        shell-default-height 30
      ;;        shell-default-position 'bottom)
@@ -314,6 +315,15 @@ you should place your code here."
   ;; disable increased heading size in spacemacs-light theme
   (setq spacemacs-theme-org-height nil)
 
+  ;; org-mode capture templates
+  (setq org-capture-templates
+        '(("t" "TODO" entry (file+headline "~/Sync/org/notes.org" "Inbox")
+           "* TODO %?\n %i\n %a")
+          ))
+
+  ;; Prettier bullets
+  (setq org-bullets-bullet-list '("■" "◆" "▲" "▶"))
+
   (setq mu4e-maildir "~/.mail"
         mu4e-get-mail-command "mbsync -a"
         ;;mu4e-html2text-command "html2text -utf8 -nobs -width 72"
@@ -325,8 +335,9 @@ you should place your code here."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(evil-want-Y-yank-to-eol t)
- '(hybrid-mode-enable-hjkl-bindings t))
+ '(evil-want-Y-yank-to-eol nil)
+ '(hybrid-mode-enable-hjkl-bindings t)
+ '(org-agenda-files (quote ("~/Sync/org/notes.org"))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

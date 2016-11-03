@@ -6,6 +6,9 @@ map <C-h> <nop>
 set hintkeys=asdghjklut
 map -b j 5j
 map -b k 5k
+map <Space>bn gt
+map <Space>bp gT
+nmap <Space>bm :winonly<CR>
 set hlfind
 
 imap <C-m> <CR>
