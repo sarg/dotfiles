@@ -1,14 +1,18 @@
+set scrollsteps=1
+set scrolltime=0
+set hlfind
 set guioptions+=n
+set findcase=smart
+
 imap jk <ESC> 
 cmap <C-n> <Tab>
 cmap <C-p> <S-Tab>
 map <C-h> <nop>
 set hintkeys=asdghjklut
-map -b j 5j
-map -b k 5k
+map -b j 8j
+map -b k 8k
 map <Space>bn gt
 map <Space>bp gT
 nmap <Space>bm :winonly<CR>
-set hlfind
 
 imap <C-m> <CR>
