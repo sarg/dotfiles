@@ -1,0 +1,16 @@
+* My dotfiles.
+  First clone the source.
+  #+BEGIN_SRC sh
+   git clone https://github.com/sarg/dotfiles.git ~/.dotfiles
+   git submodule init
+  #+END_SRC
+   
+  Then install [[https://www.gnu.org/software/stow/][stow]] utility
+  #+BEGIN_SRC sh
+   sudo apt-get install stow
+  #+END_SRC
+
+  Run stow to create symlinks
+  #+BEGIN_SRC sh
+   stow -d ~/.dotfiles zsh awesome git
+  #+END_SRC
