@@ -3,6 +3,7 @@ set scrolltime=0
 set hlfind
 set guioptions+=n
 set findcase=smart
+set editor='emacsclient -c +<line>:<column> <file>'
 
 imap jk <ESC> 
 cmap <C-n> <Tab>
