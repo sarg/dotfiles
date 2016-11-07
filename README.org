@@ -1,3 +1,4 @@
+#+PROPERTY: tangle bootstrap.sh
 * My dotfiles.
   First clone the source.
   #+BEGIN_SRC sh
@@ -7,7 +8,7 @@
    
   Then install [[https://www.gnu.org/software/stow/][stow]] utility
   #+BEGIN_SRC sh :dir /sudo::
-   apt-get install stow
+   sudo apt-get install stow
   #+END_SRC
 
   Run stow to create symlinks
