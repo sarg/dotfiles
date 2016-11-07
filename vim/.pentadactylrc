@@ -11,8 +11,11 @@ map <C-h> <nop>
 set hintkeys=asdghjklut
 map -b j 8j
 map -b k 8k
-map <Space>bn gt
-map <Space>bp gT
+
+" spacemacs inspired
+nmap <Space>bn :tabnext<CR>
+nmap <Space>bp :tabprev<CR>
 nmap <Space>bm :winonly<CR>
+nmap <Space>bd :tabclose<CR>
 
 imap <C-m> <CR>
