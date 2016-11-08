@@ -6,6 +6,7 @@ require("awful.autofocus")
 require("awful.remote")
 -- Widget and layout library
 local wibox = require("wibox")
+local inspect = require("inspect")
 -- Theme handling library
 local beautiful = require("beautiful")
 -- Notification library
@@ -269,10 +270,11 @@ globalkeys = awful.util.table.join(
     end),
     awful.key({ modkey,           }, "e", function()
 	    if client.focus and client.focus.class == 'Firefox' then
-        if firefoxPrev then
+        if firefoxPrev and firefoxPrev.valid then
           awful.client.jumpto(firefoxPrev)
-          firefoxPrev = nil
         end
+
+        firefoxPrev = nil
 	    else
         firefoxPrev = client.focus
 		    awful.client.run_or_raise('firefox', function (c)
