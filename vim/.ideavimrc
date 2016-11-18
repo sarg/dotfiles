@@ -34,6 +34,7 @@ nnoremap gp `[v`]
 # hybrid mode
 inoremap <c-b> <left>
 inoremap <c-f> <right>
+inoremap <c-d> <Delete>
 inoremap <c-a> <Esc>I
 inoremap <c-e> <End>
 
