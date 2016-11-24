@@ -24,7 +24,7 @@ splitstate false
 
 # The maximum number of articles to show on the generated page.
 # Set this to 0 for no limit.
-maxarticles 200
+maxarticles 0
 
 # The maximum age of articles to show on the generated page.
 # Set this to 0 for no limit.
@@ -42,17 +42,17 @@ expireage 1d
 # HTTP requests, since it can't tell from the response to such a request
 # whether any articles have been removed from the feed; this makes rawdog
 # slightly less bandwidth-efficient.)
-keepmin 20
+keepmin 0
 
 # Whether to only display articles that are currently included in a feed
 # (useful for "planet" pages where you only want to display the current
 # articles from several feeds). If this is false, rawdog will keep a
 # history of older articles.
-currentonly false
+currentonly true
 
 # Whether to divide the articles up by day, writing a "dayformat" heading
 # before each set.
-daysections true
+daysections false
 
 # The format to write day headings in. See "man strftime" for more
 # information; for example:
@@ -62,7 +62,7 @@ dayformat %A, %d %B
 
 # Whether to divide the articles up by time, writing a "timeformat" heading
 # before each set.
-timesections true
+timesections false
 
 # The format to write time headings in. For example:
 # %H:%M               18:07 (ISO 8601 format)
