@@ -6,7 +6,6 @@ require("awful.autofocus")
 require("awful.remote")
 -- Widget and layout library
 local wibox = require("wibox")
-local inspect = require("inspect")
 -- Theme handling library
 local beautiful = require("beautiful")
 -- Notification library
