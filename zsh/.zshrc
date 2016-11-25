@@ -11,6 +11,7 @@ antigen bundle marzocchi/zsh-notify
 
 antigen apply
 
+unsetopt flow_control
 zstyle ':notify:*' activate-terminal no
 
 alias agrep=ack-grep
@@ -69,10 +70,6 @@ bindkey "^[[A" history-beginning-search-backward
 bindkey "^[[B" history-beginning-search-forward
 bindkey "^[Od" emacs-backward-word
 bindkey "^[Oc" emacs-forward-word
-
-function whiteboard() {
-	convert "$1" -morphology Convolve DoG:15,100,0 -negate -normalize -blur 0x1 -channel RBG -level 60%,91%,0.1 "$2"
-}
 
 # Local config
 [[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
