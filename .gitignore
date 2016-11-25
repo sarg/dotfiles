@@ -3,6 +3,7 @@ config/*
 awesome/.config/awesome/themes/
 awesome/.config/awesome/hints/
 awesome/.config/awesome/redshift/
+vim/.emacs.d
 fonts/.local
 bootstrap.sh
 rawdog/

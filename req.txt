@@ -1,7 +1,0 @@
-awesome
-hsetroot
-kbdd
-compton
-redshift
-rxvt-unicode-256color
-unclutter

@@ -2,16 +2,30 @@
 * My dotfiles.
   First clone the source.
   #+BEGIN_SRC sh
-   git clone https://github.com/sarg/dotfiles.git ~/.dotfiles
-   git submodule init
+  git clone https://github.com/sarg/dotfiles.git ~/.dotfiles
+  git submodule init
   #+END_SRC
    
-  Then install [[https://www.gnu.org/software/stow/][stow]] utility
+  Then install [[https://www.gnu.org/software/stow/][stow]] utility and peru
   #+BEGIN_SRC sh :dir /sudo::
-   sudo apt-get install stow
+  sudo apt-get install stow
+  sudo apt-get install python3-pip
+  #+END_SRC
+
+  Run peru to synchronize external repositories
+  #+BEGIN_SRC sh
+  pip3 install --user peru
+  cd ~/.dotfiles && peru sync
   #+END_SRC
 
   Run stow to create symlinks
   #+BEGIN_SRC sh
-   stow -d ~/.dotfiles zsh awesome git
+  stow -d ~/.dotfiles zsh awesome git vim
   #+END_SRC
+* List of software
+  #+BEGIN_SRC sh
+  sudo apt-get install firefox git zsh emacs24 awesome rxvt-unicode-256color default-jdk syncthing htop
+  #+END_SRC
+
+** firefox plugins
+   [[https://github.com/willsALMANJ/pentadactyl-signed/releases/latest][pentadactyl]]

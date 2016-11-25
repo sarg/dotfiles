@@ -5,6 +5,7 @@ imports:
 #  font-hack: fonts/.local/share/fonts
   antigen: antigen
   awesome-hints: awesome/.config/awesome/hints
+  spacemacs: vim/.emacs.d
 
 git module awesome-brown-theme:
   url: https://github.com/mikar/awesome-themes
@@ -32,9 +33,14 @@ git module awesome-redshift:
 git module antigen:
   url: https://github.com/zsh-users/antigen.git
   reup: master
-  rev: 1359b9966689e5afb666c2c31f5ca177006ce710
+  rev: 24eac2cbe9078f386fecf7175d621a4b16ee0f8d
 
 git module awesome-hints:
   url: https://github.com/guotsuan/hints
   reup: master
   rev: f4843a30afdb9696e637abbfe120f215b8e33bf9
+
+git module spacemacs:
+  url: https://github.com/syl20bnr/spacemacs
+  reup: develop
+  rev: a1516a600399715e86926f5ce3c07d62fd3730ec
