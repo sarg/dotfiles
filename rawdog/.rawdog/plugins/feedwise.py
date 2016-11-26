@@ -91,6 +91,8 @@ class FeedwisePlugin:
 <ol class="feedarticles">''' \
         % (self.feed_no, feed.get_html_link(config), '')
 
+        basic_divider = basic_divider.encode('utf-8')
+
         if self.last_feed != feed:       # A new feed
             if self.last_feed != None:   # not the first feed
                 print >>f, '</ol></div>\n'

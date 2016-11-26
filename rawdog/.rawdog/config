@@ -28,7 +28,7 @@ maxarticles 0
 
 # The maximum age of articles to show on the generated page.
 # Set this to 0 for no limit.
-maxage 0
+maxage 1d
 
 # The age after which articles will be discarded if they do not appear
 # in a feed. Set this to a larger value if you want your rawdog output
@@ -284,7 +284,7 @@ changeconfig true
 feed 3h http://cs-syd.eu/rss.xml define_group=hab
 feed 3h https://habitica.wordpress.com/feed/ define_group=hab
 feed 3h http://www.opennet.ru/opennews/opennews_all.rss
-#feed 3h http://городшахты.рф/feed/atom/
+feed 3h http://городшахты.рф/feed/atom/
 feed 3h http://avva.livejournal.com/data/rss
 feed 3h http://fregimus.livejournal.com/data/rss
 feed 3h http://nature-wonder.livejournal.com/data/rss/
