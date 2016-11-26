@@ -1,0 +1,22 @@
+#!/bin/sh
+SETTINGS=~/.notify-tg.settings 
+if [ ! -f $SETTINGS ]; then
+    if [ ! -t 0 ]; then
+        >&2 echo "Run $0 first time to create settings file"
+        exit 1
+    fi
+    echo 'Enter your bot token:'
+    read TOKEN
+    echo "TOKEN=${TOKEN}" > $SETTINGS
+
+    echo "Searching getUpdates for chat ids"
+    CHAT_ID=$(curl -s  https://api.telegram.org/bot${TOKEN}/getUpdates | jq '.result[].message.chat.id' | uniq)
+    echo "CHAT_ID=${CHAT_ID}" >> $SETTINGS
+
+    echo "All done"
+    cat $SETTINGS
+    exit 0
+fi
+
+. ~/.notify-tg.settings
+curl -s -G --data-urlencode "text@-" "https://api.telegram.org/bot${TOKEN}/sendMessage?chat_id=${CHAT_ID}" > /dev/null
