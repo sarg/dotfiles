@@ -25,7 +25,8 @@
 * List of software
   #+BEGIN_SRC sh
   sudo apt-get install firefox git zsh emacs24 awesome rxvt-unicode-256color default-jdk syncthing htop
+  sudo apt-get install jq rawdog silversearcher-ag xclip
   #+END_SRC
-
+** TODO maim and slop
 ** firefox plugins
    [[https://github.com/willsALMANJ/pentadactyl-signed/releases/latest][pentadactyl]]
