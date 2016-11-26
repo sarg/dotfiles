@@ -170,7 +170,7 @@ showfeeds false
 # the same time.  If you have a lot of feeds, setting this to be 20 or
 # so will significantly speed up updates. If this is set to 1 (or
 # fewer), rawdog will not start any additional threads at all.
-numthreads 1
+numthreads 5
 
 # The time that rawdog will wait before considering a feed unreachable
 # when trying to connect. If you're getting lots of timeout errors and
@@ -281,8 +281,8 @@ changeconfig true
 #feed 3h http://proxyfeed.example.com/proxied.rss http_proxy=http://localhost:1234/
 #feed 3h http://dupsfeed.example.com/duplicated.rss allowduplicates=true
 
-feed 3h http://cs-syd.eu/rss.xml define_group=hab
-feed 3h https://habitica.wordpress.com/feed/ define_group=hab
+feed 3h http://cs-syd.eu/rss.xml
+feed 3h https://habitica.wordpress.com/feed/
 feed 3h http://www.opennet.ru/opennews/opennews_all.rss
 feed 3h http://городшахты.рф/feed/atom/
 feed 3h http://avva.livejournal.com/data/rss
