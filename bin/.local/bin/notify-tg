@@ -19,4 +19,13 @@ if [ ! -f $SETTINGS ]; then
 fi
 
 . ~/.notify-tg.settings
-curl -s -G --data-urlencode "text@-" "https://api.telegram.org/bot${TOKEN}/sendMessage?chat_id=${CHAT_ID}" > /dev/null
+
+CURL='curl -s -G --data-urlencode'
+DEST="https://api.telegram.org/bot${TOKEN}/sendMessage?chat_id=${CHAT_ID}"
+if [ "$1" = '-l' ]; then
+    while read line; do
+        $CURL "text=${line}" $DEST > /dev/null
+    done
+else
+    $CURL "text@-" $DEST > /dev/null
+fi
