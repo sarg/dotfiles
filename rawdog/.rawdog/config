@@ -282,7 +282,6 @@ changeconfig true
 #feed 3h http://dupsfeed.example.com/duplicated.rss allowduplicates=true
 
 feed 3h http://cs-syd.eu/rss.xml
-feed 3h https://habitica.wordpress.com/feed/
 feed 3h http://www.opennet.ru/opennews/opennews_all.rss
 feed 3h http://городшахты.рф/feed/atom/
 feed 3h http://avva.livejournal.com/data/rss
@@ -294,4 +293,3 @@ feed 3h http://www.daemonology.net/hn-daily/index.rss
 feed 3h http://ru-healthlife.livejournal.com/data/rss
 feed 3h http://hranidengi.ru/feed/
 feed 3h http://feeds.feedburner.com/codinghorror/
-feed 3h http://feeds.feedburner.com/zenhabits
