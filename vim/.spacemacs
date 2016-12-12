@@ -37,7 +37,7 @@ values."
      ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
      ;; <M-m f e R> (Emacs style) to install them.
      ;; ----------------------------------------------------------------
-     helm
+     ivy
      ;; auto-completion
      better-defaults
      lua
@@ -46,6 +46,7 @@ values."
      git
      markdown
      mu4e
+     notmuch
      (org :variables
           org-directory "~/Sync/org")
      ;; (shell :variables
@@ -326,7 +327,7 @@ you should place your code here."
   (setq org-bullets-bullet-list '("■" "◆" "▲" "▶"))
 
   (setq mu4e-maildir "~/.mail"
-        mu4e-get-mail-command "mbsync -a"
+        mu4e-get-mail-command "fetchnewmail"
         ;;mu4e-html2text-command "html2text -utf8 -nobs -width 72"
         mu4e-html2text-command "w3m -T text/html"
         )
