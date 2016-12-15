@@ -10,7 +10,7 @@ imports:
 git module awesome-brown-theme:
   url: https://github.com/mikar/awesome-themes
   reup: master
-  rev: 328f604fd29823fcfe9ffca865585682a310e835
+  rev: 5d5b5a730cea3c76858a92a440a0d6a340d560ca
   pick: brown
 
 git module font-pomicons:
@@ -33,7 +33,7 @@ git module awesome-redshift:
 git module antigen:
   url: https://github.com/zsh-users/antigen.git
   reup: master
-  rev: 24eac2cbe9078f386fecf7175d621a4b16ee0f8d
+  rev: dc60c93a76bf6726b5f39cfdc0aeaa082c3d02d4
 
 git module awesome-hints:
   url: https://github.com/guotsuan/hints
@@ -43,4 +43,4 @@ git module awesome-hints:
 git module spacemacs:
   url: https://github.com/syl20bnr/spacemacs
   reup: develop
-  rev: 4289a496de6e12a827b2a9c2eea6e4c17a9e974f
+  rev: 6288b28bb0b3120b42a9e840a0632208697fad76
