@@ -31,6 +31,7 @@ values."
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
+     html
      ;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
      ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
@@ -303,6 +304,24 @@ before packages are loaded. If you are unsure, you should try in setting them in
   )
 
 (defun mu4e-context-setup ()
+  (defun mu4e-msg-to-me (msg)
+    "Is message sent to me?"
+    (when msg
+      (or (mu4e-message-contact-field-matches-me msg :to)
+          (mu4e-message-contact-field-matches-me msg :bcc)
+          (mu4e-message-contact-field-matches-me msg :cc)
+          )
+      ))
+
+  (defun mu4e-message-maildir-matches (msg rx)
+    (when rx
+      (if (listp rx)
+          ;; if rx is a list, try each one for a match
+          (or (mu4e-message-maildir-matches msg (car rx))
+              (mu4e-message-maildir-matches msg (cdr rx)))
+        ;; not a list, check rx
+        (string-match rx (mu4e-message-field msg :maildir)))))
+
   (setq
    mu4e-maildir "~/.mail"
 
@@ -311,6 +330,10 @@ before packages are loaded. If you are unsure, you should try in setting them in
 
    ;;mu4e-html2text-command "html2text -utf8 -nobs -width 72"
    mu4e-html2text-command "w3m -T text/html"
+
+   ;; display images
+   mu4e-view-show-images t
+
 
    ;; column list for Headers view
    mu4e-headers-fields '(
@@ -329,15 +352,27 @@ before packages are loaded. If you are unsure, you should try in setting them in
    mu4e-compose-context-policy       'ask-if-none
    mu4e-confirm-quit                 nil
 
+   ;; mbsync goes crazy without this setting
+   mu4e-change-filenames-when-moving t
+
+
+   ;; Configure sending mail.
+   message-send-mail-function 'message-send-mail-with-sendmail
+   sendmail-program "/usr/bin/msmtp"
+   user-full-name "Sergey Trofimov"
+
+   ;; Use the correct account context when sending mail based on the from header.
+   message-sendmail-envelope-from 'header
+
    ;; send with msmtp
    send-mail-function 'sendmail-send-it
 
    mu4e-contexts
    `(,(make-mu4e-context
        :name "gmail"
-       :match-func (lambda(msg)
+       :match-func (lambda (msg)
                      (when msg
-                       (mu4e-message-contact-field-matches msg :to "sarg@sarg.org.ru")))
+                       (mu4e-message-maildir-matches msg "^/gmail")))
        :vars '(
                ;; local directories, relative to mail root
                (mu4e-sent-folder . "/gmail/sent")
@@ -345,7 +380,7 @@ before packages are loaded. If you are unsure, you should try in setting them in
                (mu4e-trash-folder . "/gmail/trash")
                (mu4e-refile-folder . "/gmail/all")
                ;; account details
-               (user-mail-address . "sarg@gmail.com")
+               (user-mail-address . "sarg@sarg.org.ru")
                (user-full-name . "Sergey Trofimov")
                (mu4e-user-mail-address-list . ( "sarg@sarg.org.ru" ))
                ;; gmail saves every outgoing message automatically
@@ -354,12 +389,13 @@ before packages are loaded. If you are unsure, you should try in setting them in
                ;;                            ("/gmail/[Gmail]/.All Mail" . ?a)
                ;;                            ("/gmail/[Gmail]/.Trash" . ?t)
                ;;                            ("/gmail/[Gmail]/.Drafts" . ?d)))
-               (mu4e-headers-skip-duplicates . t)))
+               (mu4e-headers-skip-duplicates . t)
+               ))
      ,(make-mu4e-context
        :name "srg"
-       :match-func (lambda(msg)
+       :match-func (lambda (msg)
                      (when msg
-                       (mu4e-message-contact-field-matches msg :to "trofimovsi@srgroup.ru")))
+                       (mu4e-message-maildir-matches msg "^/srg")))
        :vars '(
                ;; local directories, relative to mail root
                (mu4e-sent-folder . "/srg/Sent")
@@ -370,8 +406,31 @@ before packages are loaded. If you are unsure, you should try in setting them in
                (user-mail-address . "trofimovsi@srgroup.ru")
                (user-full-name . "Sergey Trofimov")
                (mu4e-user-mail-address-list . ( "trofimovsi@srgroup.ru" ))
-               ;; gmail saves every outgoing message automatically
                (mu4e-sent-messages-behavior . delete)))))
+
+  ;;store link to message if in header view, not to header query
+  (setq org-mu4e-link-query-in-headers-mode nil)
+
+
+  ;; Choose account label to feed msmtp -a option based on From header
+  ;; in Message buffer; This function must be added to
+  ;; message-send-mail-hook for on-the-fly change of From address before
+  ;; sending message since message-send-mail-hook is processed right
+  ;; before sending message.
+  (defun choose-msmtp-account ()
+    (if (message-mail-p)
+        (save-excursion
+          (let*
+              ((from (save-restriction
+                       (message-narrow-to-headers)
+                       (message-fetch-field "from")))
+               (account
+                (cond
+                 ((string-match "sarg@sarg.org.ru" from) "gmail")
+                 ((string-match "trofimovsi@srgroup.ru" from) "srg"))))
+            (setq message-sendmail-extra-arguments (list '"-a" account))))))
+
+  (add-hook 'message-send-mail-hook 'choose-msmtp-account)
   )
 
 (defun dotspacemacs/user-config ()
@@ -383,6 +442,9 @@ explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
   (define-key key-translation-map [?\C-h] [?\C-?])
   (setq-default
+   ;; russian layout on C-\
+   default-input-method "russian-computer"
+
    ;; escape to normal with jk
    evil-escape-key-sequence "jk"
 
@@ -395,18 +457,25 @@ you should place your code here."
    hybrid-mode-enable-hjkl-bindings t
    )
 
-  ;; org-mode capture templates
   (setq
+   ;; org-mode capture templates
    org-capture-templates
    '(("t" "TODO" entry (file+headline "~/Sync/org/notes.org" "Inbox")
       "* TODO %?\n %i\n %a")
+
+     ("p" "process-soon" entry (file+headline "~/Sync/org/notes.org" "Inbox")
+      "* TODO [#A] %?\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"+0d\"))\n%a\n")
+      ;; "* TODO %?\n %i\n %a")
      )
+
+   ;; don't split heading on M-RET in the middle of line
+   org-M-RET-may-split-line nil
 
    ;; Prettier bullets
    org-bullets-bullet-list '("■" "◆" "▲" "▶")
 
    ;; agenda
-   org-agenda-files "~/Sync/org/notes.org"
+   org-agenda-files '("~/Sync/org/")
    )
 
   (with-eval-after-load 'mu4e (mu4e-context-setup))
