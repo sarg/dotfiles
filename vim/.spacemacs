@@ -322,14 +322,16 @@ before packages are loaded. If you are unsure, you should try in setting them in
         ;; not a list, check rx
         (string-match rx (mu4e-message-field msg :maildir)))))
 
+  (fset 'mu4e-move-to-trash "mt")
+
   (setq
    mu4e-maildir "~/.mail"
 
    mu4e-get-mail-command "fetchnewmail"
    mu4e-update-interval 300
 
-   ;;mu4e-html2text-command "html2text -utf8 -nobs -width 72"
-   mu4e-html2text-command "w3m -T text/html"
+   ;; mu4e-html2text-command "html2text -utf8 -nobs -width 72"
+   ;; mu4e-html2text-command "w3m -T text/html"
 
    ;; display images
    mu4e-view-show-images t
@@ -373,6 +375,8 @@ before packages are loaded. If you are unsure, you should try in setting them in
        :match-func (lambda (msg)
                      (when msg
                        (mu4e-message-maildir-matches msg "^/gmail")))
+       :enter-func (lambda () (define-key mu4e-headers-mode-map (kbd "d") 'mu4e-move-to-trash))
+       :leave-func (lambda () (define-key mu4e-headers-mode-map (kbd "d") 'mu4e-headers-mark-for-trash))
        :vars '(
                ;; local directories, relative to mail root
                (mu4e-sent-folder . "/gmail/sent")
@@ -385,10 +389,9 @@ before packages are loaded. If you are unsure, you should try in setting them in
                (mu4e-user-mail-address-list . ( "sarg@sarg.org.ru" ))
                ;; gmail saves every outgoing message automatically
                (mu4e-sent-messages-behavior . delete)
-               ;; (mu4e-maildir-shortcuts . (("/gmail/INBOX" . ?j)
-               ;;                            ("/gmail/[Gmail]/.All Mail" . ?a)
-               ;;                            ("/gmail/[Gmail]/.Trash" . ?t)
-               ;;                            ("/gmail/[Gmail]/.Drafts" . ?d)))
+               (mu4e-maildir-shortcuts . (("/gmail/Inbox" . ?j)
+                                          ("/gmail/all" . ?a)
+                                          ("/gmail/trash" . ?t)))
                (mu4e-headers-skip-duplicates . t)
                ))
      ,(make-mu4e-context
@@ -477,6 +480,9 @@ you should place your code here."
    ;; agenda
    org-agenda-files '("~/Sync/org/")
    )
+
+  ;; enable auto-fill for org-mode
+  (add-hook 'org-mode-hook #'spacemacs/toggle-auto-fill-mode-on)
 
   (with-eval-after-load 'mu4e (mu4e-context-setup))
   )
