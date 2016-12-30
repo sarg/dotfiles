@@ -33,7 +33,7 @@ do
 
         naughty.notify({ preset = naughty.config.presets.critical,
                          title = "Oops, an error happened!",
-                         text = err })
+                         text = tostring(err) })
         in_error = false
     end)
 end
@@ -62,24 +62,6 @@ local layouts =
     awful.layout.suit.floating,
     awful.layout.suit.tile.right,
 }
--- }}}
-
--- {{{ Tags
--- Define a tag table which hold all screen tags.
-tags = {}
-for s = 1, screen.count() do
-  -- Each screen has its own tag table.
-  tags[s] = awful.tag({ 'code', 'term', 'mail', 'b' }, s, 
-    {
-      layouts[3],
-      layouts[3],
-      layouts[1],
-      layouts[1]
-    }
-  )
-
-    awful.tag.setnmaster(3, tags[s][2])
-end
 -- }}}
 
 -- {{{ Wibox
@@ -111,7 +93,6 @@ bashets.register("/home/sarg/.local/bin/task.py current", {
 
 
 -- Create a wibox for each screen and add it
-mywibox = {}
 mylayoutbox = {}
 mypromptbox = awful.widget.prompt()
 mytaglist = {}
@@ -138,43 +119,56 @@ mytasklist.buttons = awful.util.table.join(
   end)
 )
 
-for s = 1, screen.count() do
-    -- Create an imagebox widget which will contains an icon indicating which layout we're using.
-    -- We need one layoutbox per screen.
-    mylayoutbox[s] = awful.widget.layoutbox(s)
+mykeyboardlayout = awful.widget.keyboardlayout()
+awful.screen.connect_for_each_screen(function(s)
+    awful.tag({ 'code', 'term', 'mail', 'b' }, s, 
+      {
+        layouts[3],
+        layouts[3],
+        layouts[1],
+        layouts[1]
+      }
+    )
+
+    -- awful.tag.setnmaster(3, tags[s][2]) FIXME
+
+    s.mylayoutbox = awful.widget.layoutbox(s)
+
     -- Create a taglist widget
-    mytaglist[s] = awful.widget.taglist(s, awful.widget.taglist.filter.all, mytaglist.buttons)
+    s.mytaglist = awful.widget.taglist(s, awful.widget.taglist.filter.all, mytaglist.buttons)
 
     -- Create a tasklist widget
-    mytasklist[s] = awful.widget.tasklist(s, function(c, screen)
-        return awful.widget.tasklist.filter.minimizedcurrenttags(c, screen) or awful.widget.tasklist.filter.focused(c, screen)
-    end, 
-    mytasklist.buttons)
+    s.mytasklist = awful.widget.tasklist(s,
+                                         function(c, screen)
+                                           return awful.widget.tasklist.filter.minimizedcurrenttags(c, screen) or awful.widget.tasklist.filter.focused(c, screen)
+                                         end, 
+                                         mytasklist.buttons)
 
-    -- Create the wibox
-    mywibox[s] = awful.wibox({ position = "top", screen = s })
 
-    -- Widgets that are aligned to the left
-    local left_layout = wibox.layout.fixed.horizontal()
-    left_layout:add(mylayoutbox[s])
-    left_layout:add(mytaglist[s])
-    left_layout:add(mypromptbox)
+    s.mywibox = awful.wibar({ position = "top", screen = s })
 
-    -- Widgets that are aligned to the right
-    local right_layout = wibox.layout.fixed.horizontal()
-    right_layout:add(taskwidget)
-    if s == 1 then right_layout:add(wibox.widget.systray()) end
-    right_layout:add(kbdwidget)
-    right_layout:add(mytextclock)
+    -- Create a promptbox for each screen
+    s.mypromptbox = awful.widget.prompt()
 
-    -- Now bring it all together (with the tasklist in the middle)
-    local layout = wibox.layout.align.horizontal()
-    layout:set_left(left_layout)
-    layout:set_middle(mytasklist[s])
-    layout:set_right(right_layout)
+    -- Add widgets to the wibox
+    s.mywibox:setup {
+      layout = wibox.layout.align.horizontal,
+      { -- Left widgets
+        layout = wibox.layout.fixed.horizontal,
+        s.mytaglist,
+        s.mypromptbox,
+      },
+      s.mytasklist, -- Middle widget
+      { -- Right widgets
+        layout = wibox.layout.fixed.horizontal,
+        mykeyboardlayout,
+        wibox.widget.systray(),
+        mytextclock,
+        s.mylayoutbox,
+      },
+    }
+end)
 
-    mywibox[s]:set_widget(layout)
-end
 -- }}}
 
 -- {{{ Mouse bindings
@@ -371,10 +365,8 @@ awful.rules.rules = {
   },
   --{ rule = { role = "bubble" },
   --properties = { floating = true } },'
-  { rule = { instance = "urxvt" }, properties = { tag = tags[1][2] }, callback = awful.client.jumpto },
+  -- { rule = { instance = "urxvt" }, properties = { tag = tags[1][2] }, callback = awful.client.jumpto }, FIXME
   { rule = { name = "GANT TIMEWARRIOR" }, properties = { floating = true, width = 2000 }, callback = awful.placement.centered },
-  { rule = { class = "Evolution" },
-    properties = { border_width = 0, tag = tags[1][3] } },
   { rule = { class = "Pavucontrol" },
     properties = { floating = true, callback = awful.placement.centered } },
   { rule = { class = "jetbrains-idea" },
