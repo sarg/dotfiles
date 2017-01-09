@@ -33,7 +33,7 @@ git module awesome-redshift:
 git module antigen:
   url: https://github.com/zsh-users/antigen.git
   reup: master
-  rev: dc60c93a76bf6726b5f39cfdc0aeaa082c3d02d4
+  rev: 20926905dd5d3ff7408098b8a8a76ace9faf8e7c
 
 git module awesome-hints:
   url: https://github.com/guotsuan/hints
@@ -43,4 +43,4 @@ git module awesome-hints:
 git module spacemacs:
   url: https://github.com/syl20bnr/spacemacs
   reup: develop
-  rev: 5d73a500c0688c270d9e7a3c37b5c1b988977563
+  rev: acb2d379c08ef1f8b9983ded7549bcf18d2af398
