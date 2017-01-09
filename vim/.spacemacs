@@ -38,9 +38,11 @@ values."
      ;; <M-m f e R> (Emacs style) to install them.
      ;; ----------------------------------------------------------------
      ivy
-     ;; auto-completion
+     auto-completion
      better-defaults
+     restclient
      lua
+     erc
      python
      emacs-lisp
      git
@@ -63,7 +65,7 @@ values."
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
-   dotspacemacs-excluded-packages '()
+   dotspacemacs-excluded-packages '(mu4e-maildirs-extension)
    ;; Defines the behaviour of Spacemacs when installing packages.
    ;; Possible values are `used-only', `used-but-keep-unused' and `all'.
    ;; `used-only' installs only explicitly used packages and uninstall any
@@ -357,6 +359,10 @@ before packages are loaded. If you are unsure, you should try in setting them in
    ;; mbsync goes crazy without this setting
    mu4e-change-filenames-when-moving t
 
+   ;; bookmarks
+   mu4e-bookmarks '(("flag:unread AND NOT flag:trashed AND (maildir:/srg/Inbox OR maildir:/gmail/Inbox)" "Unread messages" 117)
+                    ("date:today..now" "Today's messages" 116))
+
 
    ;; Configure sending mail.
    message-send-mail-function 'message-send-mail-with-sendmail
@@ -443,7 +449,13 @@ layers configuration.
 This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
+
+  ;; C-h deletes character backwards
   (define-key key-translation-map [?\C-h] [?\C-?])
+
+  ;; company mode everywhere
+  (global-company-mode)
+
   (setq-default
    ;; russian layout on C-\
    default-input-method "russian-computer"
