@@ -42,9 +42,9 @@ end
 -- Themes define colours, icons, font and wallpapers.
 config_dir = awful.util.getdir("config")
 -- beautiful.init(config_dir .. "/themes/brown/theme.lua")
--- beautiful.border_width = 3
--- beautiful.border_focus = '#fa3321'
 beautiful.init(awful.util.get_themes_dir() .. "default/theme.lua")
+beautiful.border_width = 3
+beautiful.border_focus = '#fa3321'
 
 -- Default modkey.
 -- Usually, Mod4 is the key with a logo between Control and Alt.
@@ -205,7 +205,6 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey, }, "F7", function() awful.spawn.with_shell('task.py stop') end),
     awful.key({ modkey, "Shift"}, "F7", function() awful.spawn.with_shell('task.py done') end),
     awful.key({ modkey, }, "F6", function() awful.spawn.with_shell('task.py todo') end),
-    awful.key({ modkey, }, "u", function() hints.focus() end),
 
     -- Layout manipulation
     awful.key({ modkey,           }, "u", awful.client.urgent.jumpto),
@@ -360,7 +359,7 @@ awful.rules.rules = {
 client.connect_signal("manage", function (c)
                         -- Set the windows at the slave,
                         -- i.e. put it at the end of others instead of setting it master.
-                        -- if not awesome.startup then awful.client.setslave(c) end
+                        if not awesome.startup then awful.client.setslave(c) end
 
                         if awesome.startup and
                           not c.size_hints.user_position
