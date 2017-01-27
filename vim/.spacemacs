@@ -32,6 +32,7 @@ values."
    dotspacemacs-configuration-layers
    '(
      html
+     sql
      ;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
      ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
@@ -456,6 +457,15 @@ you should place your code here."
   ;; company mode everywhere
   (global-company-mode)
 
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((sql . t)
+     (emacs-lisp . t)
+     (org . t)
+     (python . t)))
+
+  (setq org-src-fontify-natively t)
+
   (setq-default
    ;; russian layout on C-\
    default-input-method "russian-computer"
@@ -483,7 +493,7 @@ you should place your code here."
 
      ("p" "process-soon" entry (file+headline "~/Sync/org/notes.org" "Inbox")
       "* TODO [#A] %?\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"+0d\"))\n%a\n")
-      ;; "* TODO %?\n %i\n %a")
+     ;; "* TODO %?\n %i\n %a")
      )
 
    ;; don't split heading on M-RET in the middle of line
