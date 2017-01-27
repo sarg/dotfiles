@@ -22,6 +22,7 @@ nnoremap <leader>ff :action GotoFile<cr>
 
 # buffers
 nnoremap <leader>bd :action CloseContent<CR>
+nnoremap <leader>bb :action RecentFiles<cr>
 nnoremap <leader>bm :action CloseAllEditorsButActive<CR>
 
 # windows

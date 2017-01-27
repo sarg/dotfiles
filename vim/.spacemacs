@@ -194,7 +194,7 @@ values."
    ;; auto-save the file in-place, `cache' to auto-save the file to another
    ;; file stored in the cache directory and `nil' to disable auto-saving.
    ;; (default 'cache)
-   dotspacemacs-auto-save-file-location 'cache
+   dotspacemacs-auto-save-file-location 'nil
    ;; Maximum number of rollback slots to keep in the cache. (default 5)
    dotspacemacs-max-rollback-slots 5
    ;; If non-nil, `helm' will try to minimize the space it uses. (default nil)
@@ -478,6 +478,9 @@ you should place your code here."
    '(("t" "TODO" entry (file+headline "~/Sync/org/notes.org" "Inbox")
       "* TODO %?\n %i\n %a")
 
+     ("w" "work entry" entry (file+headline "~/Sync/org/work.org" "Inbox")
+      "* TODO %?\n %i\n %a")
+
      ("p" "process-soon" entry (file+headline "~/Sync/org/notes.org" "Inbox")
       "* TODO [#A] %?\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"+0d\"))\n%a\n")
       ;; "* TODO %?\n %i\n %a")
@@ -497,6 +500,20 @@ you should place your code here."
   (add-hook 'org-mode-hook #'spacemacs/toggle-auto-fill-mode-on)
 
   (with-eval-after-load 'mu4e (mu4e-context-setup))
+
+  ;; Make `gg' and `G' do the correct thing
+  (eval-after-load "dired-mode"
+    (evilified-state-evilify dired-mode dired-mode-map
+      [mouse-1] 'diredp-find-file-reuse-dir-buffer
+      [mouse-2] 'dired-find-alternate-file
+      ;; "f"  'helm-find-files
+      "h"  'diredp-up-directory-reuse-dir-buffer
+      "l"  'diredp-find-file-reuse-dir-buffer
+      ;; "I"  'ao/dired-omit-switch
+      ;; "c"  'helm-find-files
+      "gg" 'ao/dired-back-to-top
+      ;; "G"  'ao/dired-jump-to-bottom
+      ))
   )
 
 
