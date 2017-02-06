@@ -9,14 +9,18 @@ clear control
 clear mod1
 clear lock
 
-keycode 22 = Control_L
-keycode 66 = Control_L
 keycode 64 = Control_L
-keycode 37 = Alt_L
 
 add control = Control_L Control_R
 add mod1 = Alt_L Alt_R
 EOF
+
+# backspace
+# keycode 22 = Control_L
+# capslock
+# keycode 66 = Control_L
+# left control
+# keycode 37 = Alt_L
 
 # keycode 108 = Control_R
 # keycode 105 = Alt_R
