@@ -13,6 +13,8 @@ set hintkeys=asdghjklut
 map -b j 8j
 map -b k 8k
 
+map -b -m base,caret,normal,visual <C-g> <Esc>
+
 " spacemacs inspired
 nmap <Space>bn :tabnext<CR>
 nmap <Space>bp :tabprev<CR>
