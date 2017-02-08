@@ -461,6 +461,7 @@ you should place your code here."
    'org-babel-load-languages
    '((sql . t)
      (emacs-lisp . t)
+     (http . t)
      (org . t)
      (python . t)))
 
@@ -473,8 +474,8 @@ you should place your code here."
    ;; escape to normal with jk
    evil-escape-key-sequence "jk"
 
-   ;; follow symbolic links under version control
-   vc-follow-symlinks t
+   ;; follow symbolic links under version control with a warning
+   vc-follow-symlinks nil
 
    ;; disable increased heading size in spacemacs-light theme
    spacemacs-theme-org-height nil
