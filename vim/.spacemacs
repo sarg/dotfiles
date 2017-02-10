@@ -457,6 +457,12 @@ you should place your code here."
   ;; company mode everywhere
   (global-company-mode)
 
+  ;; fix c-w in company mode
+  ;; https://github.com/syl20bnr/spacemacs/issues/4243#issuecomment-166246613
+  (with-eval-after-load 'company
+    (define-key company-active-map (kbd "C-w") 'evil-delete-backward-word)
+    )
+
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((sql . t)
