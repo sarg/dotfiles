@@ -495,7 +495,7 @@ you should place your code here."
    '(("t" "TODO" entry (file+headline "~/Sync/org/notes.org" "Inbox")
       "* TODO %?\n %i\n %a")
 
-     ("w" "work entry" entry (file+headline "~/Sync/org/work.org" "Inbox")
+     ("w" "work entry" entry (file "~/Sync/org/work.org")
       "* TODO %?\n %i\n %a")
 
      ("p" "process-soon" entry (file+headline "~/Sync/org/notes.org" "Inbox")
