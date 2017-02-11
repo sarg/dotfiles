@@ -200,11 +200,15 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey,           }, "l", move("right")),
     awful.key({ modkey,           }, "h", move("left")),
     awful.key({ modkey,           }, "j", move("down")),
-    awful.key({ modkey, }, "F9", function() awful.spawn.with_shell('task.py pause') end),
-    awful.key({ modkey, }, "F8", function() awful.spawn.with_shell('task.py select') end),
-    awful.key({ modkey, }, "F7", function() awful.spawn.with_shell('task.py stop') end),
-    awful.key({ modkey, "Shift"}, "F7", function() awful.spawn.with_shell('task.py done') end),
-    awful.key({ modkey, }, "F6", function() awful.spawn.with_shell('task.py todo') end),
+
+    awful.key({                   }, "F8", function() awful.spawn('emacsclient -ne "(make-capture-frame)"') end),
+
+    -- awful.key({ modkey, }, "F9", function() awful.spawn.with_shell('task.py pause') end),
+    -- awful.key({ modkey, }, "F8", function() awful.spawn.with_shell('task.py select') end),
+    -- awful.key({ modkey, }, "F7", function() awful.spawn.with_shell('task.py stop') end),
+    -- awful.key({ modkey, "Shift"}, "F7", function() awful.spawn.with_shell('task.py done') end),
+    -- awful.key({ modkey, }, "F6", function() awful.spawn.with_shell('task.py todo') end),
+    -- awful.key({                   }, "KP_Multiply", function() awful.spawn("timew gant today") end),
 
     -- Layout manipulation
     awful.key({ modkey,           }, "u", awful.client.urgent.jumpto),
@@ -232,7 +236,6 @@ globalkeys = awful.util.table.join(
     awful.key({                   }, "Print", function () awful.spawn("screenshot.sh") end),
     awful.key({                   }, "KP_Subtract", function () awful.spawn("xautolock -locknow") end),
     awful.key({ modkey,           }, "F12", awesome.restart),
-    awful.key({                   }, "KP_Multiply", function() awful.spawn("timew gant today") end),
     awful.key({ modkey,           }, "o", function()
         awful.client.run_or_raise('emacsclient -nc -a ""', function(c) return awful.rules.match(c, { class = "Emacs" }) end)
     end),
@@ -346,11 +349,10 @@ awful.rules.rules = {
   { rule_any = {type = { "dialog" }}, properties = { titlebars_enabled = true }},
 
   -- { rule = { instance = "urxvt" }, properties = { tag = tags[1][2] }, callback = awful.client.jumpto }, FIXME
-  { rule = { name = "GANT TIMEWARRIOR" }, properties = { floating = true, width = 2000 }, callback = awful.placement.centered },
-  { rule = { class = "Pavucontrol" },
-    properties = { floating = true, callback = awful.placement.centered } },
-  { rule = { class = "jetbrains-idea" },
-    callback = awful.client.setmaster },
+  -- { rule = { name = "GANT TIMEWARRIOR" }, properties = { floating = true, width = 2000 }, callback = awful.placement.centered },
+  { rule = { instance = "capture" }, properties = { floating = true, height = 300 }, callback = awful.placement.centered },
+  { rule = { class = "Pavucontrol" }, properties = { floating = true }, callback = awful.placement.centered },
+  { rule = { class = "jetbrains-idea" }, callback = awful.client.setmaster },
 }
 -- }}}
 
