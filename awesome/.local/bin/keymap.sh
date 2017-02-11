@@ -1,31 +1,21 @@
 #!/bin/sh
 
-setxkbmap us,ru -option -option grp:ctrl_shift_toggle
+# setxkbmap -option ""
+# setxkbmap us,ru -option grp:ctrl_shift_toggle -option caps:shift -option ctrl:swap_lalt_lctl
 
-# backspace, left/right alt are Control
-# left/right control are Mod1
-cat <<EOF | xmodmap -
-clear control
-clear mod1
-clear lock
-
-keycode 64 = Control_L
-keycode 66 = Shift_L
-keycode 37 = Alt_L
-
-add control = Control_L Control_R
-add mod1 = Alt_L Alt_R
+# https://www.emacswiki.org/emacs/StickyModifiers
+cat <<EOF | xkbcomp -w 0 - $DISPLAY
+xkb_keymap {
+	xkb_keycodes  { include "evdev+aliases(qwerty)"	};
+	xkb_types     { include "complete"	};
+	xkb_compat    { include "complete"	};
+	xkb_symbols   {
+    include "pc+us+ru:2+inet(evdev)+group(ctrl_shift_toggle)+ctrl(swap_lalt_lctl)"
+    key <CAPS> { [ Shift_L ] };
+  };
+	xkb_geometry  { include "pc(pc105)"	};
+};
 EOF
 
-# backspace
-# keycode 22 = Control_L
-# capslock
-# keycode 66 = Control_L
-# left control
-# keycode 37 = Alt_L
-
-# keycode 108 = Control_R
-# keycode 105 = Alt_R
-
-#xkbset -bell -feedback sticky -twokey latchlock
-#xkbset exp 64 '=sticky' '=twokey' '=latchlock'
+xkbset -bell -feedback sticky -twokey latchlock
+xkbset exp 64 '=sticky' '=twokey' '=latchlock'
