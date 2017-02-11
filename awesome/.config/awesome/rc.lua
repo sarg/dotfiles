@@ -230,14 +230,14 @@ globalkeys = awful.util.table.join(
     -- Standard program
     awful.key({ modkey,           }, "Return", function () awful.spawn("urxvt") end),
     awful.key({                   }, "Print", function () awful.spawn("screenshot.sh") end),
-    awful.key({                   }, "KP_Subtract",      function () awful.spawn("xautolock -locknow") end),
+    awful.key({                   }, "KP_Subtract", function () awful.spawn("xautolock -locknow") end),
     awful.key({ modkey,           }, "F12", awesome.restart),
-    awful.key({ }, "KP_Multiply", function() awful.spawn("timew gant today") end),
-    awful.key({modkey, }, "o", function()
+    awful.key({                   }, "KP_Multiply", function() awful.spawn("timew gant today") end),
+    awful.key({ modkey,           }, "o", function()
         awful.client.run_or_raise('emacsclient -nc -a ""', function(c) return awful.rules.match(c, { class = "Emacs" }) end)
     end),
     awful.key({ modkey,           }, "e", function()
-	    if client.focus and client.focus.class == 'Firefox' then
+	    if client.focus and client.focus.class == 'qutebrowser' then
         if firefoxPrev and firefoxPrev.valid then
           awful.client.jumpto(firefoxPrev)
         end
@@ -245,8 +245,8 @@ globalkeys = awful.util.table.join(
         firefoxPrev = nil
 	    else
         firefoxPrev = client.focus
-		    awful.client.run_or_raise('firefox', function (c)
-			    return awful.rules.match(c, {class = 'Firefox'})
+		    awful.client.run_or_raise('qutebrowser', function (c)
+			    return awful.rules.match(c, {class = 'qutebrowser'})
 		    end)
 	    end
     end),
@@ -412,7 +412,7 @@ client.connect_signal("request::titlebars", function(c)
 end)
 
 client.connect_signal("property::urgent", function (c)
-                         if c.class == "Firefox" then
+                         if c.class == "qutebrowser" then
                             awful.client.urgent.jumpto(c)
                          end
 end)
