@@ -30,3 +30,9 @@
 ** TODO maim and slop
 ** firefox plugins
    [[https://github.com/willsALMANJ/pentadactyl-signed/releases/latest][pentadactyl]]
+** qutebrowser
+#+BEGIN_SRC sh
+  wget -m -l 1 -nd -np https://github.com/qutebrowser/qutebrowser/releases/latest -e robots=off --accept-regex='.*tag.*|.*.deb'
+  wget -m -l 1 -nd -np https://qutebrowser.org/INSTALL.html -A deb 
+  sudo dpkg -i '*.deb'
+#+END_SRC
