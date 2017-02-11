@@ -10,6 +10,7 @@ clear mod1
 clear lock
 
 keycode 64 = Control_L
+keycode 66 = Shift_L
 keycode 37 = Alt_L
 
 add control = Control_L Control_R
