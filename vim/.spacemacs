@@ -120,7 +120,7 @@ values."
    ;; directory. A string value must be a path to an image format supported
    ;; by your Emacs build.
    ;; If the value is nil then no banner is displayed. (default 'official)
-   dotspacemacs-startup-banner 'official
+   dotspacemacs-startup-banner 'random
    ;; List of items to show in startup buffer or an association list of
    ;; the form `(list-type . list-size)`. If nil then it is disabled.
    ;; Possible values for list-type are:
@@ -236,7 +236,7 @@ values."
    dotspacemacs-loading-progress-bar t
    ;; If non-nil the frame is fullscreen when Emacs starts up. (default nil)
    ;; (Emacs 24.4+ only)
-   dotspacemacs-fullscreen-at-startup nil
+   dotspacemacs-fullscreen-at-startup t
    ;; If non-nil `spacemacs/toggle-fullscreen' will not use native fullscreen.
    ;; Use to disable fullscreen animations in OSX. (default nil)
    dotspacemacs-fullscreen-use-non-native nil
@@ -334,6 +334,9 @@ before packages are loaded. If you are unsure, you should try in setting them in
 
    mu4e-get-mail-command "fetchnewmail"
    mu4e-update-interval 300
+
+   mu4e-enable-notifications t
+   mu4e-enable-mode-line t
 
    ;; mu4e-html2text-command "html2text -utf8 -nobs -width 72"
    ;; mu4e-html2text-command "w3m -T text/html"
@@ -478,6 +481,8 @@ you should place your code here."
      (dot . t)
      (org . t)
      (python . t)))
+
+  (setq org-confirm-babel-evaluate nil)
 
   (setq browse-url-browser-function 'browse-url-generic
         browse-url-generic-program "qutebrowser")
