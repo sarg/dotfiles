@@ -281,7 +281,8 @@ changeconfig true
 #feed 3h http://proxyfeed.example.com/proxied.rss http_proxy=http://localhost:1234/
 #feed 3h http://dupsfeed.example.com/duplicated.rss allowduplicates=true
 
-feed 3h http://cs-syd.eu/rss.xml
+feed 3h http://ergoemacs.org/emacs/blog.xml
+feed 3h https://cs-syd.eu/rss.xml
 feed 3h http://www.opennet.ru/opennews/opennews_all.rss
 feed 3h http://городшахты.рф/feed/atom/
 feed 3h http://avva.livejournal.com/data/rss
