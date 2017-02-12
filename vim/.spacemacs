@@ -58,6 +58,7 @@ values."
      ;; spell-checking
      ;; syntax-checking
      version-control
+     vinegar
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
@@ -552,17 +553,4 @@ you should place your code here."
             (org-capture)))
 
 
-  ;; Make `gg' and `G' do the correct thing
-  (eval-after-load "dired-mode"
-    (evilified-state-evilify dired-mode dired-mode-map
-      [mouse-1] 'diredp-find-file-reuse-dir-buffer
-      [mouse-2] 'dired-find-alternate-file
-      ;; "f"  'helm-find-files
-      "h"  'diredp-up-directory-reuse-dir-buffer
-      "l"  'diredp-find-file-reuse-dir-buffer
-      ;; "I"  'ao/dired-omit-switch
-      ;; "c"  'helm-find-files
-      "gg" 'ao/dired-back-to-top
-      ;; "G"  'ao/dired-jump-to-bottom
-      ))
   )
