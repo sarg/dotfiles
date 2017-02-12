@@ -452,6 +452,10 @@ This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
 
+  ;; separate custom settings
+  (setq custom-file "~/.emacs.d/private/custom.el")
+  (load custom-file 'noerror)
+
   ;; C-h deletes character backwards
   (define-key key-translation-map [?\C-h] [?\C-?])
 
@@ -560,27 +564,3 @@ you should place your code here."
       ;; "G"  'ao/dired-jump-to-bottom
       ))
   )
-
-
-
-;; Do not write anything past this comment. This is where Emacs will
-;; auto-generate custom variable definitions.
-(defun dotspacemacs/emacs-custom-settings ()
-  "Emacs custom settings.
-This is an auto-generated function, do not modify its content directly, use
-Emacs customize menu instead.
-This function is called at the very end of Spacemacs initialization."
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(evil-want-Y-yank-to-eol nil)
- '(safe-local-variable-values (quote ((org-confirm-babel-evaluate)))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
-)
