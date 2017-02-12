@@ -11,7 +11,7 @@ xkb_keymap {
 	xkb_compat    { include "complete"	};
 	xkb_symbols   {
     include "pc+us+ru:2+inet(evdev)+group(ctrl_shift_toggle)+ctrl(swap_lalt_lctl)"
-    key <CAPS> { [ Shift_L ] };
+    replace key <CAPS> { [ Shift_L ] };
   };
 	xkb_geometry  { include "pc(pc105)"	};
 };
