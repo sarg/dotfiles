@@ -473,6 +473,8 @@ you should place your code here."
    '((sql . t)
      (emacs-lisp . t)
      (http . t)
+     (shell . t)
+     (dot . t)
      (org . t)
      (python . t)))
 
