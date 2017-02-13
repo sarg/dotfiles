@@ -344,6 +344,8 @@ before packages are loaded. If you are unsure, you should try in setting them in
    ;; display images
    mu4e-view-show-images t
 
+   ;; iso date format
+   mu4e-headers-date-format "%F"
 
    ;; column list for Headers view
    mu4e-headers-fields '(
