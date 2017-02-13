@@ -329,6 +329,8 @@ before packages are loaded. If you are unsure, you should try in setting them in
 
   (fset 'mu4e-move-to-trash "mt")
 
+  (mu4e-alert-set-default-style 'notifications)
+
   (setq
    mu4e-maildir "~/.mail"
 
