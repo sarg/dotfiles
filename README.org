@@ -31,13 +31,14 @@
 ** firefox plugins
    [[https://github.com/willsALMANJ/pentadactyl-signed/releases/latest][pentadactyl]]
 ** qutebrowser
-   #+BEGIN_SRC sh :dir /sudo::
+   #+BEGIN_SRC sh :dir /sudo:: :results none
    wget -m -l 1 -nd -np https://github.com/qutebrowser/qutebrowser/releases/latest -e robots=off --accept-regex='.*tag.*|.*.deb'
    wget -m -l 1 -nd -np https://qutebrowser.org/INSTALL.html -A deb 
-   sudo dpkg -i '*.deb'
+   sudo dpkg -i *.deb
    #+END_SRC
 ** emacs
-   #+BEGIN_SRC sh :dir /sudo::
+   #+BEGIN_SRC sh :dir /sudo:: :results none
    sudo add-apt-repository ppa:ubuntu-elisp/ppa
+   sudo apt update
    sudo apt install emacs-snapshot
    #+END_SRC
