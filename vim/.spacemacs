@@ -329,7 +329,9 @@ before packages are loaded. If you are unsure, you should try in setting them in
 
   (fset 'mu4e-move-to-trash "mt")
 
+  (define-key mu4e-main-mode-map (kbd "u") 'mu4e-update-mail-and-index)
   (mu4e-alert-set-default-style 'notifications)
+  (spacemacs/set-leader-keys "a m" 'mu4e)
 
   (setq
    mu4e-maildir "~/.mail"
