@@ -201,7 +201,7 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey,           }, "h", move("left")),
     awful.key({ modkey,           }, "j", move("down")),
 
-    awful.key({                   }, "F8", function() awful.spawn('emacsclient -ne "(make-capture-frame)"') end),
+    awful.key({ modkey,           }, "F8", function() awful.spawn('emacsclient -e "(make-capture-frame)"') end),
 
     -- awful.key({ modkey, }, "F9", function() awful.spawn.with_shell('task.py pause') end),
     -- awful.key({ modkey, }, "F8", function() awful.spawn.with_shell('task.py select') end),
