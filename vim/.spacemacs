@@ -482,14 +482,15 @@ you should place your code here."
    'org-babel-load-languages
    '((sql . t)
      (emacs-lisp . t)
+     (plantuml . t)
      (http . t)
      (shell . t)
      (dot . t)
      (org . t)
      (python . t)))
 
+  (setq org-plantuml-jar-path "~/.local/share/plantuml/plantuml.jar")
   (setq org-confirm-babel-evaluate nil)
-
   (setq browse-url-browser-function 'browse-url-generic
         browse-url-generic-program "qutebrowser")
 
