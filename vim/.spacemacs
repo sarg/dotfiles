@@ -466,6 +466,13 @@ you should place your code here."
   ;; company mode everywhere
   (global-company-mode)
 
+  ;; fuzzy match for ivy
+  ;; http://oremacs.com/2016/01/06/ivy-flx/
+  (setq ivy-re-builders-alist
+        '((t . ivy--regex-fuzzy))
+
+        ivy-initial-inputs-alist nil)
+
   ;; fix c-w in company mode
   ;; https://github.com/syl20bnr/spacemacs/issues/4243#issuecomment-166246613
   (with-eval-after-load 'company
