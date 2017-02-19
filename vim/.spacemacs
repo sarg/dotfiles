@@ -331,7 +331,6 @@ before packages are loaded. If you are unsure, you should try in setting them in
 
   (define-key mu4e-main-mode-map (kbd "u") 'mu4e-update-mail-and-index)
   (mu4e-alert-set-default-style 'notifications)
-  (spacemacs/set-leader-keys "a m" 'mu4e)
 
   (setq
    mu4e-maildir "~/.mail"
@@ -339,8 +338,10 @@ before packages are loaded. If you are unsure, you should try in setting them in
    mu4e-get-mail-command "fetchnewmail"
    mu4e-update-interval 300
 
+   ;; notification settings
    mu4e-enable-notifications t
    mu4e-enable-mode-line t
+   mu4e-alert-interesting-mail-query ("flag:unread AND NOT flag:trashed AND (maildir:/srg/Inbox OR maildir:/gmail/Inbox)")
 
    ;; mu4e-html2text-command "html2text -utf8 -nobs -width 72"
    ;; mu4e-html2text-command "w3m -T text/html"
@@ -539,6 +540,7 @@ you should place your code here."
   ;; enable auto-fill for org-mode
   (add-hook 'org-mode-hook #'spacemacs/toggle-auto-fill-mode-on)
 
+  (spacemacs/set-leader-keys "a m" 'mu4e)
   (with-eval-after-load 'mu4e (mu4e-context-setup))
 
   ;; http://cestlaz.github.io/posts/using-emacs-24-capture-2/
