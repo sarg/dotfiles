@@ -504,6 +504,11 @@ you should place your code here."
   (setq-default
    org-plantuml-jar-path "~/.local/share/plantuml/plantuml.jar"
 
+   org-refile-targets '((nil :maxlevel . 9)
+                        (org-agenda-files :maxlevel . 9))
+   org-outline-path-complete-in-steps nil         ; Refile in a single go
+   org-refile-use-outline-path t
+
    ;; set browser
    browse-url-browser-function 'browse-url-generic
    browse-url-generic-program "qutebrowser"
