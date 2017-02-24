@@ -497,33 +497,23 @@ you should place your code here."
      (org . t)
      (python . t)))
 
-  (setq org-plantuml-jar-path "~/.local/share/plantuml/plantuml.jar")
-  (setq org-confirm-babel-evaluate nil)
-  (setq browse-url-browser-function 'browse-url-generic
-        browse-url-generic-program "qutebrowser")
-
-  (setq org-src-fontify-natively t)
+  (setq 
+   ;; don't ask to evaluate code block
+   org-confirm-babel-evaluate nil)
 
   (setq-default
-   ;; russian layout on C-\
-   default-input-method "russian-computer"
+   org-plantuml-jar-path "~/.local/share/plantuml/plantuml.jar"
 
-   ;; escape to normal with jk
-   evil-escape-key-sequence "jk"
+   ;; set browser
+   browse-url-browser-function 'browse-url-generic
+   browse-url-generic-program "qutebrowser"
 
-   ;; follow symbolic links under version control with a warning
-   vc-follow-symlinks nil
+   ;; syntax highlight in code blocks
+   org-src-fontify-natively t
 
-   ;; disable increased heading size in spacemacs-light theme
-   spacemacs-theme-org-height nil
-
-   hybrid-mode-enable-hjkl-bindings t
-   )
-
-  (setq
    ;; org-mode capture templates
    org-capture-templates
-   '(("t" "TODO" entry (file+headline "~/Sync/org/notes.org" "Inbox")
+   '(("t" "TODO" entry (file "~/Sync/org/refile.org")
 
       "* TODO %?\n %i\n %a")
      ("j" "Journal" entry (file+datetree "~/Sync/org/dated.org")
@@ -545,7 +535,21 @@ you should place your code here."
 
    ;; agenda
    org-agenda-files '("~/Sync/org/")
-   )
+   ;; russian layout on C-\
+   default-input-method "russian-computer"
+
+   org-catch-invisible-edits 'show-and-error
+
+   ;; escape to normal with jk
+   evil-escape-key-sequence "jk"
+
+   ;; follow symbolic links under version control with a warning
+   vc-follow-symlinks nil
+
+   ;; disable increased heading size in spacemacs-light theme
+   spacemacs-theme-org-height nil
+
+   hybrid-mode-enable-hjkl-bindings t)
 
   ;; enable auto-fill for org-mode
   (add-hook 'org-mode-hook #'spacemacs/toggle-auto-fill-mode-on)
