@@ -524,7 +524,10 @@ you should place your code here."
    ;; org-mode capture templates
    org-capture-templates
    '(("t" "TODO" entry (file+headline "~/Sync/org/notes.org" "Inbox")
+
       "* TODO %?\n %i\n %a")
+     ("j" "Journal" entry (file+datetree "~/Sync/org/dated.org")
+      "* %?\n%U\n")
 
      ("w" "work entry" entry (file "~/Sync/org/work.org")
       "* TODO %?\n %i\n %a")
@@ -546,6 +549,9 @@ you should place your code here."
 
   ;; enable auto-fill for org-mode
   (add-hook 'org-mode-hook #'spacemacs/toggle-auto-fill-mode-on)
+
+  ;; start capturing in insert state
+  (add-hook 'org-capture-mode-hook 'evil-insert-state)
 
   (spacemacs/set-leader-keys "a m" 'mu4e)
   (with-eval-after-load 'mu4e (mu4e-context-setup))
