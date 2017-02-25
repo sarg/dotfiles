@@ -540,8 +540,13 @@ you should place your code here."
 
    ;; agenda
    org-agenda-files '("~/Sync/org/")
+
    ;; russian layout on C-\
    default-input-method "russian-computer"
+
+   ;; fixes epa-file--find-file-not-found-function: Opening input file: Decryption failed, 
+   ;; https://colinxy.github.io/software-installation/2016/09/24/emacs25-easypg-issue.html
+   epa-pinentry-mode 'loopback
 
    org-catch-invisible-edits 'show-and-error
 
