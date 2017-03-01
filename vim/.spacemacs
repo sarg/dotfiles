@@ -498,34 +498,32 @@ you should place your code here."
      (org . t)
      (python . t)))
 
-  (setq org-plantuml-jar-path "~/.local/share/plantuml/plantuml.jar")
-  (setq org-confirm-babel-evaluate nil)
-  (setq browse-url-browser-function 'browse-url-generic
-        browse-url-generic-program "qutebrowser")
-
-  (setq org-src-fontify-natively t)
+  (setq 
+   ;; don't ask to evaluate code block
+   org-confirm-babel-evaluate nil)
 
   (setq-default
-   ;; russian layout on C-\
-   default-input-method "russian-computer"
+   org-plantuml-jar-path "~/.local/share/plantuml/plantuml.jar"
 
-   ;; escape to normal with jk
-   evil-escape-key-sequence "jk"
+   org-refile-targets '((nil :maxlevel . 9)
+                        (org-agenda-files :maxlevel . 9))
+   org-outline-path-complete-in-steps nil         ; Refile in a single go
+   org-refile-use-outline-path t
 
-   ;; follow symbolic links under version control with a warning
-   vc-follow-symlinks nil
+   ;; set browser
+   browse-url-browser-function 'browse-url-generic
+   browse-url-generic-program "qutebrowser"
 
-   ;; disable increased heading size in spacemacs-light theme
-   spacemacs-theme-org-height nil
+   ;; syntax highlight in code blocks
+   org-src-fontify-natively t
 
-   hybrid-mode-enable-hjkl-bindings t
-   )
-
-  (setq
    ;; org-mode capture templates
    org-capture-templates
-   '(("t" "TODO" entry (file+headline "~/Sync/org/notes.org" "Inbox")
+   '(("t" "TODO" entry (file "~/Sync/org/refile.org")
+
       "* TODO %?\n %i\n %a")
+     ("j" "Journal" entry (file+datetree "~/Sync/org/dated.org")
+      "* %?\n%U\n")
 
      ("w" "work entry" entry (file "~/Sync/org/work.org")
       "* TODO %?\n %i\n %a")
@@ -543,10 +541,32 @@ you should place your code here."
 
    ;; agenda
    org-agenda-files '("~/Sync/org/")
-   )
+
+   ;; russian layout on C-\
+   default-input-method "russian-computer"
+
+   ;; fixes epa-file--find-file-not-found-function: Opening input file: Decryption failed, 
+   ;; https://colinxy.github.io/software-installation/2016/09/24/emacs25-easypg-issue.html
+   epa-pinentry-mode 'loopback
+
+   org-catch-invisible-edits 'show-and-error
+
+   ;; escape to normal with jk
+   evil-escape-key-sequence "jk"
+
+   ;; follow symbolic links under version control with a warning
+   vc-follow-symlinks nil
+
+   ;; disable increased heading size in spacemacs-light theme
+   spacemacs-theme-org-height nil
+
+   hybrid-mode-enable-hjkl-bindings t)
 
   ;; enable auto-fill for org-mode
   (add-hook 'org-mode-hook #'spacemacs/toggle-auto-fill-mode-on)
+
+  ;; start capturing in insert state
+  (add-hook 'org-capture-mode-hook 'evil-insert-state)
 
   (spacemacs/set-leader-keys "a m" 'mu4e)
   (with-eval-after-load 'mu4e (mu4e-context-setup))
