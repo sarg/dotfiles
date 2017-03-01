@@ -44,6 +44,7 @@ values."
      better-defaults
      restclient
      lua
+     puppet
      erc
      python
      emacs-lisp
@@ -341,7 +342,7 @@ before packages are loaded. If you are unsure, you should try in setting them in
    ;; notification settings
    mu4e-enable-notifications t
    mu4e-enable-mode-line t
-   mu4e-alert-interesting-mail-query ("flag:unread AND NOT flag:trashed AND (maildir:/srg/Inbox OR maildir:/gmail/Inbox)")
+   mu4e-alert-interesting-mail-query "flag:unread AND NOT flag:trashed AND (maildir:/srg/Inbox OR maildir:/gmail/Inbox)"
 
    ;; mu4e-html2text-command "html2text -utf8 -nobs -width 72"
    ;; mu4e-html2text-command "w3m -T text/html"
