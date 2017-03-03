@@ -3,7 +3,6 @@
   First clone the source.
   #+BEGIN_SRC sh
   git clone https://github.com/sarg/dotfiles.git ~/.dotfiles
-  git submodule init
   #+END_SRC
    
   Then install [[https://www.gnu.org/software/stow/][stow]] utility and peru
@@ -34,8 +33,21 @@
    #+BEGIN_SRC sh :dir /sudo:: :results none
    wget -m -l 1 -nd -np https://github.com/qutebrowser/qutebrowser/releases/latest -e robots=off --accept-regex='.*tag.*|.*.deb'
    wget -m -l 1 -nd -np https://qutebrowser.org/INSTALL.html -A deb 
-   sudo dpkg -i *.deb
+   dpkg -i *.deb
+   # install missing dependencies
+   apt install -f --no-install-recommends
    #+END_SRC
+** debian software
+#+BEGIN_SRC sh :dir /sudo:: :results none
+# tools
+sudo apt install htop syncthing
+
+# desktop environment
+sudo apt install lightdm awesome xkbset maim slop xclip
+
+# development
+sudo apt install emacs25 default-jdk subversion git openvpn mercurial
+#+END_SRC
 ** emacs
    #+BEGIN_SRC sh :dir /sudo:: :results none
    sudo add-apt-repository ppa:ubuntu-elisp/ppa
