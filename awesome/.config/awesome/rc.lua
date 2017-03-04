@@ -53,6 +53,8 @@ beautiful.border_focus = '#fa3321'
 -- However, you can use another modifier like Mod1, but it may interact with others.
 modkey = "Mod4"
 
+browser = "qutebrowser --backend webengine"
+
 -- Table of layouts to cover with awful.layout.inc, order matters.
 local layouts =
 {
@@ -248,7 +250,7 @@ globalkeys = awful.util.table.join(
         firefoxPrev = nil
 	    else
         firefoxPrev = client.focus
-		    awful.client.run_or_raise('qutebrowser', function (c)
+		    awful.client.run_or_raise(browser, function (c)
 			    return awful.rules.match(c, {class = 'qutebrowser'})
 		    end)
 	    end
