@@ -488,6 +488,9 @@ you should place your code here."
     (define-key company-active-map (kbd "C-w") 'evil-delete-backward-word)
     )
 
+  (with-eval-after-load 'org
+    (require 'org-protocol))
+
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((sql . t)

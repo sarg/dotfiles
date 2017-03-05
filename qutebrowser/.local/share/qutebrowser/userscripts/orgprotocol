@@ -1,0 +1,13 @@
+#!/usr/bin/env python3
+
+import os
+import subprocess
+from urllib.parse import quote
+
+subprocess.call(['emacsclient', '-nc',
+  'org-protocol://capture?url={url}&title={title}&body={body}'.format(
+    url   = quote(os.environ.get('QUTE_URL', '')),
+    title = quote(os.environ.get('QUTE_TITLE', '')),
+    body  = quote(os.environ.get('QUTE_SELECTED_TEXT', ''))
+  )
+])
