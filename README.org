@@ -40,10 +40,10 @@
 ** debian software
 #+BEGIN_SRC sh :dir /sudo:: :results none
 # tools
-sudo apt install htop syncthing unzip
+sudo apt install htop syncthing unzip silversearcher-ag
 
 # desktop environment
-sudo apt install lightdm awesome xkbset maim slop xclip
+sudo apt install lightdm awesome xkbset maim slop xclip zathura zathura-djvu alsa-utils feh
 
 # development
 sudo apt install emacs25 default-jdk subversion git openvpn mercurial
