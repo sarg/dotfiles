@@ -588,28 +588,16 @@ you should place your code here."
   (spacemacs/set-leader-keys "a m" 'mu4e)
   (with-eval-after-load 'mu4e (mu4e-context-setup))
 
-  ;; http://cestlaz.github.io/posts/using-emacs-24-capture-2/
-  (defadvice org-capture-finalize 
-      (after delete-capture-frame activate)  
-    "Advise capture-finalize to close the frame"  
-    (if (equal "capture" (frame-parameter nil 'name))  
+  ;; http://www.diegoberrocal.com/blog/2015/08/19/org-protocol/
+  (defadvice org-capture
+      (after make-full-window-frame activate)
+    "Advise capture to be the only window when used as a popup"
+    (if (equal "emacs-capture" (frame-parameter nil 'name))
+        (delete-other-windows)))
+
+  (defadvice org-capture-finalize
+      (after delete-capture-frame activate)
+    "Advise capture-finalize to close the frame"
+    (if (equal "emacs-capture" (frame-parameter nil 'name))
         (delete-frame)))
-
-  (defadvice org-capture-destroy 
-      (after delete-capture-frame activate)  
-    "Advise capture-destroy to close the frame"  
-    (if (equal "capture" (frame-parameter nil 'name))  
-        (delete-frame)))  
-
-  (use-package noflet :ensure t)
-  (defun make-capture-frame ()
-    "Create a new frame and run org-capture."
-    (interactive)
-    (make-frame '((name . "capture")))
-    (select-frame-by-name "capture")
-    (delete-other-windows)
-    (noflet ((switch-to-buffer-other-window (buf) (switch-to-buffer buf)))
-            (org-capture)))
-
-
   )

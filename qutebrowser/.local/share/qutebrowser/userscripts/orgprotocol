@@ -4,7 +4,7 @@ import os
 import subprocess
 from urllib.parse import quote
 
-subprocess.call(['emacsclient', '-nc',
+subprocess.call(['emacsclient', '-c', '-F', '((name . "emacs-capture") (height . 10) (width . 80))',
   'org-protocol://capture?url={url}&title={title}&body={body}'.format(
     url   = quote(os.environ.get('QUTE_URL', '')),
     title = quote(os.environ.get('QUTE_TITLE', '')),

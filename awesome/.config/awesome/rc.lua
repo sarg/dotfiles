@@ -203,7 +203,7 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey,           }, "h", move("left")),
     awful.key({ modkey,           }, "j", move("down")),
 
-    awful.key({ modkey,           }, "F8", function() awful.spawn('emacsclient -e "(make-capture-frame)"') end),
+    awful.key({ modkey,           }, "F8", function() awful.spawn('emacsclient -c -F \'((name . "emacs-capture") (height . 10) (width . 80))\' "org-protocol://capture?template=t&body="') end),
 
     -- awful.key({ modkey, }, "F9", function() awful.spawn.with_shell('task.py pause') end),
     -- awful.key({ modkey, }, "F8", function() awful.spawn.with_shell('task.py select') end),
@@ -352,7 +352,7 @@ awful.rules.rules = {
 
   -- { rule = { instance = "urxvt" }, properties = { tag = tags[1][2] }, callback = awful.client.jumpto }, FIXME
   -- { rule = { name = "GANT TIMEWARRIOR" }, properties = { floating = true, width = 2000 }, callback = awful.placement.centered },
-  { rule = { instance = "capture" }, properties = { floating = true, height = 300 }, callback = awful.placement.centered },
+  { rule = { instance = "emacs-capture" }, properties = { floating = true, height = 300 }, callback = awful.placement.centered },
   { rule = { class = "Pavucontrol" }, properties = { floating = true }, callback = awful.placement.centered },
   { rule = { class = "jetbrains-idea" }, callback = awful.client.setmaster },
 }
