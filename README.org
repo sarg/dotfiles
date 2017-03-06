@@ -40,10 +40,17 @@
 ** debian software
 #+BEGIN_SRC sh :dir /sudo:: :results none
 # tools
-sudo apt install htop syncthing unzip silversearcher-ag
+sudo apt install htop syncthing unzip silversearcher-ag suckless-tools
 
 # desktop environment
-sudo apt install lightdm awesome xkbset maim slop xclip zathura zathura-djvu alsa-utils feh
+echo <<EOF | xargs -n 1 apt install
+lightdm awesome 
+xkbset 
+maim slop xclip 
+zathura zathura-djvu feh
+alsa-utils 
+unclutter xautolock hsetroot
+EOF
 
 # development
 sudo apt install emacs25 default-jdk subversion git openvpn mercurial
