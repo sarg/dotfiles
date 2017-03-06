@@ -203,7 +203,7 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey,           }, "h", move("left")),
     awful.key({ modkey,           }, "j", move("down")),
 
-    awful.key({ modkey,           }, "F8", function() awful.spawn('emacsclient -c -F \'((name . "emacs-capture") (height . 10) (width . 80))\' "org-protocol://capture?template=t&body="') end),
+    awful.key({ modkey,           }, "F8", function() awful.spawn('emacs-capture --eval \'(org-capture nil "t")\'') end),
 
     -- awful.key({ modkey, }, "F9", function() awful.spawn.with_shell('task.py pause') end),
     -- awful.key({ modkey, }, "F8", function() awful.spawn.with_shell('task.py select') end),
