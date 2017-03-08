@@ -42,6 +42,12 @@
 # tools
 sudo apt install htop syncthing unzip silversearcher-ag suckless-tools
 
+# fonts
+echo <<EOF | xargs -n 1 apt install
+fonts-firacode
+fonts-dejavu
+EOF
+
 # desktop environment
 echo <<EOF | xargs -n 1 apt install
 lightdm awesome 
