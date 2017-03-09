@@ -102,6 +102,10 @@ mytasklist.buttons = awful.util.table.join(
   end)
 )
 
+bat = awful.widget.watch('cat /sys/class/power_supply/BAT1/capacity', 15, function(w, s)
+                           w:set_text("[bat: " .. s:gsub("\n", "") .. "]")
+end)
+
 mykeyboardlayout = awful.widget.keyboardlayout()
 awful.screen.connect_for_each_screen(function(s)
     awful.tag({ 'code', 'term', 'mail', 'b' }, s, 
@@ -145,6 +149,7 @@ awful.screen.connect_for_each_screen(function(s)
       s.mytasklist, -- Middle widget
       { -- Right widgets
         layout = wibox.layout.fixed.horizontal,
+        bat,
         mykeyboardlayout,
         wibox.widget.systray(),
         mytextclock,
@@ -437,7 +442,6 @@ awful.spawn.with_shell('keymap.sh')
 --run_once('compton -i 0.3 -f -D 10 -I 0.07 -O 0.07 -b')
 awful.spawn('hsetroot -solid \'#000000\'')
 run_once('xautolock -locker lock.sh &')
-run_once('kbdd &')
 run_once('unclutter &')
 -- }}}
 

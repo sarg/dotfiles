@@ -31,6 +31,7 @@ values."
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
+     yaml
      html
      sql
      ;; ----------------------------------------------------------------
@@ -144,8 +145,8 @@ values."
    dotspacemacs-colorize-cursor-according-to-state t
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
    ;; quickly tweak the mode-line size to make separators look not too crappy.
-   dotspacemacs-default-font '("Fira Code"
-                               :size 12
+   dotspacemacs-default-font '("Fira Code 12"
+                               :spacing 0
                                :weight normal
                                :width normal
                                :powerline-scale 1.1)
@@ -505,6 +506,10 @@ you should place your code here."
   (setq 
    ;; don't ask to evaluate code block
    org-confirm-babel-evaluate nil)
+
+  ;; experimental
+  (setq org-columns-default-format "%80ITEM(Task) %10Effort(Effort){:} %10CLOCKSUM")
+  (setq org-global-properties (quote (("Effort_ALL" . "0:15 0:30 0:45 1:00 2:00 3:00 4:00 5:00 6:00 0:00"))))
 
   ;; custom agenda
   ;; https://blog.aaronbieber.com/2016/09/24/an-agenda-for-life-with-org-mode.html

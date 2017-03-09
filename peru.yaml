@@ -1,9 +1,9 @@
 imports:
   awesome-brown-theme: awesome/.config/awesome/themes
   awesome-redshift: awesome/.config/awesome/redshift
-  font-pomicons: fonts/.local/share
-  font-firacode: fonts/.local/share/fonts
-#  font-hack: fonts/.local/share/fonts
+  # font-pomicons: fonts/.local/share
+  # font-firacode: fonts/.local/share/fonts
+  # font-hack: fonts/.local/share/fonts
   antigen: antigen
   awesome-hints: awesome/.config/awesome/hints
   spacemacs: vim/.emacs.d
@@ -14,23 +14,23 @@ git module awesome-brown-theme:
   rev: 5d5b5a730cea3c76858a92a440a0d6a340d560ca
   pick: brown
 
-git module font-pomicons:
-  url: https://github.com/gabrielelana/pomicons.git
-  reup: master
-  pick: fonts
-  rev: bb0a57947c4a78b3d4afa8d483a58fdcb8d1fb1b
+# git module font-pomicons:
+#   url: https://github.com/gabrielelana/pomicons.git
+#   reup: master
+#   pick: fonts
+#   rev: bb0a57947c4a78b3d4afa8d483a58fdcb8d1fb1b
 
-git module font-firacode:
-  url: https://github.com/tonsky/FiraCode.git
-  reup: master
-  export: distr/ttf
-  rev: c9813e2a4a84c6db880d0c7d55cb9b232c1da75e
+# git module font-firacode:
+#   url: https://github.com/tonsky/FiraCode.git
+#   reup: master
+#   export: distr/ttf
+#   rev: c9813e2a4a84c6db880d0c7d55cb9b232c1da75e
 
-#git module font-hack:
-#  url: https://github.com/chrissimpkins/Hack
-  #reup: master
-  #export: build/ttf
-  #rev: 66afd78f9177b988ef0f26f08a52eb8c4883801c
+# git module font-hack:
+#   url: https://github.com/chrissimpkins/Hack
+#   reup: master
+#   export: build/ttf
+#   rev: 66afd78f9177b988ef0f26f08a52eb8c4883801c
 
 git module awesome-redshift:
   url: https://github.com/YoRyan/awesome-redshift
@@ -50,4 +50,4 @@ git module awesome-hints:
 git module spacemacs:
   url: https://github.com/syl20bnr/spacemacs
   reup: develop
-  rev: 165b4b425f45c8184553b47176cc02788bafad68
+  rev: b8c9100d3a667a2430b16a9e57ae8446d733fef5
