@@ -53,6 +53,14 @@ values."
      markdown
      mu4e
      (org :variables
+          org-enable-org-journal-support t
+          org-journal-dir "~/Sync/org/journal/"
+          org-journal-file-format "%Y-%m-%d"
+          org-journal-date-prefix "#+TITLE: "
+          org-journal-date-format "%A, %B %d %Y"
+          org-journal-time-prefix "* "
+          org-journal-time-format "%R"
+
           org-directory "~/Sync/org")
      (shell :variables
             shell-default-height 30
