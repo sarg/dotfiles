@@ -14,6 +14,7 @@ antigen apply
 unsetopt flow_control
 zstyle ':notify:*' activate-terminal no
 
+alias tb='nc termbin.com 9999'
 alias agrep=ack-grep
 alias g=git
 alias t=task
