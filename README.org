@@ -52,6 +52,7 @@ EOF
 echo <<EOF | xargs -n 1 apt install
 lightdm awesome 
 xkbset 
+gnupg pass rofi
 maim slop xclip 
 zathura zathura-djvu feh
 alsa-utils 
