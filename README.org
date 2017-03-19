@@ -22,11 +22,6 @@
   stow -d ~/.dotfiles zsh awesome git vim
   #+END_SRC
 * List of software
-  #+BEGIN_SRC sh :dir /sudo::
-  sudo apt-get install firefox git zsh emacs24 awesome rxvt-unicode-256color default-jdk syncthing htop
-  sudo apt-get install jq rawdog silversearcher-ag xclip
-  #+END_SRC
-** TODO maim and slop
 ** firefox plugins
    [[https://github.com/willsALMANJ/pentadactyl-signed/releases/latest][pentadactyl]]
 ** qutebrowser
@@ -57,14 +52,13 @@ maim slop xclip
 zathura zathura-djvu feh
 alsa-utils 
 unclutter xautolock hsetroot
+syncthing htop
+zsh rxvt-unicode-256color 
+rawdog
 EOF
 
 # development
-sudo apt install emacs25 default-jdk subversion git openvpn mercurial
+echo <<EOF | xargs -n1 apt install 
+emacs25 default-jdk subversion git openvpn mercurial silversearcher-ag jq
+EOF
 #+END_SRC
-** emacs
-   #+BEGIN_SRC sh :dir /sudo:: :results none
-   sudo add-apt-repository ppa:ubuntu-elisp/ppa
-   sudo apt update
-   sudo apt install emacs-snapshot
-   #+END_SRC

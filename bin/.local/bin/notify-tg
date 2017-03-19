@@ -9,8 +9,11 @@ if [ ! -f $SETTINGS ]; then
     read TOKEN
     echo "TOKEN=${TOKEN}" > $SETTINGS
 
-    echo "Searching getUpdates for chat ids"
-    CHAT_ID=$(curl -s  https://api.telegram.org/bot${TOKEN}/getUpdates | jq '.result[].message.chat.id' | uniq)
+    echo 'Searching getUpdates for chat ids'
+    echo 'Please send a message to your bot'
+    while [ -z "${CHAT_ID}" ]; do
+        CHAT_ID=$(curl -s  https://api.telegram.org/bot${TOKEN}/getUpdates | jq '.result[].message.chat.id' | uniq)
+    done
     echo "CHAT_ID=${CHAT_ID}" >> $SETTINGS
 
     echo "All done"
