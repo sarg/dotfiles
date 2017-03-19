@@ -521,6 +521,22 @@ you should place your code here."
      (org . t)
      (python . t)))
 
+
+  ;; use python3
+  (setq python-shell-interpreter "python3")
+
+  ;; fix readline bug:
+  ;; http://emacs.stackexchange.com/questions/30082/your-python-shell-interpreter-doesn-t-seem-to-support-readline
+  (with-eval-after-load 'python
+    (defun python-shell-completion-native-try ()
+      "Return non-nil if can trigger native completion."
+      (let ((python-shell-completion-native-enable t)
+            (python-shell-completion-native-output-timeout
+             python-shell-completion-native-try-output-timeout))
+        (python-shell-completion-native-get-completions
+         (get-buffer-process (current-buffer))
+         nil "_"))))
+
   (setq 
    ;; don't ask to evaluate code block
    org-confirm-babel-evaluate nil)
