@@ -208,7 +208,7 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey,           }, "h", move("left")),
     awful.key({ modkey,           }, "j", move("down")),
 
-    awful.key({ modkey,           }, "F8", function() awful.spawn('emacs-capture --eval \'(org-capture nil "t")\'') end),
+    awful.key({ modkey,           }, "F8", function() awful.spawn('emacs-capture --eval \'(org-capture nil)\'') end),
 
     -- awful.key({ modkey, }, "F9", function() awful.spawn.with_shell('task.py pause') end),
     -- awful.key({ modkey, }, "F8", function() awful.spawn.with_shell('task.py select') end),
@@ -262,8 +262,10 @@ globalkeys = awful.util.table.join(
     end),
     
     -- Prompt
-    awful.key({ modkey },            "r",     function () awful.screen.focused().mypromptbox:run() end,
+    awful.key({ modkey },            "r",     function () awful.spawn("rofi -show run") end,
       {description = "run prompt", group = "launcher"})
+    -- awful.key({ modkey },            "r",     function () awful.screen.focused().mypromptbox:run() end,
+    --   {description = "run prompt", group = "launcher"})
 )
 
 clientkeys = awful.util.table.join(

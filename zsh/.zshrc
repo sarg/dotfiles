@@ -44,6 +44,8 @@ function extract () {
     fi
 }
 
+function ff() { find ${2:-.} -name "*$1*" ; }
+
 {
   local -a _ssh_hosts _ssh_users
 
