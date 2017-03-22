@@ -545,6 +545,9 @@ you should place your code here."
   (setq org-columns-default-format "%80ITEM(Task) %10Effort(Effort){:} %10CLOCKSUM")
   (setq org-global-properties (quote (("Effort_ALL" . "0:15 0:30 0:45 1:00 2:00 3:00 4:00 5:00 6:00 0:00"))))
 
+  ;; Include current clocking task in clock reports
+  (setq org-clock-report-include-clocking-task t)
+
   ;; custom agenda
   ;; https://blog.aaronbieber.com/2016/09/24/an-agenda-for-life-with-org-mode.html
   (setq org-agenda-custom-commands
@@ -552,7 +555,7 @@ you should place your code here."
            ((tags "PRIORITY=\"A\""
                   ((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
                    (org-agenda-overriding-header "High-priority unfinished tasks:")))
-            (agenda "" ((org-agenda-span 1)))
+            (agenda "" ((org-agenda-span 'day)))
             (alltodo ""
                      ((org-agenda-skip-function '(or (org-agenda-skip-if nil '(scheduled deadline))))
                       (org-agenda-overriding-header "ALL normal priority tasks:"))))
