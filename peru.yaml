@@ -50,4 +50,4 @@ git module awesome-hints:
 git module spacemacs:
   url: https://github.com/syl20bnr/spacemacs
   reup: develop
-  rev: e624e8f0facfc5d09e1eea6e6f628ee92f0efa3b
+  rev: c9d332fbf11dc176d39623766f2d2706cfea289a
