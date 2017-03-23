@@ -10,7 +10,6 @@ local wibox = require("wibox")
 local beautiful = require("beautiful")
 -- Notification library
 local naughty = require("naughty")
-local scratch = require("scratch")
 local bashets = require("bashets")
 
 require("collision") {
@@ -293,9 +292,8 @@ local firefoxPrev
 globalkeys = awful.util.table.join(
     awful.key({ modkey,           }, "Escape", awful.tag.history.restore),
 
-    -- scratches
-    awful.key({ modkey,           }, "space", function () scratch.drop("urxvt -name drop -e zsh -7", "bottom", "center", 1, 0.5, true, mouse.screen, "drop") end),
-    awful.key({ modkey            }, "i", function () scratch.drop("Telegram", "center", "center", 0.6, 0.5, true, mouse.screen, "Telegram") end),
+    awful.key({ modkey            }, "i", function () awful.client.run_or_raise('Telegram', function(c) return awful.rules.match(c, { class = "Telegram" }) end)
+    end),
 
     -- awful.key({ modkey,           }, "k", move("up")),
     -- awful.key({ modkey,           }, "l", move("right")),
