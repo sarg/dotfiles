@@ -13,6 +13,14 @@ local naughty = require("naughty")
 local scratch = require("scratch")
 local bashets = require("bashets")
 
+require("collision") {
+  up    = { "k" },
+  down  = { "j" },
+  left  = { "h" },
+  right = { "l" },
+                     }
+local tyrannical = require("tyrannical")
+
 -- {{{ Error handling
 -- Check if awesome encountered an error during startup and fell back to
 -- another config (This code will only ever execute for the fallback config)
@@ -108,14 +116,14 @@ end)
 
 mykeyboardlayout = awful.widget.keyboardlayout()
 awful.screen.connect_for_each_screen(function(s)
-    awful.tag({ 'code', 'term', 'mail', 'b' }, s, 
-      {
-        layouts[3],
-        layouts[3],
-        layouts[1],
-        layouts[1]
-      }
-    )
+    -- awful.tag({ 'code', 'term', 'mail', 'b' }, s, 
+    --   {
+    --     layouts[3],
+    --     layouts[3],
+    --     layouts[1],
+    --     layouts[1]
+    --   }
+    -- )
 
     -- awful.tag.setnmaster(3, tags[s][2]) FIXME
 
@@ -158,6 +166,92 @@ awful.screen.connect_for_each_screen(function(s)
     }
 end)
 
+-- }}}
+
+-- {{{ Tyrannical
+tyrannical.tags = {
+    {
+        name        = "Term",                 -- Call the tag "Term"
+        init        = true,                   -- Load the tag on startup
+        exclusive   = true,                   -- Refuse any other type of clients (by classes)
+        screen      = {1,2},                  -- Create this tag on screen 1 and screen 2
+        layout      = awful.layout.suit.tile, -- Use the tile layout
+        instance    = {"dev", "ops"},         -- Accept the following instances. This takes precedence over 'class'
+        class       = { --Accept the following classes, refuse everything else (because of "exclusive=true")
+            "xterm" , "urxvt" , "aterm","URxvt","XTerm","konsole","terminator","gnome-terminal"
+        }
+    } ,
+    {
+        name        = "Internet",
+        init        = true,
+        exclusive   = true,
+      --icon        = "~net.png",                 -- Use this icon for the tag (uncomment with a real path)
+        screen      = screen.count()>1 and 2 or 1,-- Setup on screen 2 if there is more than 1 screen, else on screen 1
+        layout      = awful.layout.suit.max,      -- Use the max layout
+        class = {
+            "Opera"         , "Firefox"        , "Rekonq"    , "Dillo"        , "Arora",
+            "Chromium"      , "nightly"        , "minefield" , "qutebrowser"     }
+    } ,
+    {
+        name        = "Files",
+        init        = true,
+        exclusive   = true,
+        screen      = 1,
+        layout      = awful.layout.suit.tile,
+        exec_once   = {"dolphin"}, --When the tag is accessed for the first time, execute this command
+        class  = {
+            "Thunar", "Konqueror", "Dolphin", "ark", "Nautilus","emelfm"
+        }
+    } ,
+    {
+        name        = "Develop",
+        init        = true,
+        exclusive   = true,
+        screen      = 1,
+        layout      = awful.layout.suit.max                          ,
+        class ={ 
+            "Kate", "KDevelop", "Codeblocks", "Code::Blocks" , "DDD", "kate4"}
+    } ,
+    {
+        name        = "Doc",
+        init        = false, -- This tag wont be created at startup, but will be when one of the
+                             -- client in the "class" section will start. It will be created on
+                             -- the client startup screen
+        exclusive   = true,
+        layout      = awful.layout.suit.max,
+        class       = {
+            "Assistant"     , "Okular"         , "Evince"    , "EPDFviewer"   , "xpdf",
+            "Xpdf"          ,                                        }
+    } ,
+}
+
+-- Ignore the tag "exclusive" property for the following clients (matched by classes)
+tyrannical.properties.intrusive = {
+    "ksnapshot"     , "pinentry"       , "gtksu"     , "kcalc"        , "xcalc"               ,
+    "feh"           , "Gradient editor", "About KDE" , "Paste Special", "Background color"    ,
+    "kcolorchooser" , "plasmoidviewer" , "Xephyr"    , "kruler"       , "plasmaengineexplorer",
+}
+
+-- Ignore the tiled layout for the matching clients
+tyrannical.properties.floating = {
+    "MPlayer"      , "pinentry"        , "ksnapshot"  , "pinentry"     , "gtksu"          ,
+    "xine"         , "feh"             , "kmix"       , "kcalc"        , "xcalc"          ,
+    "yakuake"      , "Select Color$"   , "kruler"     , "kcolorchooser", "Paste Special"  ,
+    "New Form"     , "Insert Picture"  , "kcharselect", "mythfrontend" , "plasmoidviewer" 
+}
+
+-- Make the matching clients (by classes) on top of the default layout
+tyrannical.properties.ontop = {
+    "Xephyr"       , "ksnapshot"       , "kruler"
+}
+
+-- Force the matching clients (by classes) to be centered on the screen on init
+tyrannical.properties.placement = {
+    kcalc = awful.placement.centered
+}
+
+tyrannical.settings.block_children_focus_stealing = true --Block popups ()
+tyrannical.settings.group_children = true --Force popups/dialogs to have the same tags as the parent client
 -- }}}
 
 -- {{{ Mouse bindings
@@ -203,10 +297,10 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey,           }, "space", function () scratch.drop("urxvt -name drop -e zsh -7", "bottom", "center", 1, 0.5, true, mouse.screen, "drop") end),
     awful.key({ modkey            }, "i", function () scratch.drop("Telegram", "center", "center", 0.6, 0.5, true, mouse.screen, "Telegram") end),
 
-    awful.key({ modkey,           }, "k", move("up")),
-    awful.key({ modkey,           }, "l", move("right")),
-    awful.key({ modkey,           }, "h", move("left")),
-    awful.key({ modkey,           }, "j", move("down")),
+    -- awful.key({ modkey,           }, "k", move("up")),
+    -- awful.key({ modkey,           }, "l", move("right")),
+    -- awful.key({ modkey,           }, "h", move("left")),
+    -- awful.key({ modkey,           }, "j", move("down")),
 
     awful.key({ modkey,           }, "F8", function() awful.spawn('emacs-capture --eval \'(org-capture nil)\'') end),
 

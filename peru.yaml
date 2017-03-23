@@ -1,12 +1,23 @@
 imports:
   awesome-brown-theme: awesome/.config/awesome/themes
   awesome-redshift: awesome/.config/awesome/redshift
+  awesome-collision: awesome/.config/awesome/collision
+  awesome-tyrannical: awesome/.config/awesome/tyrannical
   # font-pomicons: fonts/.local/share
   # font-firacode: fonts/.local/share/fonts
   # font-hack: fonts/.local/share/fonts
   antigen: antigen
-  awesome-hints: awesome/.config/awesome/hints
   spacemacs: vim/.emacs.d
+
+git module awesome-collision:
+  url: https://github.com/Elv13/collision.git
+  reup: master
+  rev: 79407729d034274dd963c8d2465efd005b9ac6c4
+
+git module awesome-tyrannical:
+  url: https://github.com/Elv13/tyrannical.git
+  reup: master
+  rev: 507131a18bf11028567dffeb45196cd99414c44d
 
 git module awesome-brown-theme:
   url: https://github.com/mikar/awesome-themes
@@ -41,11 +52,6 @@ git module antigen:
   url: https://github.com/zsh-users/antigen.git
   reup: master
   rev: 3c0044d0c55809dd0858c19851172d19020ef496
-
-git module awesome-hints:
-  url: https://github.com/guotsuan/hints
-  reup: master
-  rev: f4843a30afdb9696e637abbfe120f215b8e33bf9
 
 git module spacemacs:
   url: https://github.com/syl20bnr/spacemacs
