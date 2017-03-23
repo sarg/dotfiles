@@ -494,6 +494,9 @@ you should place your code here."
   ;; company mode everywhere
   (global-company-mode)
 
+  ;; pcre regexes
+  (pcre-mode)
+
   ;; fuzzy match for ivy
   ;; http://oremacs.com/2016/01/06/ivy-flx/
   (setq ivy-re-builders-alist
