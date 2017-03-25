@@ -192,24 +192,15 @@ tyrannical.tags = {
             "Chromium"      , "nightly"        , "minefield" , "qutebrowser"     }
     } ,
     {
-        name        = "Files",
-        init        = true,
-        exclusive   = true,
-        screen      = 1,
-        layout      = awful.layout.suit.tile,
-        exec_once   = {"dolphin"}, --When the tag is accessed for the first time, execute this command
-        class  = {
-            "Thunar", "Konqueror", "Dolphin", "ark", "Nautilus","emelfm"
-        }
-    } ,
-    {
-        name        = "Develop",
-        init        = true,
-        exclusive   = true,
-        screen      = 1,
-        layout      = awful.layout.suit.max                          ,
-        class ={ 
-            "Kate", "KDevelop", "Codeblocks", "Code::Blocks" , "DDD", "kate4"}
+        name         = "Develop",
+        init         = true,
+        exclusive    = true,
+        volatile     = true,
+        skip_taskbar = true,
+        max_clients  = 1,
+        screen       = 1,
+        layout       = awful.layout.suit.max                          ,
+        class        = {"Kate", "KDevelop", "Codeblocks", "Code::Blocks" , "DDD", "kate4", "jetbrains-idea" }
     } ,
     {
         name        = "Doc",
