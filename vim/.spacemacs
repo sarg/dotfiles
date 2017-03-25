@@ -564,6 +564,10 @@ you should place your code here."
                       (org-agenda-overriding-header "ALL normal priority tasks:"))))
            ((org-agenda-compact-blocks t)))))
 
+  ;; use zathura when ! on file in dired
+  (setq dired-guess-shell-alist-user
+          '(("\\.pdf" "zathura")))
+
   (setq-default
    org-plantuml-jar-path "~/.local/share/plantuml/plantuml.jar"
 
