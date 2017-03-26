@@ -316,6 +316,10 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey,           }, "\\", function () awful.layout.inc(layouts,  1) end),
     awful.key({ modkey, "Shift"   }, "\\", function () awful.layout.inc(layouts, -1) end),
 
+    -- laptop mode
+    awful.key({                   }, "XF86MonBrightnessUp", function() awful.spawn('xbacklight +5') end) ,
+    awful.key({                   }, "XF86MonBrightnessDown", function() awful.spawn('xbacklight -5') end) ,
+
     -- Volume
     awful.key({ modkey, "Control" }, "Up",   set_volume("up")) ,
     awful.key({ modkey, "Control" }, "Down",   set_volume("down")),
