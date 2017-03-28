@@ -61,6 +61,7 @@ beautiful.border_focus = '#fa3321'
 modkey = "Mod4"
 
 browser = "qutebrowser --backend webengine"
+term = "x-terminal-emulator"
 
 -- Table of layouts to cover with awful.layout.inc, order matters.
 local layouts =
@@ -326,7 +327,7 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey,           }, "F1", function() awful.spawn('clementine -t') end),
 
     -- Standard program
-    awful.key({ modkey,           }, "Return", function () awful.spawn("urxvt") end),
+    awful.key({ modkey,           }, "Return", function () awful.spawn(term) end),
     awful.key({                   }, "Print", function () awful.spawn("screenshot.sh") end),
     awful.key({                   }, "KP_Subtract", function () awful.spawn("xautolock -locknow") end),
     awful.key({ modkey,           }, "F12", awesome.restart),
