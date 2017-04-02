@@ -544,6 +544,8 @@ you should place your code here."
    ;; don't ask to evaluate code block
    org-confirm-babel-evaluate nil)
 
+  (setq frame-title-format "%b - emacs")
+
   ;; experimental
   (setq org-columns-default-format "%80ITEM(Task) %10Effort(Effort){:} %10CLOCKSUM")
   (setq org-global-properties (quote (("Effort_ALL" . "0:15 0:30 0:45 1:00 2:00 3:00 4:00 5:00 6:00 0:00"))))
