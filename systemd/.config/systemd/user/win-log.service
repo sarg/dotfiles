@@ -1,0 +1,11 @@
+[Unit]
+Description=X11 focus logger
+After=graphical.target
+Restart=always
+
+[Service]
+Type=simple
+ExecStart=/bin/sh -c 'DISPLAY=:0 ~/.local/bin/win.py >> ~/.events/focus'
+
+[Install]
+WantedBy=multi-user.target

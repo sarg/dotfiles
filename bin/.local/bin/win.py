@@ -127,7 +127,7 @@ def handle_xevent(event):
 def handle_change(new_state):
     """Replace this with whatever you want to actually do"""
     new_state['ts'] = int(time.time())
-    print(json.dumps(new_state))
+    print(json.dumps(new_state), flush=True)
 
 if __name__ == '__main__':
     # Listen for _NET_ACTIVE_WINDOW changes
