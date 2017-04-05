@@ -5,17 +5,27 @@ import operator
 from os.path import expanduser
 from collections import defaultdict
 
+def in_first_br(title):
+    left_br = title.find('[')
+    if left_br > -1:
+        right_br = title.find(']', left_br)
+        return title[left_br+1:right_br]
+
+    return None
+
 def tag(event):
     tags = []
     binary = event['cmd'][0:event['cmd'].index('\0')]
 
-    if 'qutebrowser' in event['cmd']:
+    if 'python' in binary and 'qutebrowser' in event['cmd']:
+        br = in_first_br(event['title'])
+        if br is not None:
+            tags.append("tag:" + br)
         tags.append("browser")
     elif 'IntelliJIdea' in event['cmd']:
-        left_br = event['title'].find('[')
-        if left_br > -1:
-            right_br = event['title'].find(']', left_br)
-            tags.append(event['title'][left_br+1:right_br])
+        br = in_first_br(event['title'])
+        if br is not None:
+            tags.append(br)
         tags.append("coding")
     elif 'x-terminal-emulator' == binary:
         tags.append("terminal")
