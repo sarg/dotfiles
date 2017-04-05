@@ -20,6 +20,9 @@ nnoremap <leader>gc :action GotoClass<cr>
 
 nnoremap <leader>ff :action GotoFile<cr>
 
+# search
+nnoremap <leader>sap :action FindInPath<cr>
+
 # buffers
 nnoremap <leader>bd :action CloseContent<CR>
 nnoremap <leader>bb :action RecentFiles<cr>
