@@ -196,7 +196,6 @@ tyrannical.tags = {
         name         = "Develop",
         init         = true,
         exclusive    = true,
-        volatile     = true,
         skip_taskbar = true,
         max_clients  = 1,
         screen       = 1,
