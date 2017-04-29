@@ -5,7 +5,11 @@ wpa_cli='sudo wpa_cli -i wlp1s0'
 if [ -z "$1" ]; then
     $wpa_cli status
 elif [ "$1" == "c" ]; then
-    $wpa_cli
+    if [ -z "$2" ]; then
+       $wpa_cli
+    else
+        $wpa_cli select_network $2
+    fi
 elif [ "$1" == "l" ]; then
     $wpa_cli list_networks
 elif [ "$1" == "d" ]; then
@@ -17,6 +21,14 @@ elif [ "$1" == "s" ]; then
     $wpa_cli scan
     # wpa_block_scan /var/run/wpa_supplicant/wlan0
     $wpa_cli scan_results
+elif [ "$1" == "t" ]; then
+    if /usr/sbin/rfkill list wlan | grep -qP Soft.+yes; then
+        /usr/sbin/rfkill unblock wlan
+        echo "Enabled"
+    else
+        /usr/sbin/rfkill block wlan
+        echo "Disabled"
+    fi
 elif [ "$1" == "e" ]; then
     $wpa_cli list_networks | tail -n+2 | awk '{print $1}' | xargs -n1 $wpa_cli enable_network
 elif [ "$1" == "w" ]; then
