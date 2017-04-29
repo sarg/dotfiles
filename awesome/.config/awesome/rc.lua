@@ -319,6 +319,8 @@ globalkeys = awful.util.table.join(
     -- laptop mode
     awful.key({                   }, "XF86MonBrightnessUp", function() awful.spawn('xbacklight +5') end) ,
     awful.key({                   }, "XF86MonBrightnessDown", function() awful.spawn('xbacklight -5') end) ,
+    awful.key({                   }, "XF86WLAN", function() awful.spawn('wlan.sh t') end) ,
+    awful.key({                   }, "XF86Display", function() awful.spawn('hdmi.sh') end) ,
 
     -- Volume
     awful.key({ modkey, "Control" }, "Up",   set_volume("up")) ,
