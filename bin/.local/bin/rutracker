@@ -1,0 +1,7 @@
+#!/bin/sh -x
+addr=`ip a show tun0 | grep -Po '(?<=peer ).+(?=/)'`
+
+for h in bt3.t-ru.org rutracker.org; do
+  h=$(host -t A -4 $h | cut -d' ' -f4)
+  sudo ip route add $h via $addr dev tun0 
+done
