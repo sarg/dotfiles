@@ -174,9 +174,7 @@ tyrannical.tags = {
         name        = "Term",                 -- Call the tag "Term"
         init        = true,                   -- Load the tag on startup
         exclusive   = true,                   -- Refuse any other type of clients (by classes)
-        screen      = {1,2},                  -- Create this tag on screen 1 and screen 2
         layout      = awful.layout.suit.tile, -- Use the tile layout
-        instance    = {"dev", "ops"},         -- Accept the following instances. This takes precedence over 'class'
         class       = { --Accept the following classes, refuse everything else (because of "exclusive=true")
             "xterm" , "urxvt" , "aterm","URxvt","XTerm","konsole","terminator","gnome-terminal"
         }
@@ -185,8 +183,6 @@ tyrannical.tags = {
         name        = "Internet",
         init        = true,
         exclusive   = true,
-      --icon        = "~net.png",                 -- Use this icon for the tag (uncomment with a real path)
-        screen      = screen.count()>1 and 2 or 1,-- Setup on screen 2 if there is more than 1 screen, else on screen 1
         layout      = awful.layout.suit.max,      -- Use the max layout
         class = {
             "Opera"         , "Firefox"        , "Rekonq"    , "Dillo"        , "Arora",
@@ -198,7 +194,6 @@ tyrannical.tags = {
         exclusive    = true,
         skip_taskbar = true,
         max_clients  = 1,
-        screen       = 1,
         layout       = awful.layout.suit.max                          ,
         class        = {"Kate", "KDevelop", "Codeblocks", "Code::Blocks" , "DDD", "kate4", "jetbrains-idea" }
     } ,
