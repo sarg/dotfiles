@@ -265,7 +265,8 @@ function set_volume(val)
 
     awful.spawn.easy_async("pulseaudio-ctl full-status",
                            function(stdout, stderr, reason, exit_code)
-                             local volume = tonumber(string.match(stdout, "^%d+")) or 0
+                             local mute = string.find(stdout, "yes")
+                             local volume = mute and 'x' or string.match(stdout, "^%d+")
                              vol_notify_id = naughty.notify({ text = "[" .. volume .. "%]", timeout = 5, replaces_id = vol_notify_id, font = "fixed"  }).id
                            end
     )
@@ -316,6 +317,9 @@ globalkeys = awful.util.table.join(
     awful.key({                   }, "XF86MonBrightnessDown", function() awful.spawn('xbacklight -5') end) ,
     awful.key({                   }, "XF86WLAN", function() awful.spawn('wlan.sh t') end) ,
     awful.key({                   }, "XF86Display", function() awful.spawn('hdmi.sh') end) ,
+    awful.key({                   }, "XF86AudioRaiseVolume", set_volume("up")) ,
+    awful.key({                   }, "XF86AudioLowerVolume", set_volume("down")),
+    awful.key({                   }, "XF86AudioMute", set_volume("mute")),
 
     -- Volume
     awful.key({ modkey, "Control" }, "Up",   set_volume("up")) ,

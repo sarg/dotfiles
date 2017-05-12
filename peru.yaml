@@ -17,7 +17,7 @@ git module awesome-collision:
 git module awesome-tyrannical:
   url: https://github.com/Elv13/tyrannical.git
   reup: master
-  rev: c64b48f784c2f1392ff460418d3d89876897ff92
+  rev: c22a3fab64f7370b4f91ca2a8e6cef301ad192a7
 
 git module awesome-brown-theme:
   url: https://github.com/mikar/awesome-themes
@@ -56,4 +56,4 @@ git module antigen:
 git module spacemacs:
   url: https://github.com/syl20bnr/spacemacs
   reup: develop
-  rev: e70913022d9b0f6c61e317f00e227676a552ab90
+  rev: e6927436635a0c37f2ed28722cd89d344138e648
