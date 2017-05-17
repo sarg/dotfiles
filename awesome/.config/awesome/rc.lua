@@ -529,11 +529,6 @@ function run_once(cmd)
     awful.spawn.with_shell("pgrep -u $USER -x " .. findme .. " > /dev/null || (" .. cmd .. ")")
 end
 
-awful.spawn.with_shell('keymap.sh')
---run_once('compton -i 0.3 -f -D 10 -I 0.07 -O 0.07 -b')
-awful.spawn('hsetroot -solid \'#000000\'')
-run_once('xautolock -locker lock.sh &')
-run_once('unclutter &')
 -- }}}
 
 local redshift = require("redshift")

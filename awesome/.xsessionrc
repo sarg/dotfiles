@@ -1,6 +1,6 @@
 #!/bin/sh
-eval `gnome-keyring-daemon --start`
-export SSH_AUTH_SOCK
-export NO_AT_BRIDGE=1
-export QT_GRAPHICSSYSTEM=native
+# export SSH_AUTH_SOCK
+# export NO_AT_BRIDGE=1
+# export QT_GRAPHICSSYSTEM=native
 source ~/.zshenv
+./.local/bin/keymap.sh 
