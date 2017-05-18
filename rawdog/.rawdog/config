@@ -42,7 +42,7 @@ expireage 1d
 # HTTP requests, since it can't tell from the response to such a request
 # whether any articles have been removed from the feed; this makes rawdog
 # slightly less bandwidth-efficient.)
-keepmin 0
+keepmin 100
 
 # Whether to only display articles that are currently included in a feed
 # (useful for "planet" pages where you only want to display the current
@@ -281,17 +281,18 @@ changeconfig true
 #feed 3h http://proxyfeed.example.com/proxied.rss http_proxy=http://localhost:1234/
 #feed 3h http://dupsfeed.example.com/duplicated.rss allowduplicates=true
 
-feed 3h http://ergoemacs.org/emacs/blog.xml
-feed 3h https://cs-syd.eu/rss.xml
+# feed 3h http://ergoemacs.org/emacs/blog.xml
+# feed 3h https://cs-syd.eu/rss.xml
 feed 3h http://www.opennet.ru/opennews/opennews_all.rss
-feed 3h http://городшахты.рф/feed/atom/
+# feed 3h http://городшахты.рф/feed/atom/
 feed 3h http://avva.livejournal.com/data/rss
-feed 3h http://fregimus.livejournal.com/data/rss
-feed 3h http://nature-wonder.livejournal.com/data/rss/
-feed 3h http://moskalyuk.name/feed
+# feed 3h http://fregimus.livejournal.com/data/rss
+# feed 3h http://nature-wonder.livejournal.com/data/rss/
+# feed 3h http://moskalyuk.name/feed
 feed 3h http://ilyabirman.ru/meanwhile/rss/
 feed 3h http://www.daemonology.net/hn-daily/index.rss
-feed 3h http://ru-healthlife.livejournal.com/data/rss
+feed 7d http://www.daemonology.net/hn-weekly-ask/index.rss
+# feed 3h http://ru-healthlife.livejournal.com/data/rss
 feed 3h http://hranidengi.ru/feed/
-feed 3h http://feeds.feedburner.com/codinghorror/
-feed 3h https://www.stevepavlina.com/feed/
+# feed 3h http://feeds.feedburner.com/codinghorror/
+# feed 3h https://www.stevepavlina.com/feed/
