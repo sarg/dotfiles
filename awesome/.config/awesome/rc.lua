@@ -110,7 +110,7 @@ mytasklist.buttons = awful.util.table.join(
   end)
 )
 
-bat = awful.widget.watch('cat /sys/class/power_supply/BAT1/capacity', 15, function(w, s)
+bat = awful.widget.watch('cat /sys/class/power_supply/BAT0/capacity', 15, function(w, s)
                            w:set_text("[bat: " .. s:gsub("\n", "") .. "]")
 end)
 
@@ -261,13 +261,14 @@ local vol_notify_id
 
 function set_volume(val)
   return function()
-    awful.spawn("pulseaudio-ctl " .. val)
-
-    awful.spawn.easy_async("pulseaudio-ctl full-status",
-                           function(stdout, stderr, reason, exit_code)
-                             local mute = string.find(stdout, "yes")
-                             local volume = mute and 'x' or string.match(stdout, "^%d+")
-                             vol_notify_id = naughty.notify({ text = "[" .. volume .. "%]", timeout = 5, replaces_id = vol_notify_id, font = "fixed"  }).id
+    awful.spawn.easy_async("pulseaudio-ctl " .. val,
+                           function()
+                             awful.spawn.easy_async("pulseaudio-ctl full-status",
+                                                    function(stdout, stderr, reason, exit_code)
+                                                      local volume, inp, out = string.match(stdout, "^(%d+) (%w+) (%w+)")
+                                                      vol_notify_id = naughty.notify({ text = string.format("[%3d%%]\nSPK: %4s\nMIC: %4s", volume, inp, out), timeout = 5, replaces_id = vol_notify_id, font = "Fira Code"  }).id
+                                                    end
+                             )
                            end
     )
   end
@@ -320,6 +321,7 @@ globalkeys = awful.util.table.join(
     awful.key({                   }, "XF86AudioRaiseVolume", set_volume("up")) ,
     awful.key({                   }, "XF86AudioLowerVolume", set_volume("down")),
     awful.key({                   }, "XF86AudioMute", set_volume("mute")),
+    awful.key({                   }, "XF86AudioMicMute", set_volume("mute-input")),
 
     -- Volume
     awful.key({ modkey, "Control" }, "Up",   set_volume("up")) ,
