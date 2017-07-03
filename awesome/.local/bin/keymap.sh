@@ -12,6 +12,7 @@ xkb_keymap {
 	xkb_symbols   {
     include "pc+us+ru:2+inet(evdev)+group(ctrl_shift_toggle)+ctrl(swap_lalt_lctl)"
     replace key <CAPS> { [ Shift_L ] };
+    replace key <PRSC> { [ Menu ] };
   };
 	xkb_geometry  { include "pc(pc105)"	};
 };

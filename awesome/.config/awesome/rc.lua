@@ -331,7 +331,7 @@ globalkeys = awful.util.table.join(
     -- Standard program
     awful.key({ modkey,           }, "Return", function () awful.spawn(term) end),
     awful.key({                   }, "Print", function () awful.spawn("screenshot.sh") end),
-    awful.key({                   }, "KP_Subtract", function () awful.spawn("xautolock -locknow") end),
+    awful.key({                   }, "XF86ScreenSaver", function () awful.spawn("lock.sh") end),
     awful.key({ modkey,           }, "F12", awesome.restart),
     awful.key({ modkey,           }, "o", function()
         awful.client.run_or_raise('emacsclient -nc -a ""', function(c) return awful.rules.match(c, { class = "Emacs" }) end)

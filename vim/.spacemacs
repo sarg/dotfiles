@@ -31,6 +31,7 @@ values."
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
+     (evil-snipe :variables evil-snipe-enable-alternate-f-and-t-behaviors t)
      javascript
      yaml
      html
@@ -355,6 +356,10 @@ executes.
  This function is mostly useful for variables that need to be set
 before packages are loaded. If you are unsure, you should try in setting them in
 `dotspacemacs/user-config' first."
+
+  ;; separate custom settings
+  (setq custom-file "~/.emacs.d/private/custom.el")
+  (load custom-file 'noerror)
   )
 
 (defun mu4e-context-setup ()
@@ -469,9 +474,9 @@ before packages are loaded. If you are unsure, you should try in setting them in
                        (mu4e-message-maildir-matches msg "^/srg")))
        :vars '(
                ;; local directories, relative to mail root
-               (mu4e-sent-folder . "/srg/Sent")
-               (mu4e-drafts-folder . "/srg/Drafts")
-               (mu4e-trash-folder . "/srg/Trash")
+               (mu4e-sent-folder . "/srg/sent")
+               (mu4e-drafts-folder . "/srg/drafts")
+               (mu4e-trash-folder . "/srg/trash")
                (mu4e-refile-folder . "/srg/Inbox")
                ;; account details
                (user-mail-address . "trofimovsi@srgroup.ru")
@@ -512,10 +517,6 @@ This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
 
-  ;; separate custom settings
-  (setq custom-file "~/.emacs.d/private/custom.el")
-  (load custom-file 'noerror)
-
   ;; C-h deletes character backwards
   (define-key key-translation-map [?\C-h] [?\C-?])
 
@@ -524,6 +525,9 @@ you should place your code here."
 
   ;; pcre regexes
   (pcre-mode)
+
+  ;; enable evil-snipe
+  (setq evil-snipe-enable-alternate-f-and-t-behaviors t)
 
   ;; fuzzy match for ivy
   ;; http://oremacs.com/2016/01/06/ivy-flx/
@@ -546,6 +550,8 @@ you should place your code here."
    '((sql . t)
      (emacs-lisp . t)
      (plantuml . t)
+     (maxima . t)
+     (octave . t)
      (http . t)
      (shell . t)
      (dot . t)
@@ -680,23 +686,3 @@ you should place your code here."
     (if (equal "emacs-capture" (frame-parameter nil 'name))
         (delete-frame)))
   )
-(defun dotspacemacs/emacs-custom-settings ()
-  "Emacs custom settings.
-This is an auto-generated function, do not modify its content directly, use
-Emacs customize menu instead.
-This function is called at the very end of Spacemacs initialization."
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   (quote
-    (meghanada inf-ruby swiper js2-mode company-lua groovy-mode ensime sbt-mode markdown-mode flycheck restclient alert git-commit async s string-inflection yasnippet smartparens magit-popup evil with-editor diminish helm helm-core company counsel projectile magit ivy browse-at-remote yapfify yaml-mode xterm-color ws-butler winum which-key wgrep web-mode volatile-highlights vi-tilde-fringe uuidgen use-package unfill toc-org tagedit symon sql-indent spaceline smex smeargle slim-mode shell-pop scss-mode sass-mode rvm ruby-tools ruby-test-mode rubocop rspec-mode robe restart-emacs request rbenv rake rainbow-delimiters pyvenv pytest pyenv-mode py-isort puppet-mode pug-mode popwin pip-requirements persp-mode paradox orgit org-projectile org-present org-pomodoro org-plus-contrib org-journal org-download org-bullets open-junk-file ob-restclient ob-http neotree mwim multi-term mu4e-alert move-text mmm-mode minitest markdown-toc magit-gitflow macrostep lua-mode lorem-ipsum live-py-mode linum-relative link-hint less-css-mode ivy-purpose ivy-hydra info+ indent-guide hy-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt help-fns+ helm-make google-translate golden-ratio gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gh-md fuzzy flx-ido fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help erc-yt erc-view-log erc-social-graph erc-image erc-hl-nicks emmet-mode elisp-slime-nav dumb-jump diff-hl define-word cython-mode counsel-projectile company-web company-statistics company-restclient company-anaconda column-enforce-mode clean-aindent-mode chruby bundler auto-yasnippet auto-highlight-symbol auto-compile aggressive-indent adaptive-wrap ace-window ace-link ac-ispell))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
-)

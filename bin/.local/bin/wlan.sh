@@ -1,6 +1,6 @@
 #!/bin/bash
 
-wpa_cli='sudo wpa_cli -i wlp1s0'
+wpa_cli='sudo wpa_cli -i wlp3s0'
 
 if [ -z "$1" ]; then
     $wpa_cli status
@@ -17,7 +17,6 @@ elif [ "$1" == "d" ]; then
 elif [ "$1" == "r" ]; then
     $wpa_cli reassociate
 elif [ "$1" == "s" ]; then
-    $wpa_cli scan_results
     $wpa_cli scan
     # wpa_block_scan /var/run/wpa_supplicant/wlan0
     $wpa_cli scan_results
