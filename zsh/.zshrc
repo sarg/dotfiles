@@ -18,7 +18,7 @@ alias tb='nc termbin.com 9999'
 alias agrep=ack-grep
 alias g=git
 alias t=task
-alias em='emacsclient -nc'
+alias em=emacs-one-frame.sh
 
 function extract () {
     if [[ -f "$1" ]]; then
