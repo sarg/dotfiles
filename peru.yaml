@@ -12,7 +12,7 @@ imports:
 git module awesome-collision:
   url: https://github.com/Elv13/collision.git
   reup: master
-  rev: 1b126be2320e7fd2af52bc7a960e47f73624675e
+  rev: 09c51e3d1066a8bee879e7a17384be0ab2336f81
 
 git module awesome-tyrannical:
   url: https://github.com/Elv13/tyrannical.git
@@ -56,4 +56,4 @@ git module antigen:
 git module spacemacs:
   url: https://github.com/syl20bnr/spacemacs
   reup: develop
-  rev: c6afc2a0fcd0da8607ed439ec290f0749e5963f9
+  rev: 052636d237fd8b653d24076d366c261fbe532e28
