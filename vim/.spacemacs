@@ -29,7 +29,7 @@ This function should only modify configuration layer settings."
    dotspacemacs-configuration-layer-path '()
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
-   '(
+   '(nginx
      (evil-snipe :variables evil-snipe-enable-alternate-f-and-t-behaviors t)
      javascript
      yaml
@@ -50,7 +50,10 @@ This function should only modify configuration layer settings."
      puppet
      erc
      python
+     pass
      emacs-lisp
+     themes-megapack
+     ranger
      git
      markdown
      mu4e
@@ -77,7 +80,9 @@ This function should only modify configuration layer settings."
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '()
+   dotspacemacs-additional-packages '(exwm
+                                      webpaste
+                                      )
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
@@ -149,8 +154,8 @@ It should only modify the values of Spacemacs settings."
    ;; List of themes, the first of the list is loaded when spacemacs starts.
    ;; Press `SPC T n' to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
-   dotspacemacs-themes '(spacemacs-light
-                         spacemacs-dark)
+   dotspacemacs-themes '(material-light
+                         spacemacs-light)
    ;; If non-nil the cursor color matches the state color in GUI Emacs.
    ;; (default t)
    dotspacemacs-colorize-cursor-according-to-state t
@@ -395,13 +400,18 @@ If you are unsure, try setting them in `dotspacemacs/user-config' first."
    mu4e-maildir "~/.mail"
 
    mu4e-get-mail-command "fetchnewmail"
-   mu4e-update-interval 300
+   mu4e-update-interval (* 60 15)
 
    ;; notification settings
    mu4e-enable-notifications t
    mu4e-enable-mode-line t
-   mu4e-alert-interesting-mail-query "flag:unread AND NOT flag:trashed AND (maildir:/srg/Inbox OR maildir:/gmail/Inbox)"
-
+   mu4e-alert-interesting-mail-query (concat "flag:unread "
+                                             "AND NOT flag:trashed "
+                                             "AND (maildir:/srg/Inbox OR maildir:/gmail/Inbox) "
+                                             "AND NOT from:srgn "
+                                             "AND NOT from:bitb "
+                                             "AND NOT from:jira "
+                                             )
    ;; mu4e-html2text-command "html2text -utf8 -nobs -width 72"
    ;; mu4e-html2text-command "w3m -T text/html"
 
@@ -520,6 +530,62 @@ This function is called at the very end of Spacemacs startup, after layer
 configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
+  (require 'exwm)
+  (require 'exwm-config)
+
+  (setq exwm-workspace-number 4)
+  ;; Make class name the buffer name
+  (add-hook 'exwm-update-class-hook
+            (lambda ()
+              (exwm-workspace-rename-buffer exwm-class-name)))
+  ;; 's-r': Reset
+  (exwm-input-set-key (kbd "s-r") #'exwm-reset)
+  ;; 's-w': Switch workspace
+  (exwm-input-set-key (kbd "s-w") #'exwm-workspace-switch)
+  ;; 's-N': Switch to certain workspace
+  (dotimes (i 10)
+    (exwm-input-set-key (kbd (format "s-%d" i))
+                        `(lambda ()
+                           (interactive)
+                           (exwm-workspace-switch-create ,i))))
+  ;; 's-&': Launch application
+  (exwm-input-set-key (kbd "s-&")
+                      (lambda (command)
+                        (interactive (list (read-shell-command "$ ")))
+                        (start-process-shell-command command nil command)))
+  ;; Line-editing shortcuts
+  (exwm-input-set-simulation-keys
+   '(([?\C-b] . left)
+     ([?\C-f] . right)
+     ([?\C-p] . up)
+     ([?\C-n] . down)
+     ([?\C-a] . home)
+     ([?\C-e] . end)
+
+     ([?\M-v] . prior)
+     ([?\C-v] . next)
+     ([?\C-d] . delete)
+     ([?\C-k] . (S-end delete))))
+  ;; Configure Ido
+  (exwm-config-ido)
+  ;; Other configurations
+  (exwm-config-misc)
+
+  (setq exwm-layout-show-all-buffers t
+        exwm-workspace-show-all-buffers t
+        )
+
+  (exwm-input-set-simulation-keys
+   '(([?\C-b] . left)
+     ([?\C-f] . right)
+     ([?\C-p] . up)
+     ([?\C-n] . down)
+     ([?\C-a] . home)
+     ([?\C-e] . end)
+     ([?\M-v] . prior)
+     ([?\C-v] . next)
+     ([?\C-d] . delete)
+     ([?\C-k] . (S-end delete))))
 
   ;; C-h deletes character backwards
   (define-key key-translation-map [?\C-h] [?\C-?])
@@ -532,6 +598,10 @@ before packages are loaded."
 
   ;; enable evil-snipe
   (setq evil-snipe-enable-alternate-f-and-t-behaviors t)
+
+  ;; use ranger instead of dired-jump
+  (ranger-override-dired-mode t)
+  (setq ranger-show-hidden nil)
 
   ;; fuzzy match for ivy
   ;; http://oremacs.com/2016/01/06/ivy-flx/
@@ -547,20 +617,117 @@ before packages are loaded."
     )
 
   (with-eval-after-load 'org
-    (require 'org-protocol))
+    (require 'org-protocol)
 
-  (org-babel-do-load-languages
-   'org-babel-load-languages
-   '((sql . t)
-     (emacs-lisp . t)
-     (plantuml . t)
-     (maxima . t)
-     (octave . t)
-     (http . t)
-     (shell . t)
-     (dot . t)
-     (org . t)
-     (python . t)))
+    (org-babel-do-load-languages
+     'org-babel-load-languages
+     '((sql . t)
+       (emacs-lisp . t)
+       (plantuml . t)
+       (maxima . t)
+       (octave . t)
+       (http . t)
+       (shell . t)
+       (dot . t)
+       (org . t)
+       (python . t)))
+
+    (setq 
+     ;; don't ask to evaluate code block
+     org-confirm-babel-evaluate nil)
+
+    (setq org-startup-indented t)
+
+    ;; experimental
+    (setq org-columns-default-format "%80ITEM(Task) %10Effort(Effort){:} %10CLOCKSUM")
+    (setq org-global-properties (quote (("Effort_ALL" . "0:15 0:30 0:45 1:00 2:00 3:00 4:00 5:00 6:00 0:00"))))
+
+    ;; Include current clocking task in clock reports
+    (setq org-clock-report-include-clocking-task t)
+
+    ;; custom agenda
+    ;; https://blog.aaronbieber.com/2016/09/24/an-agenda-for-life-with-org-mode.html
+    (setq org-agenda-custom-commands
+          '(("d" "Daily agenda and all TODOs"
+             ((tags "PRIORITY=\"A\""
+                    ((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
+                     (org-agenda-overriding-header "High-priority unfinished tasks:")))
+              (agenda "" ((org-agenda-span 'day)))
+              (alltodo ""
+                       ((org-agenda-skip-function '(or (org-agenda-skip-if nil '(scheduled deadline))))
+                        (org-agenda-overriding-header "ALL normal priority tasks:"))))
+             ((org-agenda-compact-blocks t)))))
+
+
+    (setq-default
+     org-plantuml-jar-path "~/.local/share/plantuml/plantuml.jar"
+
+     org-refile-targets '((nil :maxlevel . 9)
+                          (org-agenda-files :maxlevel . 9)
+                          ("~/Sync/org/notes.org" :maxlevel . 9)
+                          ("~/Sync/org/someday.org" :level . 1)
+                          )
+     org-outline-path-complete-in-steps nil         ; Refile in a single go
+     org-refile-use-outline-path t
+
+     ;; set browser
+     browse-url-browser-function 'browse-url-generic
+     browse-url-generic-program "qutebrowser"
+
+     ;; syntax highlight in code blocks
+     org-src-fontify-natively t
+
+     ;; org-mode capture templates
+     org-capture-templates
+     '(("t" "TODO" entry (file "~/Sync/org/inbox.org")
+
+        "* TODO %?\n %i\n %a")
+       ("j" "Journal" entry (file+datetree "~/Sync/org/dated.org")
+        "* %?\n%U\n")
+
+       ("w" "work entry" entry (file "~/Sync/org/work.org")
+        "* TODO %?\n %i\n %a")
+
+       ;; ("p" "process-soon" entry (file+headline "~/Sync/org/notes.org" "Inbox")
+       ;;  "* TODO [#A] %?\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"+0d\"))\n%a\n")
+       ;; ;; "* TODO %?\n %i\n %a")
+       )
+
+     ;; don't split heading on M-RET in the middle of line
+     org-M-RET-may-split-line nil
+
+     ;; Prettier bullets
+     org-bullets-bullet-list '("■" "◆" "▲" "▶")
+
+     ;; agenda
+     org-agenda-files '("~/Sync/org/work.org"
+                        "~/Sync/org/mirea.org"
+                        "~/Sync/org/teztour.org"
+                        "~/Sync/org/tickler.org"
+                        )
+
+     org-catch-invisible-edits 'show-and-error
+
+     )
+
+    ;; enable auto-fill for org-mode
+    (add-hook 'org-mode-hook #'spacemacs/toggle-auto-fill-mode-on)
+
+    ;; start capturing in insert state
+    (add-hook 'org-capture-mode-hook 'evil-insert-state)
+    ;; http://www.diegoberrocal.com/blog/2015/08/19/org-protocol/
+    (defadvice org-capture
+        (after make-full-window-frame activate)
+      "Advise capture to be the only window when used as a popup"
+      (if (equal "emacs-capture" (frame-parameter nil 'name))
+          (delete-other-windows)))
+
+    (defadvice org-capture-finalize
+        (after delete-capture-frame activate)
+      "Advise capture-finalize to close the frame"
+      (if (equal "emacs-capture" (frame-parameter nil 'name))
+          (delete-frame)))
+    )
 
 
   ;; use python3
@@ -578,84 +745,24 @@ before packages are loaded."
          (get-buffer-process (current-buffer))
          nil "_"))))
 
-  (setq 
-   ;; don't ask to evaluate code block
-   org-confirm-babel-evaluate nil)
 
   (setq frame-title-format "%b - emacs")
 
-  ;; experimental
-  (setq org-columns-default-format "%80ITEM(Task) %10Effort(Effort){:} %10CLOCKSUM")
-  (setq org-global-properties (quote (("Effort_ALL" . "0:15 0:30 0:45 1:00 2:00 3:00 4:00 5:00 6:00 0:00"))))
-
-  ;; Include current clocking task in clock reports
-  (setq org-clock-report-include-clocking-task t)
-
-  ;; custom agenda
-  ;; https://blog.aaronbieber.com/2016/09/24/an-agenda-for-life-with-org-mode.html
-  (setq org-agenda-custom-commands
-        '(("d" "Daily agenda and all TODOs"
-           ((tags "PRIORITY=\"A\""
-                  ((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
-                   (org-agenda-overriding-header "High-priority unfinished tasks:")))
-            (agenda "" ((org-agenda-span 'day)))
-            (alltodo ""
-                     ((org-agenda-skip-function '(or (org-agenda-skip-if nil '(scheduled deadline))))
-                      (org-agenda-overriding-header "ALL normal priority tasks:"))))
-           ((org-agenda-compact-blocks t)))))
 
   ;; use zathura when ! on file in dired
   (setq dired-guess-shell-alist-user
           '(("\\.pdf" "zathura")))
 
+  (setq delete-by-moving-to-trash nil)
+
+
   (setq-default
-   org-plantuml-jar-path "~/.local/share/plantuml/plantuml.jar"
-
-   org-refile-targets '((nil :maxlevel . 9)
-                        (org-agenda-files :maxlevel . 9))
-   org-outline-path-complete-in-steps nil         ; Refile in a single go
-   org-refile-use-outline-path t
-
-   ;; set browser
-   browse-url-browser-function 'browse-url-generic
-   browse-url-generic-program "qutebrowser"
-
-   ;; syntax highlight in code blocks
-   org-src-fontify-natively t
-
-   ;; org-mode capture templates
-   org-capture-templates
-   '(("t" "TODO" entry (file "~/Sync/org/refile.org")
-
-      "* TODO %?\n %i\n %a")
-     ("j" "Journal" entry (file+datetree "~/Sync/org/dated.org")
-      "* %?\n%U\n")
-
-     ("w" "work entry" entry (file "~/Sync/org/work.org")
-      "* TODO %?\n %i\n %a")
-
-     ("p" "process-soon" entry (file+headline "~/Sync/org/notes.org" "Inbox")
-      "* TODO [#A] %?\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"+0d\"))\n%a\n")
-     ;; "* TODO %?\n %i\n %a")
-     )
-
-   ;; don't split heading on M-RET in the middle of line
-   org-M-RET-may-split-line nil
-
-   ;; Prettier bullets
-   org-bullets-bullet-list '("■" "◆" "▲" "▶")
-
-   ;; agenda
-   org-agenda-files '("~/Sync/org/")
-
    ;; russian layout on C-\
    default-input-method "russian-computer"
 
    ;; fixes epa-file--find-file-not-found-function: Opening input file: Decryption failed, 
    ;; https://colinxy.github.io/software-installation/2016/09/24/emacs25-easypg-issue.html
    epa-pinentry-mode 'loopback
-
-   org-catch-invisible-edits 'show-and-error
 
    ;; escape to normal with jk
    evil-escape-key-sequence "jk"
@@ -668,25 +775,8 @@ before packages are loaded."
 
    hybrid-mode-enable-hjkl-bindings t)
 
-  ;; enable auto-fill for org-mode
-  (add-hook 'org-mode-hook #'spacemacs/toggle-auto-fill-mode-on)
-
-  ;; start capturing in insert state
-  (add-hook 'org-capture-mode-hook 'evil-insert-state)
 
   (spacemacs/set-leader-keys "a m" 'mu4e)
   (with-eval-after-load 'mu4e (mu4e-context-setup))
 
-  ;; http://www.diegoberrocal.com/blog/2015/08/19/org-protocol/
-  (defadvice org-capture
-      (after make-full-window-frame activate)
-    "Advise capture to be the only window when used as a popup"
-    (if (equal "emacs-capture" (frame-parameter nil 'name))
-        (delete-other-windows)))
-
-  (defadvice org-capture-finalize
-      (after delete-capture-frame activate)
-    "Advise capture-finalize to close the frame"
-    (if (equal "emacs-capture" (frame-parameter nil 'name))
-        (delete-frame)))
   )
