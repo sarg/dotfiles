@@ -21,7 +21,7 @@ c.content.webgl = False
 # c.hints.next_regexes = [ '\bnext\b','\bmore\b','\bnewer\b','\b[>→≫]\b','\b(>>|»)\b','\bcontinue\b','\bследующая\b' ]
 # c.hints.prev_regexes = ['\bprev(ious)?\b','\bback\b','\bolder\b','\b[<←≪]\b','\b(<<|«)\b','\bпредыдущая\b' ]
 
-c.url.defaultpage = 'about:blank'
+c.url.default_page = 'about:blank'
 c.url.searchengines['gh'] = 'https://github.com/search?utf8=✓&type=Code&q={}'
 c.url.searchengines['gg'] = 'http://www.google.ru/search?hl=ru&q={}'
 
@@ -54,6 +54,7 @@ c.fonts.prompts = '12pt sans-serif---'
 config.unbind('q', mode='normal')
 config.unbind('<Ctrl-p>', mode='command')
 config.unbind('<Ctrl-n>', mode='command')
+config.unbind('xx', mode='normal')
 
 config.bind('O', 'set-cmd-text :open {url:pretty}')
 config.bind('t', 'set-cmd-text -s :open -t')
