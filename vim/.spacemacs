@@ -154,7 +154,8 @@ It should only modify the values of Spacemacs settings."
    ;; List of themes, the first of the list is loaded when spacemacs starts.
    ;; Press `SPC T n' to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
-   dotspacemacs-themes '(material-light
+   dotspacemacs-themes '(soft-morning
+                         material-light
                          spacemacs-light)
    ;; If non-nil the cursor color matches the state color in GUI Emacs.
    ;; (default t)
@@ -645,6 +646,10 @@ before packages are loaded."
     ;; Include current clocking task in clock reports
     (setq org-clock-report-include-clocking-task t)
 
+    (setq org-todo-keywords
+          (quote ((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d)")
+                  (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)"))))
+
     ;; custom agenda
     ;; https://blog.aaronbieber.com/2016/09/24/an-agenda-for-life-with-org-mode.html
     (setq org-agenda-custom-commands
@@ -659,9 +664,16 @@ before packages are loaded."
              ((org-agenda-compact-blocks t)))))
 
 
+    ;; org-contacts
+    (require 'org-contacts)
+    (setq-default org-contacts-files '("~/Sync/org/contacts.org"))
+
+
+
     (setq-default
      org-plantuml-jar-path "~/.local/share/plantuml/plantuml.jar"
 
+     org-refile-use-outline-path 'file
      org-refile-targets '((nil :maxlevel . 9)
                           (org-agenda-files :maxlevel . 9)
                           ("~/Sync/org/notes.org" :maxlevel . 9)
@@ -702,6 +714,7 @@ before packages are loaded."
      ;; agenda
      org-agenda-files '("~/Sync/org/work.org"
                         "~/Sync/org/mirea.org"
+                        "~/Sync/org/projects.org"
                         "~/Sync/org/teztour.org"
                         "~/Sync/org/tickler.org"
                         )

@@ -1,7 +1,17 @@
-export BROWSER=qutebrowser
-export ANDROID_HOME=$HOME/devel/android-sdk-linux
-export PATH=$HOME/devel/bin:$HOME/.local/bin:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools:$PATH
-export ALTERNATE_EDITOR=''
-export EDITOR='emacsclient -c'
-export VISUAL=$EDITOR
-export PASSWORD_STORE_DIR=$HOME/Sync/pass
+BROWSER=qutebrowser
+ANDROID_HOME=$HOME/devel/android-sdk-linux
+PATH=$HOME/devel/bin:$HOME/.local/bin:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools:$PATH
+ALTERNATE_EDITOR=''
+EDITOR='emacsclient -c'
+VISUAL=$EDITOR
+PASSWORD_STORE_DIR=$HOME/Sync/pass
+
+export EDITOR
+export VISUAL
+export BROWSER
+export ANDROID_HOME
+export PATH
+export ALTERNATE_EDITOR
+export EDITOR
+export VISUAL
+export PASSWORD_STORE_DIR

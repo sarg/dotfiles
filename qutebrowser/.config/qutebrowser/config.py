@@ -1,5 +1,6 @@
 c.auto_save.session = True
 c.backend = 'webengine'
+c.qt.force_platform = 'xcb'
 
 c.editor.command = [ 'emacsclient', '-c', '{}' ]
 c.content.default_encoding = 'utf-8'
@@ -73,3 +74,4 @@ config.bind('<Ctrl-e>', 'fake-key <End>', mode='insert')
 
 config.bind('<Ctrl-n>', 'completion-item-focus next', mode='command')
 config.bind('<Ctrl-p>', 'completion-item-focus prev', mode='command')
+config.bind('<Ctrl-w>', 'rl-backward-kill-word', mode='command')
