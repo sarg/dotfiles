@@ -45,9 +45,11 @@ This function should only modify configuration layer settings."
                       auto-completion-enable-snippets-in-popup t)
      better-defaults
      restclient
+     exwm
      java
      lua
      puppet
+     semantic
      erc
      python
      pass
@@ -80,9 +82,9 @@ This function should only modify configuration layer settings."
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '(exwm
-                                      webpaste
-                                      )
+   dotspacemacs-additional-packages '(
+                                      pulseaudio-control
+                                      webpaste)
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
@@ -114,6 +116,9 @@ It should only modify the values of Spacemacs settings."
    ;; Maximum allowed time in seconds to contact an ELPA repository.
    ;; (default 5)
    dotspacemacs-elpa-timeout 5
+   ;; If non-nil then verify the signature for downloaded Spacelpa archives.
+   ;; (default nil)
+   dotspacemacs-verify-spacelpa-archives nil
    ;; If non-nil then spacemacs will check for updates at startup
    ;; when the current branch is not `develop'. Note that checking for
    ;; new versions works via git commands, thus it calls GitHub services
@@ -121,7 +126,7 @@ It should only modify the values of Spacemacs settings."
    dotspacemacs-check-for-update nil
    ;; If non-nil, a form that evaluates to a package directory. For example, to
    ;; use different package directories for different Emacs versions, set this
-   ;; to `emacs-version'. (default nil)
+   ;; to `emacs-version'. (default 'emacs-version)
    dotspacemacs-elpa-subdirectory nil
    ;; One of `vim', `emacs' or `hybrid'.
    ;; `hybrid' is like `vim' except that `insert state' is replaced by the
@@ -374,15 +379,6 @@ If you are unsure, try setting them in `dotspacemacs/user-config' first."
   )
 
 (defun mu4e-context-setup ()
-  (defun mu4e-msg-to-me (msg)
-    "Is message sent to me?"
-    (when msg
-      (or (mu4e-message-contact-field-matches-me msg :to)
-          (mu4e-message-contact-field-matches-me msg :bcc)
-          (mu4e-message-contact-field-matches-me msg :cc)
-          )
-      ))
-
   (defun mu4e-message-maildir-matches (msg rx)
     (when rx
       (if (listp rx)
@@ -401,7 +397,7 @@ If you are unsure, try setting them in `dotspacemacs/user-config' first."
    mu4e-maildir "~/.mail"
 
    mu4e-get-mail-command "fetchnewmail"
-   mu4e-update-interval (* 60 15)
+   mu4e-update-interval nil
 
    ;; notification settings
    mu4e-enable-notifications t
@@ -677,7 +673,7 @@ before packages are loaded."
      org-refile-targets '((nil :maxlevel . 9)
                           (org-agenda-files :maxlevel . 9)
                           ("~/Sync/org/notes.org" :maxlevel . 9)
-                          ("~/Sync/org/someday.org" :level . 1)
+                          ("~/Sync/org/someday.org" :maxlevel . 1)
                           )
      org-outline-path-complete-in-steps nil         ; Refile in a single go
      org-refile-use-outline-path t
