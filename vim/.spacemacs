@@ -45,7 +45,11 @@ This function should only modify configuration layer settings."
                       auto-completion-enable-snippets-in-popup t)
      better-defaults
      restclient
-     exwm
+
+     ;; FIXME: not working, fix configs
+     ;; exwm
+     ;; exwm-sarg
+
      java
      lua
      puppet
@@ -59,6 +63,7 @@ This function should only modify configuration layer settings."
      git
      markdown
      mu4e
+     sarg-mu4e
      (org :variables
           org-enable-org-journal-support t
           org-journal-dir "~/Sync/org/journal/"
@@ -69,6 +74,7 @@ This function should only modify configuration layer settings."
           org-journal-time-format "%R"
 
           org-directory "~/Sync/org")
+     sarg-org
      (shell :variables
             shell-default-height 30
             shell-default-shell 'eshell
@@ -378,211 +384,13 @@ If you are unsure, try setting them in `dotspacemacs/user-config' first."
   (load custom-file 'noerror)
   )
 
-(defun mu4e-context-setup ()
-  (defun mu4e-message-maildir-matches (msg rx)
-    (when rx
-      (if (listp rx)
-          ;; if rx is a list, try each one for a match
-          (or (mu4e-message-maildir-matches msg (car rx))
-              (mu4e-message-maildir-matches msg (cdr rx)))
-        ;; not a list, check rx
-        (string-match rx (mu4e-message-field msg :maildir)))))
-
-  (fset 'mu4e-move-to-trash "mt")
-
-  (define-key mu4e-main-mode-map (kbd "u") 'mu4e-update-mail-and-index)
-  (mu4e-alert-set-default-style 'notifications)
-
-  (setq
-   mu4e-maildir "~/.mail"
-
-   mu4e-get-mail-command "fetchnewmail"
-   mu4e-update-interval nil
-
-   ;; notification settings
-   mu4e-enable-notifications t
-   mu4e-enable-mode-line t
-   mu4e-alert-interesting-mail-query (concat "flag:unread "
-                                             "AND NOT flag:trashed "
-                                             "AND (maildir:/srg/Inbox OR maildir:/gmail/Inbox) "
-                                             "AND NOT from:srgn "
-                                             "AND NOT from:bitb "
-                                             "AND NOT from:jira "
-                                             )
-   ;; mu4e-html2text-command "html2text -utf8 -nobs -width 72"
-   ;; mu4e-html2text-command "w3m -T text/html"
-
-   ;; display images
-   mu4e-view-show-images t
-
-   ;; iso date format
-   mu4e-headers-date-format "%F"
-
-   ;; column list for Headers view
-   mu4e-headers-fields '(
-                         (:human-date . 12)
-                         (:flags . 6)
-                         (:from . 22)
-                         (:subject)
-                         )
-
-   ;; close sent message buffers
-   message-kill-buffer-on-exit t
-
-   ;; pick first context automatically on launch
-   mu4e-context-policy               'pick-first
-   ;; use current context for new mail
-   mu4e-compose-context-policy       'ask-if-none
-   mu4e-confirm-quit                 nil
-
-   ;; mbsync goes crazy without this setting
-   mu4e-change-filenames-when-moving t
-
-   ;; bookmarks
-   mu4e-bookmarks '(("flag:unread AND NOT flag:trashed AND (maildir:/srg/Inbox OR maildir:/gmail/Inbox)" "Unread messages" 117)
-                    ("date:today..now" "Today's messages" 116))
-
-
-   ;; Configure sending mail.
-   message-send-mail-function 'message-send-mail-with-sendmail
-   sendmail-program "/usr/bin/msmtp"
-   user-full-name "Sergey Trofimov"
-
-   ;; Use the correct account context when sending mail based on the from header.
-   message-sendmail-envelope-from 'header
-
-   ;; send with msmtp
-   send-mail-function 'sendmail-send-it
-
-   mu4e-contexts
-   `(,(make-mu4e-context
-       :name "gmail"
-       :match-func (lambda (msg)
-                     (when msg
-                       (mu4e-message-maildir-matches msg "^/gmail")))
-       :enter-func (lambda () (define-key mu4e-headers-mode-map (kbd "d") 'mu4e-move-to-trash))
-       :leave-func (lambda () (define-key mu4e-headers-mode-map (kbd "d") 'mu4e-headers-mark-for-trash))
-       :vars '(
-               ;; local directories, relative to mail root
-               (mu4e-sent-folder . "/gmail/sent")
-               (mu4e-drafts-folder . "/gmail/drafts")
-               (mu4e-trash-folder . "/gmail/trash")
-               (mu4e-refile-folder . "/gmail/all")
-               ;; account details
-               (user-mail-address . "sarg@sarg.org.ru")
-               (user-full-name . "Sergey Trofimov")
-               (mu4e-user-mail-address-list . ( "sarg@sarg.org.ru" ))
-               ;; gmail saves every outgoing message automatically
-               (mu4e-sent-messages-behavior . delete)
-               (mu4e-maildir-shortcuts . (("/gmail/Inbox" . ?j)
-                                          ("/gmail/all" . ?a)
-                                          ("/gmail/trash" . ?t)))
-               (mu4e-headers-skip-duplicates . t)
-               ))
-     ,(make-mu4e-context
-       :name "srg"
-       :match-func (lambda (msg)
-                     (when msg
-                       (mu4e-message-maildir-matches msg "^/srg")))
-       :vars '(
-               ;; local directories, relative to mail root
-               (mu4e-sent-folder . "/srg/sent")
-               (mu4e-drafts-folder . "/srg/drafts")
-               (mu4e-trash-folder . "/srg/trash")
-               (mu4e-refile-folder . "/srg/Inbox")
-               ;; account details
-               (user-mail-address . "trofimovsi@srgroup.ru")
-               (user-full-name . "Sergey Trofimov")
-               (mu4e-user-mail-address-list . ( "trofimovsi@srgroup.ru" ))
-               (mu4e-sent-messages-behavior . delete)))))
-
-  ;;store link to message if in header view, not to header query
-  (setq org-mu4e-link-query-in-headers-mode nil)
-
-
-  ;; Choose account label to feed msmtp -a option based on From header
-  ;; in Message buffer; This function must be added to
-  ;; message-send-mail-hook for on-the-fly change of From address before
-  ;; sending message since message-send-mail-hook is processed right
-  ;; before sending message.
-  (defun choose-msmtp-account ()
-    (if (message-mail-p)
-        (save-excursion
-          (let*
-              ((from (save-restriction
-                       (message-narrow-to-headers)
-                       (message-fetch-field "from")))
-               (account
-                (cond
-                 ((string-match "sarg@sarg.org.ru" from) "gmail")
-                 ((string-match "trofimovsi@srgroup.ru" from) "srg"))))
-            (setq message-sendmail-extra-arguments (list '"-a" account))))))
-
-  (add-hook 'message-send-mail-hook 'choose-msmtp-account)
-  )
-
 (defun dotspacemacs/user-config ()
   "Configuration for user code:
 This function is called at the very end of Spacemacs startup, after layer
 configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
-  (require 'exwm)
-  (require 'exwm-config)
 
-  (setq exwm-workspace-number 4)
-  ;; Make class name the buffer name
-  (add-hook 'exwm-update-class-hook
-            (lambda ()
-              (exwm-workspace-rename-buffer exwm-class-name)))
-  ;; 's-r': Reset
-  (exwm-input-set-key (kbd "s-r") #'exwm-reset)
-  ;; 's-w': Switch workspace
-  (exwm-input-set-key (kbd "s-w") #'exwm-workspace-switch)
-  ;; 's-N': Switch to certain workspace
-  (dotimes (i 10)
-    (exwm-input-set-key (kbd (format "s-%d" i))
-                        `(lambda ()
-                           (interactive)
-                           (exwm-workspace-switch-create ,i))))
-  ;; 's-&': Launch application
-  (exwm-input-set-key (kbd "s-&")
-                      (lambda (command)
-                        (interactive (list (read-shell-command "$ ")))
-                        (start-process-shell-command command nil command)))
-  ;; Line-editing shortcuts
-  (exwm-input-set-simulation-keys
-   '(([?\C-b] . left)
-     ([?\C-f] . right)
-     ([?\C-p] . up)
-     ([?\C-n] . down)
-     ([?\C-a] . home)
-     ([?\C-e] . end)
-
-     ([?\M-v] . prior)
-     ([?\C-v] . next)
-     ([?\C-d] . delete)
-     ([?\C-k] . (S-end delete))))
-  ;; Configure Ido
-  (exwm-config-ido)
-  ;; Other configurations
-  (exwm-config-misc)
-
-  (setq exwm-layout-show-all-buffers t
-        exwm-workspace-show-all-buffers t
-        )
-
-  (exwm-input-set-simulation-keys
-   '(([?\C-b] . left)
-     ([?\C-f] . right)
-     ([?\C-p] . up)
-     ([?\C-n] . down)
-     ([?\C-a] . home)
-     ([?\C-e] . end)
-     ([?\M-v] . prior)
-     ([?\C-v] . next)
-     ([?\C-d] . delete)
-     ([?\C-k] . (S-end delete))))
 
   ;; C-h deletes character backwards
   (define-key key-translation-map [?\C-h] [?\C-?])
@@ -598,7 +406,14 @@ before packages are loaded."
 
   ;; use ranger instead of dired-jump
   (ranger-override-dired-mode t)
-  (setq ranger-show-hidden nil)
+  (setq
+   ranger-show-hidden nil
+
+   ;; use zathura when ! on file in dired
+   dired-guess-shell-alist-user
+   '(("\\.pdf" "zathura"))
+
+   delete-by-moving-to-trash nil)
 
   ;; fuzzy match for ivy
   ;; http://oremacs.com/2016/01/06/ivy-flx/
@@ -610,134 +425,12 @@ before packages are loaded."
   ;; fix c-w in company mode
   ;; https://github.com/syl20bnr/spacemacs/issues/4243#issuecomment-166246613
   (with-eval-after-load 'company
-    (define-key company-active-map (kbd "C-w") 'evil-delete-backward-word)
-    )
+    (define-key company-active-map (kbd "C-w") 'evil-delete-backward-word))
 
-  (with-eval-after-load 'org
-    (require 'org-protocol)
-
-    (org-babel-do-load-languages
-     'org-babel-load-languages
-     '((sql . t)
-       (emacs-lisp . t)
-       (plantuml . t)
-       (maxima . t)
-       (octave . t)
-       (http . t)
-       (shell . t)
-       (dot . t)
-       (org . t)
-       (python . t)))
-
-    (setq 
-     ;; don't ask to evaluate code block
-     org-confirm-babel-evaluate nil)
-
-    (setq org-startup-indented t)
-
-    ;; experimental
-    (setq org-columns-default-format "%80ITEM(Task) %10Effort(Effort){:} %10CLOCKSUM")
-    (setq org-global-properties (quote (("Effort_ALL" . "0:15 0:30 0:45 1:00 2:00 3:00 4:00 5:00 6:00 0:00"))))
-
-    ;; Include current clocking task in clock reports
-    (setq org-clock-report-include-clocking-task t)
-
-    (setq org-todo-keywords
-          (quote ((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d)")
-                  (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)"))))
-
-    ;; custom agenda
-    ;; https://blog.aaronbieber.com/2016/09/24/an-agenda-for-life-with-org-mode.html
-    (setq org-agenda-custom-commands
-          '(("d" "Daily agenda and all TODOs"
-             ((tags "PRIORITY=\"A\""
-                    ((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
-                     (org-agenda-overriding-header "High-priority unfinished tasks:")))
-              (agenda "" ((org-agenda-span 'day)))
-              (alltodo ""
-                       ((org-agenda-skip-function '(or (org-agenda-skip-if nil '(scheduled deadline))))
-                        (org-agenda-overriding-header "ALL normal priority tasks:"))))
-             ((org-agenda-compact-blocks t)))))
-
-
-    ;; org-contacts
-    (require 'org-contacts)
-    (setq-default org-contacts-files '("~/Sync/org/contacts.org"))
-
-
-
-    (setq-default
-     org-plantuml-jar-path "~/.local/share/plantuml/plantuml.jar"
-
-     org-refile-use-outline-path 'file
-     org-refile-targets '((nil :maxlevel . 9)
-                          (org-agenda-files :maxlevel . 9)
-                          ("~/Sync/org/notes.org" :maxlevel . 9)
-                          ("~/Sync/org/someday.org" :maxlevel . 1)
-                          )
-     org-outline-path-complete-in-steps nil         ; Refile in a single go
-     org-refile-use-outline-path t
-
-     ;; set browser
-     browse-url-browser-function 'browse-url-generic
-     browse-url-generic-program "qutebrowser"
-
-     ;; syntax highlight in code blocks
-     org-src-fontify-natively t
-
-     ;; org-mode capture templates
-     org-capture-templates
-     '(("t" "TODO" entry (file "~/Sync/org/inbox.org")
-
-        "* TODO %?\n %i\n %a")
-       ("j" "Journal" entry (file+datetree "~/Sync/org/dated.org")
-        "* %?\n%U\n")
-
-       ("w" "work entry" entry (file "~/Sync/org/work.org")
-        "* TODO %?\n %i\n %a")
-
-       ;; ("p" "process-soon" entry (file+headline "~/Sync/org/notes.org" "Inbox")
-       ;;  "* TODO [#A] %?\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"+0d\"))\n%a\n")
-       ;; ;; "* TODO %?\n %i\n %a")
-       )
-
-     ;; don't split heading on M-RET in the middle of line
-     org-M-RET-may-split-line nil
-
-     ;; Prettier bullets
-     org-bullets-bullet-list '("■" "◆" "▲" "▶")
-
-     ;; agenda
-     org-agenda-files '("~/Sync/org/work.org"
-                        "~/Sync/org/mirea.org"
-                        "~/Sync/org/projects.org"
-                        "~/Sync/org/teztour.org"
-                        "~/Sync/org/tickler.org"
-                        )
-
-     org-catch-invisible-edits 'show-and-error
-
-     )
-
-    ;; enable auto-fill for org-mode
-    (add-hook 'org-mode-hook #'spacemacs/toggle-auto-fill-mode-on)
-
-    ;; start capturing in insert state
-    (add-hook 'org-capture-mode-hook 'evil-insert-state)
-    ;; http://www.diegoberrocal.com/blog/2015/08/19/org-protocol/
-    (defadvice org-capture
-        (after make-full-window-frame activate)
-      "Advise capture to be the only window when used as a popup"
-      (if (equal "emacs-capture" (frame-parameter nil 'name))
-          (delete-other-windows)))
-
-    (defadvice org-capture-finalize
-        (after delete-capture-frame activate)
-      "Advise capture-finalize to close the frame"
-      (if (equal "emacs-capture" (frame-parameter nil 'name))
-          (delete-frame)))
-    )
-
+  (setq
+   ;; set browser
+   browse-url-browser-function 'browse-url-generic
+   browse-url-generic-program "qutebrowser")
 
   ;; use python3
   (setq python-shell-interpreter "python3")
@@ -755,21 +448,13 @@ before packages are loaded."
          nil "_"))))
 
 
-  (setq frame-title-format "%b - emacs")
-
-
-  ;; use zathura when ! on file in dired
-  (setq dired-guess-shell-alist-user
-          '(("\\.pdf" "zathura")))
-
-  (setq delete-by-moving-to-trash nil)
-
-
   (setq-default
+   frame-title-format "%b - emacs"
+
    ;; russian layout on C-\
    default-input-method "russian-computer"
 
-   ;; fixes epa-file--find-file-not-found-function: Opening input file: Decryption failed, 
+   ;; fixes epa-file--find-file-not-found-function: Opening input file: Decryption failed,
    ;; https://colinxy.github.io/software-installation/2016/09/24/emacs25-easypg-issue.html
    epa-pinentry-mode 'loopback
 
@@ -782,10 +467,4 @@ before packages are loaded."
    ;; disable increased heading size in spacemacs-light theme
    spacemacs-theme-org-height nil
 
-   hybrid-mode-enable-hjkl-bindings t)
-
-
-  (spacemacs/set-leader-keys "a m" 'mu4e)
-  (with-eval-after-load 'mu4e (mu4e-context-setup))
-
-  )
+   hybrid-mode-enable-hjkl-bindings t))
