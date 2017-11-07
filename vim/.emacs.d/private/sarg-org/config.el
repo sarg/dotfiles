@@ -22,7 +22,7 @@
    ;; don't ask to evaluate code block
    org-confirm-babel-evaluate nil
 
-   setq org-startup-indented t
+   org-startup-indented t
 
    ;; experimental
    org-columns-default-format "%80ITEM(Task) %10Effort(Effort){:} %10CLOCKSUM"

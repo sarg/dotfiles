@@ -1,8 +1,21 @@
-(spacemacs/set-leader-keys "a m" 'mu4e)
+(defun mu4e-goto-unread ()
+  (interactive)
+  (mu4e-update-mail-and-index nil)
+  (mu4e-headers-search (mu4e-get-bookmark-query 117)))
+
+(spacemacs/set-leader-keys "a m" 'mu4e-goto-unread)
+
 (with-eval-after-load 'mu4e
-  (fset 'mu4e-move-to-trash "mt")
+  ;; override default trash function
+  (add-to-list 'mu4e-marks
+             '(trash
+	             :char ("d" . "▼")
+               :prompt "dtrash"
+	             :dyn-target (lambda (target msg) (mu4e-get-trash-folder msg))
+               :action mu4e-custom-delete))
 
   (define-key mu4e-main-mode-map (kbd "u") 'mu4e-update-mail-and-index)
+  (define-key mu4e-headers-mode-map (kbd "q") 'mu4e-quit)
   (add-hook 'message-send-mail-hook 'choose-msmtp-account)
 
   (setq
@@ -14,13 +27,6 @@
    ;; notification settings
    mu4e-enable-notifications t
    mu4e-enable-mode-line t
-   mu4e-alert-interesting-mail-query (concat "flag:unread "
-                                             "AND NOT flag:trashed "
-                                             "AND (maildir:/srg/Inbox OR maildir:/gmail/Inbox) "
-                                             "AND NOT from:srgn "
-                                             "AND NOT from:bitb "
-                                             "AND NOT from:jira "
-                                             )
    ;; mu4e-html2text-command "html2text -utf8 -nobs -width 72"
    ;; mu4e-html2text-command "w3m -T text/html"
 
@@ -75,7 +81,6 @@
        :match-func (lambda (msg)
                      (when msg
                        (mu4e-message-maildir-matches msg "^/gmail")))
-       :enter-func (lambda () (define-key mu4e-headers-mode-map (kbd "d") 'mu4e-move-to-trash))
        :vars '(
                ;; local directories, relative to mail root
                (mu4e-sent-folder . "/gmail/sent")
@@ -92,13 +97,13 @@
                                           ("/gmail/all" . ?a)
                                           ("/gmail/trash" . ?t)))
                (mu4e-headers-skip-duplicates . t)
+               (trash-flags . "-N")
                ))
      ,(make-mu4e-context
        :name "srg"
        :match-func (lambda (msg)
                      (when msg
                        (mu4e-message-maildir-matches msg "^/srg")))
-       :enter-func (lambda () (define-key mu4e-headers-mode-map (kbd "d") 'mu4e-headers-mark-for-trash))
        :vars '(
                ;; local directories, relative to mail root
                (mu4e-sent-folder . "/srg/sent")
@@ -109,5 +114,6 @@
                (user-mail-address . "trofimovsi@srgroup.ru")
                (user-full-name . "Sergey Trofimov")
                (mu4e-user-mail-address-list . ( "trofimovsi@srgroup.ru" ))
-               (mu4e-sent-messages-behavior . delete)))))
+               (mu4e-sent-messages-behavior . delete)
+               (trash-flags . "+T-N")))))
   )
