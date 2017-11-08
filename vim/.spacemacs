@@ -94,7 +94,7 @@ This function should only modify configuration layer settings."
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
-   dotspacemacs-excluded-packages '(mu4e-maildirs-extension)
+   dotspacemacs-excluded-packages '(mu4e-maildirs-extension mu4e-alert)
    ;; Defines the behaviour of Spacemacs when installing packages.
    ;; Possible values are `used-only', `used-but-keep-unused' and `all'.
    ;; `used-only' installs only explicitly used packages and deletes any unused
@@ -400,6 +400,7 @@ before packages are loaded."
 
   ;; pcre regexes
   (pcre-mode)
+  (diminish 'pcre-mode)
 
   ;; enable evil-snipe
   (setq evil-snipe-enable-alternate-f-and-t-behaviors t)

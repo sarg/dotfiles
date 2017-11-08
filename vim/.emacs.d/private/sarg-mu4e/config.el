@@ -1,9 +1,11 @@
+
 (defun mu4e-goto-unread ()
   (interactive)
-  (mu4e-update-mail-and-index nil)
-  (mu4e-headers-search (mu4e-get-bookmark-query 117)))
+  ;; (mu4e-update-mail-and-index nil)
+  (mu4e-headers-search (mu4e-get-bookmark-query ?u)))
 
 (spacemacs/set-leader-keys "a m" 'mu4e-goto-unread)
+(setq mu4e-enable-mode-line nil)
 
 (with-eval-after-load 'mu4e
   ;; override default trash function
@@ -57,8 +59,8 @@
    mu4e-change-filenames-when-moving t
 
    ;; bookmarks
-   mu4e-bookmarks '(("flag:unread AND NOT flag:trashed AND (maildir:/srg/Inbox OR maildir:/gmail/Inbox)" "Unread messages" 117)
-                    ("date:today..now" "Today's messages" 116))
+   mu4e-bookmarks '(("flag:unread AND NOT flag:trashed AND (maildir:/srg/Inbox OR maildir:/gmail/Inbox)" "Unread messages" ?u)
+                    ("date:today..now AND NOT flag:trashed AND NOT maildir:/gmail/trash" "Today's messages" ?t))
 
 
    ;; Configure sending mail.
