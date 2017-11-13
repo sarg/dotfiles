@@ -59,9 +59,12 @@ This function should only modify configuration layer settings."
      pass
      emacs-lisp
      themes-megapack
+     pdf-tools
      ranger
+     dash
      git
      markdown
+     imenu-list
      mu4e
      sarg-mu4e
      (org :variables
@@ -379,6 +382,11 @@ configuration.
 It is mostly for variables that should be set before packages are loaded.
 If you are unsure, try setting them in `dotspacemacs/user-config' first."
 
+  (setq configuration-layer-elpa-archives
+        '(("melpa"    . "melpa.org/packages/")
+          ("org"      . "orgmode.org/elpa/")
+          ("gnu"      . "elpa.gnu.org/packages/")))
+
   ;; separate custom settings
   (setq custom-file "~/.emacs.d/private/custom.el")
   (load custom-file 'noerror)
@@ -402,13 +410,15 @@ before packages are loaded."
   (pcre-mode)
   (diminish 'pcre-mode)
 
+  (setq ranger-enter-with-minus t)
+  (setq ranger-cleanup-eagerly t)
+
   ;; enable evil-snipe
   (setq evil-snipe-enable-alternate-f-and-t-behaviors t)
 
   ;; use ranger instead of dired-jump
   (ranger-override-dired-mode t)
-  (setq
-   ranger-show-hidden nil
+  (setq ranger-show-hidden nil
 
    ;; use zathura when ! on file in dired
    dired-guess-shell-alist-user
@@ -418,10 +428,10 @@ before packages are loaded."
 
   ;; fuzzy match for ivy
   ;; http://oremacs.com/2016/01/06/ivy-flx/
-  (setq ivy-re-builders-alist
-        '((t . ivy--regex-fuzzy))
+  ;; (setq ivy-re-builders-alist
+  ;;       '((t . ivy--regex-fuzzy))
 
-        ivy-initial-inputs-alist nil)
+  ;;       ivy-initial-inputs-alist nil)
 
   ;; fix c-w in company mode
   ;; https://github.com/syl20bnr/spacemacs/issues/4243#issuecomment-166246613

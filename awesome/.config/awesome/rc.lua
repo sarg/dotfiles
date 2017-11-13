@@ -10,7 +10,6 @@ local wibox = require("wibox")
 local beautiful = require("beautiful")
 -- Notification library
 local naughty = require("naughty")
-local bashets = require("bashets")
 
 require("collision") {
   up    = { "k" },
@@ -75,15 +74,6 @@ local layouts =
 -- {{{ Wibox
 -- Create a textclock widget
 mytextclock = awful.widget.textclock()
-
--- deprecated task widget
--- local taskwidget = wibox.widget.textbox()
--- bashets.register("/home/sarg/.local/bin/task.py current", {
---                    widget = taskwidget,
---                    separator = '\0',
---                    format = "$1",
---                    update_time = 1
--- })
 
 
 -- Create a wibox for each screen and add it
@@ -536,4 +526,3 @@ end
 local redshift = require("redshift")
 -- 1 for dim, 0 for not dimmed
 redshift.init(1)
-bashets.start()
