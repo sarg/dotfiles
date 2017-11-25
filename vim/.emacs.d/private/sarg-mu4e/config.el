@@ -116,6 +116,6 @@
                (user-mail-address . "trofimovsi@srgroup.ru")
                (user-full-name . "Sergey Trofimov")
                (mu4e-user-mail-address-list . ( "trofimovsi@srgroup.ru" ))
-               (mu4e-sent-messages-behavior . delete)
+               (mu4e-sent-messages-behavior . sent)
                (trash-flags . "+T-N")))))
   )

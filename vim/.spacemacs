@@ -54,12 +54,12 @@ This function should only modify configuration layer settings."
      lua
      puppet
      semantic
-     erc
      python
      pass
      emacs-lisp
      themes-megapack
      pdf-tools
+     finance
      ranger
      dash
      git

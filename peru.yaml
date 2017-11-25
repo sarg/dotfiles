@@ -12,12 +12,12 @@ imports:
 git module awesome-collision:
   url: https://github.com/Elv13/collision.git
   reup: master
-  rev: 09c51e3d1066a8bee879e7a17384be0ab2336f81
+  rev: e932abc867515fb555af5705186936e925fd3fda
 
 git module awesome-tyrannical:
   url: https://github.com/Elv13/tyrannical.git
   reup: master
-  rev: c22a3fab64f7370b4f91ca2a8e6cef301ad192a7
+  rev: 4ea5d2b35d630363cbc7ccf32610f2e652548f33
 
 git module awesome-brown-theme:
   url: https://github.com/mikar/awesome-themes
@@ -51,9 +51,9 @@ git module awesome-redshift:
 git module antigen:
   url: https://github.com/zsh-users/antigen.git
   reup: master
-  rev: 5a0c2f3aa4bbb28bef486a7a88e4a537eb3b4d6e
+  rev: 74aa89757038e42d472db22cb5b5bc6cbd4edb93
 
 git module spacemacs:
   url: https://github.com/syl20bnr/spacemacs
   reup: develop
-  rev: 36c15b79f6d490a4733cfca3278c0c837fdc2cff
+  rev: d475a1ba6fedc2c4d454a861ea9b184cf486e03f
