@@ -56,4 +56,4 @@ git module antigen:
 git module spacemacs:
   url: https://github.com/syl20bnr/spacemacs
   reup: develop
-  rev: d475a1ba6fedc2c4d454a861ea9b184cf486e03f
+  rev: b4b7d63e41ace986b05ee31c344e7da2f3db5b87
