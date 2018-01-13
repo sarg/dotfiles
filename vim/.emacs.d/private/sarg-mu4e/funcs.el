@@ -29,6 +29,4 @@
   "Trash with custom set of flags. Define flags in mu4e-context variable"
   (with~mu4e-context-vars
       (mu4e-context-determine msg nil)
-      (mu4e~proc-move docid
-                      (mu4e~mark-check-target target)
-                      (message trash-flags))))
+      (mu4e~proc-move docid (mu4e~mark-check-target target) trash-flags)))

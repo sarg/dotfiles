@@ -3,6 +3,7 @@ ANDROID_HOME=$HOME/devel/android-sdk-linux
 PATH=$HOME/devel/bin:$HOME/.local/bin:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools:$PATH
 ALTERNATE_EDITOR=''
 EDITOR='emacsclient -c'
+PAGER=less
 VISUAL=$EDITOR
 PASSWORD_STORE_DIR=$HOME/Sync/pass
 

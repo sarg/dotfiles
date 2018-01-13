@@ -1,3 +1,9 @@
 #!/bin/sh
 
-maim -s --format png /dev/stdout | xclip -selection clipboard -t image/png -i
+P="-s"
+if [ "$1" = 'a' ]; then
+    P=""
+fi
+
+maim $P --format png ~/screenshot.png
+xclip -verbose -sel c -t image/png -i ~/screenshot.png
