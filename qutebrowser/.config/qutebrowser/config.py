@@ -15,7 +15,7 @@ c.tabs.last_close = 'default-page'
 c.tabs.show = 'switching'
 c.tabs.position = 'left'
 c.tabs.favicons.show = False
-c.tabs.width.bar = '30%'
+c.tabs.width = '30%'
 
 c.content.webgl = False
 
@@ -55,7 +55,7 @@ c.fonts.prompts = '12pt sans-serif---'
 config.unbind('q', mode='normal')
 config.unbind('<Ctrl-p>', mode='command')
 config.unbind('<Ctrl-n>', mode='command')
-config.unbind('xx', mode='normal')
+#config.unbind('xx', mode='normal')
 
 config.bind('O', 'set-cmd-text :open {url:pretty}')
 config.bind('t', 'set-cmd-text -s :open -t')

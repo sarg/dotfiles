@@ -49,7 +49,7 @@ This function should only modify configuration layer settings."
 
      ;; FIXME: not working, fix configs
      ;; exwm
-     ;; exwm-sarg
+     exwm
 
      java
      lua
@@ -82,6 +82,7 @@ This function should only modify configuration layer settings."
      (shell :variables
             shell-default-height 30
             shell-default-shell 'eshell
+            shell-enable-smart-eshell t
             shell-default-position 'bottom)
      ;; spell-checking
      ;; syntax-checking
@@ -404,9 +405,10 @@ configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
 
-
   ;; C-h deletes character backwards
   (define-key key-translation-map [?\C-h] [?\C-?])
+
+  (fancy-battery-mode)
 
   ;; company mode everywhere
   (global-company-mode)

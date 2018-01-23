@@ -1,0 +1,10 @@
+[Unit]
+Description=ssh backchannel
+
+[Service]
+Type=simple
+Restart=always
+ExecStart=/bin/sh -c 'cat ~/.ssh/backchannel/notify-tg.sh | nc -q 0 -l localhost -p 40000'
+
+[Install]
+WantedBy=default.target
