@@ -1,3 +1,5 @@
+import urllog
+
 c.auto_save.session = True
 c.backend = 'webengine'
 c.qt.force_platform = 'xcb'
