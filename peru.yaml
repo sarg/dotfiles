@@ -1,29 +1,30 @@
 imports:
-  awesome-brown-theme: awesome/.config/awesome/themes
-  awesome-redshift: awesome/.config/awesome/redshift
-  awesome-collision: awesome/.config/awesome/collision
-  awesome-tyrannical: awesome/.config/awesome/tyrannical
+  # awesome-brown-theme: awesome/.config/awesome/themes
+  # awesome-redshift: awesome/.config/awesome/redshift
+  # awesome-collision: awesome/.config/awesome/collision
+  # awesome-tyrannical: awesome/.config/awesome/tyrannical
   # font-pomicons: fonts/.local/share
   # font-firacode: fonts/.local/share/fonts
   # font-hack: fonts/.local/share/fonts
+  # spacemacs: vim/.emacs.d
   antigen: antigen
-  spacemacs: vim/.emacs.d
+  doom: emacs/.emacs.d
 
-git module awesome-collision:
-  url: https://github.com/Elv13/collision.git
-  reup: master
-  rev: e932abc867515fb555af5705186936e925fd3fda
+# git module awesome-collision:
+#   url: https://github.com/Elv13/collision.git
+#   reup: master
+#   rev: e932abc867515fb555af5705186936e925fd3fda
 
-git module awesome-tyrannical:
-  url: https://github.com/Elv13/tyrannical.git
-  reup: master
-  rev: 4ea5d2b35d630363cbc7ccf32610f2e652548f33
+# git module awesome-tyrannical:
+#   url: https://github.com/Elv13/tyrannical.git
+#   reup: master
+#   rev: 4ea5d2b35d630363cbc7ccf32610f2e652548f33
 
-git module awesome-brown-theme:
-  url: https://github.com/mikar/awesome-themes
-  reup: master
-  rev: 5d5b5a730cea3c76858a92a440a0d6a340d560ca
-  pick: brown
+# git module awesome-brown-theme:
+#   url: https://github.com/mikar/awesome-themes
+#   reup: master
+#   rev: 5d5b5a730cea3c76858a92a440a0d6a340d560ca
+#   pick: brown
 
 # git module font-pomicons:
 #   url: https://github.com/gabrielelana/pomicons.git
@@ -43,17 +44,22 @@ git module awesome-brown-theme:
 #   export: build/ttf
 #   rev: 66afd78f9177b988ef0f26f08a52eb8c4883801c
 
-git module awesome-redshift:
-  url: https://github.com/YoRyan/awesome-redshift
-  reup: master
-  rev: 2eade4072761ac40b3569d56a085068d3382dcda
+# git module awesome-redshift:
+#   url: https://github.com/YoRyan/awesome-redshift
+#   reup: master
+#   rev: 2eade4072761ac40b3569d56a085068d3382dcda
+
+# git module spacemacs:
+#   url: https://github.com/syl20bnr/spacemacs
+#   reup: develop
+#   rev: 0fa3658cd8e283825dcd0a54ce1579dec55eb568
+
+git module doom:
+  url: https://github.com/hlissner/doom-emacs
+  reup: develop
+  rev: 183b0613510ab92591ce3039333d6b986e723bb6
 
 git module antigen:
   url: https://github.com/zsh-users/antigen.git
   reup: master
   rev: 74aa89757038e42d472db22cb5b5bc6cbd4edb93
-
-git module spacemacs:
-  url: https://github.com/syl20bnr/spacemacs
-  reup: develop
-  rev: 03343a7f1d1b9ca87bb23b64accfa05017ede806

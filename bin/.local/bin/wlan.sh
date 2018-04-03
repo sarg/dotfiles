@@ -1,6 +1,6 @@
 #!/bin/bash
 
-wpa_cli='sudo wpa_cli -i wlp3s0'
+wpa_cli='/sbin/wpa_cli -i wlp3s0'
 
 if [ -z "$1" ]; then
     $wpa_cli status

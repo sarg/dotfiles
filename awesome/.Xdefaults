@@ -4,8 +4,8 @@ URxvt.foreground: black
 URxvt.cursorColor: green
 URxvt.underlineColor: yellow
 URxvt.font: xft:Fira Code:pixelsize=14,xft:DejaVu Sans:size=9
-URxvt*skipBuiltinGlyphs: true
-URxvt.letterSpace: -2
+!URxvt*skipBuiltinGlyphs: true
+!URxvt.letterSpace: -2
 URxvt*scrollBar: false
 URxvt*tinting: grey
 URxvt.urgentOnBell: true

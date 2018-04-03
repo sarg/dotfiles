@@ -5,6 +5,7 @@ awesome/.config/awesome/tyrannical/
 awesome/.config/awesome/collision/
 awesome/.config/awesome/redshift/
 vim/.emacs.d
+emacs/.emacs.d
 fonts/.local
 bootstrap.sh
 rawdog/
