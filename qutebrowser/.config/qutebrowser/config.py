@@ -16,7 +16,7 @@ c.tabs.background = True
 c.tabs.last_close = 'default-page'
 c.tabs.show = 'switching'
 c.tabs.position = 'left'
-c.tabs.favicons.show = False
+c.tabs.favicons.show = 'never'
 c.tabs.width = '30%'
 
 c.content.webgl = False

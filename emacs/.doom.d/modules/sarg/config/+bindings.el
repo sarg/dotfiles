@@ -1,12 +1,12 @@
-;;; private/default/+bindings.el -*- lexical-binding: t; -*-
+;;; config/default/+bindings.el -*- lexical-binding: t; -*-
+
+;; This file defines a Spacemacs-esque keybinding scheme
 
 ;; expand-region's prompt can't tell what key contract-region is bound to, so we
 ;; tell it explicitly.
 (setq expand-region-contract-fast-key "V")
 
-
-;; This files defines a Spacemacs-esque keybinding scheme
-
+;;
 (map! [remap evil-jump-to-tag] #'projectile-find-tag
       [remap find-tag]         #'projectile-find-tag
       [remap newline]          #'newline-and-indent
@@ -25,34 +25,35 @@
       :gnvime "M-:" #'doom/open-scratch-buffer
 
       ;; Text-scaling
-      "M-+"       (λ! (text-scale-set 0))
-      "M-="       #'text-scale-increase
-      "M--"       #'text-scale-decrease
+      :ne "M-+"       (λ! (text-scale-set 0))
+      :ne "M-="       #'text-scale-increase
+      :ne "M--"       #'text-scale-decrease
 
-      ;; Simple window navigation/manipulation
-      "C-`"       #'+popup/toggle
-      "C-~"       #'+popup/raise
-      ;; "M-t"       #'+workspace/new
-      ;; "M-T"       #'+workspace/display
-      "M-w"       #'delete-window
-      "M-W"       #'delete-frame
-      "M-n"       #'evil-buffer-new
-      "M-N"       #'make-frame
-      ;; "M-1"       (λ! (+workspace/switch-to 0))
-      ;; "M-2"       (λ! (+workspace/switch-to 1))
-      ;; "M-3"       (λ! (+workspace/switch-to 2))
-      ;; "M-4"       (λ! (+workspace/switch-to 3))
-      ;; "M-5"       (λ! (+workspace/switch-to 4))
-      ;; "M-6"       (λ! (+workspace/switch-to 5))
-      ;; "M-7"       (λ! (+workspace/switch-to 6))
-      ;; "M-8"       (λ! (+workspace/switch-to 7))
-      ;; "M-9"       (λ! (+workspace/switch-to 8))
-      ;; "M-0"       #'+workspace/switch-to-last
+      ;; Simple window/frame navigation/manipulation
+      :ne "C-`"       #'+popup/toggle
+      :ne "C-~"       #'+popup/raise
+      :ne "M-t"       #'+workspace/new
+      :ne "M-T"       #'+workspace/display
+      :ne "M-w"       #'delete-window
+      :ne "M-W"       #'delete-frame
+      :ne "C-M-f"     #'toggle-frame-fullscreen
+      :ne "M-n"       #'evil-buffer-new
+      :ne "M-N"       #'make-frame
+      :ne "M-1"       (λ! (+workspace/switch-to 0))
+      :ne "M-2"       (λ! (+workspace/switch-to 1))
+      :ne "M-3"       (λ! (+workspace/switch-to 2))
+      :ne "M-4"       (λ! (+workspace/switch-to 3))
+      :ne "M-5"       (λ! (+workspace/switch-to 4))
+      :ne "M-6"       (λ! (+workspace/switch-to 5))
+      :ne "M-7"       (λ! (+workspace/switch-to 6))
+      :ne "M-8"       (λ! (+workspace/switch-to 7))
+      :ne "M-9"       (λ! (+workspace/switch-to 8))
+      :ne "M-0"       #'+workspace/switch-to-last
 
       ;; Other sensible, textmate-esque global bindings
       :ne "M-r"   #'+eval/buffer
       :ne "M-R"   #'+eval/region-and-replace
-      :ne "M-b"   #'+eval/build
+      :ne "M-b"   #'+default/compile
       :ne "M-a"   #'mark-whole-buffer
       :ne "M-c"   #'evil-yank
       :ne "M-q"   #'fill-paragraph
@@ -115,9 +116,11 @@
           :desc "Spelling correction"   :n  "S" #'flyspell-correct-word-generic)
 
         (:desc "search" :prefix "/"
-          :desc "Swiper"                :nv "/" #'swiper
-          :desc "Imenu"                 :nv "i" #'imenu
-          :desc "Imenu across buffers"  :nv "I" #'imenu-anywhere
+          :desc "Project"                :nv "p" #'+ivy/project-search
+          :desc "Directory"              :nv "d" (λ! (+ivy/project-search t))
+          :desc "Buffer"                 :nv "b" #'swiper
+          :desc "Symbols"                :nv "i" #'imenu
+          :desc "Symbols across buffers" :nv "I" #'imenu-anywhere
           :desc "Online providers"      :nv "o" #'+lookup/online-select)
 
         (:desc "workspace" :prefix "TAB"
@@ -154,8 +157,8 @@
           :desc "Save buffer"             :n "s" #'save-buffer
           :desc "Pop scratch buffer"      :n "x" #'doom/open-scratch-buffer
           :desc "Bury buffer"             :n "z" #'bury-buffer
-          :desc "Next buffer"             :n "]" #'doom/next-buffer
-          :desc "Previous buffer"         :n "[" #'doom/previous-buffer
+          :desc "Next buffer"             :n "]" #'next-buffer
+          :desc "Previous buffer"         :n "[" #'previous-buffer
           :desc "Sudo edit this file"     :n "S" #'doom/sudo-this-file)
 
         (:desc "code" :prefix "c"
@@ -178,55 +181,69 @@
           :desc "Find file from here"       :n "?" #'counsel-file-jump
           :desc "Find other file"           :n "a" #'projectile-find-other-file
           :desc "Open project editorconfig" :n "c" #'editorconfig-find-current-editorconfig
+          :desc "Find directory"            :n "d" #'dired
           :desc "Find file in emacs.d"      :n "e" #'+default/find-in-emacsd
           :desc "Browse emacs.d"            :n "E" #'+default/browse-emacsd
           :desc "Recent files"              :n "r" #'recentf-open-files
           :desc "Recent project files"      :n "R" #'projectile-recentf
-          :desc "Yank filename"             :n "y" #'+default/yank-buffer-filename)
+          :desc "Yank filename"             :n "y" #'+default/yank-buffer-filename
+          :desc "Find file in private config" :n "p" #'+default/find-in-config
+          :desc "Browse private config"       :n "P" #'+default/browse-config)
 
         (:desc "git" :prefix "g"
-          :desc "Git status"            :n  "S" #'magit-status
-          :desc "Git blame"             :n  "b" #'magit-blame
-          :desc "Git time machine"      :n  "t" #'git-timemachine-toggle
-          :desc "Git stage hunk"        :n  "s" #'git-gutter:stage-hunk
+          :desc "Magit blame"           :n  "b" #'magit-blame
+          :desc "Magit commit"          :n  "c" #'magit-commit
+          :desc "Magit clone"           :n  "C" #'magit-clone
+          :desc "Magit dispatch"        :n  "d" #'magit-dispatch-popup
+          :desc "Magit find-file"       :n  "f" #'magit-find-file
+          :desc "Magit status"          :n  "g" #'magit-status
+          :desc "List gists"            :n  "G" #'+gist:list
+          :desc "Initialize repo"       :n  "i" #'magit-init
+          :desc "Magit buffer log"      :n  "l" #'magit-log-buffer-file
+          :desc "List repositories"     :n  "L" #'magit-list-repositories
+          :desc "Magit push popup"      :n  "p" #'magit-push-popup
+          :desc "Magit pull popup"      :n  "P" #'magit-pull-popup
           :desc "Git revert hunk"       :n  "r" #'git-gutter:revert-hunk
-          :desc "Git revert buffer"     :n  "R" #'vc-revert
-          :desc "List gists"            :n  "g" #'+gist:list
+          :desc "Git revert file"       :n  "R" #'vc-revert
+          :desc "Git status"            :n  "s" #'git-gutter:stage-hunk
+          :desc "Git stage hunk"        :n  "S" #'magit-stage-file
+          :desc "Git time machine"      :n  "t" #'git-timemachine-toggle
+          :desc "Git stage hunk"        :n  "U" #'magit-unstage-file
           :desc "Next hunk"             :nv "]" #'git-gutter:next-hunk
           :desc "Previous hunk"         :nv "[" #'git-gutter:previous-hunk)
 
         (:desc "help" :prefix "h"
           :n "h" help-map
           :desc "Apropos"               :n  "a" #'apropos
-          :desc "Reload theme"          :n  "R" #'doom//reload-theme
-          :desc "Find library"          :n  "l" #'find-library
-          :desc "Toggle Emacs log"      :n  "m" #'view-echo-area-messages
-          :desc "Command log"           :n  "L" #'global-command-log-mode
-          :desc "Describe function"     :n  "f" #'describe-function
-          :desc "Describe key"          :n  "k" #'describe-key
           :desc "Describe char"         :n  "c" #'describe-char
-          :desc "Describe mode"         :n  "M" #'describe-mode
-          :desc "Describe variable"     :n  "v" #'describe-variable
-          :desc "Describe face"         :n  "F" #'describe-face
-          :desc "Describe DOOM setting" :n  "s" #'doom/describe-setting
           :desc "Describe DOOM module"  :n  "d" #'doom/describe-module
-          :desc "Find definition"       :n  "." #'+lookup/definition
-          :desc "Find references"       :n  "/" #'+lookup/references
-          :desc "Find documentation"    :n  "h" #'+lookup/documentation
+          :desc "Open Doom manual"      :n  "D" #'doom/help
+          :desc "Describe function"     :n  "f" #'describe-function
+          :desc "Describe face"         :n  "F" #'describe-face
+          :desc "Info"                  :n  "i" #'info-lookup-symbol
+          :desc "Describe key"          :n  "k" #'describe-key
+          :desc "Find documentation"    :n  "K" #'+lookup/documentation
+          :desc "Find library"          :n  "l" #'find-library
+          :desc "Command log"           :n  "L" #'global-command-log-mode
+          :desc "Toggle Emacs log"      :n  "m" #'view-echo-area-messages
+          :desc "Describe mode"         :n  "M" #'describe-mode
+          :desc "Toggle profiler"       :n  "p" #'doom/toggle-profiler
+          :desc "Reload theme"          :n  "R" #'doom//reload-theme
+          :desc "Describe DOOM setting" :n  "s" #'doom/describe-setting
+          :desc "Describe variable"     :n  "v" #'describe-variable
           :desc "Describe at point"     :n  "." #'helpful-at-point
           :desc "What face"             :n  "'" #'doom/what-face
-          :desc "What minor modes"      :n  ";" #'doom/what-minor-mode
-          :desc "Info"                  :n  "i" #'info
-          :desc "Toggle profiler"       :n  "p" #'doom/toggle-profiler)
+          :desc "What minor modes"      :n  ";" #'doom/what-minor-mode)
 
         (:desc "insert" :prefix "i"
           :desc "From kill-ring"        :nv "y" #'counsel-yank-pop
+          :desc "From evil registers"   :nv "r" #'counsel-evil-registers
           :desc "From snippet"          :nv "s" #'yas-insert-snippet)
 
         (:desc "notes" :prefix "n"
           :desc "Find file in notes"    :n  "n" #'+default/find-in-notes
           :desc "Browse notes"          :n  "N" #'+default/browse-notes
-          :desc "Org capture"           :n  "x" #'+org-capture/open
+          :desc "Org capture"           :n  "x" #'org-capture
           :desc "Browse mode notes"     :n  "m" #'+org/browse-notes-for-major-mode
           :desc "Browse project notes"  :n  "p" #'+org/browse-notes-for-project)
 
@@ -260,23 +277,25 @@
           :desc "Browse project"          :n  "." #'+default/browse-project
           :desc "Find file in project"    :n  "/" #'projectile-find-file
           :desc "Run cmd in project root" :nv "!" #'projectile-run-shell-command-in-root
+          :desc "Compile project"         :n  "c" #'projectile-compile-project
+          :desc "Find other file"         :n  "o" #'projectile-find-other-file
           :desc "Switch project"          :n  "p" #'projectile-switch-project
           :desc "Recent project files"    :n  "r" #'projectile-recentf
           :desc "List project tasks"      :n  "t" #'+ivy/tasks
-          :desc "Pop term in project"     :n  "o" #'+term/open-popup-in-project
           :desc "Invalidate cache"        :n  "x" #'projectile-invalidate-cache)
 
         (:desc "quit" :prefix "q"
-          :desc "Quit"                   :n "q" #'evil-save-and-quit
+          :desc "Save and quit"          :n "q" #'evil-save-and-quit
           :desc "Quit (forget session)"  :n "Q" #'+workspace/kill-session-and-quit)
 
+        (:when (featurep! :tools upload)
         (:desc "remote" :prefix "r"
-          :desc "Upload local"           :n "u" #'+upload/local
-          :desc "Upload local (force)"   :n "U" (λ! (+upload/local t))
-          :desc "Download remote"        :n "d" #'+upload/remote-download
-          :desc "Diff local & remote"    :n "D" #'+upload/diff
-          :desc "Browse remote files"    :n "." #'+upload/browse
-          :desc "Detect remote changes"  :n ">" #'+upload/check-remote)
+            :desc "Upload local"           :n "u" #'ssh-deploy-upload-handler
+            :desc "Upload local (force)"   :n "U" #'ssh-deploy-upload-handler-forced
+            :desc "Download remote"        :n "d" #'ssh-deploy-download-handler
+            :desc "Diff local & remote"    :n "D" #'ssh-deploy-diff-handler
+            :desc "Browse remote files"    :n "." #'ssh-deploy-browse-remote-handler
+            :desc "Detect remote changes"  :n ">" #'ssh-deploy-remote-changes-handler))
 
         (:desc "snippets" :prefix "s"
           :desc "New snippet"            :n  "n" #'yas-new-snippet
@@ -288,15 +307,17 @@
           :desc "Flyspell"               :n "s" #'flyspell-mode
           :desc "Flycheck"               :n "f" #'flycheck-mode
           :desc "Line numbers"           :n "l" #'doom/toggle-line-numbers
-          :desc "Frame fullscreen"       :n "f" #'toggle-frame-fullscreen
+          :desc "Frame fullscreen"       :n "F" #'toggle-frame-fullscreen
           :desc "Indent guides"          :n "i" #'highlight-indentation-mode
           :desc "Indent guides (column)" :n "I" #'highlight-indentation-current-column-mode
           :desc "Impatient mode"         :n "h" #'+impatient-mode/toggle
           :desc "Big mode"               :n "b" #'doom-big-font-mode
-          :desc "Evil goggles"           :n "g" #'+evil-goggles/toggle))
+          :desc "Evil goggles"           :n "g" #'+evil-goggles/toggle
+          :desc "org-tree-slide mode"    :n "p" #'+org-present/start))
 
 
       ;; --- Personal vim-esque bindings ------------------
+      :nv "K"  #'+lookup/documentation
       :n  "zx" #'kill-this-buffer
       :n  "ZX" #'bury-buffer
       :n  "]b" #'next-buffer
@@ -307,20 +328,18 @@
       :m  "gT" #'+workspace/switch-left
       :m  "gd" #'+lookup/definition
       :m  "gD" #'+lookup/references
-      :m  "gh" #'+lookup/documentation
       :n  "gp" #'+evil/reselect-paste
       :n  "gr" #'+eval:region
       :n  "gR" #'+eval/buffer
       :v  "gR" #'+eval:replace-region
-      :v  "@"  #'+evil:macro-on-all-lines
-      :n  "g@" #'+evil:macro-on-all-lines
+      :m  "gs" #'+default/easymotion  ; lazy-load `evil-easymotion'
+      :v  "@"  #'+evil:apply-macro
+      :n  "g@" #'+evil:apply-macro
       ;; repeat in visual mode (FIXME buggy)
       :v  "."  #'evil-repeat
       ;; don't leave visual mode after shifting
       :v  "<"  #'+evil/visual-dedent  ; vnoremap < <gv
       :v  ">"  #'+evil/visual-indent  ; vnoremap > >gv
-      ;; paste from recent yank register (which isn't overwritten)
-      :v  "C-p" "\"0p"
 
       ;; :nv "C-a" #'evil-numbers/inc-at-pt
       ;; :nv "C-x" #'evil-numbers/dec-at-pt
@@ -331,6 +350,7 @@
       :nv [C-tab] #'aya-create
 
       ;; company-mode (vim-like omnicompletion)
+      :i "C-@"    #'+company/complete
       :i "C-SPC"  #'+company/complete
       (:prefix "C-x"
         :i "C-l"   #'+company/whole-lines
@@ -355,13 +375,14 @@
           "C-s"        #'company-filter-candidates
           "C-SPC"      #'company-complete-common
           "C-h"        #'company-quickhelp-manual-begin
+          "TAB"     #'company-complete-common-or-cycle
           [tab]        #'company-complete-common-or-cycle
-          [backtab]    #'company-select-previous
-          [escape]     (λ! (company-abort) (evil-normal-state 1)))
+          "S-TAB"   #'company-select-previous
+          [backtab] #'company-select-previous)
         ;; Automatically applies to `company-filter-map'
         (:map company-search-map
-          "C-n"        #'company-search-repeat-forward
-          "C-p"        #'company-search-repeat-backward
+          "C-n"     #'company-select-next-or-abort
+          "C-p"     #'company-select-previous-or-abort
           "C-s"        (λ! (company-search-abort) (company-filter-candidates))
           [escape]     #'company-search-abort))
 
@@ -556,11 +577,14 @@
         :map ivy-minibuffer-map
         [escape] #'keyboard-escape-quit
         "C-SPC" #'ivy-call-and-recenter
-        "M-v" #'yank
         "M-z" #'undo
+        "M-v"    #'yank
+        "C-v"    #'yank
         "C-r" #'evil-paste-from-register
         "C-k" #'ivy-previous-line
         "C-j" #'ivy-next-line
+        "C-A-k"  #'ivy-scroll-down-command
+        "C-A-j"  #'ivy-scroll-up-command
         "C-l" #'ivy-alt-done
         "C-w" #'ivy-backward-kill-word
         "C-u" #'ivy-kill-line
@@ -610,7 +634,6 @@
       :n  "!"  #'rotate-text
 
       ;; smart-forward
-      :nv "K"  #'smart-up
       :m  "g]" #'smart-forward
       :m  "g[" #'smart-backward
 
@@ -634,8 +657,8 @@
           [backspace]     #'+snippets/delete-backward-char
           [delete]        #'+snippets/delete-forward-char-or-field)
         (:map yas-minor-mode-map
-          :i "<tab>" yas-maybe-expand
-          :v "<tab>" #'+snippets/expand-on-region))
+          :ig "<tab>" yas-maybe-expand
+          :v  "<tab>" #'yas-insert-snippet))
 
 
       ;; --- Major mode bindings --------------------------
@@ -652,31 +675,15 @@
         ;; TAB auto-completion in term buffers
         :map comint-mode-map [tab] #'company-complete)
 
-      (:after debug
-        ;; For elisp debugging
-        :map debugger-mode-map
-        :n "RET" #'debug-help-follow
-        :n "e"   #'debugger-eval-expression
-        :n "n"   #'debugger-step-through
-        :n "c"   #'debugger-continue)
-
-      (:map help-mode-map
-        :n "[["  #'help-go-back
-        :n "]]"  #'help-go-forward
+      (:map* (help-mode-map helpful-mode-map)
         :n "o"   #'ace-link-help
-        :n "q"   #'quit-window
-        :n "Q"   #'ivy-resume)
+        :n "Q"  #'ivy-resume
+        :n "]l" #'forward-button
+        :n "[l" #'backward-button)
 
       (:after vc-annotate
         :map vc-annotate-mode-map
-        :n "q"   #'kill-this-buffer
-        :n "d"   #'vc-annotate-show-diff-revision-at-line
-        :n "D"   #'vc-annotate-show-changeset-diff-revision-at-line
-        :n "SPC" #'vc-annotate-show-log-revision-at-line
-        :n "]]"  #'vc-annotate-next-revision
-        :n "[["  #'vc-annotate-prev-revision
-        :n "TAB" #'vc-annotate-toggle-annotation-visibility
-        :n "RET" #'vc-annotate-find-revision-at-line))
+        [remap quit-window] #'kill-this-buffer))
 
 
 ;;
@@ -716,25 +723,50 @@
              minibuffer-local-isearch-map
              read-expression-map)
         [escape] #'abort-recursive-edit
-        "C-r" #'evil-paste-from-register
+        (:when (featurep 'evil)
+          "C-r" #'evil-paste-from-register)
         "C-a" #'move-beginning-of-line
-        "C-w" #'doom/minibuffer-kill-word
-        "C-u" #'doom/minibuffer-kill-line
+        "C-w" #'backward-kill-word
+        "C-u" #'backward-kill-sentence
         "C-b" #'backward-word
         "C-f" #'forward-word
-        "M-z" #'doom/minibuffer-undo)
+        "C-z" (λ! (ignore-errors (call-interactively #'undo))))
 
       (:after evil
         (:map evil-ex-completion-map
-          "C-a" #'move-beginning-of-line))
-
-      (:map messages-buffer-mode-map
-        "M-;" #'eval-expression
-        "A-;" #'eval-expression)
+          "C-a" #'move-beginning-of-line
+          "C-b" #'backward-word
+          "C-f" #'forward-word))
 
       (:after tabulated-list
         (:map tabulated-list-mode-map
-          [remap evil-record-macro] #'quit-window))
+          "q" #'quit-window))
 
       (:after view
         (:map view-mode-map "<escape>" #'View-quit-all)))
+
+
+;;
+;; Evil-collection fixes
+;;
+
+(when (featurep 'evil-collection)
+  ;; don't interfere with leader key
+  (evil-define-key* '(normal visual) special-mode-map (kbd doom-leader-key) nil)
+  (after! dired
+    (evil-define-key* 'normal dired-mode-map (kbd doom-leader-key) nil))
+
+  ;; don't remap gd or K; Doom does this already
+  ;; TODO find a better way
+  (after! compile
+    (evil-define-key* '(normal visual) compilation-mode-map "gd" nil "K" nil))
+  (after! racer
+    (evil-define-key* 'normal racer-mode-map "gd" nil "K" nil))
+  (after! anaconda-mode
+    (evil-define-key* 'normal anaconda-mode-map "gd" nil "K" nil))
+  (after! alchemist
+    (evil-define-key* 'normal alchemist-mode-map "gd" nil "K" nil "gz" nil))
+  (after! go-mode
+    (evil-define-key* 'normal go-mode-map "gd" nil "K" nil))
+  (after! lua-mode
+    (evil-define-key* 'normal lua-mode-map "K" nil)))

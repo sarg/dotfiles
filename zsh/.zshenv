@@ -1,6 +1,6 @@
 BROWSER=qutebrowser
 ANDROID_HOME=$HOME/devel/android-sdk-linux
-PATH=$HOME/devel/bin:$HOME/.local/bin:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools:$PATH
+PATH=$HOME/devel/bin:$HOME/.local/bin:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools:$HOME/go/bin:$PATH
 ALTERNATE_EDITOR=''
 EDITOR='emacsclient'
 PAGER=less

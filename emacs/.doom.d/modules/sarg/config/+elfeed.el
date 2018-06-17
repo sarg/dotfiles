@@ -1,7 +1,10 @@
 (after! elfeed
-  (advice-add 'elfeed :around
+
+  (advice-add 'elfeed-update :around
               (lambda (orig-fun &rest args)
-                (if (or (= 6 (calendar-day-of-week (calendar-current-date)))
+                (if (or (= 0 (mod
+                              (calendar-day-of-week (calendar-current-date))
+                              6)) ; 0 and 6 - Sunday and Saturday
                         (> (nth 2 (decode-time)) 18))
                     (apply orig-fun args)
                   (message "Time for rss did not come yet!")))

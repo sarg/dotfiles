@@ -1,6 +1,6 @@
 ;;; private/exwm/config.el -*- lexical-binding: t; -*-
 
-(defcustom pulseaudio-control-default-source "0"
+(defcustom pulseaudio-control-default-source "@DEFAULT_SOURCE@"
   "Default Pulse source index to act on."
   :type 'string
   :group 'pulseaudio-control)
@@ -87,7 +87,10 @@ Can show completions at point for COMMAND using helm or ido"
 
 (def-package! cl-generic :demand)
 (def-package! dmenu)
-(def-package! pulseaudio-control)
+(def-package! pulseaudio-control
+  :config
+  (setq pulseaudio-control--current-sink "@DEFAULT_SINK@"))
+
 (def-package! xelb)
 (def-package! exwm
   :init
@@ -225,10 +228,12 @@ Can show completions at point for COMMAND using helm or ido"
                          (sarg/brightness-change -10)
                          ))
 
-  (exwm-input-set-key (kbd "s-i")
-                      `(lambda ()
-                         (interactive)
-                         (sarg/run-or-raise "TelegramDesktop" "telegram-desktop")))
+  ;; (exwm-input-set-key (kbd "s-i")
+  ;;                     `(lambda ()
+  ;;                        (interactive)
+  ;;                        (sarg/run-or-raise "TelegramDesktop" "telegram-desktop")))
+
+  (exwm-input-set-key (kbd "s-i") #'telega-chat-with)
 
   (exwm-input-set-key (kbd "<s-return>")
                       `(lambda ()
@@ -301,10 +306,6 @@ Can show completions at point for COMMAND using helm or ido"
 (defun sarg/with-browser ()
   "Opens browser side-by-side with current window"
   (interactive)
-  ;; (delete-other-windows)
-  ;; (with-selected-window
-  ;;     (split-window-horizontally)
-  ;;   (set-window-buffer nil "qutebrowser")))
   (delete-other-windows)
   (set-window-buffer (split-window-horizontally) "qutebrowser"))
 
@@ -318,3 +319,4 @@ Can show completions at point for COMMAND using helm or ido"
           (format-time-string "%s.%6N")
           (fate:escape left)
           (fate:escape right)))
+> 

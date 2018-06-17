@@ -33,8 +33,7 @@
                      (message-fetch-field "from")))
              (account
               (cond
-               ((string-match "sarg@sarg.org.ru" from) "gmail")
-               ((string-match "trofimovsi@srgroup.ru" from) "srg"))))
+               ((string-match "sarg@sarg.org.ru" from) "gmail"))))
           (setq message-sendmail-extra-arguments (list '"-a" account))))))
 
 ;;
@@ -45,7 +44,7 @@
   (add-to-list 'mu4e-headers-actions '("browser" . mu4e-action-view-in-browser) t)
   (add-to-list 'mu4e-view-actions '("browser" . mu4e-action-view-in-browser) t)
 
-  (setq mu4e-user-mail-address-list '("sarg@sarg.org.ru" "trofimovsi@srgroup.ru"))
+  (setq mu4e-user-mail-address-list '("sarg@sarg.org.ru"))
 
   (setq mu4e-contexts
         `(,(make-mu4e-context
@@ -68,22 +67,7 @@
                                                ("/gmail/all" . ?a)
                                                ("/gmail/trash" . ?t)))
                     (mu4e-headers-skip-duplicates . t)))
-
-          ,(make-mu4e-context
-            :name "srg"
-            :match-func (lambda (msg)
-                          (when msg
-                            (mu4e-message-maildir-matches msg "^/srg")))
-            :enter-func (lambda () (define-key mu4e-headers-mode-map (kbd "d") 'mu4e-headers-mark-for-trash))
-            :vars '(
-                    ;; local directories, relative to mail root
-                    (mu4e-sent-folder . "/srg/sent")
-                    (mu4e-drafts-folder . "/srg/drafts")
-                    (mu4e-trash-folder . "/srg/trash")
-                    (mu4e-refile-folder . "/srg/Inbox")
-                    ;; account details
-                    (user-mail-address . "trofimovsi@srgroup.ru")
-                    (mu4e-sent-messages-behavior . delete))))))
+          )))
 
 ;;
 ;; Plugins
@@ -142,8 +126,7 @@
           (:subject))
 
         ;; bookmarks
-        mu4e-bookmarks '(("flag:unread AND NOT flag:trashed AND (maildir:/srg/Inbox or from:bitbucket)" "Work messages" 117)
-                         ("flag:unread AND NOT flag:trashed AND maildir:/gmail/Inbox and not from:bitbucket" "Gmail messages" 118)
+        mu4e-bookmarks '(("flag:unread AND NOT flag:trashed AND maildir:/gmail/Inbox and not from:bitbucket" "Gmail messages" ?u)
                          ("date:today..now" "Today's messages" 116)))
 
   ;; Refresh the current view after marks are executed

@@ -1,9 +1,10 @@
 ;;; private/sarg/config.el -*- lexical-binding: t; -*-
 
-(load! +bindings)
-(load! +elfeed)
-(load! +email)
-(load! +org)
+(load! "+bindings")
+(load! "+elfeed")
+(load! "+email")
+(load! "+org")
+(load! "+telega")
 
 ;; (after! dired
 ;;   (require 'evil-collection-dired)
@@ -58,6 +59,6 @@
 
 (def-package! ox-hugo)
 (def-package! puppet-mode)
-(def-package! ranger
-  :config
-  (ranger-override-dired-mode t))
+;; (def-package! ranger
+;;   :config
+;;   (ranger-override-dired-mode t))

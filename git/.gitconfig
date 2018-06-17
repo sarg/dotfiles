@@ -37,3 +37,5 @@
     smtpUser = sarg@sarg.org.ru
     smtpServerPort = 587
 
+[core]
+	autocrlf = input

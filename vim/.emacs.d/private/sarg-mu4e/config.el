@@ -59,7 +59,7 @@
    mu4e-change-filenames-when-moving t
 
    ;; bookmarks
-   mu4e-bookmarks '(("flag:unread AND NOT flag:trashed AND (maildir:/srg/Inbox OR maildir:/gmail/Inbox)" "Unread messages" ?u)
+   mu4e-bookmarks '(("flag:unread AND NOT flag:trashed AND maildir:/gmail/Inbox" "Unread messages" ?u)
                     ("date:today..now AND NOT flag:trashed AND NOT maildir:/gmail/trash" "Today's messages" ?t))
 
 
