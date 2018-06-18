@@ -1,11 +1,11 @@
 (use-package telega
   :load-path  "~/devel/ext/telega.el"
   :commands (telega)
-  :config ((set-popup-rule! "^\\\*Telega Root\*"
+  :config (set-popup-rule! "^\\\*Telega Root\*"
            '((size . 0.25) (side . left))
-           '((quit . current) (select . t))
+           '((quit . current) (select . t)))
 
-           (setq telega-completing-read-function 'ivy-completing-read)))
+           (setq telega-completing-read-function 'ivy-completing-read)
   :defer t)
 
 (use-package telega-notifications
