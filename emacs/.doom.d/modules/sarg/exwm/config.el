@@ -309,14 +309,14 @@ Can show completions at point for COMMAND using helm or ido"
   (delete-other-windows)
   (set-window-buffer (split-window-horizontally) "qutebrowser"))
 
-(add-to-list 'load-path "/home/sarg/devel/ext/fate")
-(require 'fate)
+(use-package fate
+  :load-path "~/devel/ext/fate"
+  :config
+  (setq fate:data-file "~/.events/win")
+  (defun fate:state-string-base (left right)
+    "Represent state using LEFT and RIGHT."
+    (format "%s;win;%s;%s\n"
+            (format-time-string "%s.%6N")
+            (fate:escape left)
+            (fate:escape right))))
 
-(setq fate:data-file "~/.events/win")
-(defun fate:state-string-base (left right)
-  "Represent state using LEFT and RIGHT."
-  (format "%s;win;%s;%s\n"
-          (format-time-string "%s.%6N")
-          (fate:escape left)
-          (fate:escape right)))
-> 
