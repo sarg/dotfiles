@@ -81,6 +81,7 @@
         mu4e-user-mail-address-list nil)
   :config
   (setq mu4e-update-interval nil
+        mu4e-html2text-command "iconv -c -t utf-8 | pandoc -f html -t plain"
         mu4e-compose-format-flowed t ; visual-line-mode + auto-fill upon sending
         mu4e-view-show-addresses t
         ;; try to show images
