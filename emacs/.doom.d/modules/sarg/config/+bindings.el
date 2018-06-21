@@ -551,6 +551,7 @@
         :desc "Switch workspace buffer" :n "b" #'persp-switch-to-buffer
         :desc "Switch buffer"           :n "B" #'switch-to-buffer
         :desc "Kill buffer"             :n "k" #'kill-this-buffer
+        :desc "Kill buffer"             :n "d" #'kill-this-buffer
         :desc "Kill other buffers"      :n "o" #'doom/kill-other-buffers
         :desc "Save buffer"             :n "s" #'save-buffer
         :desc "Pop scratch buffer"      :n "x" #'doom/open-scratch-buffer
@@ -585,6 +586,7 @@
         :desc "Yank filename"             :n "y" #'+default/yank-buffer-filename
         :desc "Find file in private config" :n "p" #'+default/find-in-config
         :desc "Browse private config"       :n "P" #'+default/browse-config
+        :desc "Save buffer"             :n "s" #'save-buffer
         :desc "Delete this file"            :n "X" #'doom/delete-this-file)
 
       (:desc "git" :prefix "g"
