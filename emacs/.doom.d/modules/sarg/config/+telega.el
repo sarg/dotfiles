@@ -39,5 +39,5 @@
                   (lambda (x) (cons (ivy-telega-chat-highlight x) x))
                   (telega-filter-chats 'all))))
       (ivy-read "chat: " chats
-                :action (lambda (x) (telega-chat-with (telega-chat--title (cdr x))))
+                :action (lambda (x) (telega-chat--pop-to-buffer (cdr x)))
                 :caller 'ivy-telega-chat-with))))
