@@ -233,7 +233,6 @@ Can show completions at point for COMMAND using helm or ido"
   ;;                        (interactive)
   ;;                        (sarg/run-or-raise "TelegramDesktop" "telegram-desktop")))
 
-  (exwm-input-set-key (kbd "s-i") #'telega-chat-with)
 
   (exwm-input-set-key (kbd "<s-return>")
                       `(lambda ()
