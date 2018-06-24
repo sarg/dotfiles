@@ -95,6 +95,8 @@ Can show completions at point for COMMAND using helm or ido"
 (def-package! exwm
   :init
 
+  (require 'exwm-systemtray)
+  (exwm-systemtray-enable)
   (setq mouse-autoselect-window t
         focus-follows-mouse t)
 

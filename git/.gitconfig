@@ -39,3 +39,5 @@
 
 [core]
 	autocrlf = input
+[github]
+	user = sarg
