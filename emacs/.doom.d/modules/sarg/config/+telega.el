@@ -24,8 +24,10 @@
                 :caller 'ivy-telega-chat-with)))
 
   (set-popup-rule! "^\\\*Telega Root\*"
-    '((size . 0.25) (side . left))
-    '((quit . current) (select . t)))
+    :side 'left
+    :size 0.25
+    :quit t
+    :select t)
 
   (when (featurep! :completion ivy)
     (setq telega-completing-read-function 'ivy-completing-read))
