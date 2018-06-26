@@ -1,20 +1,5 @@
 ;;; private/exwm/config.el -*- lexical-binding: t; -*-
 
-(defcustom pulseaudio-control-default-source "@DEFAULT_SOURCE@"
-  "Default Pulse source index to act on."
-  :type 'string
-  :group 'pulseaudio-control)
-
-(defvar pulseaudio-control--current-source pulseaudio-control-default-source
-  "String containing index of currently-selected Pulse sink.")
-
-(defun pulseaudio-control-toggle-current-source-mute ()
-  "Toggle muting of currently-selected Pulse sink."
-  (interactive)
-  (pulseaudio-control--call-pactl (concat "set-source-mute "
-                                          pulseaudio-control--current-source
-                                          " toggle")))
-
 (defun sarg/exwm-app-launcher ()
   "Launches an application in your PATH.
 Can show completions at point for COMMAND using helm or ido"
@@ -23,8 +8,7 @@ Can show completions at point for COMMAND using helm or ido"
     (dmenu--cache-executable-files))
   (ivy-read "Run a command: " dmenu--cache-executable-files
             :action (lambda (command) (start-process-shell-command command nil command))
-            :caller 'sarg/exwm-app-launcher)
-  )
+            :caller 'sarg/exwm-app-launcher))
 
 (defun sarg/brightness-change (amount)
   "Adjust screen brightness relatively using the amount given"
@@ -69,6 +53,8 @@ Can show completions at point for COMMAND using helm or ido"
           command (pop bindings))))
 
 
+(battery) ; initializes battery-status-function
+(run-at-time nil 60 #'sarg/check-battery)
 (defun sarg/check-battery ()
   "Checks battery level and makes a warning if it is too low."
   (let* ((status (funcall battery-status-function))
@@ -76,20 +62,13 @@ Can show completions at point for COMMAND using helm or ido"
          (remain (string-to-number (alist-get ?p status))))
 
     (if (and (not charging) (< remain 15))
-        (alert "Battery too low! Please charge now!"
-               :severity 'high))))
+        (notifications-notify :body "Battery too low! Please charge now!" :urgency 'critical))))
 
-(def-package! alert
-  :config
-  (battery) ; initializes battery-status-function
-  (setq alert-default-style 'libnotify)
-  (run-at-time nil 60 #'sarg/check-battery))
-
-(def-package! cl-generic :demand)
 (def-package! dmenu)
 (def-package! pulseaudio-control
   :config
-  (setq pulseaudio-control--current-sink "@DEFAULT_SINK@"))
+  (setq pulseaudio-control--current-sink "@DEFAULT_SINK@"
+        pulseaudio-control--current-source "@DEFAULT_SOURCE@"))
 
 (def-package! xelb)
 (def-package! exwm
@@ -314,6 +293,11 @@ Can show completions at point for COMMAND using helm or ido"
   :load-path "~/devel/ext/fate"
   :config
   (setq fate:data-file "~/.events/win")
+
+  (defun fate:log-state (state)
+    "Write STATE to the database file."
+    (write-region state nil fate:data-file 'append :inhibit))
+
   (defun fate:state-string-base (left right)
     "Represent state using LEFT and RIGHT."
     (format "%s;win;%s;%s\n"
