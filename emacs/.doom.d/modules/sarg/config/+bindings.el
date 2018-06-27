@@ -162,7 +162,7 @@
             "M-RET"    (+ivy-do-action! #'+ivy-git-grep-other-window-action))))
 
       ;; easymotion
-      :m "gs" #'+default/easymotion  ; lazy-load `evil-easymotion'
+      :m "gs" #'+evil/easymotion  ; lazy-load `evil-easymotion'
       (:after evil-easymotion
         :map evilem-map
         "a" (evilem-create #'evil-forward-arg)
@@ -599,10 +599,10 @@
         :desc "Magit file delete"     :n  "x" #'magit-file-delete
         :desc "List gists"            :n  "G" #'+gist:list
         :desc "Initialize repo"       :n  "i" #'magit-init
-        :desc "Browse issues tracker" :n  "I" #'+vcs/git-browse-issues
+        :desc "Browse issues tracker" :n  "I" #'+vc/git-browse-issues
         :desc "Magit buffer log"      :n  "l" #'magit-log-buffer-file
         :desc "List repositories"     :n  "L" #'magit-list-repositories
-        :desc "Browse remote"         :n  "o" #'+vcs/git-browse
+        :desc "Browse remote"         :n  "o" #'+vc/git-browse
         :desc "Magit push popup"      :n  "p" #'magit-push-popup
         :desc "Magit pull popup"      :n  "P" #'magit-pull-popup
         :desc "Git revert hunk"       :n  "r" #'git-gutter:revert-hunk
@@ -703,7 +703,8 @@
         :desc "Quit Emacs"             :n "q" #'evil-quit-all
         :desc "Save and quit"          :n "Q" #'evil-save-and-quit
         :desc "Quit (forget session)"  :n "X" #'+workspace/kill-session-and-quit
-        :desc "Restart Doom Emacs"     :n "r" #'restart-emacs)
+        :desc "Restart & restore Doom" :n "r" #'+workspace/restart-emacs-then-restore
+        :desc "Restart Doom"           :n "R" #'restart-emacs)
 
       (:when (featurep! :tools upload)
         (:desc "remote" :prefix "r"

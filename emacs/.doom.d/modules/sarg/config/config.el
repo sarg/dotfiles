@@ -4,7 +4,6 @@
 (load! "+elfeed")
 (load! "+email")
 (load! "+org")
-(load! "+telega")
 
 ;; (after! dired
 ;;   (require 'evil-collection-dired)

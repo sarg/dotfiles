@@ -209,6 +209,10 @@ Can show completions at point for COMMAND using helm or ido"
                          (sarg/brightness-change -10)
                          ))
 
+
+  (when (featurep! :app telega +ivy)
+    (exwm-input-set-key (kbd "s-i") #'ivy-telega-chat-with))
+
   ;; (exwm-input-set-key (kbd "s-i")
   ;;                     `(lambda ()
   ;;                        (interactive)
