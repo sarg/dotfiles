@@ -1,5 +1,11 @@
+(defun telega-clear-mentions ()
+  (interactive)
+
+  (telega-server--send (list :@type "readAllChatMentions"
+     :chat_id (plist-get telega-chatbuf--chat :id))))
+
 (def-package! telega
-  :commands (telega telega-filter-chats ivy-telega-chat-with)
+  ;; :load-path "/home/sarg/devel/ext/telega.el"
   :config
 
   (set-popup-rule! "^\\\*Telega Root\*"
@@ -12,7 +18,7 @@
     (load! "+ivy"))
 
   (require 'telega-notifications)
-  (add-hook 'telega-root-mode-hook (lambda () (telega-notifications-mode 1)))
+  (telega-notifications-mode 1)
 
   ;; This fixes the issue with closing buffer when it is visible in other window.
   ;; The logic is as follows:

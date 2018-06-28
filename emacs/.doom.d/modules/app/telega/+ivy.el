@@ -1,3 +1,4 @@
+;;;###autoload
 (defun ivy-telega-chat-highlight (chat)
   (let ((unread (funcall (telega--tl-prop :unread_count) chat))
         (title (telega-chat--title chat 'with-identity))
@@ -7,6 +8,7 @@
         (ivy-append-face (format "%s %d@%d" title unread mentions) 'ivy-highlight-face)
       title)))
 
+;;;###autoload
 (defun ivy-telega-chat-with ()
   "Starts chat with defined peer"
   (interactive)
