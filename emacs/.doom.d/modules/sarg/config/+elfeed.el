@@ -12,8 +12,6 @@
 
 
   (setq elfeed-search-filter "@2-week-ago +unread ")
-  (require 'evil-collection-elfeed)
-  (evil-collection-elfeed-setup)
 
   (setq elfeed-show-entry-switch (lambda (buf) (display-buffer-below-selected buf nil)))
 
@@ -31,12 +29,10 @@
 
   (defvar elfeed-mpv-patterns
     '("youtu\\.?be")
-    "List of regexp to match against elfeed entry link to know
-whether to use mpv to visit the link.")
+    "List of regexp to match against elfeed entry link to know whether to use mpv to visit the link.")
 
   (defun ambrevar/elfeed-visit-or-play-with-mpv ()
-    "Play in mpv if entry link matches `elfeed-mpv-patterns', visit otherwise.
-See `elfeed-play-with-mpv'."
+    "Play in mpv if entry link matches `elfeed-mpv-patterns', visit otherwise. See `elfeed-play-with-mpv'."
     (interactive)
     (let ((entry (if (eq major-mode 'elfeed-show-mode) elfeed-show-entry (elfeed-search-selected :single)))
           (patterns elfeed-mpv-patterns))
