@@ -10,45 +10,23 @@ Can show completions at point for COMMAND using helm or ido"
             :action (lambda (command) (start-process-shell-command command nil command))
             :caller 'sarg/exwm-app-launcher))
 
-(defun sarg/brightness-change (amount)
-  "Adjust screen brightness relatively using the amount given"
-  (interactive "NChange screen brightness by: ")
-  (let ((brightness-string))
-    (if (> 0 amount)
-        (setq brightness-string (concat (number-to-string amount) "%"))
-      (setq brightness-string (concat "+" (number-to-string amount) "%")))
-    (start-process "brightness" nil "xbacklight" brightness-string)))
-
-(defvar sarg-redshift-timer 'nil
-  "Stores redshift-adjust timer")
-
-(defun sarg/redshift-adjust ()
-  (interactive)
-  (start-process-shell-command "redshift" nil "redshift" "-m randr -o"))
-
-(defun sarg/redshift-start ()
-  (interactive)
-  (unless sarg-redshift-timer
-    (setq sarg-redshift-timer (run-at-time nil 60 #'sarg/redshift-adjust))))
-
-(defun sarg/redshift-cancel ()
-  (interactive)
-  (when sarg-redshift-timer (cancel-timer sarg-redshift-timer))
-  (start-process-shell-command "redshift" nil "redshift" "-x"))
-
 (defun sarg/run-or-raise (NAME PROGRAM)
   (interactive)
-  (let ((buf (cl-first (ivy--buffer-list NAME))))
+  (let ((buf (cl-find-if
+              (lambda (buf) (string= NAME (buffer-name buf)))
+              (buffer-list))))
 
     (if buf (switch-to-buffer buf)
       (start-process NAME nil PROGRAM))))
 
+(defun sarg/shell-cmd (command)
+  `(lambda ()
+     (interactive)
+     (start-process-shell-command ,command nil ,command)))
+
 (defun spacemacs/exwm-bind-command (key command &rest bindings)
   (while key
-    (exwm-input-set-key (kbd key)
-                        `(lambda ()
-                           (interactive)
-                           (start-process-shell-command ,command nil ,command)))
+    (exwm-input-set-key (kbd key) command)
     (setq key     (pop bindings)
           command (pop bindings))))
 
@@ -65,11 +43,6 @@ Can show completions at point for COMMAND using helm or ido"
         (notifications-notify :body "Battery too low! Please charge now!" :urgency 'critical))))
 
 (def-package! dmenu)
-(def-package! pulseaudio-control
-  :config
-  (setq pulseaudio-control--current-sink "@DEFAULT_SINK@"
-        pulseaudio-control--current-source "@DEFAULT_SOURCE@"))
-
 (def-package! xelb)
 (def-package! exwm
   :init
@@ -80,7 +53,8 @@ Can show completions at point for COMMAND using helm or ido"
         focus-follows-mouse t)
 
   :config
-  (sarg/redshift-start)
+  (load! "+brightness")
+  (load! "+volume")
 
   ;; Disable dialog boxes since they are unusable in EXWM
   (setq use-dialog-box nil)
@@ -96,9 +70,8 @@ Can show completions at point for COMMAND using helm or ido"
   (add-hook 'exwm-mode-hook 'hide-mode-line-mode)
 
   (spacemacs/exwm-bind-command
-   "<s-f12>" "flameshot gui"
-   "<XF86ScreenSaver>" "lock.sh"
-   )
+   "<s-f12>"           (sarg/shell-cmd "flameshot gui")
+   "<XF86ScreenSaver>" (sarg/shell-cmd "lock.sh"))
 
   ;; All buffers created in EXWM mode are named "*EXWM*". You may want to change
   ;; it in `exwm-update-class-hook' and `exwm-update-title-hook', which are run
@@ -138,15 +111,6 @@ Can show completions at point for COMMAND using helm or ido"
   (defadvice exwm-workspace-switch (before save-toggle-workspace activate)
     (setq exwm-toggle-workspace exwm-workspace-current-index))
 
-  ;; `exwm-input-set-key' allows you to set a global key binding (available in
-  ;; any case). Following are a few examples.
-  ;; + We always need a way to go back to line-mode from char-mode
-  ;; (exwm-input-set-key (kbd "s-c") 'exwm-reset)
-
-  (exwm-input-set-key (kbd "s-f") #'exwm-layout-toggle-fullscreen)
-  (exwm-input-set-key (kbd "<s-tab>") #'exwm-jump-to-last-exwm)
-  ;; + Bind a key to switch workspace interactively
-  (exwm-input-set-key (kbd "s-w") 'exwm-workspace-switch)
   ;; + Set shortcuts to switch to a certain workspace.
   (dotimes (i exwm-workspace-number)
     (exwm-input-set-key (kbd (format "s-%d" (+ 1 i)))
@@ -154,8 +118,40 @@ Can show completions at point for COMMAND using helm or ido"
                            (interactive)
                            (exwm-workspace-switch ,i))))
 
-  (exwm-input-set-key (kbd "s-r") #'sarg/exwm-app-launcher)
-  (exwm-input-set-key (kbd "s-c") #'kill-buffer-and-window)
+  (spacemacs/exwm-bind-command
+   "s-f"     #'exwm-layout-toggle-fullscreen
+   "<s-tab>" #'exwm-jump-to-last-exwm
+   "s-w"     #'exwm-workspace-switch
+   "s-r"     #'sarg/exwm-app-launcher
+   "s-c"     #'kill-buffer-and-window
+
+   "s-u"     #'winner-undo
+   "S-s-U"   #'winner-redo
+
+   "s-b"     #'ivy-switch-buffer
+
+   "s-h"     #'evil-window-left
+   "s-j"     #'evil-window-down
+   "s-k"     #'evil-window-up
+   "s-l"     #'evil-window-right
+
+   "s-H"     #'evil-window-move-far-left
+   "s-J"     #'evil-window-move-very-bottom
+   "s-K"     #'evil-window-move-very-top
+   "s-L"     #'evil-window-move-far-right
+
+   "M-s-h"   #'shrink-window-horizontally
+   "M-s-j"   #'shrink-window
+   "M-s-k"   #'enlarge-window
+   "M-s-l"   #'enlarge-window-horizontally
+
+   "s-E"     #'sarg/with-browser
+   "s-e"    `(lambda () (interactive) (sarg/run-or-raise "qutebrowser" "qutebrowser"))
+
+   "<s-return>" `(lambda () (interactive) (start-process "terminal" nil "my-terminal")))
+
+  (when (featurep! :app telega +ivy)
+    (exwm-input-set-key (kbd "s-i") #'ivy-telega-chat-with))
 
   (setq exwm-input-prefix-keys
         '(
@@ -172,69 +168,7 @@ Can show completions at point for COMMAND using helm or ido"
   (define-key exwm-mode-map [?\C-c] 'nil)
 
   ;; Undo window configurations
-  (exwm-input-set-key (kbd "s-u") #'winner-undo)
-  (exwm-input-set-key (kbd "S-s-U") #'winner-redo)
-  ;; Change buffers
-  (exwm-input-set-key (kbd "s-b") #'ivy-switch-buffer)
-  ;; Focusing windows
-  (exwm-input-set-key (kbd "s-h") #'evil-window-left)
-  (exwm-input-set-key (kbd "s-j") #'evil-window-down)
-  (exwm-input-set-key (kbd "s-k") #'evil-window-up)
-  (exwm-input-set-key (kbd "s-l") #'evil-window-right)
-  ;; Moving Windows
-  (exwm-input-set-key (kbd "s-H") #'evil-window-move-far-left)
-  (exwm-input-set-key (kbd "s-J") #'evil-window-move-very-bottom)
-  (exwm-input-set-key (kbd "s-K") #'evil-window-move-very-top)
-  (exwm-input-set-key (kbd "s-L") #'evil-window-move-far-right)
-  ;; Resize
-  (exwm-input-set-key (kbd "M-s-h") #'shrink-window-horizontally)
-  (exwm-input-set-key (kbd "M-s-j") #'shrink-window)
-  (exwm-input-set-key (kbd "M-s-k") #'enlarge-window)
-  (exwm-input-set-key (kbd "M-s-l") #'enlarge-window-horizontally)
 
-  (exwm-input-set-key (kbd "<XF86AudioRaiseVolume>") #'pulseaudio-control-increase-volume)
-  (exwm-input-set-key (kbd "<XF86AudioLowerVolume>") #'pulseaudio-control-decrease-volume)
-  (exwm-input-set-key (kbd "<XF86AudioMute>") #'pulseaudio-control-toggle-current-sink-mute)
-  (exwm-input-set-key (kbd "<XF86AudioMicMute>") #'pulseaudio-control-toggle-current-source-mute)
-
-  (exwm-input-set-key (kbd "<XF86MonBrightnessUp>")
-                      `(lambda ()
-                         (interactive)
-                         (sarg/brightness-change 10)
-                         ))
-
-  (exwm-input-set-key (kbd "<XF86MonBrightnessDown>")
-                      `(lambda ()
-                         (interactive)
-                         (sarg/brightness-change -10)
-                         ))
-
-
-  (when (featurep! :app telega +ivy)
-    (exwm-input-set-key (kbd "s-i") #'ivy-telega-chat-with))
-
-  ;; (exwm-input-set-key (kbd "s-i")
-  ;;                     `(lambda ()
-  ;;                        (interactive)
-  ;;                        (sarg/run-or-raise "TelegramDesktop" "telegram-desktop")))
-
-
-  (exwm-input-set-key (kbd "<s-return>")
-                      `(lambda ()
-                         (interactive)
-                         (start-process "terminal" nil "my-terminal")))
-
-  (exwm-input-set-key (kbd "s-e")
-                      `(lambda ()
-                         (interactive)
-                         (sarg/run-or-raise "qutebrowser" "qutebrowser")))
-
-  (exwm-input-set-key (kbd "s-E") #'sarg/with-browser)
-
-  ;; (exwm-input-set-key (kbd "C-\\")
-  ;;                     `(lambda ()
-  ;;                        (interactive)
-  ;;                        (start-process "xkb-switch" nil "xkb-switch" "-n")))
 
   (setq exwm-layout-show-all-buffers t
         exwm-workspace-show-all-buffers t)
@@ -266,19 +200,16 @@ Can show completions at point for COMMAND using helm or ido"
 
   (exwm-input-set-key (kbd "s-.") (lambda () (interactive) (message (format-time-string "%Y-%m-%d %T (%a w%W)"))))
 
-  (setq exwm-manage-configurations '(
-                                     ((equal exwm-class-name "Peek")
+  (setq exwm-manage-configurations '(((equal exwm-class-name "Peek")
                                       floating t
-                                      floating-mode-line nil
-                                      )
+                                      floating-mode-line nil)
                                      ((equal exwm-class-name "TelegramDesktop")
                                       floating t
                                       floating-mode-line nil
                                       x 0.73
                                       y 0.02
                                       width 0.25
-                                      height 0.8
-                                      )))
+                                      height 0.8)))
 
   ;; (exwm-input-set-simulation-keys nil)
 
