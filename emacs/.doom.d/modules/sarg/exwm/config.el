@@ -46,6 +46,7 @@ Can show completions at point for COMMAND using helm or ido"
 (def-package! xelb)
 (def-package! exwm
   :init
+  (set-popup-rule! '*EXWM*' :actions '(display-buffer-reuse-window))
 
   (require 'exwm-systemtray)
   (exwm-systemtray-enable)
@@ -155,8 +156,7 @@ Can show completions at point for COMMAND using helm or ido"
     (exwm-input-set-key (kbd "s-i") #'ivy-telega-chat-with))
 
   (setq exwm-input-prefix-keys
-        '(
-          ?\C-x
+        '(?\C-x
           ?\M-x
           ?\M-m
           ?\C-g

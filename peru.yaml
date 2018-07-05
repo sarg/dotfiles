@@ -57,7 +57,7 @@ imports:
 git module doom:
   url: https://github.com/hlissner/doom-emacs
   reup: develop
-  rev: ad5470ce3f140d1bda7f1538d48b66657dc859c6
+  rev: 2d30d996c32b25a89bd329a8a9e34e2f58637206
 
 git module antigen:
   url: https://github.com/zsh-users/antigen.git
