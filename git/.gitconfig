@@ -38,6 +38,6 @@
     smtpServerPort = 587
 
 [core]
-	autocrlf = input
+	#autocrlf = input
 [github]
 	user = sarg
