@@ -55,6 +55,7 @@ Can show completions at point for COMMAND using helm or ido"
   :config
   (load! "+brightness")
   (load! "+volume")
+  (load! "+spotify")
 
   ;; Disable dialog boxes since they are unusable in EXWM
   (setq use-dialog-box nil)

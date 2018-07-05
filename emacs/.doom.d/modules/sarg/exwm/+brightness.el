@@ -24,9 +24,8 @@
   (when sarg-redshift-timer (cancel-timer sarg-redshift-timer))
   (start-process-shell-command "redshift" nil "redshift" "-x"))
 
-(exwm-input-set-key (kbd "<XF86MonBrightnessUp>")
-                    `(lambda () (interactive) (sarg/brightness-change 10)))
-(exwm-input-set-key (kbd "<XF86MonBrightnessDown>")
-                    `(lambda () (interactive) (sarg/brightness-change -10)))
+(spacemacs/exwm-bind-command
+ "<XF86MonBrightnessUp>"   `(lambda () (interactive) (sarg/brightness-change 10))
+ "<XF86MonBrightnessDown>" `(lambda () (interactive) (sarg/brightness-change -10)))
 
 (sarg/redshift-start)
