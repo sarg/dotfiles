@@ -43,7 +43,7 @@
 (add-hook 'term-exec-hook 'oleh-term-exec-hook)
 
 (setq doom-theme 'doom-one-light
-      doom-font "Hack 11")
+      doom-font (font-spec :family "Hack" :size 14))
 
 (after! prodigy
   (prodigy-define-service

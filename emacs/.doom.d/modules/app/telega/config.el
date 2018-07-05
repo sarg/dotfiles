@@ -1,8 +1,23 @@
-(defun telega-clear-mentions ()
-  (interactive)
+(defun telega-clear-mentions (chat-id)
+  (interactive (list (plist-get telega-chatbuf--chat :id)))
 
-  (telega-server--send (list :@type "readAllChatMentions"
-     :chat_id (plist-get telega-chatbuf--chat :id))))
+  (telega-server--call (list :@type "readAllChatMentions"
+                             :chat_id chat-id)))
+
+(defun telega-mute-chat (chat-id seconds)
+  (interactive (list (plist-get telega-chatbuf--chat :id)
+                     (let* ((time (org-read-date 'with-time 'to-time nil "Mute until: " nil "+1y"))
+                            (seconds (round (float-time (time-subtract time (current-time))))))
+                       (if (> seconds 0) seconds 0))))
+
+  (telega-server--call (list :@type "setNotificationSettings"
+                             :scope (list :@type "notificationSettingsScopeChat" :chat_id chat-id)
+                             :notification_settings (list :mute_for seconds
+                                                          :show_preview (or (= 0 seconds) :json-false)))))
+
+(defun telega-set-my-name (first last)
+  (interactive "sFirst name: \nsLast name: ")
+  (telega-server--call (list :@type "setName" :first_name first :last_name last)))
 
 (def-package! telega
   ;; :load-path "/home/sarg/devel/ext/telega.el"
