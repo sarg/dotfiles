@@ -43,10 +43,13 @@ Can show completions at point for COMMAND using helm or ido"
         (notifications-notify :body "Battery too low! Please charge now!" :urgency 'critical))))
 
 (def-package! dmenu)
+(def-package! gpastel)
 (def-package! xelb)
 (def-package! exwm
   :init
   (set-popup-rule! "^\\*EXWM\\*$" :ignore t)
+
+  (add-hook! 'exwm-init-hook 'gpastel-start-listening)
 
   (require 'exwm-systemtray)
   (exwm-systemtray-enable)
@@ -57,6 +60,22 @@ Can show completions at point for COMMAND using helm or ido"
   (load! "+brightness")
   (load! "+volume")
   (load! "+spotify")
+
+
+  (exwm-input-set-key (kbd "M-y") #'my/exwm-counsel-yank-pop)
+
+  (defun my/exwm-counsel-yank-pop ()
+    "Same as `counsel-yank-pop' and paste into exwm buffer."
+    (interactive)
+    (let ((inhibit-read-only t)
+          ;; Make sure we send selected yank-pop candidate to
+          ;; clipboard:
+          (yank-pop-change-selection t))
+      (call-interactively #'counsel-yank-pop))
+    (when (derived-mode-p 'exwm-mode)
+      ;; https://github.com/ch11ng/exwm/issues/413#issuecomment-386858496
+      (exwm-input--set-focus (exwm--buffer->id (window-buffer (selected-window))))
+      (exwm-input--fake-key ?\C-v)))
 
   ;; Disable dialog boxes since they are unusable in EXWM
   (setq use-dialog-box nil)
@@ -124,7 +143,7 @@ Can show completions at point for COMMAND using helm or ido"
    "s-f"     #'exwm-layout-toggle-fullscreen
    "<s-tab>" #'exwm-jump-to-last-exwm
    "s-w"     #'exwm-workspace-switch
-   "s-r"     #'sarg/exwm-app-launcher
+   "s-r"     #'counsel-linux-app
    "s-c"     #'kill-buffer-and-window
 
    "s-u"     #'winner-undo

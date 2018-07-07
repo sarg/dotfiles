@@ -5,6 +5,10 @@
 (load! "+email")
 (load! "+org")
 
+(setq auth-sources '(password-store))
+(after! magit
+    (setq magit-process-find-password-functions '(magit-process-password-auth-source)))
+
 ;; C-h deletes character backwards
 (define-key key-translation-map [?\C-h] [?\C-?])
 
@@ -45,7 +49,16 @@
 (def-package! ox-hugo)
 (def-package! puppet-mode)
 (def-package! nginx-mode)
-(def-package! slack)
+(def-package! slack
+  :init
+  (set-popup-rule! "^\\*Slack" :ignore t)
+  (setq slack-prefer-current-team t)
+
+  :commands (slack-start)
+
+  :config
+  (load! "+slack"))
+
 (def-package! webpaste)
 ;; (def-package! ranger
 ;;   :config
