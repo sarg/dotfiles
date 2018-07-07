@@ -5,20 +5,6 @@
 (load! "+email")
 (load! "+org")
 
-;; (after! dired
-;;   (require 'evil-collection-dired)
-;;   (evil-collection-dired-setup)
-;;   (evil-define-key 'normal dired-mode-map
-;;     (kbd doom-leader-key) nil))
-
-;; (after! eshell
-;;   (require 'evil-collection-eshell)
-;;   (evil-collection-eshell-setup))
-
-;; (after! term
-;;   (require 'evil-collection-term)
-;;   (evil-collection-term-setup))
-
 ;; C-h deletes character backwards
 (define-key key-translation-map [?\C-h] [?\C-?])
 
@@ -58,6 +44,9 @@
 
 (def-package! ox-hugo)
 (def-package! puppet-mode)
+(def-package! nginx-mode)
+(def-package! slack)
+(def-package! webpaste)
 ;; (def-package! ranger
 ;;   :config
 ;;   (ranger-override-dired-mode t))

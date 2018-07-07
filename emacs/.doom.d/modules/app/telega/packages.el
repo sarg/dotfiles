@@ -1,1 +1,4 @@
-(package! telega :recipe (:fetcher github :repo "sarg/telega.el" :files (:defaults "etc")))
+(package! telega :recipe
+  (:fetcher github
+   :repo "zevlg/telega.el"
+   :files (:defaults "README.md" "etc" "server")))
