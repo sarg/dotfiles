@@ -46,7 +46,7 @@ Can show completions at point for COMMAND using helm or ido"
 (def-package! xelb)
 (def-package! exwm
   :init
-  (set-popup-rule! '*EXWM*' :ignore t)
+  (set-popup-rule! "^\\*EXWM\\*$" :ignore t)
 
   (require 'exwm-systemtray)
   (exwm-systemtray-enable)
