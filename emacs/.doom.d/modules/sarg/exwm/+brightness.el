@@ -29,3 +29,15 @@
  "<XF86MonBrightnessDown>" `(lambda () (interactive) (sarg/brightness-change -10)))
 
 (sarg/redshift-start)
+
+;; Change color theme based on day time
+(def-package! color-theme-sanityinc-tomorrow)
+(def-package! anti-zenburn-theme)
+(def-package! circadian
+  :config
+  (setq calendar-latitude 56
+        calendar-longitude 38
+        circadian-themes
+        '((:sunrise . sanityinc-tomorrow-day)
+          (:sunset . anti-zenburn)))
+  (circadian-setup))
