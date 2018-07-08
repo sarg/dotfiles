@@ -5,6 +5,7 @@
 (load! "+email")
 (load! "+org")
 
+;; for magithub auth to work create pass entry user^magithub@api.github.com
 (setq auth-sources '(password-store))
 (after! magit
     (setq magit-process-find-password-functions '(magit-process-password-auth-source)))
