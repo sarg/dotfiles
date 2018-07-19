@@ -1,9 +1,3 @@
-(defun telega-clear-mentions (chat-id)
-  (interactive (list (plist-get telega-chatbuf--chat :id)))
-
-  (telega-server--call (list :@type "readAllChatMentions"
-                             :chat_id chat-id)))
-
 (defun telega-mute-chat (chat-id seconds)
   (interactive (list (plist-get telega-chatbuf--chat :id)
                      (let* ((time (org-read-date 'with-time 'to-time nil "Mute until: " nil "+1y"))

@@ -28,6 +28,7 @@
 ;;; License: MIT
 
 (defvar +org-dir (expand-file-name "~/Sync/org/"))
+(defvar evil-want-C-u-scroll nil)
 (doom! :feature
       ;debugger          ; FIXME stepping through code, to help you add bugs
        eval              ; run code, run (also, repls)
@@ -60,8 +61,8 @@
       ;fci               ; a `fill-column' indicator
        hl-todo           ; highlight TODO/FIXME/NOTE tags
        nav-flash         ; blink the current line after jumping
-       neotree           ; a project drawer, like NERDTree for vim
-      ;treemacs          ; a project drawer, like neotree but cooler
+      ;neotree           ; a project drawer, like NERDTree for vim
+       treemacs          ; a project drawer, like neotree but cooler
        (popup            ; tame sudden yet inevitable temporary windows
         +all             ; catch all popups that start with an asterix
         +defaults)       ; default popup rules

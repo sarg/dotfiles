@@ -1,14 +1,16 @@
 (after! elfeed
 
-  (advice-add 'elfeed-update :around
-              (lambda (orig-fun &rest args)
-                (if (or (= 0 (mod
-                              (calendar-day-of-week (calendar-current-date))
-                              6)) ; 0 and 6 - Sunday and Saturday
-                        (> (nth 2 (decode-time)) 18))
-                    (apply orig-fun args)
-                  (message "Time for rss did not come yet!")))
-              '(name "restrict-rss-by-time"))
+  ;; (advice-remove 'elfeed-update #'sarg/restrict-rss-by-time)
+
+  (defun sarg/restrict-rss-by-time (orig-fun &rest args)
+    (if (or (= 0 (mod
+                  (calendar-day-of-week (calendar-current-date))
+                  6)) ; 0 and 6 - Sunday and Saturday
+            (> (nth 2 (decode-time)) 18))
+        (apply orig-fun args)
+      (message "Time for rss did not come yet!")))
+
+  (advice-add 'elfeed-update :around #'sarg/restrict-rss-by-time)
 
 
   (setq elfeed-search-filter "@2-week-ago +unread ")

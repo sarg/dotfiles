@@ -2,6 +2,7 @@
 
 (load! "+bindings")
 (load! "+elfeed")
+(load! "+dired")
 (load! "+email")
 (load! "+org")
 

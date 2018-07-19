@@ -6,4 +6,6 @@
 (package! nginx-mode)
 (package! slack)
 (package! webpaste)
+(package! dired-filter)
+(package! dired-collapse)
 ;; (package! ranger)
