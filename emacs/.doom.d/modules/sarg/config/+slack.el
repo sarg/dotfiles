@@ -5,3 +5,6 @@
  :client-secret (auth-source-pass-get "client-secret" "Sites/intelgro.slack.com")
  :token (auth-source-pass-get "token" "Sites/intelgro.slack.com")
  :full-and-display-names t)
+
+(after! alert
+  (setq alert-default-style 'notifications))

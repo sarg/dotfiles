@@ -41,3 +41,6 @@
 	#autocrlf = input
 [github]
 	user = sarg
+[http]
+	sslVerify = false
+	postBuffer = 1048576000

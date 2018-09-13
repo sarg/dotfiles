@@ -13,7 +13,7 @@
   (advice-add 'elfeed-update :around #'sarg/restrict-rss-by-time)
 
 
-  (setq elfeed-search-filter "@2-week-ago +unread ")
+  (setq elfeed-search-filter "@2-week-ago +unread -youtube")
 
   (setq elfeed-show-entry-switch (lambda (buf) (display-buffer-below-selected buf nil)))
 

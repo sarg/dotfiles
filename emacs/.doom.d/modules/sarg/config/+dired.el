@@ -1,7 +1,7 @@
 (def-package! dired-filter
   :config
-  (add-hook! dired-mode-hook #'dired-filter-mode))
+  (add-hook! dired-mode #'dired-filter-mode))
 
 (def-package! dired-collapse
   :config
-  (add-hook! dired-mode-hook #'dired-collapse-mode))
+  (add-hook! dired-mode #'dired-collapse-mode))
