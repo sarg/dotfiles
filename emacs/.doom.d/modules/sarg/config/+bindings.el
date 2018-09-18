@@ -60,7 +60,7 @@
       :n "M-c"   #'evil-yank
       :n "M-q"   (if (daemonp) #'delete-frame #'evil-quit-all)
       (:when (featurep! :completion helm)
-        :n "M-f" #'helm-swoop)
+        :n "M-f" #'swiper-helm)
       (:when (featurep! :completion ivy)
         :n "M-f" #'swiper)
       :n  "M-s"   #'save-buffer
@@ -68,13 +68,10 @@
       :m  "A-k"   #'+default:multi-previous-line
       :nv "C-SPC" #'+evil:fold-toggle
       :gnvimr "M-v" #'clipboard-yank
-      ;; Easier window navigation
-      :en "C-h"   #'evil-window-left
-      :en "C-j"   #'evil-window-down
-      :en "C-k"   #'evil-window-up
-      :en "C-l"   #'evil-window-right
 
       "C-x p"     #'+popup/other
+      (:when IS-MAC
+        "M-`"     #'other-frame)
 
 
       ;; --- Personal vim-esque bindings ------------------
@@ -92,6 +89,7 @@
       :m  "gd" #'+lookup/definition
       :m  "gD" #'+lookup/references
       :n  "gf" #'+lookup/file
+      :n  "gQ" #'+format:region
       :n  "gp" #'+evil/reselect-paste
       :v  "gp" #'+evil/paste-preserve-register
       :n  "gr" #'+eval:region
@@ -169,12 +167,14 @@
         "a" (evilem-create #'evil-forward-arg)
         "A" (evilem-create #'evil-backward-arg)
         "s" (evilem-create #'evil-snipe-repeat
+                           :name 'evil-easymotion-snipe-forward
                            :pre-hook (save-excursion (call-interactively #'evil-snipe-s))
                            :bind ((evil-snipe-scope 'buffer)
                                   (evil-snipe-enable-highlight)
                                   (evil-snipe-enable-incremental-highlight)))
-        "S" (evilem-create #'evil-snipe-repeat-reverse
-                           :pre-hook (save-excursion (call-interactively #'evil-snipe-s))
+        "S" (evilem-create #'evil-snipe-repeat
+                           :name 'evil-easymotion-snipe-backward
+                           :pre-hook (save-excursion (call-interactively #'evil-snipe-S))
                            :bind ((evil-snipe-scope 'buffer)
                                   (evil-snipe-enable-highlight)
                                   (evil-snipe-enable-incremental-highlight)))
@@ -340,27 +340,45 @@
       ;; helm
       (:after helm
         (:map helm-map
-          "ESC"        nil
+          [left]     #'left-char
+          [right]    #'right-char
           "C-S-n"      #'helm-next-source
           "C-S-p"      #'helm-previous-source
+          "C-j"      #'helm-next-line
+          "C-k"      #'helm-previous-line
+          "C-S-j"    #'helm-next-source
+          "C-S-k"    #'helm-previous-source
+          "C-f"      #'helm-next-page
+          "C-S-f"    #'helm-previous-page
           "C-u"        #'helm-delete-minibuffer-contents
           "C-w"        #'backward-kill-word
           "C-r"        #'evil-paste-from-register ; Evil registers in helm! Glorious!
           "C-s"        #'helm-minibuffer-history
           "C-b"        #'backward-word
-          [left]       #'backward-char
-          [right]      #'forward-char
-          [escape]     #'helm-keyboard-quit
-          [tab]        #'helm-execute-persistent-action)
+          ;; Swap TAB and C-z
+          [tab]      #'helm-execute-persistent-action
+          "C-z"      #'helm-select-action)
         (:after helm-files
-          (:map helm-generic-files-map
-            :e [escape] #'helm-keyboard-quit)
-          (:map helm-find-files-map
-            "C-w" #'helm-find-files-up-one-level
-            [tab] #'helm-execute-persistent-action))
+          :map (helm-find-files-map helm-read-file-map)
+          [M-return] #'helm-ff-run-switch-other-window
+          "C-w"      #'helm-find-files-up-one-level)
         (:after helm-ag
-          (:map helm-ag-map
-            [backtab]  #'helm-ag-edit)))
+          :map helm-ag-map
+          [backtab]  #'helm-ag-edit
+          [left] nil
+          [right] nil)
+        (:after helm-locate
+          :map helm-generic-files-map
+          [M-return] #'helm-ff-run-switch-other-window)
+        (:after helm-buffers
+          :map helm-buffer-map
+          [M-return] #'helm-buffer-switch-other-window)
+        (:after helm-regexp
+          :map helm-moccur-map
+          [M-return] #'helm-moccur-run-goto-line-ow)
+        (:after helm-grep
+          :map helm-grep-map
+          [M-return] #'helm-grep-run-other-window-action))
 
       ;; hl-todo
       :m  "]t" #'hl-todo-next
@@ -422,10 +440,6 @@
         (:map swiper-map
           [backtab]  #'+ivy/wgrep-occur))
 
-      ;; undo-tree -- undo/redo for visual regions
-      :v "C-u" #'undo-tree-undo
-      :v "C-r" #'undo-tree-redo
-
       ;; yasnippet
       (:after yasnippet
         (:map yas-keymap
@@ -468,7 +482,6 @@
         [remap quit-window] #'kill-this-buffer))
 
 
-;;
 ;; <leader>
 ;;
 
@@ -482,7 +495,10 @@
       :desc "Find file in project"    :n "SPC" #'projectile-find-file
       :desc "Browse files"            :n "."   #'find-file
       :desc "Toggle last popup"       :n "~"   #'+popup/toggle
-      :desc "Eval expression"         :n "`"   #'eval-expression
+      (:when (featurep! :completion ivy)
+        :desc "Resume last search"    :n "'"   #'ivy-resume)
+      (:when (featurep! :completion helm)
+        :desc "Resume last search"    :n "'"   #'helm-resume)
       :desc "Blink cursor line"       :n "DEL" #'+nav-flash/blink-cursor
       :desc "Jump to bookmark"        :n "RET" #'bookmark-jump
 
@@ -521,11 +537,11 @@
         (:when (featurep! :completion ivy)
           :desc "Buffer"                 :nv "b" #'swiper
           :desc "Project"                :nv "p" #'+ivy/project-search
-          :desc "Directory"              :nv "d" (λ! (+ivy/project-search t)))
+          :desc "Directory"              :nv "d" #'+ivy/project-search-from-cwd)
         (:when (featurep! :completion helm)
-          :desc "Buffer"                 :nv "b" #'helm-swoop
+          :desc "Buffer"                 :nv "b" #'swiper-helm
           :desc "Project"                :nv "p" #'+helm/project-search
-          :desc "Directory"              :nv "d" (λ! (+helm/project-search t)))
+          :desc "Directory"              :nv "d" #'+helm/project-search-from-cwd)
         :desc "Symbols"                :nv "i" #'imenu
         :desc "Symbols across buffers" :nv "I" #'imenu-anywhere
         :desc "Online providers"       :nv "o" #'+lookup/online-select)
@@ -559,10 +575,10 @@
       (:desc "buffer" :prefix "b"
         :desc "New empty buffer"        :n "n" #'evil-buffer-new
         (:when (featurep! :feature workspaces)
-          :desc "Switch workspace buffer" :n "b" #'persp-switch-to-buffer)
+          :desc "Switch workspace buffer" :n "b" #'persp-switch-to-buffer
+          :desc "Switch buffer"           :n "B" #'switch-to-buffer)
         (:unless (featurep! :feature workspaces)
-          :desc "Switch workspace buffer" :n "b" #'switch-to-buffer)
-        :desc "Switch buffer"           :n "B" #'switch-to-buffer
+          :desc "Switch buffer"           :n "b" #'switch-to-buffer)
         :desc "Kill buffer"             :n "k" #'kill-this-buffer
         :desc "Kill buffer"             :n "d" #'kill-this-buffer
         :desc "Kill other buffers"      :n "o" #'doom/kill-other-buffers
@@ -578,6 +594,8 @@
         :desc "Evaluate buffer/region"    :n  "e" #'+eval/buffer
                                           :v  "e" #'+eval/region
         :desc "Evaluate & replace region" :nv "E" #'+eval:replace-region
+        :desc "Format buffer/region"      :n  "f" #'+format/buffer
+                                          :v  "f" #'+format/region
         :desc "Build tasks"               :nv "b" #'+eval/build
         :desc "Jump to definition"        :n  "d" #'+lookup/definition
         :desc "Jump to references"        :n  "D" #'+lookup/references
@@ -641,7 +659,7 @@
         :desc "Describe key"          :n  "k" #'describe-key
         :desc "Find documentation"    :n  "K" #'+lookup/documentation
         :desc "Find library"          :n  "l" #'find-library
-        :desc "Command log"           :n  "L" #'global-command-log-mode
+        :desc "Command log"           :n  "L" #'clm/toggle-command-log-buffer
         :desc "View *Messages*"       :n  "m" #'view-echo-area-messages
         :desc "Describe mode"         :n  "M" #'describe-mode
         :desc "Toggle profiler"       :n  "p" #'doom/toggle-profiler
@@ -664,12 +682,14 @@
         :desc "From snippet"          :nv "s" #'yas-insert-snippet)
 
       (:desc "notes" :prefix "n"
+        (:when (featurep! :ui deft)
+          :desc "Deft"                :n "d" #'deft)
         :desc "Find file in notes"    :n  "n" #'+default/find-in-notes
         :desc "Browse notes"          :n  "N" #'+default/browse-notes
         :desc "Org capture"           :n  "x" #'org-capture)
 
       (:desc "open" :prefix "o"
-        :desc "Org agenda"            :n  "a" #'org-agenda-list
+        :desc "Org agenda"            :n  "a" #'org-agenda
         :desc "Default browser"       :n  "b" #'browse-url-of-file
         :desc "Debugger"              :n  "d" #'+debug/open
         :desc "REPL"                  :n  "r" #'+eval/open-repl
@@ -680,7 +700,7 @@
           :desc "Find file in project sidebar" :n  "P" #'+neotree/find-this-file)
         (:when (featurep! :ui treemacs)
           :desc "Project sidebar"              :n  "p" #'+treemacs/toggle
-          :desc "Find file in project sidebar" :n  "P" #'treemacs-find-file)
+          :desc "Find file in project sidebar" :n  "P" #'+treemacs/find-file)
         :desc "Imenu sidebar"         :nv "i" #'imenu-list-smart-toggle
         :desc "Terminal"              :n  "t" #'+term/open
         :desc "Terminal in popup"     :n  "T" #'+term/open-popup-in-project
@@ -704,7 +724,10 @@
           :desc "Send to Transmit"          :n "u" #'+macos/send-to-transmit
           :desc "Send project to Transmit"  :n "U" #'+macos/send-project-to-transmit
           :desc "Send to Launchbar"         :n "l" #'+macos/send-to-launchbar
-          :desc "Send project to Launchbar" :n "L" #'+macos/send-project-to-launchbar))
+          :desc "Send project to Launchbar" :n "L" #'+macos/send-project-to-launchbar)
+
+        (:when (featurep! :tools docker)
+          :desc "Docker"                    :n "D" #'docker))
 
       (:desc "project" :prefix "p"
         :desc "Browse project"          :n  "." #'+default/browse-project
@@ -739,7 +762,8 @@
           :desc "Insert snippet"        :nv "i" #'yas-insert-snippet
           :desc "Find snippet"          :n  "s" #'+default/find-in-snippets
           :desc "Find snippet for mode" :n  "S" #'+default/browse-snippets
-          :desc "Find global snippet"   :n  "/" #'yas-visit-snippet-file))
+          :desc "Find global snippet"   :n  "/" #'yas-visit-snippet-file
+          :desc "Reload snippets"       :n  "r" #'yas-reload-all))
 
       (:desc "toggle" :prefix "t"
         :desc "Flyspell"               :n "s" #'flyspell-mode
@@ -756,7 +780,6 @@
 
 ;;
 ;; Keybinding fixes
-;;
 
 ;; This section is dedicated to "fixing" certain keys so that they behave
 ;; sensibly (and consistently with similar contexts).
@@ -802,6 +825,9 @@
     "\C-b" #'backward-word
     "\C-f" #'forward-word)
 
+  (after! man
+    (evil-define-key* 'normal Man-mode-map "q" #'kill-this-buffer))
+
   (after! view
     (define-key view-mode-map [escape] #'View-quit-all)))
 
@@ -842,5 +868,5 @@
 
 ;; Evil-collection fixes
 (setq evil-collection-key-blacklist
-      (list "C-j" "C-k" "gd" "gf" "K" "[" "]"
+      (list "C-j" "C-k" "gd" "gf" "K" "[" "]" "gz"
             doom-leader-key doom-localleader-key))
