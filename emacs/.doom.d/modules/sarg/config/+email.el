@@ -127,7 +127,7 @@
           (:subject))
 
         ;; bookmarks
-        mu4e-bookmarks '(("flag:unread AND NOT flag:trashed AND maildir:/gmail/Inbox and not from:bitbucket" "Gmail messages" ?u)
+        mu4e-bookmarks '(("flag:unread AND NOT flag:trashed AND maildir:/gmail/Inbox" "Gmail messages" ?u)
                          ("date:today..now AND NOT flag:trashed AND NOT maildir:/gmail/trash" "Today's messages" 116)))
 
   ;; Refresh the current view after marks are executed

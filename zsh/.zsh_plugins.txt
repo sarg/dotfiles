@@ -1,0 +1,6 @@
+mafredri/zsh-async
+# antigen use oh-my-zsh
+sindresorhus/pure
+zsh-users/zsh-completions src
+zsh-users/zsh-syntax-highlighting
+marzocchi/zsh-notify

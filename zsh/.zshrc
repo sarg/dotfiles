@@ -1,19 +1,10 @@
-source ~/.dotfiles/antigen/antigen.zsh
-
-antigen use oh-my-zsh
-antigen bundle command-not-found
-antigen bundle mafredri/zsh-async
-antigen bundle sindresorhus/pure
-antigen bundle zsh-users/zsh-completions src
-antigen bundle zsh-users/zsh-syntax-highlighting
-antigen bundle marzocchi/zsh-notify
-#antigen theme simple
-
-antigen apply
+source <(antibody init)
+antibody bundle < ~/.zsh_plugins.txt
 
 unsetopt flow_control
 zstyle ':notify:*' activate-terminal no
 
+alias mount='mount | column -t'
 alias tb='nc termbin.com 9999'
 alias agrep=ack-grep
 alias g=git

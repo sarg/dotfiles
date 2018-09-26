@@ -12,7 +12,7 @@
 
 (defun sarg/redshift-adjust ()
   (interactive)
-  (start-process-shell-command "redshift" nil "redshift" "-m randr -o"))
+  (start-process-shell-command "redshift" nil "redshift" "-m randr -Po"))
 
 (defun sarg/redshift-start ()
   (interactive)
