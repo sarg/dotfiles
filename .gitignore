@@ -5,9 +5,12 @@ awesome/.config/awesome/tyrannical/
 awesome/.config/awesome/collision/
 awesome/.config/awesome/redshift/
 vim/.emacs.d
+oh-my-zsh
 emacs/.emacs.d
 fonts/.local
 bootstrap.sh
 rawdog/
 xmonad/.xmonad/xmonad*
 !xmonad/.xmonad/xmonad.hs
+/qutebrowser/.config/qutebrowser/autoconfig.yml
+/qutebrowser/.config/qutebrowser/__pycache__
