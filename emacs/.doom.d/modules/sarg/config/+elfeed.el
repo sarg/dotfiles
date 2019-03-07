@@ -1,18 +1,5 @@
 (after! elfeed
 
-  ;; (advice-remove 'elfeed-update #'sarg/restrict-rss-by-time)
-
-  (defun sarg/restrict-rss-by-time (orig-fun &rest args)
-    (if (or (= 0 (mod
-                  (calendar-day-of-week (calendar-current-date))
-                  6)) ; 0 and 6 - Sunday and Saturday
-            (> (nth 2 (decode-time)) 18))
-        (apply orig-fun args)
-      (message "Time for rss did not come yet!")))
-
-  (advice-add 'elfeed-update :around #'sarg/restrict-rss-by-time)
-
-
   (setq elfeed-search-filter "@2-week-ago +unread -youtube")
 
   (setq elfeed-show-entry-switch (lambda (buf) (display-buffer-below-selected buf nil)))

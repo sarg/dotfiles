@@ -63,8 +63,8 @@
    '(("t" "TODO" entry (file "~/Sync/org/inbox.org")
 
       "* TODO %?\n %i\n %a")
-     ("j" "Journal" entry (file+datetree "~/Sync/org/dated.org")
-      "* %?\n%U\n")
+     ;; ("j" "Journal" entry (file+datetree "~/Sync/org/dated.org")
+     ;;  "* %?\n%U\n")
 
      ("w" "work entry" entry (file "~/Sync/org/work.org")
       "* TODO %?\n %i\n %a")

@@ -5,3 +5,5 @@
 (def-package! dired-collapse
   :config
   (add-hook! dired-mode #'dired-collapse-mode))
+
+(dired-async-mode 1)

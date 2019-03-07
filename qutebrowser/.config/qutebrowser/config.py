@@ -48,9 +48,9 @@ c.colors.tabs.selected.odd.fg = 'blue'
 c.colors.tabs.selected.odd.bg = 'white'
 c.colors.tabs.bar.bg = '#f0f0f0'
 c.fonts.monospace = '"Fira Code", Terminus, Fixed'
-c.fonts.completion.entry = '10pt monospace'
-c.fonts.tabs = '12pt monospace'
-c.fonts.statusbar = '12pt monospace'
+c.fonts.completion.entry = '12pt monospace'
+c.fonts.tabs = '13pt monospace'
+c.fonts.statusbar = '13pt monospace'
 c.fonts.prompts = '12pt sans-serif---' 
 
 # bindings

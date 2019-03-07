@@ -37,10 +37,7 @@
        (lookup           ; helps you navigate your code and documentation
         +docsets)        ; ...or in Dash docsets locally
        snippets          ; my elves. They type so I don't have to
-       spellcheck        ; tasing you for misspelling mispelling
-       (syntax-checker)  ; tasing you for every semicolon you forget
-       ;; +childframe)     ; use childframes for error popups (Emacs 26+ only)
-       ;;workspaces        ; tab emulation, persistence & separate workspaces
+       ;; workspaces        ; tab emulation, persistence & separate workspaces
 
        :completion
        (company          ; the ultimate code completion backend
@@ -54,8 +51,8 @@
        :ui
        ;;deft              ; notational velocity for Emacs
        doom              ; what makes DOOM look the way it does
-       doom-dashboard    ; a nifty splash screen for Emacs
-       doom-modeline     ; a snazzy Atom-inspired mode-line
+       ;; doom-dashboard    ; a nifty splash screen for Emacs
+       modeline          ; a snazzy Atom-inspired mode-line
        doom-quit         ; DOOM quit-message prompts when you quit Emacs
        evil-goggles      ; display visual hints when editing in evil
        ;;fci               ; a `fill-column' indicator
@@ -71,21 +68,24 @@
        ;;tabbar            ; FIXME an (incomplete) tab bar for Emacs
        unicode           ; extended unicode support for various languages
        vc-gutter         ; vcs diff in the fringe
-       vi-tilde-fringe   ; fringe tildes to mark beyond EOB
+       ;; vi-tilde-fringe   ; fringe tildes to mark beyond EOB
        window-select     ; visually switch windows
 
        :editor
+       fold              ; (nigh) universal code folding
        ;;(format +onsave)  ; automated prettiness
+       ;;lispy             ; vim for lisp, for people who dont like vim
        multiple-cursors  ; editing in many places at once
        ;;parinfer          ; turn lisp into python, sort of
        rotate-text       ; cycle region at point between text candidates
 
        :emacs
-       dired             ; making dired pretty [functional]
-       ediff             ; comparing files in Emacs
+       (dired            ; making dired pretty [functional]
+       ;;+ranger         ; bringing the goodness of ranger to dired
+       ;;+icons          ; colorful icons for dired-mode
+        )
        electric          ; smarter, keyword-based electric-indent
        eshell            ; a consistent, cross-platform shell (WIP)
-       hideshow          ; basic code-folding support
        imenu             ; an imenu sidebar and searchable code index
        ;;term              ; terminals in Emacs
        vc                ; version-control and Emacs, sitting in a tree
@@ -95,7 +95,10 @@
        ;;docker
        editorconfig      ; let someone else argue about tabs vs spaces
        ;;ein               ; tame Jupyter notebooks with emacs
+       flycheck          ; tasing you for every semicolon you forget
+       ;;flyspell          ; tasing you for misspelling mispelling
        ;;gist              ; interacting with github gists
+       ;;lsp
        ;;macos             ; MacOS-specific commands
        make              ; run make tasks from Emacs
        magit             ;
@@ -104,9 +107,11 @@
        pdf               ; pdf enhancements
        prodigy           ; FIXME managing external services & code builders
        ;;rgb               ; creating color strings
+       terraform         ; infrastructure as code
        ;;tmux              ; an API for interacting with tmux
        ;;upload            ; map local to remote projects via ssh/ftp
        ;;wakatime
+       ;;vterm             ; another terminals in Emacs
 
        :lang
        ;;assembly          ; assembly for fun or debugging
@@ -127,7 +132,7 @@
        ;;hy                ; readability of scheme w/ speed of python
        ;;idris             ;
        ;;(java +meghanada) ; the poster child for carpal tunnel syndrome
-       javascript        ; all(hope(abandon(ye(who(enter(here))))))
+       ;;javascript        ; all(hope(abandon(ye(who(enter(here))))))
        ;;julia             ; a better, faster MATLAB
        ;;latex             ; writing papers in Emacs has never been so fun
        ;;ledger            ; an accounting system in Emacs
@@ -180,10 +185,9 @@
        ;; literate config in your `doom-private-dir' whenever it changes.
        ;;literate
 
-       ;; The default module set reasonable defaults for Emacs. It also provides
-       ;; a Spacemacs-inspired keybinding scheme, a custom yasnippet library,
-       ;; and additional ex commands for evil-mode. Use it as a reference for
-       ;; your own modules.
+       ;; The default module sets reasonable defaults for Emacs. It also
+       ;; provides a Spacemacs-inspired keybinding scheme and a smartparens
+       ;; config. Use it as a reference for your own modules.
        (default +evil-commands)
 
        :sarg

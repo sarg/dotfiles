@@ -7,8 +7,8 @@ imports:
   # font-firacode: fonts/.local/share/fonts
   # font-hack: fonts/.local/share/fonts
   # spacemacs: vim/.emacs.d
-  antigen: antigen
   doom: emacs/.emacs.d
+  oh-my-zsh: oh-my-zsh
 
 # git module awesome-collision:
 #   url: https://github.com/Elv13/collision.git
@@ -57,9 +57,8 @@ imports:
 git module doom:
   url: https://github.com/hlissner/doom-emacs
   reup: develop
-  rev: 9afc61e57e1cb1a9860db2569e8e28db5223d23e
+  rev: 4a1a359c21810591f3e1e7804ec79b554d3022a0
 
-git module antigen:
-  url: https://github.com/zsh-users/antigen.git
-  reup: master
-  rev: 74aa89757038e42d472db22cb5b5bc6cbd4edb93
+git module oh-my-zsh:
+  url: https://github.com/robbyrussell/oh-my-zsh.git
+  rev: 52afbf77f63844abd719e565a15af2c34075de7f

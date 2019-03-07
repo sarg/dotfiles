@@ -43,13 +43,13 @@ Can show completions at point for COMMAND using helm or ido"
         (notifications-notify :body "Battery too low! Please charge now!" :urgency 'critical))))
 
 (def-package! dmenu)
-(def-package! gpastel)
+;; (def-package! gpastel)
 (def-package! xelb)
 (def-package! exwm
   :init
   (set-popup-rule! "^\\*EXWM\\*$" :ignore t)
 
-  (add-hook! 'exwm-init-hook 'gpastel-start-listening)
+  ;; (add-hook! 'exwm-init-hook 'gpastel-start-listening)
 
   (require 'exwm-systemtray)
   (exwm-systemtray-enable)
@@ -60,7 +60,6 @@ Can show completions at point for COMMAND using helm or ido"
   (load! "+brightness")
   (load! "+volume")
   (load! "+spotify")
-
 
   (exwm-input-set-key (kbd "M-y") #'my/exwm-counsel-yank-pop)
 
@@ -251,6 +250,11 @@ Can show completions at point for COMMAND using helm or ido"
   :config
   (setq fate:data-file "~/.events/win")
 
+  (defun fate:buffer-string (buffer)
+    "Return either path or name of BUFFER."
+    (or (buffer-file-name buffer)
+        (buffer-name buffer)))
+
   (defun fate:log-state (state)
     "Write STATE to the database file."
     (write-region state nil fate:data-file 'append :inhibit))
@@ -261,4 +265,3 @@ Can show completions at point for COMMAND using helm or ido"
             (format-time-string "%s.%6N")
             (fate:escape left)
             (fate:escape right))))
-

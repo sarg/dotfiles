@@ -5,6 +5,10 @@
 (load! "+dired")
 (load! "+email")
 (load! "+org")
+(load! "+selfcontrol")
+
+(after! doom-modeline
+  (setq doom-modeline-height 20))
 
 ;; for magithub auth to work create pass entry user^magithub@api.github.com
 (setq auth-sources '(password-store))

@@ -1,3 +1,9 @@
+DISABLE_AUTO_UPDATE=true
+plugins=(git history python web-search vi-mode)
+ZSH=$HOME/.dotfiles/oh-my-zsh
+# FIXME: parser error in .zcompdump
+source $ZSH/oh-my-zsh.sh
+
 source <(antibody init)
 antibody bundle < ~/.zsh_plugins.txt
 
