@@ -155,6 +155,9 @@
       mu4e~update-mail-mode)
     'normal)
 
+  (map! :map mu4e-headers-mode-map
+        :n "gR" #'mu4e-update-mail-and-index)
+
   (add-hook 'message-send-mail-hook 'choose-msmtp-account))
 
 (def-package! org-mu4e
