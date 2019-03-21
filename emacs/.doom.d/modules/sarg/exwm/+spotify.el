@@ -25,7 +25,7 @@
         (re-search-forward "^\tProperties:$")
         (while (and
                 (= (forward-line 1) 0)
-                (search-forward " = " nil t)
+                (search-forward " = " (line-end-position) t)
                 (progn
                   (setq sep (point))
                   (back-to-indentation)
