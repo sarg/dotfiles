@@ -1,0 +1,7 @@
+#!/bin/sh
+
+if [ "$1" = "show" ] && [ -n "$DISPLAY" ]; then
+    emacsclient -a false -e "(+pass/read-entry \"$2\")" | xargs echo -ne
+else
+    /usr/bin/pass $@
+fi

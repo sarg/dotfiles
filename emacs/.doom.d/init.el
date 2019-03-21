@@ -1,34 +1,7 @@
 ;;; init.el -*- lexical-binding: t; -*-
-;;
-;; Author:  Henrik Lissner <henrik@lissner.net>
-;; URL:     https://github.com/hlissner/doom-emacs
-;;
-;;   =================     ===============     ===============   ========  ========
-;;   \\ . . . . . . .\\   //. . . . . . .\\   //. . . . . . .\\  \\. . .\\// . . //
-;;   ||. . ._____. . .|| ||. . ._____. . .|| ||. . ._____. . .|| || . . .\/ . . .||
-;;   || . .||   ||. . || || . .||   ||. . || || . .||   ||. . || ||. . . . . . . ||
-;;   ||. . ||   || . .|| ||. . ||   || . .|| ||. . ||   || . .|| || . | . . . . .||
-;;   || . .||   ||. _-|| ||-_ .||   ||. . || || . .||   ||. _-|| ||-_.|\ . . . . ||
-;;   ||. . ||   ||-'  || ||  `-||   || . .|| ||. . ||   ||-'  || ||  `|\_ . .|. .||
-;;   || . _||   ||    || ||    ||   ||_ . || || . _||   ||    || ||   |\ `-_/| . ||
-;;   ||_-' ||  .|/    || ||    \|.  || `-_|| ||_-' ||  .|/    || ||   | \  / |-_.||
-;;   ||    ||_-'      || ||      `-_||    || ||    ||_-'      || ||   | \  / |  `||
-;;   ||    `'         || ||         `'    || ||    `'         || ||   | \  / |   ||
-;;   ||            .===' `===.         .==='.`===.         .===' /==. |  \/  |   ||
-;;   ||         .=='   \_|-_ `===. .==='   _|_   `===. .===' _-|/   `==  \/  |   ||
-;;   ||      .=='    _-'    `-_  `='    _-'   `-_    `='  _-'   `-_  /|  \/  |   ||
-;;   ||   .=='    _-'          '-__\._-'         '-_./__-'         `' |. /|  |   ||
-;;   ||.=='    _-'                                                     `' |  /==.||
-;;   =='    _-'                                                            \/   `==
-;;   \   _-'                                                                `-_   /
-;;    `''                                                                      ``'
-;;
-;; These demons are not part of GNU Emacs.
-;;
-;;; License: MIT
-
-(defvar +org-dir (expand-file-name "~/Sync/org/"))
+(defvar org-directory (expand-file-name "~/Sync/org/"))
 (defvar evil-want-C-u-scroll nil)
+
 (doom! :feature
        ;;debugger          ; FIXME stepping through code, to help you add bugs
        eval              ; run code, run (also, repls)
@@ -188,7 +161,7 @@
        ;; The default module sets reasonable defaults for Emacs. It also
        ;; provides a Spacemacs-inspired keybinding scheme and a smartparens
        ;; config. Use it as a reference for your own modules.
-       (default +evil-commands)
+       (default +evil-commands +bindings)
 
        :sarg
        config

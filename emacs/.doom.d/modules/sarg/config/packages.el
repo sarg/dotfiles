@@ -4,6 +4,7 @@
 (package! ox-hugo)
 (package! puppet-mode)
 (package! nginx-mode)
+(package! multitran)
 (package! slack)
 (package! webpaste)
 (package! dired-filter)

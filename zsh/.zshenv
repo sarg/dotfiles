@@ -3,7 +3,6 @@ ANDROID_HOME=$HOME/devel/android-sdk-linux
 PATH=$HOME/devel/bin:$HOME/.local/bin:$PATH
 PATH=$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools:$PATH
 PATH=$HOME/go/bin:$PATH
-PATH=$HOME/.cask/bin:$PATH
 ALTERNATE_EDITOR=''
 EDITOR='emacsclient'
 PAGER=less

@@ -219,7 +219,7 @@ Can show completions at point for COMMAND using helm or ido"
 
   (exwm-input-set-key (kbd "s-.") (lambda () (interactive) (message "%s %s"
                                                             (concat (format-time-string "%Y-%m-%d %T (%a w%W)"))
-                                                            (battery-format "| BAT: %p%% (%t)" (funcall battery-status-function)))))
+                                                            (battery-format "| %L: %p%% (%t)" (funcall battery-status-function)))))
 
   (setq exwm-manage-configurations '(((equal exwm-class-name "Peek")
                                       floating t

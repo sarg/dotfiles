@@ -17,10 +17,13 @@
   ;; :load-path "/home/sarg/devel/ext/telega.el"
   :config
 
+  (advice-add! 'telega-logout :before-while (lambda (&rest r) (y-or-n-p "Really log out from current account?")))
+
   (set-popup-rule! "^\\\*Telega Root\*"
     :side 'left
     :size 0.25
-    :quit t
+    :ttl nil
+    :quit 'current
     :select t)
 
   (when (featurep! :completion ivy)

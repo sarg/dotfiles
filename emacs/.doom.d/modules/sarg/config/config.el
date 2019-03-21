@@ -1,17 +1,20 @@
 ;;; private/sarg/config.el -*- lexical-binding: t; -*-
 
-(load! "+bindings")
+;; (load! "+bindings")
 (load! "+elfeed")
 (load! "+dired")
 (load! "+email")
 (load! "+org")
+(load! "+pass")
 (load! "+selfcontrol")
 
 (after! doom-modeline
   (setq doom-modeline-height 20))
 
+(after! password-store
+  (advice-add #'password-store-copy :override #'+pass/copy-secret))
+
 ;; for magithub auth to work create pass entry user^magithub@api.github.com
-(setq auth-sources '(password-store))
 (after! magit
     (setq magit-process-find-password-functions '(magit-process-password-auth-source)))
 
@@ -69,3 +72,5 @@
 ;; (def-package! ranger
 ;;   :config
 ;;   (ranger-override-dired-mode t))
+
+(def-package! multitran)

@@ -26,3 +26,5 @@ EOF
 
 xkbset -bell -feedback sticky -twokey latchlock
 xkbset exp 64 '=sticky' '=twokey' '=latchlock'
+xset r rate 250 50
+xset m 15/10 4
