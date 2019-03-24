@@ -6,4 +6,7 @@
   :config
   (add-hook! dired-mode #'dired-collapse-mode))
 
+(def-package! dired-avfs)
+
+(setq dired-dwim-target t)
 (dired-async-mode 1)

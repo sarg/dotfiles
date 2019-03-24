@@ -6,6 +6,7 @@
 (load! "+email")
 (load! "+org")
 (load! "+pass")
+(load! "+aria2")
 (load! "+selfcontrol")
 
 (after! doom-modeline
