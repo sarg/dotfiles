@@ -1,4 +1,6 @@
 (def-package! pulseaudio-control
+  :load-path "~/devel/ext/pulseaudio-control/"
+
   :config
   (setq pulseaudio-control-use-default-sink t
         pulseaudio-control-volume-step "5%"

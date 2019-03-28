@@ -32,7 +32,7 @@
 (use-package aria2
   :config
 
-  (setq aria2-download-directory "~/Downloads"))
+  (setq aria2-download-directory (expand-file-name "~/Downloads")))
 
 (defun sarg/aria2-marked-files (dest-dir)
   "Download selected files in torrent with aria2 to DEST-DIR."
@@ -43,6 +43,9 @@
                               aria2-download-directory)
                          nil
                          t)))
+
+  (set-popup-rule! aria2-list-buffer-name
+    :ignore t)
 
   (let (indexes base64-file)
     (setq indexes (string-join

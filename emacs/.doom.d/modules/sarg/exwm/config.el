@@ -168,7 +168,8 @@ Can show completions at point for COMMAND using helm or ido"
    "s-E"     #'sarg/with-browser
    "s-e"    `(lambda () (interactive) (sarg/run-or-raise "qutebrowser" "qutebrowser"))
 
-   "<s-return>" `(lambda () (interactive) (start-process "terminal" nil "my-terminal")))
+   "<s-return>" #'multi-term)
+   ;; "<s-return>" `(lambda () (interactive) (start-process "terminal" nil "my-terminal")))
 
   (when (featurep! :app telega +ivy)
     (exwm-input-set-key (kbd "s-i") #'ivy-telega-chat-with))
