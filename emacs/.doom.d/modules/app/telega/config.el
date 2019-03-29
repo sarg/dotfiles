@@ -1,3 +1,21 @@
+(defun sarg/telega-get-code ()
+  "Extract confirmation code from latest message of telegram user BenderBot."
+  (interactive)
+  (let* ((chat (cl-find "BenderBot" telega--ordered-chats
+                        :test (lambda (needname chat)
+                                (string= (telega-chat-title chat)
+                                         needname))))
+
+         (text (telega--tl-get chat :last_message :content :text :text))
+
+         (re-list (list (rx (or "Code: " "Kod " "Код " "код: "
+                                "Пароль для подтвердения - ")
+                            (group (1+ digit))))))
+
+    (set-text-properties 0 (length text) nil text)
+    (when (-any (lambda (re) (string-match re text)) re-list)
+      (kill-new (match-string 1 text)))))
+
 (defun telega-mute-chat (seconds)
   (interactive (list (let* ((time (org-read-date 'with-time 'to-time nil "Mute until: " nil "+1y"))
                             (seconds (round (float-time (time-subtract time (current-time))))))

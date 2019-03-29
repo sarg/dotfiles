@@ -1,9 +1,5 @@
 (after! elfeed
 
-  (advice-add 'delete-file-projectile-remove-from-cache
-              :before-until
-              (lambda (filename &optional _trash)
-                (string-prefix-p elfeed-db-directory filename)))
   (setq elfeed-search-filter "@2-week-ago +unread -youtube")
 
   (setq elfeed-show-entry-switch (lambda (buf) (display-buffer-below-selected buf nil)))

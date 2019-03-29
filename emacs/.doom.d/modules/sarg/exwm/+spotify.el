@@ -24,3 +24,13 @@
    "<XF86AudioPlay>"    #'spotify-playpause
    "<XF86AudioNext>"    #'spotify-next
    "<XF86AudioPrev>"    #'spotify-previous))
+
+(def-package! counsel-spotify                                                                                 
+  :config
+
+  (advice-add 'counsel-spotify-verify-credentials :before
+              (lambda ()
+                (when (string= counsel-spotify-client-secret "")
+                  (setq counsel-spotify-client-id (+pass-get-field "Sites/spotify.com" "client-id")
+                        counsel-spotify-client-secret (+pass-get-field "Sites/spotify.com" "client-secret")))))
+  )
