@@ -11,3 +11,4 @@
 (package! color-theme-sanityinc-tomorrow)
 (package! anti-zenburn-theme)
 (package! counsel-spotify)
+(package! emms)
