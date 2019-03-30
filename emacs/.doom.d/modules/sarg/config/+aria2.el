@@ -1,7 +1,9 @@
 (defun archive-torrent-summarize()
   (let* ((data (bencode-decode-from-buffer))
          (retfiles '())
-         (files (plist-get (plist-get data :info) :files)))
+         (info (plist-get data :info))
+         (files (or (plist-get info :files)
+                    (list info))))
 
     (read-only-mode)
     (goto-char (point-min))
@@ -10,7 +12,9 @@
     (archive-summarize-files
      (seq-map-indexed (lambda (file index)
                (let* ((size (plist-get file :length))
-                      (name (string-join (plist-get file :path) "/"))
+                      (name (string-join (or (plist-get file :path)
+                                             (list (plist-get file :name)))
+                                         "/"))
                       (text (format "  %8s  %s" (file-size-human-readable size) name)))
 
                  ;; [EXT-FILE-NAME INT-FILE-NAME CASE-FIDDLED MODE ...]")
@@ -25,24 +29,24 @@
 
   (advice-add 'archive-find-type :before-until
               (lambda ()
-                (and
-                 (string-match "\\.torrent" (or buffer-file-name (buffer-name)))
-                 'torrent))))
+                (when (string-match-p "\\.torrent$" (or buffer-file-name (buffer-name)))
+                  'torrent))))
 
 (use-package aria2
   :config
 
-  (setq aria2-download-directory (expand-file-name "~/Downloads")))
+  (setq aria2-download-directory (expand-file-name "~/Downloads")
+        aria2-add-evil-quirks t
+        aria2-custom-args '("--rpc-save-upload-metadata=false")))
 
 (defun sarg/aria2-marked-files (dest-dir)
   "Download selected files in torrent with aria2 to DEST-DIR."
   (interactive
-   (list
-    (read-directory-name "Directory: "
-                         (or (dired-dwim-target-directory)
-                              aria2-download-directory)
-                         nil
-                         t)))
+   (list (read-directory-name "Directory: "
+                              (or (dired-dwim-target-directory)
+                                  aria2-download-directory)
+                              nil
+                              t)))
 
   (set-popup-rule! aria2-list-buffer-name
     :ignore t)
