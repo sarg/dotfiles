@@ -1,3 +1,52 @@
+(defun sarg/telega-ins--message (msg &optional no-header)
+  "Insert message MSG.
+If NO-HEADER is non-nil, then do not display message header
+unless message is edited."
+  (if (telega-msg-special-p msg)
+      (telega-ins--with-attrs (list :min (- telega-chat-fill-column
+                                            (telega-current-column))
+                                    :align 'center
+                                    :align-symbol "-")
+        (telega-ins--content msg))
+
+    ;; Message header needed
+    (let* ((chat (telega-msg-chat msg))
+           (sender (telega-msg-sender msg))
+           (channel-post-p (plist-get msg :is_channel_post))
+           (private-chat-p (eq "chatTypePrivate" (telega--tl-get chat :type :@type)))
+           (avatar (if channel-post-p
+                       (telega-chat-avatar-image chat)
+                     (telega-user-avatar-image sender)))
+           (awidth (string-width (plist-get (cdr avatar) :telega-text)))
+           (tfaces (list (if (telega-msg-by-me-p msg)
+                             'telega-msg-self-title
+                           'telega-msg-user-title)))
+           ccol)
+      (when telega-msg-rainbow-title
+        (let ((color (if channel-post-p
+                         (telega-chat-color chat)
+                       (telega-user-color sender)))
+              (lightp (eq (frame-parameter nil 'background-mode) 'light)))
+          (push (list :foreground (nth (if lightp 2 0) color)) tfaces)))
+
+      (telega-ins--with-attrs (list :face tfaces)
+        (when (not channel-post-p)
+          (telega-ins "<" (telega-user--name sender 'short) "> ")))
+
+      (setq ccol (telega-current-column))
+      ;; (telega-ins--fwd-info-inline (plist-get msg :forward_info))
+      ;; (telega-ins--reply-inline (telega-msg-reply-msg msg))
+      ;;
+      (telega-ins--column ccol telega-chat-fill-column
+        (telega-ins--content msg)
+        (telega-ins-prefix "\n"
+          (telega-ins--reply-markup msg)))))
+
+  ;; Date/status starts at `telega-chat-fill-column' column
+  t)
+
+
+
 (defun sarg/telega-get-code ()
   "Extract confirmation code from latest message of telegram user BenderBot."
   (interactive)
@@ -34,6 +83,8 @@
   ;; :load-path "~/devel/ext/telega.el"
   :commands (telega ivy-telega-chat-with)
   :config
+
+  (setq telega-inserter-for-msg-button 'sarg/telega-ins--message)
 
   (advice-add! 'telega-logout :before-while (lambda (&rest r) (y-or-n-p "Really log out from current account?")))
 
