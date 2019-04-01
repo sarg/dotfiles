@@ -13,7 +13,7 @@ unless message is edited."
     (let* ((chat (telega-msg-chat msg))
            (sender (telega-msg-sender msg))
            (channel-post-p (plist-get msg :is_channel_post))
-           (private-chat-p (eq "chatTypePrivate" (telega--tl-get chat :type :@type)))
+           (private-chat-p (eq 'chatTypePrivate (telega--tl-type (plist-get chat :type))))
            (avatar (if channel-post-p
                        (telega-chat-avatar-image chat)
                      (telega-user-avatar-image sender)))
@@ -30,8 +30,11 @@ unless message is edited."
           (push (list :foreground (nth (if lightp 2 0) color)) tfaces)))
 
       (telega-ins--with-attrs (list :face tfaces)
-        (when (not channel-post-p)
-          (telega-ins "<" (telega-user--name sender 'short) "> ")))
+        (cond
+         (private-chat-p
+          (telega-ins (if (telega-msg-by-me-p msg) "-> " "<- ")))
+         ((not channel-post-p)
+          (telega-ins "<" (telega-user--name sender 'short) "> "))))
 
       (setq ccol (telega-current-column))
       ;; (telega-ins--fwd-info-inline (plist-get msg :forward_info))
@@ -82,9 +85,11 @@ unless message is edited."
 (def-package! telega
   ;; :load-path "~/devel/ext/telega.el"
   :commands (telega ivy-telega-chat-with)
+  :custom
+  (telega-inserter-for-msg-button 'sarg/telega-ins--message)
   :config
 
-  (setq telega-inserter-for-msg-button 'sarg/telega-ins--message)
+
 
   (advice-add! 'telega-logout :before-while (lambda (&rest r) (y-or-n-p "Really log out from current account?")))
 
