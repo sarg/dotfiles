@@ -120,6 +120,7 @@ unless message is edited."
   (add-hook 'telega-chat-mode-hook #'doom|mark-buffer-as-real)
 
   (when (featurep! :feature evil)
-    (define-key telega-msg-button-map "k" nil)
-    (evil-define-key* 'normal telega-root-mode-map
-      "u" #'telega-filter-undo)))
+    (map!
+     (:map telega-msg-button-map
+       "k" nil
+       "l" nil))))
