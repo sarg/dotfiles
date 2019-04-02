@@ -3,4 +3,4 @@
 # export NO_AT_BRIDGE=1
 # export QT_GRAPHICSSYSTEM=native
 . ~/.zshenv
-./.local/bin/keymap.sh 
+. ./.local/bin/keymap.sh

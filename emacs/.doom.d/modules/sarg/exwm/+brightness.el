@@ -32,12 +32,17 @@
 
 ;; Change color theme based on day time
 (def-package! color-theme-sanityinc-tomorrow)
+(def-package! kaolin-themes)
 (def-package! anti-zenburn-theme)
 (def-package! circadian
   :config
   (setq calendar-latitude 56
         calendar-longitude 38
         circadian-themes
-        '((:sunrise . sanityinc-tomorrow-day)
-          (:sunset . anti-zenburn)))
+        '(
+          (:sunrise . kaolin-valley-light)
+          (:sunset . kaolin-valley-dark)
+          ;; (:sunrise . sanityinc-tomorrow-day)
+          ;; (:sunset . anti-zenburn)
+          ))
   (circadian-setup))

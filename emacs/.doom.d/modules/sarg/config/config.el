@@ -75,3 +75,7 @@
 ;;   (ranger-override-dired-mode t))
 
 (def-package! multitran)
+(def-package! keyfreq
+  :config
+  (keyfreq-mode 1)
+  (keyfreq-autosave-mode 1))

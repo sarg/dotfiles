@@ -16,7 +16,7 @@ xkb_keymap {
 	xkb_types     { include "complete"	};
 	xkb_compat    { include "complete"	};
 	xkb_symbols   {
-    include "pc+us+ru:2+inet(evdev)+group(ctrl_shift_toggle)"
+    include "pc+us+ru:2+inet(evdev)"
     replace key <CAPS> { [ Shift_L ] };
     replace key <PRSC> { [ Menu ] };
   };
@@ -28,3 +28,8 @@ xkbset -bell -feedback sticky -twokey latchlock
 xkbset exp 64 '=sticky' '=twokey' '=latchlock'
 xset r rate 250 50
 xset m 15/10 4
+
+export XMODIFIERS=@im=exwm-xim
+export GTK_IM_MODULE=xim
+export QT_IM_MODULE=xim
+export CLUTTER_IM_MODULE=xim

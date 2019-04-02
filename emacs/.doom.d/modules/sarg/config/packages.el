@@ -11,6 +11,8 @@
 (package! dired-avfs)
 (package! dired-collapse)
 (package! aria2)
+(package! openwith)
+(package! keyfreq)
 (package! bencode
   :recipe (:fetcher github :repo "skeeto/emacs-bencode"))
 ;; (package! ranger)

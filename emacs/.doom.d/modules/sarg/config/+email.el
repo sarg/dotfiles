@@ -72,15 +72,24 @@
 ;;
 ;; Plugins
 ;;
+;;
+(defun sarg/ensure-msmtp-pass-available ()
+  (interactive)
+  (+pass/read-entry (concat "Email/" user-mail-address)))
 
 (def-package! mu4e
   :commands (mu4e mu4e-compose-new)
   :init
-  (provide 'html2text) ; disable obsolete package
+  (provide 'html2text)                  ; disable obsolete package
   (setq mu4e-maildir "~/.mail"
+        user-mail-address "sarg@sarg.org.ru"
         mu4e-attachment-dir "~/Downloads"
         mu4e-user-mail-address-list nil)
   :config
+
+  (advice-add 'sendmail-send-it
+            :before #'sarg/ensure-msmtp-pass-available)
+
   (setq mu4e-update-interval nil
         mu4e-html2text-command "iconv -c -t utf-8 | pandoc -f html -t plain"
         mu4e-compose-format-flowed t ; visual-line-mode + auto-fill upon sending
@@ -156,7 +165,7 @@
     'normal)
 
   (map! :map mu4e-headers-mode-map
-        :n "gR" #'mu4e-update-mail-and-index)
+        :n "gR" (lambda () (interactive) (mu4e-update-mail-and-index t)))
 
   (add-hook 'message-send-mail-hook 'choose-msmtp-account))
 
