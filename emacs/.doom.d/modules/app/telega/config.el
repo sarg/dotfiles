@@ -89,6 +89,10 @@ unless message is edited."
   (telega-inserter-for-msg-button 'sarg/telega-ins--message)
   :config
 
+  (add-hook! telega-chat-mode
+    (visual-line-mode)
+    (visual-fill-column-mode)
+    (setq-local visual-fill-column-width (+ 11 telega-chat-fill-column)))
 
 
   (advice-add! 'telega-logout :before-while (lambda (&rest r) (y-or-n-p "Really log out from current account?")))
