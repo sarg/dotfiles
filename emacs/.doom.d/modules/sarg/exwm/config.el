@@ -44,8 +44,10 @@ Can show completions at point for COMMAND using helm or ido"
 
 (def-package! dmenu)
 ;; (def-package! gpastel)
+(def-package! exwm-mff)
 (def-package! xelb)
 (def-package! exwm
+  :hook (exwm-init . exwm-mff-mode)
   :init
   (set-popup-rule! "^\\*EXWM\\*$" :ignore t)
 
@@ -175,14 +177,18 @@ Can show completions at point for COMMAND using helm or ido"
     (exwm-input-set-key (kbd "s-i") #'ivy-telega-chat-with))
 
   (setq exwm-input-prefix-keys
-        '(?\C-x
+        '(?\C-\\                        ; xim
+          ?\C-x
           ?\M-x
           ?\M-m
           ?\C-g
           ?\C-m
           ?\C-h
-          ?\C-р ; cyrillic
+          ?\C-р                         ; cyrillic
           ))
+
+  (require 'exwm-xim)
+  (exwm-xim-enable)
 
   (define-key exwm-mode-map [?\C-q] 'exwm-input-send-next-key)
   (define-key exwm-mode-map [?\C-c] 'nil)
@@ -219,10 +225,13 @@ Can show completions at point for COMMAND using helm or ido"
              )))
 
   (exwm-input-set-key (kbd "s-.") (lambda () (interactive) (message "%s %s"
-                                                            (concat (format-time-string "%Y-%m-%d %T (%a w%W)"))
-                                                            (battery-format "| %L: %p%% (%t)" (funcall battery-status-function)))))
+                                                                    (concat (format-time-string "%Y-%m-%d %T (%a w%W)"))
+                                                                    (battery-format "| %L: %p%% (%t)" (funcall battery-status-function)))))
 
   (setq exwm-manage-configurations '(((equal exwm-class-name "Peek")
+                                      floating t
+                                      floating-mode-line nil)
+                                     ((equal exwm-class-name "mpv")
                                       floating t
                                       floating-mode-line nil)
                                      ((equal exwm-class-name "TelegramDesktop")
