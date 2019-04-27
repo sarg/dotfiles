@@ -7,11 +7,9 @@
 (defun dired-telega-copy ()
   (when-let*
       ((files (dired-get-marked-files))
-       ((= 1 (length files)))
-       (file (first files))
        (chatbuf (telega-dwim-chatbuf)))
     (select-window chatbuf)
-    (telega-chatbuf-attach-file file)))
+    (-each files #'telega-chatbuf-attach-file )))
 
 (advice-add 'dired-do-copy :before-until
             (lambda (&rest args)
