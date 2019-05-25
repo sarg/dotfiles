@@ -168,16 +168,3 @@
         :n "gR" (lambda () (interactive) (mu4e-update-mail-and-index t)))
 
   (add-hook 'message-send-mail-hook 'choose-msmtp-account))
-
-(def-package! org-mu4e
-  :commands org-mu4e-compose-org-mode
-  :init (add-hook 'mu4e-compose-mode-hook #'org-mu4e-compose-org-mode)
-  :config
-  (setq org-mu4e-link-query-in-headers-mode nil
-        org-mu4e-convert-to-html t)
-
-  ;; Only render to html once. If the first send fails for whatever reason,
-  ;; org-mu4e would do so each time you try again.
-  (add-hook! 'message-send-hook
-    (setq-local org-mu4e-convert-to-html nil)))
-

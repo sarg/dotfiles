@@ -39,6 +39,19 @@
         aria2-add-evil-quirks t
         aria2-custom-args '("--rpc-save-upload-metadata=false")))
 
+(defun sarg/aria2-file-at-point (dest-dir)
+  (interactive
+   (list (read-directory-name "Directory: "
+                              (or (dired-dwim-target-directory)
+                                  aria2-download-directory)
+                              nil
+                              t)))
+
+  (make-request aria2--cc "aria2.addTorrent"
+                (aria2--base64-encode-file (dired-get-filename))
+                (vector)
+                (list :dir dest-dir)))
+
 (defun sarg/aria2-marked-files (dest-dir)
   "Download selected files in torrent with aria2 to DEST-DIR."
   (interactive
@@ -65,3 +78,35 @@
                      (buffer-substring archive-proper-file-start (1+ (buffer-size))) t)
                     (vector)
                     (list :select-file indexes :dir dest-dir)))))
+
+
+;; ; Replace continuous spans of integers in sorted array with '(spanStart . spanEnd)
+;; (assert (equal '((1 . 2) (5 . 7) 10 13)
+;; (let* ((arr '(1 2 5 6 7 10 13))
+;;       (spanStart (first arr))
+;;       (spanEnd spanStart)
+;;       (state)
+;;       (ret '()))
+
+;;   (case state
+;;     ('init (setq spanStart el
+;;                  spanEnd el
+;;                  state 'span))
+;;     ('span (if (< (- el spanEnd) 2)
+;;                (setq spanEnd el)
+;;              (setq state 'print
+;;                    spanStart el
+;;                    spanEnd el))))
+
+;;   (when (eq state 'print)
+
+;;     )
+
+;;   (-each arr (lambda (el)
+;;             (if (< (- el spanEnd) 2)
+;;                 (setq spanEnd el)
+;;               (push (if (= spanEnd spanStart) spanEnd (cons spanStart spanEnd)) ret)
+;;               (setq spanStart el)
+;;               (setq spanEnd el))))
+;;   (push (if (= spanEnd spanStart) spanEnd (cons spanStart spanEnd)) ret)
+;;   (nreverse ret))))

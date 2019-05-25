@@ -19,3 +19,9 @@
      ("f" +pass/copy-field "get field"))))
 
 (defalias '+pass/read-entry #'auth-source-pass--read-entry)
+
+(setq password-cache-expiry (* 60 15))
+
+;; for magithub auth to work create pass entry user^magithub@api.github.com
+(after! magit
+    (setq magit-process-find-password-functions '(magit-process-password-auth-source)))
