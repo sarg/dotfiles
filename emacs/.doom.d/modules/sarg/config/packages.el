@@ -12,7 +12,11 @@
 (package! dired-collapse)
 (package! aria2)
 (package! openwith)
+(package! web-search)
 (package! keyfreq)
+(package! dictcc)
+(package! goldendict)
+(package! mpv)
 (package! bencode
   :recipe (:fetcher github :repo "skeeto/emacs-bencode"))
 ;; (package! ranger)

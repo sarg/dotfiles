@@ -1,19 +1,41 @@
+(defun telega-get--date (timestamp)
+  "Insert DATE.
+Format is:
+- HH:MM      if today
+- Mon/Tue/.. if on this week
+- DD.MM.YY   otherwise"
+  (let* ((dtime (decode-time timestamp))
+         (current-ts (time-to-seconds (current-time)))
+         (ctime (decode-time current-ts))
+         (today00 (telega--time-at00 current-ts ctime)))
+    (if (> timestamp today00)
+        (format "%02d:%02d" (nth 2 dtime) (nth 1 dtime))
+
+      (let* ((week-day (nth 6 ctime))
+             (mdays (+ week-day
+                       (- (if (< week-day telega-week-start-day) 7 0)
+                          telega-week-start-day)))
+             (week-start00 (telega--time-at00
+                            (- current-ts (* mdays 24 3600)))))
+        (if (> timestamp week-start00)
+            (nth (nth 6 dtime) telega-week-day-names)
+
+          (format "%02d.%02d.%02d"
+                  (nth 3 dtime) (nth 4 dtime) (- (nth 5 dtime) 2000))))
+      )))
+
 (defun sarg/telega-ins--message (msg &optional no-header)
   "Insert message MSG.
 If NO-HEADER is non-nil, then do not display message header
 unless message is edited."
-  (if (telega-msg-special-p msg)
-      (telega-ins--with-attrs (list :min (- telega-chat-fill-column
-                                            (telega-current-column))
-                                    :align 'center
-                                    :align-symbol "-")
-        (telega-ins--content msg))
-
+  (unless (telega-msg-special-p msg)
     ;; Message header needed
     (let* ((chat (telega-msg-chat msg))
            (sender (telega-msg-sender msg))
            (channel-post-p (plist-get msg :is_channel_post))
            (private-chat-p (eq 'chatTypePrivate (telega--tl-type (plist-get chat :type))))
+           (content (plist-get msg :content))
+           (content-type (telega--tl-type content))
            (avatar (if channel-post-p
                        (telega-chat-avatar-image chat)
                      (telega-user-avatar-image sender)))
@@ -22,6 +44,9 @@ unless message is edited."
                              'telega-msg-self-title
                            'telega-msg-user-title)))
            ccol)
+      ;; #17161c
+      ;;
+
       (when telega-msg-rainbow-title
         (let ((color (if channel-post-p
                          (telega-chat-color chat)
@@ -34,19 +59,25 @@ unless message is edited."
          (private-chat-p
           (telega-ins (if (telega-msg-by-me-p msg) "-> " "<- ")))
          ((not channel-post-p)
-          (telega-ins "<" (telega-user--name sender 'short) "> "))))
+          (telega-ins "<" (telega-user--name sender 'name) "> "))))
 
       (setq ccol (telega-current-column))
-      ;; (telega-ins--fwd-info-inline (plist-get msg :forward_info))
-      ;; (telega-ins--reply-inline (telega-msg-reply-msg msg))
-      ;;
-      (telega-ins--column ccol telega-chat-fill-column
-        (telega-ins--content msg)
-        (telega-ins-prefix "\n"
-          (telega-ins--reply-markup msg)))))
+      (telega-ins--fwd-info-inline (plist-get msg :forward_info))
+      (telega-ins--reply-inline (telega-msg-reply-msg msg))
 
-  ;; Date/status starts at `telega-chat-fill-column' column
-  t)
+      (if (memq content-type '(messagePhoto messageSticker))
+          (progn
+            (telega-ins "\n  ")
+            (telega-ins--content msg))
+
+        (telega-ins--content msg)
+
+        (telega-ins-prefix "\n"
+          (telega-ins--reply-markup msg)))
+
+      (when channel-post-p (insert ?\n ?\n ?\^L ?\n)))
+    (telega-ins "\n")
+    t))
 
 
 
@@ -82,34 +113,11 @@ unless message is edited."
   (interactive "sFirst name: \nsLast name: ")
   (telega-server--call (list :@type "setName" :first_name first :last_name last)))
 
+(def-package! page-break-lines)
+(def-package! visual-fill-column)
 (def-package! telega
   ;; :load-path "~/devel/ext/telega.el"
   :commands (telega ivy-telega-chat-with)
-  :custom
-  (telega-inserter-for-msg-button 'sarg/telega-ins--message)
-  :config
-
-  (add-hook! telega-chat-mode
-    (visual-line-mode)
-    (visual-fill-column-mode)
-    (setq-local visual-fill-column-width (+ 11 telega-chat-fill-column)))
-
-
-  (advice-add! 'telega-logout :before-while (lambda (&rest r) (y-or-n-p "Really log out from current account?")))
-
-  (set-popup-rule! "^\\\*Telega Root\*"
-    :side 'left
-    :size 0.25
-    :ttl nil
-    :quit 'current
-    :select t)
-
-  (when (featurep! :completion ivy)
-    (load! "+ivy"))
-
-  (setq telega-chat-use-markdown-formatting t)
-  (require 'telega-notifications)
-  (telega-notifications-mode 1)
 
   ;; This fixes the issue with closing buffer when it is visible in other window.
   ;; The logic is as follows:
@@ -117,7 +125,46 @@ unless message is edited."
   ;;   this function delegates to original kill-this-buffer if the buffer isn't doom-real-buffer-p
   ;;   then doom|protect-visible-functions in kill-buffer-query-functions prevents the close.
   ;; So, to fix this make telega.el chat buffers real.
-  (add-hook 'telega-chat-mode-hook #'doom|mark-buffer-as-real)
+  :hook (telega-chat-mode . doom|mark-buffer-as-real)
+
+  :hook (telega-chat-mode . +telega|init-chatbuf)
+
+  :custom
+  (telega-inserter-for-msg-button 'sarg/telega-ins--message)
+
+  :config
+
+  (defun telega-msg--pp (msg)
+    "Pretty printer for MSG button."
+    (telega-button--insert 'telega-msg msg))
+
+  (defalias 'telega-ins--webpage #'ignore)
+
+  (defun +telega|init-chatbuf ()
+    (setq-local visual-fill-column-width (+ 11 telega-chat-fill-column))
+    (setq-local visual-fill-column-center-text nil)
+    (visual-line-mode)
+    (visual-fill-column-mode)
+    (page-break-lines-mode))
+
+  (advice-add! 'telega-logout :before-while (lambda (&rest r) (y-or-n-p "Really log out from current account?")))
+
+  (set-popup-rule! "^\\\*Telega Root\*"
+    :side 'left
+    :size 0.25
+    :ttl nil
+    :quit t
+    :select t)
+
+  (when (featurep! :completion ivy)
+    (load! "+ivy"))
+
+  (after! dired
+    (load! "+dired"))
+
+  (setq telega-chat-use-markdown-formatting t)
+  (require 'telega-notifications)
+  (telega-notifications-mode 1)
 
   (when (featurep! :feature evil)
     (map!

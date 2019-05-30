@@ -14,7 +14,7 @@
   :config
 
   (setq sarg/spotify-ads-dbus-handler
-        (dbus-register-signal :session "org.mpris.MediaPlayer2.Player"
+        (dbus-register-signal :session "org.mpris.MediaPlayer2.spotify"
                               "/org/mpris/MediaPlayer2"
                               "org.freedesktop.DBus.Properties"
                               "PropertiesChanged"
@@ -89,7 +89,7 @@
   (emms-player-set emms-player-spotify
                    'dbus-handler
                    (dbus-register-signal :session
-                                         "org.mpris.MediaPlayer2.Player"
+                                         "org.mpris.MediaPlayer2.spotify"
                                          "/org/mpris/MediaPlayer2"
                                          "org.freedesktop.DBus.Properties"
                                          "PropertiesChanged"
@@ -116,7 +116,7 @@
   (emms-player-set emms-player-spotify 'resume #'spotify-play)
 
   (emms-all)
-  ;; (emms-history-load)
+  (emms-history-load)
   (setq emms-player-list (list emms-player-spotify emms-player-mpv)
         emms-playlist-buffer-name "*Music*"
         emms-source-file-default-directory (expand-file-name "~/Music")

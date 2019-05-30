@@ -19,9 +19,9 @@
     (if (string= input pass)
         (apply proc args))))
 
-(after! elfeed
-  (advice-add 'elfeed-update :around #'sarg/ad-selfcontrol-otp-confirm)
-  (advice-add '=rss :around #'sarg/ad-selfcontrol-otp-confirm))
+;; (after! elfeed
+  ;; (advice-add 'elfeed-update :around #'sarg/ad-selfcontrol-otp-confirm)
+  ;; (advice-add '=rss :around #'sarg/ad-selfcontrol-otp-confirm))
   ;;(advice-add 'elfeed-update :around #'sarg/selfcontrol-time-restriction))
 
 ;; (after! telega

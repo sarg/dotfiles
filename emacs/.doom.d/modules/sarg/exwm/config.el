@@ -47,7 +47,7 @@ Can show completions at point for COMMAND using helm or ido"
 (def-package! exwm-mff)
 (def-package! xelb)
 (def-package! exwm
-  :hook (exwm-init . exwm-mff-mode)
+  ;; :hook (exwm-init . exwm-mff-mode)
   :init
   (set-popup-rule! "^\\*EXWM\\*$" :ignore t)
 
@@ -55,8 +55,8 @@ Can show completions at point for COMMAND using helm or ido"
 
   (require 'exwm-systemtray)
   (exwm-systemtray-enable)
-  (setq mouse-autoselect-window t
-        focus-follows-mouse t)
+  ;; (setq mouse-autoselect-window t
+  ;;       focus-follows-mouse t)
 
   :config
   (load! "+brightness")
@@ -170,8 +170,8 @@ Can show completions at point for COMMAND using helm or ido"
    "s-E"     #'sarg/with-browser
    "s-e"    `(lambda () (interactive) (sarg/run-or-raise "qutebrowser" "qutebrowser"))
 
-   "<s-return>" #'multi-term)
-   ;; "<s-return>" `(lambda () (interactive) (start-process "terminal" nil "my-terminal")))
+   ;; "<s-return>" #'multi-term)
+   "<s-return>" `(lambda () (interactive) (start-process "terminal" nil "my-terminal")))
 
   (when (featurep! :app telega +ivy)
     (exwm-input-set-key (kbd "s-i") #'ivy-telega-chat-with))
@@ -234,6 +234,8 @@ Can show completions at point for COMMAND using helm or ido"
                                      ((equal exwm-class-name "mpv")
                                       floating t
                                       floating-mode-line nil)
+                                     ((equal exwm-class-name "Slack")
+                                      managed t)
                                      ((equal exwm-class-name "TelegramDesktop")
                                       floating t
                                       floating-mode-line nil

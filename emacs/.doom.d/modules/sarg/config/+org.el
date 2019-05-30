@@ -18,6 +18,20 @@
     (if (equal "emacs-capture" (frame-parameter nil 'name))
         (delete-frame))))
 
+
+(defun org-contacts-filter-not-ignored (&rest args)
+  (-remove (lambda (contact)
+             (-contains?
+              (org-split-string
+               (or (cdr (assoc-string "ALLTAGS" (caddr contact))) "") ":")
+              "ignore"))
+           (org-contacts-db)))
+
+(defun sarg/export-contacts-to-vcard ()
+  (interactive)
+  (cl-letf (((symbol-function 'org-contacts-filter) #'org-contacts-filter-not-ignored))
+    (org-contacts-export-as-vcard)))
+
 (after! org
 
   (sarg/init-org-protocol)

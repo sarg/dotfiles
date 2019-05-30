@@ -40,7 +40,7 @@
         calendar-longitude 38
         circadian-themes
         '(
-          (:sunrise . kaolin-valley-light)
+          (:sunrise . kaolin-breeze)
           (:sunset . kaolin-valley-dark)
           ;; (:sunrise . sanityinc-tomorrow-day)
           ;; (:sunset . anti-zenburn)

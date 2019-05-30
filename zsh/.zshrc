@@ -1,11 +1,13 @@
 DISABLE_AUTO_UPDATE=true
-plugins=(git history python web-search vi-mode)
 ZSH=$HOME/.dotfiles/oh-my-zsh
 # FIXME: parser error in .zcompdump
 source $ZSH/oh-my-zsh.sh
 
+if [ -n "$INSIDE_EMACS" ]; then
+else
 source <(antibody init)
 antibody bundle < ~/.zsh_plugins.txt
+fi
 
 unsetopt flow_control
 zstyle ':notify:*' activate-terminal no
@@ -16,30 +18,6 @@ alias agrep=ack-grep
 alias g=git
 alias t=task
 alias em=emacs-one-frame.sh
-
-function extract () {
-    if [[ -f "$1" ]]; then
-        case "$1" in
-            *.tbz2 | *.tar.bz2) tar -xvjf  "$1"     ;;
-            *.txz | *.tar.xz)   tar -xvJf  "$1"     ;;
-            *.tgz | *.tar.gz)   tar -xvzf  "$1"     ;;
-            *.tar | *.cbt)      tar -xvf   "$1"     ;;
-            *.zip | *.cbz)      unzip      "$1"     ;;
-            *.rar | *.cbr)      unrar x    "$1"     ;;
-            *.arj)              unarj x    "$1"     ;;
-            *.ace)              unace x    "$1"     ;;
-            *.bz2)              bunzip2    "$1"     ;;
-            *.xz)               unxz       "$1"     ;;
-            *.gz)               gunzip     "$1"     ;;
-            *.7z)               7z x       "$1"     ;;
-            *.Z)                uncompress "$1"     ;;
-            *.gpg)        gpg -d "$1" | tar -xvzf - ;;
-            *) echo "Error: failed to extract '$1'" ;;
-        esac
-    else
-        echo "Error: '$1' is not a valid file for extraction"
-    fi
-}
 
 function ff() { find ${2:-.} -name "*$1*" ; }
 

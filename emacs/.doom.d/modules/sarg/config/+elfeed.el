@@ -1,4 +1,10 @@
 (after! elfeed
+  (defun sarg/elfeed-strip-content (entry)
+    (when (find "rmbody" (elfeed-entry-tags entry))
+      (setf (elfeed-entry-content entry) (elfeed-ref ""))
+      (elfeed-untag entry "rmbody")))
+
+  (add-hook 'elfeed-new-entry-hook #'sarg/elfeed-strip-content)
 
   (setq elfeed-search-filter "@2-week-ago +unread -youtube")
 

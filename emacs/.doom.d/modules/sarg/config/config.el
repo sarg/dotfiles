@@ -12,15 +12,10 @@
 (after! doom-modeline
   (setq doom-modeline-height 20))
 
-(after! password-store
-  (advice-add #'password-store-copy :override #'+pass/copy-secret))
-
-;; for magithub auth to work create pass entry user^magithub@api.github.com
-(after! magit
-    (setq magit-process-find-password-functions '(magit-process-password-auth-source)))
-
 ;; C-h deletes character backwards
 (define-key key-translation-map [?\C-h] [?\C-?])
+
+(set-popup-rule! "^\\*Async Shell" :ttl nil)
 
 ;; russian layout on C-\
 (setq-default
@@ -55,6 +50,10 @@
    :name "redis"
    :command "docker"
    :args '("start" "-a" "redis")))
+
+(def-package! web-search
+  :custom
+  (web-search-default-provider "DuckDuckGo"))
 
 (def-package! ox-hugo)
 (def-package! puppet-mode)
