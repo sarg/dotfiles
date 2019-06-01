@@ -16,7 +16,7 @@
        ;;(helm             ; the *other* search engine for love and life
        ;; +fuzzy)          ; enable fuzzy search backend for helm
        ;;ido               ; the other *other* search engine...
-       ivy                              ; a search engine for love and life
+       (ivy +fuzzy)                              ; a search engine for love and life
 
        :ui
        ;;deft              ; notational velocity for Emacs

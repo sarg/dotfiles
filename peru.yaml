@@ -57,7 +57,7 @@ imports:
 git module doom:
   url: https://github.com/hlissner/doom-emacs
   reup: develop
-  rev: c9493038a037b8ee989e31d0874a84d966e00fff
+  rev: 32e266cfb4be41951c8bbffd516ccf9456beeeb8
 
 git module oh-my-zsh:
   url: https://github.com/robbyrussell/oh-my-zsh.git

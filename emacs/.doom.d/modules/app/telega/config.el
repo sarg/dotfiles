@@ -166,7 +166,7 @@ unless message is edited."
   (require 'telega-notifications)
   (telega-notifications-mode 1)
 
-  (when (featurep! :feature evil)
+  (when (featurep! :editor evil)
     (map!
      (:map telega-msg-button-map
        "k" nil
