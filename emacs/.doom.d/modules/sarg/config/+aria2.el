@@ -35,6 +35,9 @@
 (use-package aria2
   :config
 
+  (set-popup-rule! aria2-list-buffer-name
+    :ignore t)
+
   (setq aria2-download-directory (expand-file-name "~/Downloads")
         aria2-add-evil-quirks t
         aria2-custom-args '("--rpc-save-upload-metadata=false")))
@@ -47,10 +50,11 @@
                               nil
                               t)))
 
-  (make-request aria2--cc "aria2.addTorrent"
-                (aria2--base64-encode-file (dired-get-filename))
-                (vector)
-                (list :dir dest-dir)))
+  (mapc (lambda (file) (make-request aria2--cc "aria2.addTorrent"
+                                (aria2--base64-encode-file file)
+                                (vector)
+                                (list :dir dest-dir)))
+        (dired-get-marked-files)))
 
 (defun sarg/aria2-marked-files (dest-dir)
   "Download selected files in torrent with aria2 to DEST-DIR."
@@ -60,9 +64,6 @@
                                   aria2-download-directory)
                               nil
                               t)))
-
-  (set-popup-rule! aria2-list-buffer-name
-    :ignore t)
 
   (let (indexes base64-file)
     (setq indexes (string-join

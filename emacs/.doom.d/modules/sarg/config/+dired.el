@@ -8,6 +8,7 @@
   (add-hook! dired-mode #'dired-collapse-mode))
 
 (def-package! dired-avfs)
+(def-package! dired-du)
 
 (after! dired
   (setq dired-dwim-target t))
@@ -19,6 +20,7 @@
   :config
   (setq openwith-associations
         '(("\\.pdf\\'" "zathura" (file))
+          ("\\.epub\\'" "llpp" (file))
           ("\\.\\(?:mkv\\|avi\\|mp4\\)\\'" "mpv" (file))))
 
   (openwith-mode t))

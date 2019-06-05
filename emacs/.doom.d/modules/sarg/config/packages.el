@@ -9,6 +9,7 @@
 (package! webpaste)
 (package! dired-filter)
 (package! dired-avfs)
+(package! dired-du)
 (package! dired-collapse)
 (package! aria2)
 (package! openwith)

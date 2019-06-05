@@ -49,6 +49,7 @@
        (format +onsave)     ; automated prettiness
        lispy                ; vim for lisp, for people who dont like vim
        multiple-cursors     ; editing in many places at once
+       ;;objed             ; text object editing for the innocent
        ;;parinfer          ; turn lisp into python, sort of
        rotate-text               ; cycle region at point between text candidates
        snippets                  ; my elves. They type so I don't have to
@@ -56,7 +57,7 @@
        :emacs
        (dired       ; making dired pretty [functional]
         ;;+ranger         ; bringing the goodness of ranger to dired
-        +icons                          ; colorful icons for dired-mode
+       ;;+icons          ; colorful icons for dired-mode
         )
        electric                   ; smarter, keyword-based electric-indent
        vc                         ; version-control and Emacs, sitting in a tree
@@ -108,6 +109,7 @@
        ;;elm               ; care for a cup of TEA?
        emacs-lisp ; drown in parentheses
        ;;ess               ; emacs speaks statistics
+       ;;fsharp           ; ML stands for Microsoft's Language
        ;;go                ; the hipster dialect
        ;;(haskell +intero) ; a language that's lazier than I am
        ;;hy                ; readability of scheme w/ speed of python
@@ -179,7 +181,7 @@
        ;; The default module sets reasonable defaults for Emacs. It also
        ;; provides a Spacemacs-inspired keybinding scheme and a smartparens
        ;; config. Use it as a reference for your own modules.
-       (default +evil-commands +bindings +smartparens)
+       (default +bindings +smartparens)
 
        :sarg
        config
