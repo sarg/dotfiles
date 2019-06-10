@@ -23,7 +23,7 @@
 
     (apply #'vector (nreverse retfiles))))
 
-(use-package bencode
+(def-package! bencode
   :config
   (push (cons "\\.torrent$" 'archive-mode) auto-mode-alist)
 
@@ -32,7 +32,7 @@
                 (when (string-match-p "\\.torrent$" (or buffer-file-name (buffer-name)))
                   'torrent))))
 
-(use-package aria2
+(def-package! aria2
   :config
 
   (set-popup-rule! aria2-list-buffer-name
