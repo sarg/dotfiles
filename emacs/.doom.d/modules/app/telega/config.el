@@ -131,8 +131,16 @@ unless message is edited."
 
   :custom
   (telega-inserter-for-msg-button 'sarg/telega-ins--message)
+  (telega-chat-use-markdown-formatting t)
+  (telega-msg-group-by-sender t)
 
   :config
+
+  (setenv "LD_LIBRARY_PATH"
+          (string-join
+           (list (expand-file-name "~/.telega/lib")
+                 (getenv "LD_LIBRARY_PATH"))
+           ":"))
 
   (defun telega-msg--pp (msg)
     "Pretty printer for MSG button."
@@ -147,7 +155,9 @@ unless message is edited."
     (visual-fill-column-mode)
     (page-break-lines-mode))
 
-  (advice-add! 'telega-logout :before-while (lambda (&rest r) (y-or-n-p "Really log out from current account?")))
+  (advice-add!
+   'telega-logout
+   :before-while (lambda (&rest r) (y-or-n-p "Really log out from current account?")))
 
   (set-popup-rule! "^\\\*Telega Root\*"
     :side 'left
@@ -162,7 +172,6 @@ unless message is edited."
   (after! dired
     (load! "+dired"))
 
-  (setq telega-chat-use-markdown-formatting t)
   (require 'telega-notifications)
   (telega-notifications-mode 1)
 

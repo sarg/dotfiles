@@ -1,12 +1,3 @@
-(defun sarg/brightness-change (amount)
-  "Adjust screen brightness relatively using the amount given"
-  (interactive "NChange screen brightness by: ")
-  (let ((brightness-string))
-    (if (> 0 amount)
-        (setq brightness-string (concat (number-to-string amount) "%"))
-      (setq brightness-string (concat "+" (number-to-string amount) "%")))
-    (start-process "brightness" nil "xbacklight" brightness-string)))
-
 (defvar sarg-redshift-timer 'nil
   "Stores redshift-adjust timer")
 
@@ -25,8 +16,8 @@
   (start-process-shell-command "redshift" nil "redshift" "-x"))
 
 (spacemacs/exwm-bind-command
- "<XF86MonBrightnessUp>"   `(lambda () (interactive) (sarg/brightness-change 10))
- "<XF86MonBrightnessDown>" `(lambda () (interactive) (sarg/brightness-change -10)))
+ "<XF86MonBrightnessUp>"   `(lambda () (interactive) (backlight-inc 100))
+ "<XF86MonBrightnessDown>" `(lambda () (interactive) (backlight-dec 100)))
 
 (sarg/redshift-start)
 

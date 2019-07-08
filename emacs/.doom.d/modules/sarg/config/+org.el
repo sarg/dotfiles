@@ -103,3 +103,8 @@
                       )
 
    org-catch-invisible-edits 'show-and-error))
+
+(def-package! linkmarks
+  :config
+
+  (setq linkmarks-file (concat org-directory "links.org")))

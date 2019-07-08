@@ -91,10 +91,6 @@ Can show completions at point for COMMAND using helm or ido"
   (add-hook 'exwm-mode-hook 'evil-emacs-state)
   (add-hook 'exwm-mode-hook 'hide-mode-line-mode)
 
-  (spacemacs/exwm-bind-command
-   "<s-f12>"           (sarg/shell-cmd "flameshot gui")
-   "<XF86ScreenSaver>" (sarg/shell-cmd "lock.sh"))
-
   ;; All buffers created in EXWM mode are named "*EXWM*". You may want to change
   ;; it in `exwm-update-class-hook' and `exwm-update-title-hook', which are run
   ;; when a new window class name or title is available. Here's some advice on
@@ -151,6 +147,7 @@ Can show completions at point for COMMAND using helm or ido"
    "S-s-U"   #'winner-redo
 
    "s-b"     #'ivy-switch-buffer
+   "s-g"     #'linkmarks-select
 
    "s-h"     #'evil-window-left
    "s-j"     #'evil-window-down
@@ -171,7 +168,10 @@ Can show completions at point for COMMAND using helm or ido"
    "s-e"    `(lambda () (interactive) (sarg/run-or-raise "qutebrowser" "qutebrowser"))
 
    ;; "<s-return>" #'multi-term)
-   "<s-return>" `(lambda () (interactive) (start-process "terminal" nil "my-terminal")))
+   "<s-return>" (sarg/shell-cmd "st")
+
+   "<s-f12>" (sarg/shell-cmd "flameshot gui")
+   "<s-delete>" (sarg/shell-cmd "lock.sh"))
 
   (when (featurep! :app telega +ivy)
     (exwm-input-set-key (kbd "s-i") #'ivy-telega-chat-with))
@@ -257,7 +257,8 @@ Can show completions at point for COMMAND using helm or ido"
   (delete-other-windows)
   (set-window-buffer (split-window-horizontally) "qutebrowser"))
 
-(use-package fate
+(def-package! fate
+  :disabled
   :load-path "~/devel/ext/fate"
   :config
   (setq fate:data-file "~/.events/win")

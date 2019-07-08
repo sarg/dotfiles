@@ -7,8 +7,7 @@
    
   Then install [[https://www.gnu.org/software/stow/][stow]] utility and peru
   #+BEGIN_SRC sh :dir /sudo::
-  sudo apt-get install stow
-  sudo apt-get install python3-pip
+  apt -y install stow python3-pip
   #+END_SRC
 
   Run peru to synchronize external repositories
@@ -23,42 +22,46 @@
   #+END_SRC
 * List of software
 ** firefox plugins
-   [[https://github.com/willsALMANJ/pentadactyl-signed/releases/latest][pentadactyl]]
-** qutebrowser
-   #+BEGIN_SRC sh :dir /sudo:: :results none
-   wget -m -l 1 -nd -np https://github.com/qutebrowser/qutebrowser/releases/latest -e robots=off --accept-regex='.*tag.*|.*.deb'
-   wget -m -l 1 -nd -np https://qutebrowser.org/INSTALL.html -A deb 
-   dpkg -i *.deb
-   # install missing dependencies
-   apt install -f --no-install-recommends
-   #+END_SRC
+[[https://github.com/willsALMANJ/pentadactyl-signed/releases/latest][pentadactyl]]
 ** debian software
+firmware-iwlwifi
+
+qutebrowser-webengine
+antibody curl atool
+st-patches (libx11-dev libxft-dev)
+openvpn strace pavucontrol notify-osd expect mlocate
+lightdm-mini-greeter
+pulseaudio pulseaudio-module-bluetooth
+
 #+BEGIN_SRC sh :dir /sudo:: :results none
 # tools
-sudo apt install htop syncthing unzip silversearcher-ag suckless-tools
+chsh zsh
+apt install -y rsync htop syncthing unzip silversearcher-ag suckless-tools
 
 # fonts
-echo <<EOF | xargs -n 1 apt install
+echo <<EOF | xargs -n 1 apt install -y
+fonts-hack
+fonts-symbola
 fonts-firacode
 fonts-dejavu
 EOF
 
 # desktop environment
-echo <<EOF | xargs -n 1 apt install
-lightdm awesome 
-xkbset 
-gnupg pass rofi
-maim slop xclip 
+echo <<EOF | xargs -n 1 apt install -y
+lightdm dunst xss-lock udiskie dbus-x11 avfs x11-xserver-utils xsetroot
+xkbset mpv nomacs
+gnupg pass pass-extension-otp rofi
+xclip flameshot
 zathura zathura-djvu feh
 alsa-utils 
 unclutter xautolock hsetroot
-syncthing htop
-zsh rxvt-unicode-256color 
-rawdog
+syncthing htop zsh apg atool
+calibre chromium expect
+laptop-mode-tools
 EOF
 
 # development
-echo <<EOF | xargs -n1 apt install 
-emacs25 default-jdk subversion git openvpn mercurial silversearcher-ag jq
+echo <<EOF | xargs -n1 apt install -y
+zsh default-jdk subversion git openvpn mercurial jq ripgrep
 EOF
 #+END_SRC

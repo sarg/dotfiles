@@ -1,6 +1,6 @@
 ;;; private/sarg/config.el -*- lexical-binding: t; -*-
 
-;; (load! "+bindings")
+(load! "+bindings")
 (load! "+elfeed")
 (load! "+dired")
 (load! "+email")
@@ -78,3 +78,9 @@
   :config
   (keyfreq-mode 1)
   (keyfreq-autosave-mode 1))
+
+(after! eshell
+  (add-hook 'eshell-first-time-mode-hook
+            (lambda ()
+              (map! :map eshell-mode-map
+                    :ni "C-r" #'counsel-esh-history))))

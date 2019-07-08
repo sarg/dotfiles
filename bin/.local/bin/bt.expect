@@ -1,0 +1,18 @@
+#!/usr/bin/expect -f
+
+set address [lindex $argv 0]
+if {$address == ""} { set address "B8:AD:3E:42:00:34" }
+
+set prompt "#"
+log_user 1
+
+spawn bluetoothctl
+expect $prompt
+
+send -- "connect $address\r"
+expect "Connection successful"
+expect "$prompt"
+
+send "quit\r"
+spawn notify-send "Bluetooth connected"
+expect "eof"
