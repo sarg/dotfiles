@@ -42,6 +42,15 @@ Can show completions at point for COMMAND using helm or ido"
     (if (and (not charging) (< remain 15))
         (notifications-notify :body "Battery too low! Please charge now!" :urgency 'critical))))
 
+;; props to https://github.com/ch11ng/exwm/issues/593
+(defun my-exwm-workspace-switch-to-buffer (orig-func buffer-or-name &rest args)
+  (when buffer-or-name
+    (if (or exwm--floating-frame
+            (with-current-buffer buffer-or-name exwm--floating-frame))
+        (exwm-workspace-switch-to-buffer buffer-or-name)
+      (apply orig-func buffer-or-name args))))
+        (derived-mode-p 'exwm-mode)
+
 (def-package! dmenu)
 ;; (def-package! gpastel)
 (def-package! exwm-mff)
@@ -62,6 +71,10 @@ Can show completions at point for COMMAND using helm or ido"
   (load! "+brightness")
   (load! "+volume")
   (load! "+spotify")
+
+
+  (advice-add 'switch-to-buffer :around 'my-exwm-workspace-switch-to-buffer)
+  (advice-add 'ivy--switch-buffer-action :around 'my-exwm-workspace-switch-to-buffer)
 
   (exwm-input-set-key (kbd "M-y") #'my/exwm-counsel-yank-pop)
 
@@ -228,10 +241,8 @@ Can show completions at point for COMMAND using helm or ido"
                                                                     (concat (format-time-string "%Y-%m-%d %T (%a w%W)"))
                                                                     (battery-format "| %L: %p%% (%t)" (funcall battery-status-function)))))
 
-  (setq exwm-manage-configurations '(((equal exwm-class-name "Peek")
-                                      floating t
-                                      floating-mode-line nil)
-                                     ((equal exwm-class-name "mpv")
+  (setq exwm-manage-configurations '(((-any? (lambda (el) (equal exwm-class-name el))
+                                             '("Peek" "mpv" "scrcpy"))
                                       floating t
                                       floating-mode-line nil)
                                      ((equal exwm-class-name "Slack")
