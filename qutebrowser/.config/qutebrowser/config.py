@@ -68,6 +68,7 @@ config.bind('T', 'set-cmd-text :open -t -i {url:pretty}')
 config.bind('xx', 'spawn -u orgprotocol')
 config.bind('xp', 'spawn -u password_fill')
 config.bind('xo', 'spawn -u qute-pass')
+config.bind('xg', 'spawn chromium {url}')
 
 config.bind('<Ctrl-w>', 'fake-key <Ctrl-Backspace>', mode='insert')
 config.bind('<Ctrl-h>', 'fake-key <Backspace>', mode='insert')
