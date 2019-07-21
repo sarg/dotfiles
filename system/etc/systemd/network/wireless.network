@@ -1,0 +1,11 @@
+[Match]
+Name=wl*
+
+[Link]
+Name=wifi
+
+[Network]
+DHCP=yes
+RouteMetric=20
+IPv6PrivacyExtensions=true
+
