@@ -1,6 +1,7 @@
 #!/bin/bash
 
-wpa_cli='/sbin/wpa_cli -i wlp5s0'
+device=$(ls -1d /sys/class/net/wl* | head -n1 | xargs basename)
+wpa_cli="/sbin/wpa_cli -i $device"
 
 if [ -z "$1" ]; then
     $wpa_cli status
