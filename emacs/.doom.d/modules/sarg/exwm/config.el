@@ -45,11 +45,11 @@ Can show completions at point for COMMAND using helm or ido"
 ;; props to https://github.com/ch11ng/exwm/issues/593
 (defun my-exwm-workspace-switch-to-buffer (orig-func buffer-or-name &rest args)
   (when buffer-or-name
-    (if (or exwm--floating-frame
-            (with-current-buffer buffer-or-name exwm--floating-frame))
+    (if (and (get-buffer buffer-or-name)
+             (or exwm--floating-frame
+                 (with-current-buffer buffer-or-name exwm--floating-frame)))
         (exwm-workspace-switch-to-buffer buffer-or-name)
       (apply orig-func buffer-or-name args))))
-        (derived-mode-p 'exwm-mode)
 
 (def-package! dmenu)
 ;; (def-package! gpastel)
