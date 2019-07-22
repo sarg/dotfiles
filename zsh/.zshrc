@@ -1,3 +1,4 @@
+source /usr/share/autojump/autojump.zsh
 DISABLE_AUTO_UPDATE=true
 ZSH=$HOME/.dotfiles/oh-my-zsh
 # FIXME: parser error in .zcompdump
