@@ -21,4 +21,5 @@
 (package! el-patch)
 (package! linkmarks :recipe (:fetcher github :repo "dustinlacewell/linkmarks"))
 (package! bencode :recipe (:fetcher github :repo "skeeto/emacs-bencode"))
+(package! sauron)
 ;; (package! ranger)
