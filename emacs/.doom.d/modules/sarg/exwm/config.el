@@ -1,5 +1,24 @@
 ;;; private/exwm/config.el -*- lexical-binding: t; -*-
 
+(defun exwm-change-screen-hook ()
+  (let ((xrandr-output-regexp "\n\\([^ ]+\\) connected ")
+        default-output)
+    (with-temp-buffer
+      (call-process "xrandr" nil t nil)
+      (goto-char (point-min))
+      (re-search-forward xrandr-output-regexp nil 'noerror)
+      (setq default-output (match-string 1))
+      (forward-line)
+      (if (not (re-search-forward xrandr-output-regexp nil 'noerror))
+          (call-process "xrandr" nil nil nil "--output" default-output "--auto")
+        (call-process
+         "xrandr" nil nil nil
+         "--output" (match-string 1) "--primary" "--auto"
+         "--output" default-output "--below" (match-string 1))
+        (setq exwm-randr-workspace-output-plist
+              (list 0 default-output
+                    1 (match-string 1)))))))
+
 (defun sarg/exwm-app-launcher ()
   "Launches an application in your PATH.
 Can show completions at point for COMMAND using helm or ido"
@@ -214,10 +233,7 @@ Can show completions at point for COMMAND using helm or ido"
 
   (require 'exwm-randr)
   ;; (setq exwm-randr-workspace-output-plist '(0 "VGA1"))
-  (add-hook 'exwm-randr-screen-change-hook
-            (lambda ()
-              (start-process-shell-command
-               "xrandr" nil "xrandr --auto --output LVDS1 --off --output DP2 --mode 2560x1440")))
+  (add-hook 'exwm-randr-screen-change-hook #'exwm-change-screen-hook)
   (exwm-randr-enable)
   ;; The following example demonstrates how to use simulation keys to mimic the
   ;; behavior of Emacs. The argument to `exwm-input-set-simulation-keys' is a
