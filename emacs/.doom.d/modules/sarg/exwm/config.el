@@ -206,7 +206,7 @@ Can show completions at point for COMMAND using helm or ido"
    "<s-delete>" (sarg/shell-cmd "lock.sh"))
 
   (when (featurep! :app telega +ivy)
-    (exwm-input-set-key (kbd "s-i") #'ivy-telega-chat-with))
+    (exwm-input-set-key (kbd "s-i") #'sauron-pop-to-buffer))
 
   (setq exwm-input-prefix-keys
         '(?\C-\\                        ; xim

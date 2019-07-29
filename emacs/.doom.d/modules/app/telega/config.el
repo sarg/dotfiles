@@ -116,7 +116,6 @@ unless message is edited."
 (def-package! page-break-lines)
 (def-package! visual-fill-column)
 (def-package! telega
-  ;; :load-path "~/devel/ext/telega.el"
   :commands (telega ivy-telega-chat-with)
 
   ;; This fixes the issue with closing buffer when it is visible in other window.
@@ -159,7 +158,7 @@ unless message is edited."
    'telega-logout
    :before-while (lambda (&rest r) (y-or-n-p "Really log out from current account?")))
 
-  (set-popup-rule! "^\\\*Telega Root\*"
+  (set-popup-rule! (regexp-quote telega-root-buffer-name)
     :side 'left
     :size 0.25
     :ttl nil
@@ -172,8 +171,9 @@ unless message is edited."
   (after! dired
     (load! "+dired"))
 
-  (require 'telega-notifications)
-  (telega-notifications-mode 1)
+  (after! sauron
+    (add-to-list 'sauron-modules 'sauron-telega)
+    (sauron-telega-start))
 
   (when (featurep! :editor evil)
     (map!
