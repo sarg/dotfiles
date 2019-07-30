@@ -10,7 +10,7 @@ c.editor.command = [ 'emacsclient', '-c', '{}' ]
 c.content.default_encoding = 'utf-8'
 c.scrolling.smooth = True
 c.downloads.remove_finished = 15000
-c.window.title_format = '[{host}] {title}'
+c.window.title_format = '[{host}] {current_title}'
 c.input.partial_timeout = 0
 c.input.links_included_in_focus_chain = False
 
