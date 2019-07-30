@@ -1,7 +1,4 @@
 [Match]
-Name=wl*
-
-[Link]
 Name=wifi
 
 [Network]

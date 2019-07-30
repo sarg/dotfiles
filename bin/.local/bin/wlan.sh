@@ -1,6 +1,6 @@
 #!/bin/bash
 
-device=$(ls -1d /sys/class/net/wl* | head -n1 | xargs basename)
+device=wifi
 wpa_cli="/sbin/wpa_cli -i $device"
 
 if [ -z "$1" ]; then
