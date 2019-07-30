@@ -79,8 +79,6 @@ unless message is edited."
     (telega-ins "\n")
     t))
 
-
-
 (defun sarg/telega-get-code ()
   "Extract confirmation code from latest message of telegram user BenderBot."
   (interactive)
@@ -114,7 +112,6 @@ unless message is edited."
   (telega-server--call (list :@type "setName" :first_name first :last_name last)))
 
 (def-package! page-break-lines)
-(def-package! visual-fill-column)
 (def-package! telega
   :commands (telega ivy-telega-chat-with)
 
@@ -172,6 +169,7 @@ unless message is edited."
     (load! "+dired"))
 
   (after! sauron
+    (load! "sauron-telega")
     (add-to-list 'sauron-modules 'sauron-telega)
     (sauron-telega-start))
 

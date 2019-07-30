@@ -1,5 +1,10 @@
 ;;; sarg/config/+sauron.el -*- lexical-binding: t; -*-
 
+(defun sarg/sauron-show ()
+  (interactive)
+  (sauron-start)
+  (pop-to-buffer (sr-create-buffer-maybe sr-buffer-name)))
+
 (def-package! sauron
   :config
 

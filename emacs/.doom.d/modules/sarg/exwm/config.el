@@ -1,6 +1,7 @@
 ;;; private/exwm/config.el -*- lexical-binding: t; -*-
 
 (defun exwm-change-screen-hook ()
+  (interactive)
   (let ((xrandr-output-regexp "\n\\([^ ]+\\) connected ")
         default-output)
     (with-temp-buffer
@@ -10,7 +11,7 @@
       (setq default-output (match-string 1))
       (forward-line)
       (if (not (re-search-forward xrandr-output-regexp nil 'noerror))
-          (call-process "xrandr" nil nil nil "--output" default-output "--auto")
+          (call-process "xrandr" nil nil nil "--auto")
         (call-process
          "xrandr" nil nil nil
          "--output" (match-string 1) "--primary" "--auto"
@@ -206,7 +207,7 @@ Can show completions at point for COMMAND using helm or ido"
    "<s-delete>" (sarg/shell-cmd "lock.sh"))
 
   (when (featurep! :app telega +ivy)
-    (exwm-input-set-key (kbd "s-i") #'sauron-pop-to-buffer))
+    (exwm-input-set-key (kbd "s-i") #'sarg/sauron-show))
 
   (setq exwm-input-prefix-keys
         '(?\C-\\                        ; xim
