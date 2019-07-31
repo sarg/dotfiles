@@ -12,13 +12,13 @@
     (error "sauron-telega is already running. Call
           sauron-telega-stop first."))
 
-  (add-hook 'telega-chat-pre-message-hook #'sauron-telega-hook)
+  (add-hook 'telega-chat-post-message-hook #'sauron-telega-hook)
   (setq sauron-telega-running t))
 
 (defun sauron-telega-stop ()
   "Stops and cleans up sauron-telega."
   (when sauron-telega-running
-    (remove-hook 'telega-chat-pre-message-hook #'sauron-telega-hook)
+    (remove-hook 'telega-chat-post-message-hook #'sauron-telega-hook)
     (setq sauron-telega-running nil)))
 
 (defun sauron-telega-hook (msg)
