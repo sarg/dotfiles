@@ -21,7 +21,7 @@ if [ ! -f $SETTINGS ]; then
     exit 0
 fi
 
-. ~/.notify-tg.settings
+. $SETTINGS
 
 CURL='curl -s -G --data-urlencode'
 DEST="https://api.telegram.org/bot${TOKEN}/sendMessage?chat_id=${CHAT_ID}"
