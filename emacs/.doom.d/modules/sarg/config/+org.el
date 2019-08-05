@@ -100,6 +100,7 @@
                       "~/Sync/org/projects.org"
                       "~/Sync/org/teztour.org"
                       "~/Sync/org/tickler.org"
+                      "~/Sync/org/auto1-cal.org"
                       )
 
    org-catch-invisible-edits 'show-and-error))

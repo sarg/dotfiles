@@ -262,8 +262,6 @@ Can show completions at point for COMMAND using helm or ido"
                                              '("Peek" "mpv" "scrcpy"))
                                       floating t
                                       floating-mode-line nil)
-                                     ((equal exwm-class-name "Slack")
-                                      managed t)
                                      ((equal exwm-class-name "TelegramDesktop")
                                       floating t
                                       floating-mode-line nil

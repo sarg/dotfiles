@@ -25,17 +25,21 @@
   "Hook which is called on new messages."
 
   (let* ((msg-id (plist-get msg :id))
-         (chat-id (plist-get msg :chat_id))
-         (chat (telega-chat-get chat-id))
-         (user-id (plist-get msg :sender_user_id))
+         (chat (telega-msg-chat msg))
          (username (telega-chat-username chat)))
 
-    (sauron-add-event
-     'telega sauron-prio-telega
-     (telega--desurrogate-apply
-      (telega-ins--as-string
-       (funcall telega-inserter-for-msg-notification msg)))
-     (lambda () (telega-chat--goto-msg chat msg-id t))
-     `(:sender ,username))))
+    (unless (or (telega-msg-ignored-p msg)
+                (> (- (time-to-seconds) (plist-get msg :date)) 60)
+                (not (zerop (telega-chat-notification-setting chat :mute_for)))
+                (telega-msg-seen-p msg chat)
+                (telega-msg-observable-p msg chat))
+
+      (sauron-add-event
+       'telega sauron-prio-telega
+       (telega--desurrogate-apply
+        (telega-ins--as-string
+         (funcall telega-inserter-for-msg-notification msg)))
+       (lambda () (telega-chat--goto-msg chat msg-id t))
+       `(:sender ,username)))))
 
 (provide 'sauron-telega)

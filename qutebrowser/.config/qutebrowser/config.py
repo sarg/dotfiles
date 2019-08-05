@@ -28,7 +28,8 @@ c.content.webgl = False
 
 c.url.default_page = 'about:blank'
 c.url.searchengines['gh'] = 'https://github.com/search?utf8=✓&type=Code&q={}'
-c.url.searchengines['gg'] = 'http://www.google.ru/search?hl=ru&q={}'
+c.url.searchengines['gg'] = 'https://www.google.ru/search?hl=ru&q={}'
+c.url.searchengines['aj'] = 'https://wkdauto.atlassian.net/browse/{}'
 
 c.colors.completion.fg = '#333333'
 c.colors.completion.item.selected.bg = 'white'

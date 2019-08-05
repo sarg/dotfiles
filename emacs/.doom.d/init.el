@@ -125,14 +125,11 @@
        ;;nim               ; python + lisp at the speed of c
        ;;nix               ; I hereby declare "nix geht mehr!"
        ;;ocaml             ; an objective camel
-       (org          ; organize your plain life in plain text
-        +attach      ; custom attachment system
-        +babel       ; running code in org
-        +capture     ; org-capture in and outside of Emacs
-        +export      ; Exporting org to whatever you want
-        +habit       ; Keep track of your habits
-        +present     ; Emacs for presentations
-        +protocol)   ; Support for org-protocol:// links
+       (org              ; organize your plain life in plain text
+        +dragndrop       ; file drag & drop support
+        +ipython         ; ipython support for babel
+        +pandoc          ; pandoc integration into org's exporter
+        +present)        ; Emacs for presentations
        ;;perl              ; write code no one else can comprehend
        ;;php               ; perl's insecure younger brother
        plantuml            ; diagrams for confusing people more
@@ -160,7 +157,7 @@
        ;; toward a specific purpose. They may have additional dependencies and
        ;; should be loaded late.
        :app
-       ;;calendar
+       calendar
        (telega +ivy)
        ;; irc               ; how neckbeards socialize
        (rss +org)                       ; emacs as an RSS reader
