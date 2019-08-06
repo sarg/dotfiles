@@ -77,6 +77,8 @@ Can show completions at point for COMMAND using helm or ido"
 (def-package! xelb)
 (def-package! exwm
   ;; :hook (exwm-init . exwm-mff-mode)
+  :hook (exwm-mode . doom|mark-buffer-as-real)
+
   :init
   (set-popup-rule! "^\\*EXWM\\*$" :ignore t)
 

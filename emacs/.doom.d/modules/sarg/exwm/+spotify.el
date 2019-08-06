@@ -1,6 +1,6 @@
 (defun spotify-set-mute (val)
   (let ((sink-input (-first (lambda (el)
-                              (string= "Spotify" (alist-get "application.name" (cdr el) nil nil #'string=)))
+                              (string= "spotify" (alist-get "application.process.binary" (cdr el) nil nil #'string=)))
                             (pulseaudio-control--get-sink-inputs))))
     (when sink-input
       (pulseaudio-control--set-sink-input-mute (car sink-input) val))))
