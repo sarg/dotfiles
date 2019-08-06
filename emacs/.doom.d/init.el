@@ -1,6 +1,4 @@
 ;;; init.el -*- lexical-binding: t; -*-
-(defvar org-directory (expand-file-name "~/Sync/org/"))
-(defvar evil-want-C-u-scroll nil)
 
 ;; (defun dont-byte-compile-telega (orig-fn pkg-desc)
 ;;   (unless (eq (package-desc-name pkg-desc) 'telega)
@@ -64,6 +62,7 @@
 
        :term
        eshell            ; a consistent, cross-platform shell (WIP)
+       shell             ; a terminal REPL for Emacs
        term              ; terminals in Emacs
        ;;vterm             ; another terminals in Emacs
 
@@ -129,7 +128,7 @@
         +dragndrop       ; file drag & drop support
         +ipython         ; ipython support for babel
         +pandoc          ; pandoc integration into org's exporter
-        +present)        ; Emacs for presentations
+        +present)        ; using Emacs for presentations
        ;;perl              ; write code no one else can comprehend
        ;;php               ; perl's insecure younger brother
        plantuml            ; diagrams for confusing people more
@@ -141,6 +140,7 @@
        ;;ruby              ; 1.step do {|i| p "Ruby is #{i.even? ? 'love' : 'life'}"}
        ;;rust              ; Fe2O3.unwrap().unwrap().unwrap().unwrap()
        ;;scala             ; java, but good
+       ;;scheme            ; a fully conniving family of lisps
        (sh +fish)           ; she sells (ba|z|fi)sh shells on the C xor
        ;;solidity          ; do you need a blockchain? No.
        ;;swift             ; who asked for emoji variables?
