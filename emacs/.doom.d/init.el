@@ -1,5 +1,7 @@
 ;;; init.el -*- lexical-binding: t; -*-
 
+(defvar org-directory (expand-file-name "~/Sync/org/"))
+
 ;; (defun dont-byte-compile-telega (orig-fn pkg-desc)
 ;;   (unless (eq (package-desc-name pkg-desc) 'telega)
 ;;     (funcall orig-fn pkg-desc)))

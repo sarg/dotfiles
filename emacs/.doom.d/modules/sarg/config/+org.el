@@ -37,7 +37,7 @@
   (sarg/init-org-protocol)
 
   (require 'org-contacts)
-  (setq-default org-contacts-files '("~/Sync/org/contacts.org"))
+  (setq-default org-contacts-files (list (concat org-directory "contacts.org")))
 
   (setq
    org-todo-keywords
@@ -65,7 +65,7 @@
                         ("~/Sync/org/notes.org" :maxlevel . 9)
                         ("~/Sync/org/someday.org" :maxlevel . 1)
                         )
-   org-outline-path-complete-in-steps nil         ; Refile in a single go
+   org-outline-path-complete-in-steps nil ; Refile in a single go
    org-refile-use-outline-path t
 
 
@@ -95,17 +95,18 @@
    org-bullets-bullet-list '("■" "◆" "▲" "▶")
 
    ;; agenda
-   org-agenda-files '("~/Sync/org/work.org"
-                      "~/Sync/org/mirea.org"
-                      "~/Sync/org/projects.org"
-                      "~/Sync/org/teztour.org"
-                      "~/Sync/org/tickler.org"
-                      "~/Sync/org/auto1-cal.org"
-                      )
+   org-agenda-files
+   (-map (lambda (el) (concat org-directory el))
+         '("work.org"
+           "mirea.org"
+           "projects.org"
+           "teztour.org"
+           "tickler.org"
+           "auto1-cal.org"))
 
    org-catch-invisible-edits 'show-and-error))
 
 (use-package! linkmarks
   :config
 
-  (setq linkmarks-file "~/Sync/org/links.org"))
+  (setq linkmarks-file (concat org-directory "links.org")))
