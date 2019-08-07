@@ -10,7 +10,7 @@
          (url (cl-caadr (assoc "xesam:url" metadata))))
     (spotify-set-mute (string-prefix-p "https://open.spotify.com/ad/" url))))
 
-(def-package! spotify
+(use-package! spotify
   :config
 
   (setq sarg/spotify-ads-dbus-handler
@@ -25,7 +25,7 @@
    "<XF86AudioNext>"    #'emms-next
    "<XF86AudioPrev>"    #'emms-previous))
 
-(def-package! counsel-spotify
+(use-package! counsel-spotify
   :config
 
   (cl-defmethod counsel-spotify-do-play ((backend counsel-spotify-linux-backend) (playable counsel-spotify-playable))
@@ -98,7 +98,7 @@
 ;(emms-add-url "spotify:user:spotify:playlist:37i9dQZEVXbk5YUFhWd7TC")
 ;(emms-add-url "spotify:artist:3SYkxKBdwKFCTxWDh9l5f9")
 
-(def-package! emms
+(use-package! emms
   :config
 
   (defcustom emms-player-spotify

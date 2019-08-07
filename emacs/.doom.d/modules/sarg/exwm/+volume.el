@@ -1,4 +1,4 @@
-(def-package! pulseaudio-control
+(use-package! pulseaudio-control
   ;; :load-path "~/devel/ext/pulseaudio-control/"
 
   :config

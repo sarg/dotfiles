@@ -52,14 +52,14 @@
    :command "docker"
    :args '("start" "-a" "redis")))
 
-(def-package! web-search
+(use-package! web-search
   :custom
   (web-search-default-provider "DuckDuckGo"))
 
-(def-package! ox-hugo)
-(def-package! puppet-mode)
-(def-package! nginx-mode)
-(def-package! slack
+(use-package! ox-hugo)
+(use-package! puppet-mode)
+(use-package! nginx-mode)
+(use-package! slack
   :init
   (set-popup-rule! "^\\*Slack" :ignore t)
   (setq slack-prefer-current-team t)
@@ -69,13 +69,13 @@
   :config
   (load! "+slack"))
 
-(def-package! webpaste)
-;; (def-package! ranger
+(use-package! webpaste)
+;; (use-package! ranger
 ;;   :config
 ;;   (ranger-override-dired-mode t))
 
-(def-package! multitran)
-(def-package! keyfreq
+(use-package! multitran)
+(use-package! keyfreq
   :config
   (keyfreq-mode 1)
   (keyfreq-autosave-mode 1))

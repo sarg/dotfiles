@@ -22,10 +22,10 @@
 (sarg/redshift-start)
 
 ;; Change color theme based on day time
-(def-package! color-theme-sanityinc-tomorrow)
-(def-package! kaolin-themes)
-(def-package! anti-zenburn-theme)
-(def-package! circadian
+(use-package! color-theme-sanityinc-tomorrow)
+(use-package! kaolin-themes)
+(use-package! anti-zenburn-theme)
+(use-package! circadian
   :config
   (setq calendar-latitude 56
         calendar-longitude 38

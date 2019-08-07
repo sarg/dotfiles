@@ -77,7 +77,7 @@
   (interactive)
   (+pass/read-entry (concat "Email/" user-mail-address)))
 
-(def-package! mu4e
+(use-package! mu4e
   :commands (mu4e mu4e-compose-new)
   :init
   (provide 'html2text)                  ; disable obsolete package

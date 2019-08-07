@@ -23,7 +23,7 @@
 
     (apply #'vector (nreverse retfiles))))
 
-(def-package! bencode
+(use-package! bencode
   :mode ("\\.torrent\\'" . archive-mode)
   :config
 
@@ -56,7 +56,7 @@
                 (list (aria2--list-entries-Err e)      'face 'aria2-error-face)))
               entries)))))
 
-(def-package! aria2
+(use-package! aria2
   :config
   (add-to-list 'evil-normal-state-modes 'aria2-mode)
 

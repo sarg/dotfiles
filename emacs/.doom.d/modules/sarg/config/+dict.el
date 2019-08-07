@@ -1,3 +1,3 @@
-(def-package! mpv)
-(def-package! goldendict)
-(def-package! dictcc)
+(use-package! mpv)
+(use-package! goldendict)
+(use-package! dictcc)

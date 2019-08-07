@@ -71,13 +71,14 @@ Can show completions at point for COMMAND using helm or ido"
         (exwm-workspace-switch-to-buffer buffer-or-name)
       (apply orig-func buffer-or-name args))))
 
-(def-package! dmenu)
-;; (def-package! gpastel)
-(def-package! exwm-mff)
-(def-package! xelb)
-(def-package! exwm
+(use-package! dmenu)
+;; (use-package! gpastel)
+;; (use-package! exwm-mff)
+(use-package! xelb)
+(use-package! exwm
+  :commands exwm-enable
   ;; :hook (exwm-init . exwm-mff-mode)
-  :hook (exwm-mode . doom|mark-buffer-as-real)
+  :hook (exwm-mode . doom-mark-buffer-as-real-h)
 
   :init
   (set-popup-rule! "^\\*EXWM\\*$" :ignore t)
@@ -285,7 +286,7 @@ Can show completions at point for COMMAND using helm or ido"
   (delete-other-windows)
   (set-window-buffer (split-window-horizontally) "qutebrowser"))
 
-(def-package! fate
+(use-package! fate
   :disabled
   :load-path "~/devel/ext/fate"
   :config

@@ -5,7 +5,7 @@
   (sauron-start)
   (pop-to-buffer (sr-create-buffer-maybe sr-buffer-name)))
 
-(def-package! sauron
+(use-package! sauron
   :config
 
   (setq sauron-modules '(sauron-dbus sauron-org))

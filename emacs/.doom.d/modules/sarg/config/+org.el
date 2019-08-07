@@ -105,7 +105,7 @@
 
    org-catch-invisible-edits 'show-and-error))
 
-(def-package! linkmarks
+(use-package! linkmarks
   :config
 
-  (setq linkmarks-file (concat org-directory "links.org")))
+  (setq linkmarks-file "~/Sync/org/links.org"))

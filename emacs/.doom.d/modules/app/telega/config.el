@@ -111,8 +111,8 @@ unless message is edited."
   (interactive "sFirst name: \nsLast name: ")
   (telega-server--call (list :@type "setName" :first_name first :last_name last)))
 
-(def-package! page-break-lines)
-(def-package! telega
+(use-package! page-break-lines)
+(use-package! telega
   :commands (telega ivy-telega-chat-with)
 
   ;; This fixes the issue with closing buffer when it is visible in other window.
@@ -121,7 +121,7 @@ unless message is edited."
   ;;   this function delegates to original kill-this-buffer if the buffer isn't doom-real-buffer-p
   ;;   then doom|protect-visible-functions in kill-buffer-query-functions prevents the close.
   ;; So, to fix this make telega.el chat buffers real.
-  :hook (telega-chat-mode . doom|mark-buffer-as-real)
+  :hook (telega-chat-mode . doom-mark-buffer-as-real-h)
 
   :hook (telega-chat-mode . +telega|init-chatbuf)
 
@@ -151,7 +151,7 @@ unless message is edited."
     (visual-fill-column-mode)
     (page-break-lines-mode))
 
-  (advice-add!
+  (advice-add
    'telega-logout
    :before-while (lambda (&rest r) (y-or-n-p "Really log out from current account?")))
 
