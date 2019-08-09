@@ -142,8 +142,6 @@ unless message is edited."
     "Pretty printer for MSG button."
     (telega-button--insert 'telega-msg msg))
 
-  (defalias 'telega-ins--webpage #'ignore)
-
   (defun +telega|init-chatbuf ()
     (setq-local visual-fill-column-width (+ 11 telega-chat-fill-column))
     (setq-local visual-fill-column-center-text nil)

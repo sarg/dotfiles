@@ -64,10 +64,7 @@
   (set-popup-rule! "^\\*Slack" :ignore t)
   (setq slack-prefer-current-team t)
 
-  :commands (slack-start)
-
-  :config
-  (load! "+slack"))
+  :commands (slack-start))
 
 (use-package! webpaste)
 ;; (use-package! ranger

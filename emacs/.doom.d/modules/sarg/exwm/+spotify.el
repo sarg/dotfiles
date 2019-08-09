@@ -10,15 +10,30 @@
          (url (cl-caadr (assoc "xesam:url" metadata))))
     (spotify-set-mute (string-prefix-p "https://open.spotify.com/ad/" url))))
 
+(defun sarg/name-owner-changed-handler (interface properties &rest args)
+  (when (string= "org.mpris.MediaPlayer2.spotify" interface)
+    (if (string-empty-p properties)
+        (setq sarg/spotify-ads-dbus-handler
+              (dbus-register-signal :session "org.mpris.MediaPlayer2.spotify"
+                                    "/org/mpris/MediaPlayer2"
+                                    "org.freedesktop.DBus.Properties"
+                                    "PropertiesChanged"
+                                    #'sarg/spotify-cut-ads))
+      (when sarg/spotify-ads-dbus-handler
+        (dbus-unregister-object sarg/spotify-ads-dbus-handler)
+        (setq sarg/spotify-ads-dbus-handler nil)))))
+
 (use-package! spotify
   :config
 
-  (setq sarg/spotify-ads-dbus-handler
-        (dbus-register-signal :session "org.mpris.MediaPlayer2.spotify"
-                              "/org/mpris/MediaPlayer2"
-                              "org.freedesktop.DBus.Properties"
-                              "PropertiesChanged"
-                              #'sarg/spotify-cut-ads))
+  (setq sarg/name-owner-changed
+        (dbus-register-signal :session
+                              "org.freedesktop.DBus"
+                              "/org/freedesktop/DBus"
+                              "org.freedesktop.DBus"
+                              "NameOwnerChanged"
+                              #'sarg/name-owner-changed-handler))
+  ;; (dbus-unregister-object sarg/spotify-ads-dbus-handler)
 
   (spacemacs/exwm-bind-command
    "<XF86AudioPlay>"    #'emms-pause
@@ -71,10 +86,13 @@
 
 (defun emms-player-spotify-start (track)
   (emms-player-spotify-enable-dbus-handler)
-  (spotify-dbus-call
-   "org.mpris.MediaPlayer2.Player"
-   "OpenUri"
-   (emms-player-spotify--transform-url (emms-track-name track)))
+  (dbus-call-method-asynchronously :session
+                                   "org.mpris.MediaPlayer2.spotify"
+                                   "/org/mpris/MediaPlayer2"
+                                   "org.mpris.MediaPlayer2.Player"
+                                   "OpenUri"
+                                   nil
+                                   (emms-player-spotify--transform-url (emms-track-name track)))
   (emms-player-started emms-player-spotify))
 
 (defun emms-player-spotify-stop ()

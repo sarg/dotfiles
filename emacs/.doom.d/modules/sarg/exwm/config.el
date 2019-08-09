@@ -204,7 +204,7 @@ Can show completions at point for COMMAND using helm or ido"
    "s-e"    `(lambda () (interactive) (sarg/run-or-raise "qutebrowser" "qutebrowser"))
 
    ;; "<s-return>" #'multi-term)
-   "<s-return>" (sarg/shell-cmd "st")
+   "<s-return>" #'vterm
 
    "<s-f12>" (sarg/shell-cmd "flameshot gui")
    "<s-delete>" (sarg/shell-cmd "lock.sh"))
