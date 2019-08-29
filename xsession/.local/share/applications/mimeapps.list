@@ -1,11 +1,11 @@
 [Default Applications]
-text/html=qutebrowser.desktop
-x-scheme-handler/http=qutebrowser.desktop
-x-scheme-handler/https=qutebrowser.desktop
-x-scheme-handler/about=qutebrowser.desktop
-x-scheme-handler/unknown=qutebrowser.desktop
-application/x-dvi=zathura.desktop
-application/pdf=zathura.desktop
+text/html=org.qutebrowser.qutebrowser.desktop
+x-scheme-handler/http=org.qutebrowser.qutebrowser.desktop
+x-scheme-handler/https=org.qutebrowser.qutebrowser.desktop
+x-scheme-handler/about=org.qutebrowser.qutebrowser.desktop
+x-scheme-handler/unknown=org.qutebrowser.qutebrowser.desktop
+application/x-dvi=org.pwmt.zathura.desktop
+application/pdf=org.pwmt.zathura.desktop
 image/jpeg=feh.desktop
 image/bmp=feh.desktop
 image/png=feh.desktop
