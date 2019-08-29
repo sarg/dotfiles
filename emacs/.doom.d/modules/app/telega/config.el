@@ -39,7 +39,6 @@ unless message is edited."
            (avatar (if channel-post-p
                        (telega-chat-avatar-image chat)
                      (telega-user-avatar-image sender)))
-           (awidth (string-width (plist-get (cdr avatar) :telega-text)))
            (tfaces (list (if (telega-msg-by-me-p msg)
                              'telega-msg-self-title
                            'telega-msg-user-title)))
@@ -63,7 +62,7 @@ unless message is edited."
 
       (setq ccol (telega-current-column))
       (telega-ins--fwd-info-inline (plist-get msg :forward_info))
-      (telega-ins--reply-inline (telega-msg-reply-msg msg))
+      (telega-ins--msg-reply-inline msg)
 
       (if (memq content-type '(messagePhoto messageSticker))
           (progn
