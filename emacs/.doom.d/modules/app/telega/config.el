@@ -127,15 +127,10 @@ unless message is edited."
   :custom
   (telega-inserter-for-msg-button 'sarg/telega-ins--message)
   (telega-chat-use-markdown-formatting t)
+  (telega-server-libs-prefix "/usr")
   (telega-msg-group-by-sender t)
 
   :config
-
-  (setenv "LD_LIBRARY_PATH"
-          (string-join
-           (list (expand-file-name "~/.telega/lib")
-                 (getenv "LD_LIBRARY_PATH"))
-           ":"))
 
   (defun telega-msg--pp (msg)
     "Pretty printer for MSG button."

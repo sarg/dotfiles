@@ -25,7 +25,7 @@
 ;; set browser
 (setq-default
  browse-url-browser-function 'browse-url-generic
- browse-url-generic-program "qutebrowser-background")
+ browse-url-generic-program "qutebrowser")
 
 (defun oleh-term-exec-hook ()
   (let* ((buff (current-buffer))
