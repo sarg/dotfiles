@@ -6,7 +6,7 @@
 (load! "+email")
 (load! "+org")
 (load! "+pass")
-(load! "+aria2")
+;; (load! "+aria2")
 (load! "+sauron")
 (load! "+selfcontrol")
 
@@ -38,19 +38,8 @@
 
 (add-hook 'term-exec-hook 'oleh-term-exec-hook)
 
-(setq doom-theme 'doom-one-light
-      doom-font (font-spec :family "Hack" :size 14))
-
-(after! prodigy
-  (prodigy-define-service
-   :name "nginx"
-   :command "docker-compose"
-   :args '("up")
-   :cwd "~/devel/nginx")
-  (prodigy-define-service
-   :name "redis"
-   :command "docker"
-   :args '("start" "-a" "redis")))
+(setq doom-theme 'white-sand-theme
+      doom-font (font-spec :family "Hack" :size 16))
 
 (use-package! web-search
   :custom

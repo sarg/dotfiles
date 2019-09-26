@@ -11,7 +11,8 @@
 (package! dired-avfs)
 (package! dired-du)
 (package! dired-collapse)
-(package! aria2)
+;; (package! aria2
+  ;; :recipe (:host gitlab :repo "ukaszg/aria2" :branch "remake"))
 (package! openwith)
 (package! web-search)
 (package! keyfreq)
@@ -23,4 +24,7 @@
 (package! bencode :recipe (:host github :repo "skeeto/emacs-bencode"))
 (package! sauron)
 (package! google-translate)
+(package! white-sand-theme)
 ;; (package! ranger)
+
+(package! magit-todos :disable t)
