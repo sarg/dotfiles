@@ -6,10 +6,10 @@
 
 (defun dired-telega-copy ()
   (when-let*
-      ((files (-filter #'file-regular-p (dired-get-marked-files)))
+      ((files (seq-filter #'file-regular-p (dired-get-marked-files)))
        (chatbuf (telega-dwim-chatbuf)))
     (select-window chatbuf)
-    (-each files #'telega-chatbuf-attach-file)))
+    (mapc #'telega-chatbuf-attach-file files)))
 
 (advice-add 'dired-do-copy :before-until
             (lambda (&rest args)
