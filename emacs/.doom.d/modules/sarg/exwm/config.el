@@ -118,10 +118,10 @@ Can show completions at point for COMMAND using helm or ido"
   (setq use-dialog-box nil)
   (setq exwm-workspace-number 5)
   ;; You may want Emacs to show you the time
-  (display-time-mode t)
-  (setq display-time-24hr-format t)
+  ;; (display-time-mode t)
+  ;; (setq display-time-24hr-format t)
   ;; (setq-default display-time-format "%H:%M")
-  (setq display-time-default-load-average nil)
+  ;; (setq display-time-default-load-average nil)
 
   (add-to-list 'evil-emacs-state-modes 'exwm-mode)
   (add-hook 'exwm-mode-hook 'evil-emacs-state)
@@ -204,7 +204,8 @@ Can show completions at point for COMMAND using helm or ido"
    "s-e"    `(lambda () (interactive) (sarg/run-or-raise "qutebrowser" "qutebrowser"))
 
    ;; "<s-return>" #'multi-term)
-   "<s-return>" #'vterm
+   "<s-return>" #'+eshell/here
+   "<S-s-return>" #'vterm
 
    "<s-f12>" (sarg/shell-cmd "flameshot gui")
    "<s-delete>" (sarg/shell-cmd "lock.sh"))

@@ -11,7 +11,13 @@
 (load! "+selfcontrol")
 
 (after! doom-modeline
-  (setq doom-modeline-height 20))
+  (setq doom-modeline-height 20
+        doom-modeline-icon t
+        doom-modeline-percent-position nil
+        doom-modeline-major-mode-icon nil
+        doom-modeline-buffer-encoding nil)
+
+  (remove-hook 'doom-modeline-mode-hook #'size-indication-mode))
 
 ;; C-h deletes character backwards
 (define-key key-translation-map [?\C-h] [?\C-?])
@@ -38,6 +44,7 @@
 
 (add-hook 'term-exec-hook 'oleh-term-exec-hook)
 
+(use-package! white-sand-theme)
 (setq doom-theme 'white-sand-theme
       doom-font (font-spec :family "Hack" :size 16))
 
