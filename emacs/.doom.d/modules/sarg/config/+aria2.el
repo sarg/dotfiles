@@ -57,6 +57,7 @@
               entries)))))
 
 (use-package! aria2
+  :disabled
   :config
   (add-to-list 'evil-normal-state-modes 'aria2-mode)
 

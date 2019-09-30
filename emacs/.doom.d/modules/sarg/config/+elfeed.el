@@ -37,7 +37,7 @@
   (add-hook 'elfeed-show-mode-hook (lambda () (setq-local browse-url-generic-program "qutebrowser-background")))
 
   (setq elfeed-search-filter "@2-week-ago +unread -youtube"
-        elfeed-show-entry-switch (lambda (buf) (display-buffer-below-selected buf nil)))
+        elfeed-show-entry-switch (lambda (buf) (display-buffer-below-selected buf nil) (select-window (get-buffer-window buf))))
 
   (evil-define-key 'normal elfeed-show-mode-map
     "go" 'ambrevar/elfeed-visit-or-play-with-mpv

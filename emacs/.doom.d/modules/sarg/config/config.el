@@ -6,7 +6,7 @@
 (load! "+email")
 (load! "+org")
 (load! "+pass")
-;; (load! "+aria2")
+(load! "+aria2")
 (load! "+sauron")
 (load! "+selfcontrol")
 

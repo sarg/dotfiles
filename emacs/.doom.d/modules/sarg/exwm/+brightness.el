@@ -15,9 +15,15 @@
   (when sarg-redshift-timer (cancel-timer sarg-redshift-timer))
   (start-process-shell-command "redshift" nil "redshift" "-x"))
 
+(defhydra hydra-brightness ()
+    "brightness"
+    ("<f8>" (progn (backlight-dec 100) (message "Brightness: %d" backlight--current-brightness)) "dec")
+    ("<f9>" (progn (backlight-inc 100) (message "Brightness: %d" backlight--current-brightness)) "inc"))
+
+
 (spacemacs/exwm-bind-command
- "<XF86MonBrightnessUp>"   `(lambda () (interactive) (backlight-inc 100))
- "<XF86MonBrightnessDown>" `(lambda () (interactive) (backlight-dec 100)))
+ "<XF86MonBrightnessUp>"   `hydra-brightness/body
+ "<XF86MonBrightnessDown>" `hydra-brightness/body)
 
 (sarg/redshift-start)
 

@@ -28,3 +28,4 @@
 ;; (package! ranger)
 
 (package! magit-todos :disable t)
+(package! powerthesaurus)

@@ -8,7 +8,7 @@
  :emacs       dired electric
  :term        eshell shell term vterm
  :tools       editorconfig eval flycheck (lookup +docsets) magit pdf (pass +auth)
- :lang        clojure emacs-lisp (org +dragndrop +ipython +pandoc +present) rest (sh +fish)
+ :lang        clojure hy emacs-lisp (org +dragndrop +ipython +pandoc +present) rest (sh +fish)
  :app         calendar (telega +ivy) (rss +org)
  :config      (default +bindings +smartparens)
  :sarg        config exwm)

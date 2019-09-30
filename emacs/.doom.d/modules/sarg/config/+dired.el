@@ -22,7 +22,6 @@
   (-any? (lambda (oa) (string-match (car oa) file)) openwith-associations))
 
 (use-package! openwith
-  :hook (after-init . openwith-mode)
   :custom
   (openwith-associations
    '(("\\.pdf\\'" "zathura" (file))
@@ -30,6 +29,7 @@
      ("\\.\\(?:mkv\\|webm\\|avi\\|mp4\\)\\'" "mpv" (file))))
 
   :config
+  (openwith-mode)
   ;; Don't ask if file is too large when it'll be handled by openwith-mode.
   (advice-add 'abort-if-file-too-large :before-until
               (lambda (size op-type filename &rest args)
