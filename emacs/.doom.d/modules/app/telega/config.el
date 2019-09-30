@@ -128,6 +128,7 @@ unless message is edited."
   (telega-inserter-for-msg-button 'sarg/telega-ins--message)
   (telega-chat-use-markdown-formatting t)
   (telega-server-libs-prefix "/usr")
+  (telega-animation-play-inline nil)
   (telega-msg-group-by-sender t)
 
   :config
@@ -146,6 +147,9 @@ unless message is edited."
   (advice-add
    'telega-logout
    :before-while (lambda (&rest r) (y-or-n-p "Really log out from current account?")))
+
+  (set-popup-rule! (regexp-quote "*Telega Instant View*")
+    :ignore t)
 
   (set-popup-rule! (regexp-quote telega-root-buffer-name)
     :side 'left

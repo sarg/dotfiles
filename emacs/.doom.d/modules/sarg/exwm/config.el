@@ -266,6 +266,8 @@ Can show completions at point for COMMAND using helm or ido"
                                              '("Peek" "mpv" "scrcpy"))
                                       floating t
                                       floating-mode-line nil)
+                                     ((equal exwm-instance-name "sun-awt-X11-XDialogPeer")
+                                      floating t)
                                      ((equal exwm-class-name "TelegramDesktop")
                                       floating t
                                       floating-mode-line nil
@@ -308,3 +310,6 @@ Can show completions at point for COMMAND using helm or ido"
             (format-time-string "%s.%6N")
             (fate:escape left)
             (fate:escape right))))
+
+(use-package! statusbar
+  :hook (after-init . statusbar-mode))

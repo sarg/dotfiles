@@ -17,4 +17,6 @@
 (package! counsel-spotify)
 (package! emms)
 (package! backlight)
+(package! statusbar
+  :recipe (:host github :repo "dakra/statusbar.el"))
 ;; (package! exwm-mff :recipe (:host github :repo "ieure/exwm-mff"))
