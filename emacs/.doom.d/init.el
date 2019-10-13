@@ -5,7 +5,7 @@
  :completion  company (ivy +fuzzy)
  :ui          nav-flash modeline ophints (popup +all +defaults) pretty-code unicode vc-gutter window-select
  :editor      (evil +everywhere) fold lispy snippets (format +onsave) multiple-cursors
- :emacs       dired electric
+ :emacs       dired electric vc
  :term        eshell shell term vterm
  :tools       editorconfig eval flycheck (lookup +docsets) magit pdf (pass +auth)
  :lang        clojure data hy emacs-lisp (org +dragndrop +ipython +pandoc +present) rest (sh +fish)
