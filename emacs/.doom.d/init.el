@@ -3,7 +3,7 @@
 (defvar org-directory (expand-file-name "~/Sync/org/"))
 (doom!
  :completion  company (ivy +fuzzy)
- :ui          nav-flash modeline ophints (popup +all +defaults) pretty-code unicode vc-gutter window-select
+ :ui          nav-flash modeline ophints (popup +all +defaults) pretty-code unicode vc-gutter window-select treemacs
  :editor      (evil +everywhere) fold lispy snippets (format +onsave) multiple-cursors
  :emacs       dired electric vc
  :term        eshell shell term vterm
