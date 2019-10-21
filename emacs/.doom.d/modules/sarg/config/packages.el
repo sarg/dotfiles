@@ -22,7 +22,6 @@
 (package! el-patch)
 (package! linkmarks :recipe (:host github :repo "dustinlacewell/linkmarks"))
 (package! bencode :recipe (:host github :repo "skeeto/emacs-bencode"))
-(package! sauron)
 (package! google-translate)
 (package! white-sand-theme)
 ;; (package! ranger)

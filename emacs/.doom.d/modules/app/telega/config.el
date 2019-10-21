@@ -164,11 +164,6 @@ unless message is edited."
   (after! dired
     (load! "+dired"))
 
-  (after! sauron
-    (load! "sauron-telega")
-    (add-to-list 'sauron-modules 'sauron-telega)
-    (sauron-telega-start))
-
   (when (featurep! :editor evil)
     (map!
      (:map telega-msg-button-map

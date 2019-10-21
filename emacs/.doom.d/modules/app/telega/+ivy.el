@@ -2,7 +2,7 @@
 (defun ivy-telega-chat-highlight (chat)
   (let ((unread (funcall (telega--tl-prop :unread_count) chat))
         (title (telega-chat-title chat 'with-identity))
-        (not-muted-p (not (telega-chat--muted-p chat)))
+        (not-muted-p (not (telega-chat-muted-p chat)))
         (mentions (funcall (telega--tl-prop :unread_mention_count) chat)))
 
     (if (and not-muted-p (> (+ unread mentions) 0))

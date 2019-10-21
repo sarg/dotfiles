@@ -144,12 +144,14 @@ Can show completions at point for COMMAND using helm or ido"
   (add-hook 'exwm-update-class-hook
             (lambda ()
               (unless (or (string-prefix-p "sun-awt-X11-" exwm-instance-name)
+                          (string= "qutebrowser" exwm-instance-name)
                           (string= "gimp" exwm-instance-name))
                 (exwm-workspace-rename-buffer exwm-class-name))))
 
   (add-hook 'exwm-update-title-hook
             (lambda ()
               (when (or (not exwm-instance-name)
+                        (string= "qutebrowser" exwm-instance-name)
                         (string-prefix-p "sun-awt-X11-" exwm-instance-name)
                         (string= "gimp" exwm-instance-name))
                 (exwm-workspace-rename-buffer exwm-title))))

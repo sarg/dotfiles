@@ -1,4 +1,4 @@
-;;; app/telega/sauron-telega.el -*- lexical-binding: t; -*-
+;;; app/sauron/sauron-telega.el -*- lexical-binding: t; -*-
 
 (defvar sauron-prio-telega 3
   "telega event priority.")

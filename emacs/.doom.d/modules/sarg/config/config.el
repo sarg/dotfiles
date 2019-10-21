@@ -7,7 +7,6 @@
 (load! "+org")
 (load! "+pass")
 (load! "+aria2")
-(load! "+sauron")
 (load! "+selfcontrol")
 
 (after! doom-modeline
