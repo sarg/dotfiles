@@ -76,4 +76,6 @@
   (add-hook 'eshell-first-time-mode-hook
             (lambda ()
               (map! :map eshell-mode-map
-                    :ni "C-r" #'counsel-esh-history))))
+                    :ni "C-r" #'counsel-esh-history)
+              (setq eshell-visual-commands
+                    (cons eshell-visual-commands '("htop" "less" "ssh" "docker" "docker-compose"))))))

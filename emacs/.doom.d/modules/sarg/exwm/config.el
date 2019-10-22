@@ -153,6 +153,7 @@ Can show completions at point for COMMAND using helm or ido"
               (when (or (not exwm-instance-name)
                         (string= "qutebrowser" exwm-instance-name)
                         (string-prefix-p "sun-awt-X11-" exwm-instance-name)
+                        (string= "qutebrowser" exwm-instance-name)
                         (string= "gimp" exwm-instance-name))
                 (exwm-workspace-rename-buffer exwm-title))))
 

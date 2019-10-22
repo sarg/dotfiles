@@ -15,7 +15,8 @@ c.input.partial_timeout = 0
 c.input.links_included_in_focus_chain = False
 
 c.tabs.background = True
-c.tabs.last_close = 'default-page'
+c.tabs.last_close = 'close'
+c.tabs.tabs_are_windows = True
 c.tabs.show = 'switching'
 c.tabs.position = 'left'
 c.tabs.favicons.show = 'never'
@@ -27,6 +28,7 @@ c.content.webgl = False
 # c.hints.prev_regexes = ['\bprev(ious)?\b','\bback\b','\bolder\b','\b[<←≪]\b','\b(<<|«)\b','\bпредыдущая\b' ]
 
 c.url.default_page = 'about:blank'
+c.url.start_pages = 'about:blank'
 c.url.searchengines['gh'] = 'https://github.com/search?utf8=✓&type=Code&q={}'
 c.url.searchengines['gg'] = 'https://www.google.ru/search?hl=ru&q={}'
 c.url.searchengines['aj'] = 'https://wkdauto.atlassian.net/browse/{}'
