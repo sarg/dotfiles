@@ -44,7 +44,7 @@
 (add-hook 'term-exec-hook 'oleh-term-exec-hook)
 
 (use-package! white-sand-theme)
-(setq doom-theme 'white-sand-theme
+(setq doom-theme 'white-sand
       doom-font (font-spec :family "Hack" :size 16))
 
 (use-package! web-search
