@@ -79,3 +79,9 @@
                     :ni "C-r" #'counsel-esh-history)
               (setq eshell-visual-commands
                     (cons eshell-visual-commands '("htop" "less" "ssh" "docker" "docker-compose"))))))
+
+(after! plantuml
+  (setq plantuml-default-exec-mode 'jar
+        plantuml-java-args '("-Djava.awt.headless=true" "-jar"))
+
+  (set-popup-rule! "^\\*PLANTUML" :size 0.4 :select nil :ttl 0 :side 'right))

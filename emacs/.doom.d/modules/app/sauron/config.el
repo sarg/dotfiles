@@ -15,10 +15,10 @@
     :size 0.25 :side 'bottom
     :select t :quit t :ttl nil)
 
-  (when (featurep! :app telega)
-    (load! "sauron-telega")
-    (add-to-list 'sauron-modules 'sauron-telega)
-    (sauron-telega-start))
+  ;; (when (featurep! :app telega)
+  ;;   (load! "sauron-telega")
+  ;;   (add-to-list 'sauron-modules 'sauron-telega)
+  ;;   (sauron-telega-start))
 
   (after! slack
     (load! "sauron-slack")

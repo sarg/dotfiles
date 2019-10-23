@@ -6,6 +6,11 @@
 (use-package! dired-collapse
   :hook (dired-mode . dired-collapse-mode))
 
+(use-package! dired-git-info
+  :custom
+  (dgi-commit-message-format "%cr\t%s"))
+
+(setq dgi-commit-message-format "%cr\t%s")
 (use-package! dired-avfs)
 (use-package! dired-du
   :hook (dired-mode . dired-hide-details-mode)
