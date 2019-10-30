@@ -8,8 +8,10 @@
 (use-package! sauron
   :config
 
-  (setq sauron-modules '(sauron-dbus sauron-org))
-  (setq sauron-separate-frame nil)
+
+  (setq sauron-separate-frame nil
+        sauron-modules '(sauron-dbus sauron-org)
+        sauron-max-line-length 160)
 
   (set-popup-rule! (regexp-quote sr-buffer-name)
     :size 0.25 :side 'bottom

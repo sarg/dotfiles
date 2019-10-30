@@ -116,10 +116,7 @@
 ;(emms-add-url "spotify:user:spotify:playlist:37i9dQZEVXbk5YUFhWd7TC")
 ;(emms-add-url "spotify:artist:3SYkxKBdwKFCTxWDh9l5f9")
 
-(use-package! emms
-  :config
-
-  (defcustom emms-player-spotify
+(defcustom emms-player-spotify
     (emms-player
      #'emms-player-spotify-start
      #'emms-player-spotify-stop
@@ -128,15 +125,10 @@
     :type '(cons symbol alist)
     :group 'emms-player-spotify)
 
+(after! emms
   (emms-player-set emms-player-spotify 'regex
                    (rx string-start (or "https://open.spotify.com" "spotify:")))
   (emms-player-set emms-player-spotify 'pause #'spotify-pause)
   (emms-player-set emms-player-spotify 'resume #'spotify-play)
 
-  (emms-all)
-  (emms-history-load)
-  (setq emms-player-list (list emms-player-spotify emms-player-mpv)
-        emms-playlist-buffer-name "*Music*"
-        emms-source-file-default-directory (expand-file-name "~/Music")
-        emms-source-file-directory-tree-function 'emms-source-file-directory-tree-find
-        emms-browser-covers 'emms-browser-cache-thumbnail))
+  (add-to-list 'emms-player-list 'emms-player-spotify))

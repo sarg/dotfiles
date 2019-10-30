@@ -92,9 +92,6 @@ Can show completions at point for COMMAND using helm or ido"
 
   :config
   (load! "+brightness")
-  (load! "+volume")
-  (load! "+spotify")
-
 
   (advice-add 'switch-to-buffer :around 'my-exwm-workspace-switch-to-buffer)
   (advice-add 'ivy--switch-buffer-action :around 'my-exwm-workspace-switch-to-buffer)
