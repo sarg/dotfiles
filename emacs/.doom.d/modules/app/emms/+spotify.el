@@ -35,10 +35,7 @@
                               #'sarg/name-owner-changed-handler))
   ;; (dbus-unregister-object sarg/spotify-ads-dbus-handler)
 
-  (spacemacs/exwm-bind-command
-   "<XF86AudioPlay>"    #'emms-pause
-   "<XF86AudioNext>"    #'emms-next
-   "<XF86AudioPrev>"    #'emms-previous))
+  )
 
 (use-package! counsel-spotify
   :config
@@ -116,6 +113,8 @@
 ;(emms-add-url "spotify:user:spotify:playlist:37i9dQZEVXbk5YUFhWd7TC")
 ;(emms-add-url "spotify:artist:3SYkxKBdwKFCTxWDh9l5f9")
 
+
+(after! emms
 (defcustom emms-player-spotify
     (emms-player
      #'emms-player-spotify-start
@@ -125,7 +124,6 @@
     :type '(cons symbol alist)
     :group 'emms-player-spotify)
 
-(after! emms
   (emms-player-set emms-player-spotify 'regex
                    (rx string-start (or "https://open.spotify.com" "spotify:")))
   (emms-player-set emms-player-spotify 'pause #'spotify-pause)

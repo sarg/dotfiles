@@ -7,6 +7,7 @@
 (load! "+org")
 (load! "+pass")
 (load! "+aria2")
+(load! "+slack")
 (load! "+selfcontrol")
 
 (after! doom-modeline
@@ -54,12 +55,6 @@
 (use-package! ox-hugo)
 (use-package! puppet-mode)
 (use-package! nginx-mode)
-(use-package! slack
-  :init
-  (set-popup-rule! "^\\*Slack" :ignore t)
-  (setq slack-prefer-current-team t)
-
-  :commands (slack-start))
 
 (use-package! webpaste)
 ;; (use-package! ranger

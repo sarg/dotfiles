@@ -1,2 +1,57 @@
 (define-key! ivy-switch-buffer-map
   "C-c C-k" 'ivy-switch-buffer-kill)
+
+(defun spacemacs/exwm-bind-command (key command &rest bindings)
+  (while key
+    (exwm-input-set-key (kbd key) command)
+    (setq key     (pop bindings)
+          command (pop bindings))))
+
+(after! exwm
+  ;; EXWM
+  (spacemacs/exwm-bind-command
+   "<XF86AudioRaiseVolume>" #'pulseaudio-control-increase-volume
+   "<XF86AudioLowerVolume>" #'pulseaudio-control-decrease-volume
+   "<XF86AudioMute>"        #'pulseaudio-control-toggle-current-sink-mute
+   "<XF86AudioMicMute>"     #'pulseaudio-control-toggle-current-source-mute
+
+   "<XF86AudioPlay>"    #'emms-pause
+   "<XF86AudioNext>"    #'emms-next
+   "<XF86AudioPrev>"    #'emms-previous
+
+   "s-f"     #'exwm-layout-toggle-fullscreen
+   "<s-tab>" #'exwm-jump-to-last-exwm
+   "s-w"     #'exwm-workspace-switch
+   "s-r"     #'counsel-linux-app
+   "s-c"     #'kill-buffer-and-window
+
+   "s-u"     #'winner-undo
+   "S-s-U"   #'winner-redo
+
+   "s-b"     #'ivy-switch-buffer
+   "s-g"     #'linkmarks-select
+
+   "s-h"     #'evil-window-left
+   "s-j"     #'evil-window-down
+   "s-k"     #'evil-window-up
+   "s-l"     #'evil-window-right
+
+   "s-H"     #'evil-window-move-far-left
+   "s-J"     #'evil-window-move-very-bottom
+   "s-K"     #'evil-window-move-very-top
+   "s-L"     #'evil-window-move-far-right
+
+   "M-s-h"   #'shrink-window-horizontally
+   "M-s-j"   #'shrink-window
+   "M-s-k"   #'enlarge-window
+   "M-s-l"   #'enlarge-window-horizontally
+
+   "s-E"     #'sarg/with-browser
+   "s-e"    `(lambda () (interactive) (sarg/run-or-raise "qutebrowser" "qutebrowser"))
+
+   ;; "<s-return>" #'multi-term)
+   "<s-return>"   #'+eshell/here
+   "<S-s-return>" #'vterm
+
+   "<s-f12>" (sarg/shell-cmd "flameshot gui")
+   "<s-delete>" (sarg/shell-cmd "lock.sh")))

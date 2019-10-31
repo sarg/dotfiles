@@ -68,4 +68,4 @@ git module doom:
 
 git module oh-my-zsh:
   url: https://github.com/robbyrussell/oh-my-zsh.git
-  rev: e363109a6d3367d8be1dd66f05a38eb38b4257d7
+  rev: 687c50bdf999f8efd45f3c8f578a62329b0633da

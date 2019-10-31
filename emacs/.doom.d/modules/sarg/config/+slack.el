@@ -34,9 +34,7 @@
                                 :user-ids (user-ids)))))
 
 (after! alert
-  (setq alert-default-style 'notifications)
-
-  (add-hook! slack-mode-hook #'enable-slack-company))
+  (setq alert-default-style 'notifications))
 
 
 (defun slack-group-mpim-from-list (user-list)
@@ -47,4 +45,13 @@
                            (slack-select-multiple #'(lambda (idx) "Select user: ")
                                                   users
                                                   #'(lambda (idx) (nth idx user-list))))))
-    (slack-conversations-open team :user-ids (user-ids))))
+    (slack-conversations-open team :user-ids user-ids)))
+
+(use-package! slack
+  :hook (slack-mode-hook . enable-slack-company)
+
+  :init
+  (set-popup-rule! "^\\*Slack" :ignore t)
+  (setq slack-prefer-current-team t)
+
+  :commands (slack-start))
