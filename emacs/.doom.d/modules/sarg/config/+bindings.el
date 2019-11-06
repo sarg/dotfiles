@@ -1,6 +1,27 @@
 (define-key! ivy-switch-buffer-map
   "C-c C-k" 'ivy-switch-buffer-kill)
 
+(defun ivy-beginning-or-regex (&rest args)
+  (interactive)
+  (let ((p (point)))
+    (move-beginning-of-line 1)
+    (when (= p (point))
+      (insert "^"))))
+
+(defun ivy-end-or-regex (&rest args)
+  (interactive)
+  (let ((p (point)))
+    (move-end-of-line 1)
+    (when (= p (point))
+      (insert "$"))))
+
+(map!
+ (:when (featurep! :completion ivy)
+   :after ivy
+   :map ivy-minibuffer-map
+   "C-e" #'ivy-end-or-regex
+   "C-a" #'ivy-beginning-or-regex))
+
 (defun spacemacs/exwm-bind-command (key command &rest bindings)
   (while key
     (exwm-input-set-key (kbd key) command)
