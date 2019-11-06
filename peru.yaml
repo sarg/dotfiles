@@ -64,8 +64,8 @@ git module font-tufte:
 git module doom:
   url: https://github.com/hlissner/doom-emacs
   reup: develop
-  rev: d407b3355ac57f3f6f1da23815926e998d302fe8
+  rev: 8db3b7dca7fd8025d18941b1846b4c6c6545bf05
 
 git module oh-my-zsh:
   url: https://github.com/robbyrussell/oh-my-zsh.git
-  rev: 687c50bdf999f8efd45f3c8f578a62329b0633da
+  rev: 0ec59e25c7f6ac11d0988082fef908ff753126a2
