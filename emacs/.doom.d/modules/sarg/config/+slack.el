@@ -30,11 +30,22 @@
          (user-ids ()
                    (mapcar #'(lambda (user) (plist-get user :id))
                            (slack-select-multiple #'prompt users))))
-      (slack-conversations-open team
-                                :user-ids (user-ids)))))
+      (slack-conversations-open team :user-ids user-ids))))
 
 (after! alert
   (setq alert-default-style 'notifications))
+
+(defun slack-user-select+ ()
+  "Select user from team, then display the user's profile."
+  (interactive)
+  (let* ((team (slack-team-select))
+         (users (slack-user-details team))
+         (selected (slack-select-from-list (users "Select User: ")))
+         (user-id (plist-get selected :id))
+         (im (slack-im-find-by-user-id user-id team)))
+    (if im
+        (slack-room-display im team)
+      (slack-conversations-open team :user-ids (list user-id)))))
 
 
 (defun slack-group-mpim-from-list (user-list)
