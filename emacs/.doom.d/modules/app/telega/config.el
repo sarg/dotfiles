@@ -24,6 +24,8 @@ Format is:
                   (nth 3 dtime) (nth 4 dtime) (- (nth 5 dtime) 2000))))
       )))
 
+;; (defalias 'sarg/telega-ins--message (symbol-function 'telega-ins--message))
+
 (defun sarg/telega-ins--message (msg &optional no-header)
   "Insert message MSG.
 If NO-HEADER is non-nil, then do not display message header
@@ -74,7 +76,8 @@ unless message is edited."
         (telega-ins-prefix "\n"
           (telega-ins--reply-markup msg)))
 
-      (when channel-post-p (insert ?\n ?\n ?\^L ?\n)))
+      (when channel-post-p (insert ?\n ?\n ?\^L ?\n))
+      (telega-ins "\n"))
     t))
 
 (defun sarg/telega-get-code ()

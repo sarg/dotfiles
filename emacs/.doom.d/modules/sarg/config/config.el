@@ -52,6 +52,14 @@
   :custom
   (web-search-default-provider "DuckDuckGo"))
 
+(use-package! nov
+  :custom
+  (nov-variable-pitch nil)
+  (nov-text-width t)
+
+  :mode
+  ("\\.epub\\'" . nov-mode))
+
 (use-package! ox-hugo)
 (use-package! puppet-mode)
 (use-package! nginx-mode)
