@@ -1,6 +1,5 @@
 ;;; init.el -*- lexical-binding: t; -*-
 
-(defvar org-directory (expand-file-name "~/Sync/org/"))
 (doom!
  :completion  company (ivy +fuzzy +prescient)
  :ui          nav-flash modeline ophints (popup +all +defaults) pretty-code unicode vc-gutter window-select treemacs

@@ -4,8 +4,10 @@
 (package! dmenu)
 (package! circadian)
 ;; (package! gpastel)
-(package! xelb)
-(package! exwm)
+(package! xelb
+  :recipe (:host github :repo "ch11ng/xelb"))
+(package! exwm
+  :recipe (:host github :repo "ch11ng/exwm"))
 (package! color-theme-sanityinc-tomorrow)
 (package! anti-zenburn-theme)
 (package! kaolin-themes)

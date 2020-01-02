@@ -29,8 +29,8 @@ nnoremap <leader>bb :action RecentFiles<cr>
 nnoremap <leader>bm :action CloseAllEditorsButActive<CR>
 
 # windows
-nnoremap <leader>wv :action VimWindowSplitVertical<CR>
-nnoremap <leader>ws :action VimWindowSplitHorizontal<CR>
+nnoremap <leader>wv :vsplit<CR>
+nnoremap <leader>ws :split<CR>
 
 # select paste in visual mode
 nnoremap gp `[v`]

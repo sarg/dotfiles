@@ -106,7 +106,12 @@
 
    org-catch-invisible-edits 'show-and-error))
 
+
+(after! org-download
+  (setq org-download-screenshot-method "xclip -selection clipboard -t image/png -o > %s"))
+
 (use-package! linkmarks
+  :after org
   :config
 
   (setq linkmarks-file (concat org-directory "links.org")))

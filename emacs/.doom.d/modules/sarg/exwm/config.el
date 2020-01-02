@@ -225,6 +225,7 @@ Can show completions at point for COMMAND using helm or ido"
                                       floating t
                                       floating-mode-line nil)
                                      ((equal exwm-instance-name "sun-awt-X11-XDialogPeer")
+                                      managed t
                                       floating t)
                                      ((equal exwm-class-name "TelegramDesktop")
                                       floating t

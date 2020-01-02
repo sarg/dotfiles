@@ -127,6 +127,7 @@ unless message is edited."
   :hook (telega-chat-mode . +telega|init-chatbuf)
 
   :custom
+  (telega-chat-footer-show-pinned-message nil)
   (telega-inserter-for-msg-button 'sarg/telega-ins--message)
   (telega-chat-use-markdown-formatting t)
   (telega-server-libs-prefix "/usr")

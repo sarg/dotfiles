@@ -33,8 +33,8 @@
 (use-package! anti-zenburn-theme)
 (use-package! circadian
   :config
-  (setq calendar-latitude 56
-        calendar-longitude 38
+  (setq calendar-latitude 52.516667
+        calendar-longitude 13.388889
         circadian-themes
         '(
           (:sunrise . kaolin-breeze)

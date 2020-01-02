@@ -29,6 +29,7 @@ c.content.webgl = False
 
 c.url.default_page = 'about:blank'
 c.url.start_pages = 'about:blank'
+c.url.searchengines['DEFAULT'] = 'https://duckduckgo.com/lite?q={}'
 c.url.searchengines['gh'] = 'https://github.com/search?utf8=✓&type=Code&q={}'
 c.url.searchengines['gg'] = 'https://www.google.ru/search?hl=ru&q={}'
 c.url.searchengines['aj'] = 'https://wkdauto.atlassian.net/browse/{}'
