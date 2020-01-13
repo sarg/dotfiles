@@ -26,7 +26,7 @@ Format is:
 
 ;; (defalias 'sarg/telega-ins--message (symbol-function 'telega-ins--message))
 
-(defun sarg/telega-ins--message (msg &optional no-header)
+(defun sarg/telega-ins--message0 (msg &optional no-header addon-header-inserter)
   "Insert message MSG.
 If NO-HEADER is non-nil, then do not display message header
 unless message is edited."
@@ -79,6 +79,15 @@ unless message is edited."
       (when channel-post-p (insert ?\n ?\n ?\^L ?\n))
       (telega-ins "\n"))
     t))
+
+(defun sarg/telega-ins--message (msg &optional no-header addon-header-inserter)
+  "Inserter for the message MSG."
+  (if (telega-msg-marked-p msg)
+      (progn
+        (telega-ins telega-symbol-mark)
+        (telega-ins--with-attrs (list :fill-prefix telega-symbol-mark)
+          (sarg/telega-ins--message0 msg no-header addon-header-inserter)))
+    (sarg/telega-ins--message0 msg no-header addon-header-inserter)))
 
 (defun sarg/telega-get-code ()
   "Extract confirmation code from latest message of telegram user BenderBot."
