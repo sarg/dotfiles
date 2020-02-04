@@ -1,0 +1,9 @@
+max-cache-ttl=0
+enable-dbus
+# resolv-file=/run/systemd/resolve/resolv.conf
+server=1.1.1.1
+#local=/lan/
+address=/dev.local/127.0.0.1
+address=/local/127.0.0.1
+addn-hosts=/etc/hosts.coldturkey
+dhcp-range=172.20.0.2,172.20.255.254

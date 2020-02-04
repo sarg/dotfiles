@@ -1,0 +1,10 @@
+[Unit]
+Description=LED PWM frequency 
+After=suspend.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/intel_reg write 0xc8254 0x3d103d1
+
+[Install]
+WantedBy=graphical.target suspend.target
