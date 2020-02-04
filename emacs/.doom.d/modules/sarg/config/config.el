@@ -60,8 +60,6 @@
   :mode
   ("\\.epub\\'" . nov-mode))
 
-(use-package! ox-hugo
-  :after org)
 (use-package! puppet-mode)
 (use-package! nginx-mode)
 

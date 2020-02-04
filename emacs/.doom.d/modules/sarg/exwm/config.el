@@ -70,7 +70,7 @@ Can show completions at point for COMMAND using helm or ido"
 ;; (use-package! exwm-mff)
 (use-package! xelb)
 (use-package! exwm
-  :commands exwm-enable
+  :commands (exwm-enable exwm-init)
   ;; :hook (exwm-init . exwm-mff-mode)
   :hook (exwm-mode . doom-mark-buffer-as-real-h)
 
@@ -271,4 +271,5 @@ Can show completions at point for COMMAND using helm or ido"
             (fate:escape right))))
 
 (use-package! statusbar
+  :disabled
   :hook (after-init . statusbar-mode))

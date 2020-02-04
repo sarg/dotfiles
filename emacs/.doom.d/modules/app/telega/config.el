@@ -139,7 +139,7 @@ unless message is edited."
   (telega-chat-footer-show-pinned-message nil)
   (telega-root-show-avatars nil)
   (telega-inserter-for-msg-button 'sarg/telega-ins--message)
-  (telega-chat-use-markdown-formatting t)
+  (telega-chat-use-markdown-version 1)
   (telega-server-libs-prefix "/usr")
   (telega-animation-play-inline nil)
   (telega-msg-group-by-sender t)
