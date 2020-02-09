@@ -1,5 +1,16 @@
+(defun dbus-capable ()
+  "Check if dbus is available"
+  (unwind-protect
+      (let (retval)
+        (condition-case ex
+            (setq retval (dbus-ping :session "org.freedesktop.Notifications"))
+          ('error
+           (message (format "Error: %s - No dbus" ex))))
+        retval)))
+
 (when (featurep! :app emms +spotify)
-  (load! "+spotify"))
+  (if (dbus-capable)
+      (load! "+spotify")))
 
 (when (featurep! :app emms +volume)
   (load! "+volume"))
