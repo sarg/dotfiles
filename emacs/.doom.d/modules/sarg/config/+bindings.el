@@ -74,5 +74,5 @@
    "<s-return>"   #'+eshell/here
    "<S-s-return>" #'vterm
 
-   "<s-f12>" (sarg/shell-cmd "flameshot gui")
-   "<s-delete>" (sarg/shell-cmd "lock.sh")))
+   "<s-f12>" `(lambda () (interactive) (start-process "lock" nil "lock.sh"))
+   "<s-delete>" `(lambda () (interactive) (start-process "flameshot" nil "flameshot" "gui"))))
