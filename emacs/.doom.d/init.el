@@ -1,7 +1,7 @@
 ;;; init.el -*- lexical-binding: t; -*-
 
 (doom!
- :completion  company (ivy +fuzzy +prescient)
+ :completion  company (ivy +fuzzy +prescient +childframe)
  :ui          nav-flash modeline ophints (popup +all +defaults) pretty-code unicode vc-gutter window-select treemacs
  :editor      (evil +everywhere) fold lispy snippets (format +onsave) multiple-cursors
  :emacs       dired electric vc ibuffer

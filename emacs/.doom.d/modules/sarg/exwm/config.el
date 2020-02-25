@@ -20,6 +20,8 @@
               (list 0 default-output
                     1 (match-string 1)))))))
 
+(load! "+posframe")
+
 (defun sarg/exwm-app-launcher ()
   "Launches an application in your PATH.
 Can show completions at point for COMMAND using helm or ido"
@@ -144,7 +146,6 @@ Can show completions at point for COMMAND using helm or ido"
               (when (or (not exwm-instance-name)
                         (string= "qutebrowser" exwm-instance-name)
                         (string-prefix-p "sun-awt-X11-" exwm-instance-name)
-                        (string= "qutebrowser" exwm-instance-name)
                         (string= "gimp" exwm-instance-name))
                 (exwm-workspace-rename-buffer exwm-title))))
 

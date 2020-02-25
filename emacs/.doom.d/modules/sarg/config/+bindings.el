@@ -69,6 +69,7 @@
 
    "s-E"     #'sarg/with-browser
    "s-e"    `(lambda () (interactive) (sarg/run-or-raise "qutebrowser" "qutebrowser"))
+   "s-s"    `(lambda () (interactive) (sarg/run-or-raise "Slack" "slack"))
 
    ;; "<s-return>" #'multi-term)
    "<s-return>"   #'+eshell/here
