@@ -78,11 +78,12 @@ Can show completions at point for COMMAND using helm or ido"
 
   :init
   (set-popup-rule! "^\\*EXWM\\*$" :ignore t)
+  (load! "+polybar")
 
   ;; (add-hook! 'exwm-init-hook 'gpastel-start-listening)
 
-  (require 'exwm-systemtray)
-  (exwm-systemtray-enable)
+  ;; (require 'exwm-systemtray)
+  ;; (exwm-systemtray-enable)
   ;; (setq mouse-autoselect-window t
   ;;       focus-follows-mouse t)
 
@@ -110,6 +111,12 @@ Can show completions at point for COMMAND using helm or ido"
   ;; Disable dialog boxes since they are unusable in EXWM
   (setq use-dialog-box nil)
   (setq exwm-workspace-number 5)
+  (setq exwm-workspace-index-map
+        (lambda (index)
+          (let ((named-workspaces ["code" "brow" "extr" "slac" "lisp"]))
+            (if (< index (length named-workspaces))
+                (elt named-workspaces index)
+              (number-to-string index)))))
   ;; You may want Emacs to show you the time
   ;; (display-time-mode t)
   ;; (setq display-time-24hr-format t)

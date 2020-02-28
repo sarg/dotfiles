@@ -1,11 +1,30 @@
-;; (exwm-systemtray--exit)
+(defvar sarg/polybar-process nil)
 
-(defun dw/polybar-exwm-workspace ()
-  (+ 1 exwm-workspace-current-index))
+(define-minor-mode sarg/polybar-mode
+  "Show polybar."
+  :init-value nil
+  :global t
 
-(defun dw/update-polybar-exwm ()
-  (f-append-text (format "%s\n" (dw/polybar-exwm-workspace))
-                 'utf-8
-                 "/tmp/exwm.workspace"))
+  (if sarg/polybar-mode
+      (progn
+        (exwm-workspace--update-ewmh-desktop-names)
+        (setq sarg/polybar-process
+              (start-process "polybar" nil
+                             "polybar" "-c" (expand-file-name "~/.config/polybar.conf") "panel")))
 
-(add-hook 'exwm-workspace-switch-hook #'dw/update-polybar-exwm)
+    (when sarg/polybar-process
+      (interrupt-process sarg/polybar-process)
+      (setq sarg/polybar-process nil))))
+
+(defun exwm-workspace--update-ewmh-desktop-names ()
+  (xcb:+request exwm--connection
+      (make-instance 'xcb:ewmh:set-_NET_DESKTOP_NAMES
+                     :window exwm--root :data
+                     (mapconcat (lambda (i) (funcall exwm-workspace-index-map i))
+                                (number-sequence 0 (1- (exwm-workspace--count)))
+                                "\0"))))
+
+(add-hook 'exwm-workspace-list-change-hook
+          #'exwm-workspace--update-ewmh-desktop-names)
+(add-hook 'exwm-init-hook
+          #'sarg/polybar-mode)
