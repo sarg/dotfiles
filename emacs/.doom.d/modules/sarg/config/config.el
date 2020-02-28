@@ -82,6 +82,9 @@
               (setq eshell-visual-commands
                     (cons eshell-visual-commands '("htop" "less" "ssh" "docker" "docker-compose"))))))
 
+(after! counsel
+  (setq counsel-linux-app-format-function #'counsel-linux-app-format-function-name-only))
+
 (after! plantuml
   (setq plantuml-default-exec-mode 'jar
         plantuml-java-args '("-Djava.awt.headless=true" "-jar"))
