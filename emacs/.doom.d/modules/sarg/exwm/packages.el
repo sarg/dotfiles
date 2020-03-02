@@ -15,6 +15,4 @@
 (package! frame-purpose)
 (package! frame-workflow :recipe (:host github :repo "akirak/frame-workflow"))
 (package! backlight)
-(package! statusbar
-  :recipe (:host github :repo "dakra/statusbar.el"))
 ;; (package! exwm-mff :recipe (:host github :repo "ieure/exwm-mff"))

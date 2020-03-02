@@ -277,7 +277,3 @@ Can show completions at point for COMMAND using helm or ido"
             (format-time-string "%s.%6N")
             (fate:escape left)
             (fate:escape right))))
-
-(use-package! statusbar
-  :disabled
-  :hook (after-init . statusbar-mode))
