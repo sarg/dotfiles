@@ -169,7 +169,7 @@ Can show completions at point for COMMAND using helm or ido"
 
   ;; + Set shortcuts to switch to a certain workspace.
   (dotimes (i exwm-workspace-number)
-    (exwm-input-set-key (kbd (format "s-%d" (+ 1 i)))
+    (exwm-input-set-key (kbd (format "s-%d" (1+ i)))
                         `(lambda ()
                            (interactive)
                            (exwm-workspace-switch ,i))))

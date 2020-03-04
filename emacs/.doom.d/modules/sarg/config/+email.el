@@ -101,7 +101,7 @@
         mu4e-headers-date-format "%F"
         ;; don't save message to Sent Messages, Gmail/IMAP takes care of this
         mu4e-sent-messages-behavior 'delete
-        mu4e-get-mail-command "fetchnewmail"
+        mu4e-get-mail-command "mbsync -a -c ~/.mbsyncrc"
 
         ;; mbsync goes crazy without this setting
         mu4e-change-filenames-when-moving t

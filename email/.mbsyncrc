@@ -1,0 +1,44 @@
+IMAPAccount gmail
+Host imap.gmail.com
+User sarg@sarg.org.ru
+PassCmd "pass show Email/sarg@sarg.org.ru | grep mbsync | cut -d' ' -f2"
+# Use SSL
+SSLType IMAPS
+SSLVersions TLSv1.2
+CertificateFile /etc/ssl/certs/ca-certificates.crt
+
+IMAPStore gmail-remote
+Account gmail
+
+MaildirStore gmail-local
+# The trailing "/" is important
+Path ~/.mail/gmail/
+Inbox ~/.mail/gmail/Inbox
+
+Channel gmail-default
+Master :gmail-remote:
+Slave :gmail-local:
+Patterns INBOX
+
+Channel gmail-sent
+Master :gmail-remote:"[Gmail]/Sent Mail"
+slave  :gmail-local:sent
+
+Channel gmail-trash
+Master :gmail-remote:"[Gmail]/Bin"
+slave  :gmail-local:trash
+
+Channel gmail-archive
+Master :gmail-remote:"[Gmail]/All Mail"
+slave  :gmail-local:all
+
+Create Slave
+Remove Slave
+Expunge Both
+SyncState *
+
+Group gmail
+Channel gmail-default
+Channel gmail-trash
+Channel gmail-archive
+Channel gmail-sent

@@ -1,7 +1,12 @@
 (use-modules (gnu)
              (gnu services)
+             (gnu packages)
              (guix packages)
+             (guix profiles)
+             (guix download)
+             (guix utils)
              (srfi srfi-1)
+             (pkill9 fhs)
              (nongnu packages linux)
              (nongnu system linux-initrd))
 
@@ -13,6 +18,25 @@
  desktop ssh networking sysctl
  xorg dbus shepherd sound pm)
 
+(define (corrupt-linux freedo version hash)
+  (package
+    (inherit freedo)
+    (name "linux")
+    (version version)
+    (source (origin
+              (method url-fetch)
+              (uri (list (string-append "https://www.kernel.org/pub/linux/kernel/v"
+                                        (version-major version) ".x/linux-" version ".tar.xz")))
+              (sha256 (base32 hash))))
+    (home-page "https://www.kernel.org/")
+    (synopsis "Linux kernel with nonfree binary blobs included")
+    (description
+     "The unmodified Linux kernel, including nonfree blobs, for running GuixSD
+on hardware which requires nonfree software to function.")))
+
+(define %linux-5.4.21
+  (corrupt-linux linux-libre-5.4 "5.4.21"
+                 "1yjv8qg47kb4j4jkcpi9z7v07p0vz3gszpmhrfji5866j97748vd"))
 
 (define %my-syslog.conf
   ;; from http://www.linuxfromscratch.org/lfs/view/stable/chapter06/sysklogd.html
@@ -55,6 +79,46 @@ menuentry \"Ubuntu 14.04 ISO\" {
         (format port #$text)
         (close port))))
 
+(define-public (manifest->packages manifest) ;; copied from guix/scripts/refresh.scm, referring to it with (@@ ...) stopped working for some reason, kept saying it's an unbound variable
+  "Return the list of packages in MANIFEST."
+  (filter-map (lambda (entry)
+                (let ((item (manifest-entry-item entry)))
+                  (if (package? item) item #f)))
+              (manifest-entries manifest)))
+
+
+(define fhs-packages ;; list of packages to use for fhs-service
+  (manifest->packages
+   (specifications->manifest
+    (list
+     "libmediainfo" "libxscrnsaver" "eudev" "alsa-lib" "libzen"
+     "fontconfig" "zlib" "pulseaudio" "libx11"
+     "libnet" "libxcb" "libxau" "libxdmcp" "libxxf86vm" "libxext" "libxi"
+     "libxrandr" "libxrender" "libxcursor" "libxfixes" "libxinerama" "libxcb"
+     "glu" "libdrm" "libxdamage" "expat" "libpciaccess"
+
+     ;; "libxcomposite" "libxtst" "libxaw" "libxt" "libxrandr" "libxext" "libx11"
+     ;; "libxfixes" "glib" "gtk+" "gtk+@2" "bzip2" "zlib" "gdk-pixbuf" "libxinerama"
+     ;; "libxdamage" "libxcursor" "libxrender" "libxscrnsaver" "libxxf86vm"
+     ;; "libxi" "libsm" "libice" "gconf" "freetype" "curl" "nspr" "nss" "fontconfig"
+     ;; "cairo" "pango" "expat" "dbus" "cups" "libcap" "sdl2" "libusb" "dbus-glib"
+     ;; "atk" "eudev" "network-manager" "pulseaudio" "openal" "alsa-lib" "mesa"
+     ;; "libxmu" "libxcb" "glu" "util-linux" "libogg" "libvorbis" "sdl" "sdl2-image"
+     ;; "glew" "openssl" "libidn" "tbb" "flac" "freeglut" "libjpeg" "libpng" "libpng@1.2"
+     ;; "libsamplerate" "libmikmod" "libtheora" "libtiff" "pixman" "speex" "sdl-image"
+     ;; "sdl-ttf" "sdl-mixer" "sdl2-ttf" "sdl2-mixer" "gstreamer" "gst-plugins-base"
+     ;; "glu" "libcaca" "libcanberra" "libgcrypt" "libvpx"
+     ;;"librsvg" ;; currently requires compiling, but shouldn't, it's being weird
+     ;; "libxft" "libvdpau" "gst-plugins-ugly" "libdrm" "xkeyboard-config" "libpciaccess"
+     ;;"ffmpeg@3.4" ;; Disable this because test fails at livf-something (373grdi4fc369v2h29g10672whmv0mvb-ffmpeg-3.4.7.drv)
+     ;; "libpng" "libgpg-error" "sqlite" "libnotify"
+
+     ;; "fuse" "e2fsprogs" "p11-kit" "xz" "keyutils" "xcb-util-keysyms" "libselinux"
+     ;; "ncurses" "jack" "jack2" "vulkan-loader" "at-spi2-atk" "at-spi2-core" "libsigc++"
+     ))))
+
+
+
 (define* (grub-conf-with-custom-part fn)
   ;; fn returns computed-file
   (lambda* (#:rest r)
@@ -69,11 +133,11 @@ menuentry \"Ubuntu 14.04 ISO\" {
        ))))
 
 (operating-system
-  (kernel linux-5.4)
+  (kernel %linux-5.4.21)
   (kernel-arguments '("quiet" "loglevel=1"))
   (initrd microcode-initrd)
   (initrd-modules (cons "i915" %base-initrd-modules))
-  (firmware (cons* iwlwifi-firmware %base-firmware))
+  (firmware (cons* iwlwifi-firmware broadcom-bt-firmware %base-firmware))
   (locale "en_GB.utf8")
   (timezone "Europe/Berlin")
   (keyboard-layout (keyboard-layout "us"))
@@ -113,6 +177,7 @@ menuentry \"Ubuntu 14.04 ISO\" {
   (packages
    (cons*
     (specification->package "nss-certs")
+    (specification->package "bluez")
     ;; xorg-server
     ;; xf86-input-libinput xf86-video-intel
     brightnessctl
@@ -129,6 +194,7 @@ menuentry \"Ubuntu 14.04 ISO\" {
              ;; Add polkit rules, so that non-root users in the wheel group can
              ;; perform administrative tasks (similar to "sudo").
              polkit-wheel-service
+             (bluetooth-service)
 
              (udisks-service)
              (service polkit-service-type)
@@ -138,10 +204,15 @@ menuentry \"Ubuntu 14.04 ISO\" {
                       (sysctl-configuration
                        (settings '(("kernel.printk" . "2 4 1 7")))))
 
-             ;; fhs-binaries-compatibility-service
+             (service fhs-binaries-compatibility-service-type
+                      (fhs-configuration
+                       (lib-packages fhs-packages)))
+
              (dbus-service)
              x11-socket-directory-service
-             (service tlp-service-type)
+             (service tlp-service-type
+                      (tlp-configuration
+                       (restore-device-state-on-startup? #t)))
              (service pulseaudio-service-type)
              (service alsa-service-type)
 

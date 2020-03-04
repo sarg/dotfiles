@@ -1,0 +1,14 @@
+{
+	"repos": [
+		{
+			"id": "f-droid",
+			"url": "https://f-droid.org/repo",
+			"enabled": true
+		},
+		{
+			"id": "izzysoft",
+			"url": "https://apt.izzysoft.de/fdroid/repo",
+			"enabled": true
+		}
+	]
+}

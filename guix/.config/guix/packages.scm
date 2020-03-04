@@ -2,18 +2,28 @@
  '("adb" "fastboot" "fdroidcl"
    "socat"
 
+   ;; utils
    "aria2" "git" "curl" "rsync"
-   "atool" "p7zip" "unzip"
+   "atool" "p7zip" "unzip" "jq"
+   "ripgrep" "stow"
+   "powertop" "strace" "graphviz"
 
-   "brightnessctl"
-   "pavucontrol"
-   "slock"
-   "dunst"
-   "flameshot"
+   ;; DE
+   "brightnessctl" "pavucontrol"
+   "slock" "dunst" "flameshot"
+   "cmst" "pulseaudio" "dbus"
 
-   "cmst"
-   "dbus"
+   ;; counsel-linux-app uses gtk-launch
+   "gtk+:bin"               ; for gtk-launch
+   "glib:bin"               ; for gio-launch-desktop which is used by gtk-launch
 
+   ;; fonts
+   "font-fira-code"
+   "font-google-noto"
+   "font-hack"
+   "font-terminus"
+
+   ;; emacs
    "emacs-emacsql"
    "emacs-guix"
    "emacs-next"
@@ -21,32 +31,20 @@
    "emacs-telega"
    "emacs-vterm"
 
-   "font-fira-code"
-   "font-google-noto"
-   "font-hack"
-   "font-terminus"
-   "glib:bin"
    "glibc-utf8-locales"
 
+   ;; apps
+   "calibre" "goldendict" "mpv" "qutebrowser"
+   "syncthing" "udiskie" "youtube-dl"
+   "zathura" "zathura-pdf-mupdf"
+   "openvpn" "nomacs" "mu" "mbsync"
    "gnupg" "pass-otp" "password-store" "pinentry-tty"
+   "redshift"
 
-   "graphviz"
-   "gtk+:bin"
-   "mpv"
+   ;; dev
    "openjdk"
-   "openvpn"
-   "powertop"
-   "pulseaudio"
    "python"
-   "qutebrowser"
-   "ripgrep"
-   "stow"
-   "strace"
-   "syncthing"
-   "udiskie"
 
+   ;; x11
    "xf86-input-libinput" "xf86-video-intel"
-   "xhost" "xinit" "xkbcomp" "xkbset" "xorg-server" "xprop" "xrandr" "xset" "xwininfo"
-
-   "youtube-dl"
-   "zathura" "zathura-pdf-mupdf"))
+   "xhost" "xinit" "xkbcomp" "xkbset" "xorg-server" "xprop" "xrandr" "xset" "xwininfo"))
