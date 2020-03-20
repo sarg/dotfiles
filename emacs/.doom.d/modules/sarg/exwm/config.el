@@ -111,12 +111,18 @@ Can show completions at point for COMMAND using helm or ido"
   ;; Disable dialog boxes since they are unusable in EXWM
   (setq use-dialog-box nil)
   (setq exwm-workspace-number 5)
+  (defvar exwm-workspace-names
+    '("code" "brow" "extr" "slac" "lisp" ))
+
+  (defsubst exwm-workspace-name-to-index (name)
+    (-elem-index name exwm-workspace-names))
+
   (setq exwm-workspace-index-map
         (lambda (index)
-          (let ((named-workspaces ["code" "brow" "extr" "slac" "lisp"]))
-            (if (< index (length named-workspaces))
-                (elt named-workspaces index)
-              (number-to-string index)))))
+          (if (< index (length exwm-workspace-names))
+              (elt exwm-workspace-names index)
+            (number-to-string index))))
+ 
   ;; You may want Emacs to show you the time
   ;; (display-time-mode t)
   ;; (setq display-time-24hr-format t)
@@ -225,23 +231,30 @@ Can show completions at point for COMMAND using helm or ido"
              )))
 
   (exwm-input-set-key (kbd "s-.") (lambda () (interactive) (message "%s %s"
-                                                                    (concat (format-time-string "%Y-%m-%d %T (%a w%W)"))
-                                                                    (battery-format "| %L: %p%% (%t)" (funcall battery-status-function)))))
+                                                               (concat (format-time-string "%Y-%m-%d %T (%a w%W)"))
+                                                               (battery-format "| %L: %p%% (%t)" (funcall battery-status-function)))))
 
-  (setq exwm-manage-configurations '(((-any? (lambda (el) (equal exwm-class-name el))
-                                             '("Peek" "mpv" "scrcpy"))
-                                      floating t
-                                      floating-mode-line nil)
-                                     ((equal exwm-instance-name "sun-awt-X11-XDialogPeer")
-                                      managed t
-                                      floating t)
-                                     ((equal exwm-class-name "TelegramDesktop")
-                                      floating t
-                                      floating-mode-line nil
-                                      x 0.73
-                                      y 0.02
-                                      width 0.25
-                                      height 0.8)))
+  (setq exwm-manage-configurations
+        `(((-any? (lambda (el) (equal exwm-class-name el))
+                  '("Peek" "mpv" "scrcpy"))
+           floating t
+           floating-mode-line nil)
+          ((equal exwm-class-name "Slack")
+           workspace ,(exwm-workspace-name-to-index "slac"))
+          ((equal exwm-instance-name "sun-awt-X11-XDialogPeer")
+           managed t
+           floating t)
+          ((equal exwm-class-name "jetbrains-idea")
+           workspace ,(exwm-workspace-name-to-index "code"))
+          ((equal exwm-class-name "qutebrowser")
+           workspace ,(exwm-workspace-name-to-index "brow"))
+          ((equal exwm-class-name "TelegramDesktop")
+           floating t
+           floating-mode-line nil
+           x 0.73
+           y 0.02
+           width 0.25
+           height 0.8)))
 
   ;; (exwm-input-set-simulation-keys nil)
 

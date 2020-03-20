@@ -6,8 +6,8 @@ source $ZSH/oh-my-zsh.sh
 
 if [ -n "$INSIDE_EMACS" ]; then
 else
-source <(antibody init)
-antibody bundle < ~/.zsh_plugins.txt
+#source <(antibody init)
+#antibody bundle < ~/.zsh_plugins.txt
 fi
 
 unsetopt flow_control

@@ -106,6 +106,12 @@
 
    org-catch-invisible-edits 'show-and-error))
 
+(use-package! es-mode
+  :commands (org-babel-execute:es)
+
+  :config
+  (appendq!
+   +org-babel-mode-alist '((es . elasticsearch))))
 
 (after! org-download
   (setq org-download-screenshot-method "xclip -selection clipboard -t image/png -o > %s"))

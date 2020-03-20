@@ -23,6 +23,7 @@
 (package! bencode :recipe (:host github :repo "skeeto/emacs-bencode"))
 (package! google-translate)
 (package! nov)
+(package! es-mode)
 (package! dired-git-info :recipe (:host github :repo "clemera/dired-git-info"))
 (package! white-sand-theme)
 ;; (package! ranger)

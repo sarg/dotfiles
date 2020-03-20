@@ -13,14 +13,14 @@
 # https://www.emacswiki.org/emacs/StickyModifiers
 cat <<EOF | xkbcomp -w 0 - $DISPLAY
 xkb_keymap {
-	xkb_keycodes  { include "evdev+aliases(qwerty)"	};
-	xkb_types     { include "complete"	};
-	xkb_compat    { include "complete"	};
-	xkb_symbols   {
+  xkb_keycodes  { include "evdev+aliases(qwerty)"   };
+  xkb_types     { include "complete"  };
+  xkb_compat    { include "complete"  };
+  xkb_symbols   {
     include "pc+us+ru:2+inet(evdev)"
     replace key <PRSC> { [ Menu ] };
   };
-	xkb_geometry  { include "pc(pc105)"	};
+  xkb_geometry  { include "pc(pc105)"   };
 };
 EOF
 

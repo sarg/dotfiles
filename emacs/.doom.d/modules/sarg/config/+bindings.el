@@ -68,7 +68,9 @@
    "M-s-l"   #'enlarge-window-horizontally
 
    "s-E"     #'sarg/with-browser
-   "s-e"    `(lambda () (interactive) (sarg/run-or-raise "qutebrowser" "qutebrowser"))
+   "s-e"    `(lambda () (interactive)
+               (sarg/run-or-raise "qutebrowser" "qutebrowser")
+               (exwm-workspace-switch (exwm-workspace-name-to-index "brow")))
    "s-s"    `(lambda () (interactive) (sarg/run-or-raise "Slack" "slack"))
 
    ;; "<s-return>" #'multi-term)

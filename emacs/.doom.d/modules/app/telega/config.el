@@ -143,6 +143,7 @@ unless message is edited."
   (telega-server-libs-prefix "/usr")
   (telega-animation-play-inline nil)
   (telega-msg-group-by-sender t)
+  (telega-emoji-custom-alist '((":s:" . "¯\\_(ツ)_/¯")))
 
   :config
 

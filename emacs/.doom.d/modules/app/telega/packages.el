@@ -1,2 +1,2 @@
-(package! telega)
+;; (package! telega)
 (package! page-break-lines)
