@@ -46,7 +46,8 @@
 
 (use-package! white-sand-theme)
 (setq doom-theme 'white-sand
-      doom-font (font-spec :family "Hack" :size 16))
+      doom-font (font-spec :family "Hack" :size 16)
+      doom-unicode-font (font-spec :family "Hack"))
 
 (use-package! web-search
   :custom
@@ -78,9 +79,7 @@
   (add-hook 'eshell-first-time-mode-hook
             (lambda ()
               (map! :map eshell-mode-map
-                    :ni "C-r" #'counsel-esh-history)
-              (setq eshell-visual-commands
-                    (cons eshell-visual-commands '("htop" "less" "ssh" "docker" "docker-compose"))))))
+                    :ni "C-r" #'counsel-esh-history))))
 
 (after! ivy-rich
   (setq counsel-linux-app-format-function #'counsel-linux-app-format-function-name-only)
