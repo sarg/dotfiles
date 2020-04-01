@@ -11,7 +11,7 @@
              (nongnu system linux-initrd))
 
 (use-package-modules
- linux ssh android suckless
+ linux ssh android suckless dns
  xdisorg pulseaudio connman xorg)
 
 (use-service-modules
@@ -56,6 +56,17 @@ menuentry \"Ubuntu 14.04 ISO\" {
     loopback loop ($root)$isofile
     linux (loop)/casper/vmlinuz boot=casper iso-scan/filename=${isofile} quiet splash
     initrd (loop)/casper/initrd
+}
+")
+
+(define dhclient-enter-hooks "
+make_resolv_conf() {
+    touch /etc/dnsmasq.servers
+    sed -i \"/#dhcp/,+1d;
+             $ a #dhcp\\nserver=/${new_domain_name}/${new_domain_name_servers}\\n\" \\
+        /etc/dnsmasq.servers
+
+    kill -HUP $(cat /run/dnsmasq.pid)
 }
 ")
 
@@ -132,9 +143,36 @@ menuentry \"Ubuntu 14.04 ISO\" {
        ;; #:options '(#:local-build? #t #:substitutable? #f)
        ))))
 
+(define dnsmasq-service-type
+  (shepherd-service-type
+   'dnsmasq
+   (lambda (a)
+     (shepherd-service
+      (provision '(dnsmasq))
+      (requirement '(networking))
+      (documentation "Run the dnsmasq DNS server.")
+      (start #~(make-forkexec-constructor
+                '(#$(file-append dnsmasq "/sbin/dnsmasq")
+                  "--keep-in-foreground"
+                  "--pid-file=/run/dnsmasq.pid"
+                  "--no-hosts"
+                  "--local-service"
+                  "--address=/dev.local/127.0.0.1"
+                  "--address=/local/127.0.0.1"
+                  "--servers-file=/etc/dnsmasq.servers"
+                  "--no-resolv"
+                  "--server=1.1.1.1")
+                #:pid-file "/run/dnsmasq.pid"))
+      (stop #~(make-kill-destructor))))))
+
+(define wifi-udev-rule
+  (udev-rule
+   "80-wifi.rules"
+   "SUBSYSTEM==\"net\", ACTION==\"add\", DRIVERS==\"iwlwifi\", KERNEL==\"wl*\", NAME=\"wifi\""))
+
 (operating-system
   (kernel %linux-5.4.21)
-  (kernel-arguments '("quiet" "loglevel=1"))
+  (kernel-arguments '("quiet" "loglevel=1" "ipv6.disable=1"))
   (initrd microcode-initrd)
   (initrd-modules (cons "i915" %base-initrd-modules))
   (firmware (cons* iwlwifi-firmware broadcom-bt-firmware %base-firmware))
@@ -182,11 +220,26 @@ menuentry \"Ubuntu 14.04 ISO\" {
     ;; xf86-input-libinput xf86-video-intel
     brightnessctl
     tlp
-    %base-packages))
+    (filter (lambda (p)
+              (not (member (package-name p)
+                           '("wireless-tools" "info-reader" "nano" "zile"))))
+            %base-packages)))
 
   (services (cons*
-             (service connman-service-type)
-             (service wpa-supplicant-service-type)
+             ;; (service connman-service-type)
+             (service wpa-supplicant-service-type
+                      (wpa-supplicant-configuration
+                       (interface "wifi")
+                       (config-file "/etc/network/wpa-supplicant.conf")
+                       (extra-options '("-Dnl80211"))))
+
+             (service dhcp-client-service-type)
+             (extra-special-file "/etc/dhclient-enter-hooks"
+                                 (plain-file "dhclient-enter-hooks"
+                                             dhclient-enter-hooks))
+             (extra-special-file "/etc/dhclient.conf"
+                                 (plain-file "dhclient.conf"
+                                             "send host-name = gethostname();"))
 
              (screen-locker-service slock)
              ;; (screen-locker-service xlockmore "xlock")
@@ -213,8 +266,14 @@ menuentry \"Ubuntu 14.04 ISO\" {
              (service tlp-service-type
                       (tlp-configuration
                        (restore-device-state-on-startup? #t)))
-             (service pulseaudio-service-type)
+             (service pulseaudio-service-type
+                      (pulseaudio-configuration
+                       (daemon-conf '((flat-volumes . no)
+                                      (exit-idle-time . -1)))))
              (service alsa-service-type)
+
+             (service openssh-service-type)
+             (service dnsmasq-service-type 0)
 
              ;; remap lctrl->lalt, lalt->lctrl, capslock->lshift
              (service extrakeys-service-type (list "1d" "56" "38" "29" "3a" "42"))
@@ -233,4 +292,5 @@ menuentry \"Ubuntu 14.04 ISO\" {
                  (rules (cons*
                          brightnessctl
                          android-udev-rules
+                         wifi-udev-rule
                          (udev-configuration-rules config)))))))))
