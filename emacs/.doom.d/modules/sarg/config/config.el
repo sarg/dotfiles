@@ -69,7 +69,14 @@
 ;;   :config
 ;;   (ranger-override-dired-mode t))
 
-(use-package! multitran)
+(use-package! multitran
+  :config
+
+  (defadvice! multitran-fix-useragent (orig-fn &rest args)
+    :around #'multitran--url
+    (let ((url-privacy-level 'paranoid))
+      (apply orig-fn args))))
+
 (use-package! keyfreq
   :config
   (keyfreq-mode 1)
