@@ -10,8 +10,8 @@
 
    ;; DE
    "brightnessctl" "pavucontrol"
-   "slock" "dunst" "flameshot"
-   "cmst" "pulseaudio" "dbus"
+   "physlock" "slock" "dunst" "flameshot"
+   "pulseaudio" "dbus"
 
    ;; counsel-linux-app uses gtk-launch
    "gtk+:bin"               ; for gtk-launch
@@ -46,5 +46,5 @@
    "python"
 
    ;; x11
-   "xf86-input-libinput" "xf86-video-intel"
+   "xf86-input-libinput" "xf86-video-intel" "picom"
    "xhost" "xinit" "xkbcomp" "xkbset" "xorg-server" "xprop" "xrandr" "xset" "xwininfo"))

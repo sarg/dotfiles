@@ -8,7 +8,7 @@
  :term        eshell shell term vterm
  :tools       editorconfig (eval +overlay) (lookup +docsets) magit pdf (pass +auth) docker lsp
  :checkers    syntax
- :lang        (cc +lsp) clojure data hy emacs-lisp (org +dragndrop +ipython +pandoc +present) rest (sh +fish) plantuml python scheme
+ :lang        (cc +lsp) clojure data hy emacs-lisp (org +dragndrop +ipython +pandoc +present) rest (sh +fish) plantuml (python +pyenv +lsp) scheme
  :app         calendar (telega +ivy) (rss +org) sauron (emms +volume +spotify)
  :config      (default +bindings +smartparens)
  :sarg        config exwm)

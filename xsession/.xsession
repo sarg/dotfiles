@@ -7,6 +7,7 @@ export QT_QPA_PLATFORMTHEME
 # xss-lock ~/.local/bin/lock.sh &
 dunst &
 gtk-launch ~/.guix-profile/share/applications/flameshot-init.desktop
+picom --backend glx --vsync -b
 # mountavfs
 . ~/.local/bin/keymap.sh
 xhost +

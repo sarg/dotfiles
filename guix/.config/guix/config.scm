@@ -7,6 +7,7 @@
              (guix utils)
              (srfi srfi-1)
              (pkill9 fhs)
+             (personal packages xdisorg)
              (nongnu packages linux)
              (nongnu system linux-initrd))
 
@@ -241,7 +242,7 @@ make_resolv_conf() {
                                  (plain-file "dhclient.conf"
                                              "send host-name = gethostname();"))
 
-             (screen-locker-service slock)
+             (screen-locker-service physlock)
              ;; (screen-locker-service xlockmore "xlock")
 
              ;; Add polkit rules, so that non-root users in the wheel group can
