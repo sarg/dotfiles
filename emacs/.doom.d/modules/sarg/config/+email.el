@@ -77,6 +77,24 @@
   (interactive)
   (+pass/read-entry (concat "Email/" user-mail-address)))
 
+(require 'sendmail)
+(setq
+ ;; Configure sending mail.
+ message-send-mail-function 'message-send-mail-with-sendmail
+
+ sendmail-program "msmtp"
+ ;; send with msmtp
+ send-mail-function 'sendmail-send-it
+ user-full-name "Sergey Trofimov"
+
+ ;; close message after sending it
+ message-kill-buffer-on-exit t
+
+ ;; Use the correct account context when sending mail based on the from header.
+ message-sendmail-envelope-from 'header)
+
+(add-hook 'message-send-mail-hook 'choose-msmtp-account)
+
 (use-package! mu4e
   :commands (mu4e mu4e-compose-new)
   :init
@@ -90,6 +108,7 @@
   (advice-add 'sendmail-send-it
             :before #'sarg/ensure-msmtp-pass-available)
 
+  (add-to-list 'mm-body-charset-encoding-alist '(utf-8 . 8bit))
   (setq mu4e-update-interval nil
         mu4e-html2text-command "iconv -c -t utf-8 | pandoc -f html -t plain"
         mu4e-compose-format-flowed t ; visual-line-mode + auto-fill upon sending
@@ -106,17 +125,6 @@
         ;; mbsync goes crazy without this setting
         mu4e-change-filenames-when-moving t
 
-        ;; Configure sending mail.
-        message-send-mail-function 'message-send-mail-with-sendmail
-        sendmail-program "/usr/bin/msmtp"
-        user-full-name "Sergey Trofimov"
-
-        ;; Use the correct account context when sending mail based on the from header.
-        message-sendmail-envelope-from 'header
-
-        ;; send with msmtp
-        send-mail-function 'sendmail-send-it
-
         ;; start with the first (default) context;
         mu4e-context-policy 'pick-first
         ;; compose with the current context, or ask
@@ -126,8 +134,6 @@
         (cond ((featurep! :completion ivy) #'ivy-completing-read)
               ((featurep! :completion helm) #'completing-read)
               (t #'ido-completing-read))
-        ;; close message after sending it
-        message-kill-buffer-on-exit t
         ;; no need to ask
         mu4e-confirm-quit nil
         ;; remove 'lists' column
@@ -165,6 +171,4 @@
     'normal)
 
   (map! :map mu4e-headers-mode-map
-        :n "gR" (lambda () (interactive) (mu4e-update-mail-and-index t)))
-
-  (add-hook 'message-send-mail-hook 'choose-msmtp-account))
+        :n "gR" (lambda () (interactive) (mu4e-update-mail-and-index t))))

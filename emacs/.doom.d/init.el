@@ -6,7 +6,7 @@
  :editor      (evil +everywhere) fold lispy snippets (format +onsave) multiple-cursors
  :emacs       dired electric vc ibuffer
  :term        eshell shell term vterm
- :tools       editorconfig (eval +overlay) (lookup +docsets) magit pdf (pass +auth) docker lsp
+ :tools       editorconfig (eval +overlay) (lookup +docsets) magit pdf (pass +auth) docker lsp debugger
  :checkers    syntax
  :lang        (cc +lsp) clojure data hy emacs-lisp (org +dragndrop +ipython +pandoc +present) rest (sh +fish) plantuml (python +pyenv +lsp) scheme
  :app         calendar (telega +ivy) (rss +org) sauron (emms +volume +spotify)

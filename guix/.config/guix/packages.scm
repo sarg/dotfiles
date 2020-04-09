@@ -26,7 +26,7 @@
    ;; emacs
    "emacs-emacsql"
    "emacs-guix"
-   "emacs-next"
+   "emacs-next-snapshot"
    "emacs-pdf-tools"
    "emacs-telega"
    "emacs-vterm"

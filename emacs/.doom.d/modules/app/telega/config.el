@@ -140,13 +140,13 @@ unless message is edited."
   (telega-root-show-avatars nil)
   (telega-inserter-for-msg-button 'sarg/telega-ins--message)
   (telega-chat-use-markdown-version 1)
-  (telega-server-libs-prefix "/usr")
   (telega-animation-play-inline nil)
   (telega-msg-group-by-sender t)
   (telega-emoji-custom-alist '((":s:" . "¯\\_(ツ)_/¯")))
 
   :config
 
+  (defun telega-ins--webpage (msg &optional web-page))
   (defun telega-msg--pp (msg)
     "Pretty printer for MSG button."
     (telega-button--insert 'telega-msg msg))

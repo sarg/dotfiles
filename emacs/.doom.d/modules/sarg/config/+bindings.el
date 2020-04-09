@@ -16,6 +16,8 @@
       (insert "$"))))
 
 (map!
+ (:map dired-mode-map
+   :n "K" #'dired-do-kill-lines)
  (:when (featurep! :completion ivy)
    :after ivy
    :map ivy-minibuffer-map

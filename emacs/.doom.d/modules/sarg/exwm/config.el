@@ -39,7 +39,7 @@ Can show completions at point for COMMAND using helm or ido"
               (buffer-list))))
 
     (if buf (switch-to-buffer buf)
-      (start-process NAME nil PROGRAM))))
+      (start-process NAME nil "setsid" "-w" PROGRAM))))
 
 (defun sarg/shell-cmd (command)
   `(lambda ()
@@ -49,6 +49,7 @@ Can show completions at point for COMMAND using helm or ido"
 
 (battery) ; initializes battery-status-function
 (run-at-time nil 60 #'sarg/check-battery)
+(require 'notifications)
 (defun sarg/check-battery ()
   "Checks battery level and makes a warning if it is too low."
   (let* ((status (funcall battery-status-function))
