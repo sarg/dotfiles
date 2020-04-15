@@ -3,8 +3,6 @@
 
   (require 'org-protocol)
 
-  ;; start capturing in insert state
-  (add-hook 'org-capture-mode-hook 'evil-insert-state)
   ;; http://www.diegoberrocal.com/blog/2015/08/19/org-protocol/
   (defadvice org-capture
       (after make-full-window-frame activate)
@@ -88,21 +86,20 @@
      ;; ;; "* TODO %?\n %i\n %a")
      )
 
-   ;; don't split heading on M-RET in the middle of line
-   org-M-RET-may-split-line nil
 
    ;; Prettier bullets
    org-bullets-bullet-list '("■" "◆" "▲" "▶")
 
    ;; agenda
    org-agenda-files
-   (-map (lambda (el) (concat org-directory el))
-         '("work.org"
-           "mirea.org"
-           "projects.org"
-           "teztour.org"
-           "tickler.org"
-           "auto1-cal.org"))
+   (append
+    (list (expand-file-name "~/auto1-cal.org"))
+    (-map (lambda (el) (concat org-directory el))
+          '("work.org"
+            "mirea.org"
+            "projects.org"
+            "teztour.org"
+            "tickler.org")))
 
    org-catch-invisible-edits 'show-and-error))
 

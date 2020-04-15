@@ -44,9 +44,15 @@
 
 (add-hook 'term-exec-hook 'oleh-term-exec-hook)
 
+(setq sarg-repos-dir (expand-file-name "~/devel/ext"))
+(after! magit
+  (setq magit-repository-directories `((,sarg-repos-dir . 1))
+        magit-clone-default-directory `,sarg-repos-dir))
+
 (use-package! white-sand-theme)
 (setq doom-theme 'white-sand
       doom-font (font-spec :family "Hack" :size 16)
+      doom-serif-font (font-spec :family "Hack")
       doom-unicode-font (font-spec :family "Hack"))
 
 (use-package! web-search
@@ -83,6 +89,7 @@
   (keyfreq-autosave-mode 1))
 
 (after! eshell
+  (setenv "PAGER" "cat")
   (add-hook 'eshell-first-time-mode-hook
             (lambda ()
               (map! :map eshell-mode-map

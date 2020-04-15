@@ -1,29 +1,3 @@
-(defun telega-get--date (timestamp)
-  "Insert DATE.
-Format is:
-- HH:MM      if today
-- Mon/Tue/.. if on this week
-- DD.MM.YY   otherwise"
-  (let* ((dtime (decode-time timestamp))
-         (current-ts (time-to-seconds (current-time)))
-         (ctime (decode-time current-ts))
-         (today00 (telega--time-at00 current-ts ctime)))
-    (if (> timestamp today00)
-        (format "%02d:%02d" (nth 2 dtime) (nth 1 dtime))
-
-      (let* ((week-day (nth 6 ctime))
-             (mdays (+ week-day
-                       (- (if (< week-day telega-week-start-day) 7 0)
-                          telega-week-start-day)))
-             (week-start00 (telega--time-at00
-                            (- current-ts (* mdays 24 3600)))))
-        (if (> timestamp week-start00)
-            (nth (nth 6 dtime) telega-week-day-names)
-
-          (format "%02d.%02d.%02d"
-                  (nth 3 dtime) (nth 4 dtime) (- (nth 5 dtime) 2000))))
-      )))
-
 ;; (defalias 'sarg/telega-ins--message (symbol-function 'telega-ins--message))
 
 (defun sarg/telega-ins--message0 (msg &optional no-header addon-header-inserter)
@@ -146,10 +120,18 @@ unless message is edited."
 
   :config
 
-  (defun telega-ins--webpage (msg &optional web-page))
-  (defun telega-msg--pp (msg)
-    "Pretty printer for MSG button."
-    (telega-button--insert 'telega-msg msg))
+  (advice-add #'telega-ins--webpage :override #'ignore)
+
+  ;; insert just content of a message, no headers needed
+  ;; -> message text
+  ;;
+  ;; instead of
+  ;;
+  ;; XX Username
+  ;; XX message text                                                    08.04.20✓
+  (advice-add #'telega-msg--pp
+              :override
+              (lambda (msg) (telega-button--insert 'telega-msg msg)))
 
   (defun +telega|init-chatbuf ()
     (setq-local visual-fill-column-width (+ 11 telega-chat-fill-column))
@@ -176,7 +158,7 @@ unless message is edited."
     (load! "+ivy"))
 
   (after! dired
-    (load! "+dired"))
+    (load "contrib/telega-dired-dwim.el"))
 
   (when (featurep! :editor evil)
     (map!
