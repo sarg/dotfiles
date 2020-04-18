@@ -12,9 +12,6 @@
   (if (dbus-capable)
       (load! "+spotify")))
 
-(when (featurep! :app emms +volume)
-  (load! "+volume"))
-
 (use-package! emms
   :config
 

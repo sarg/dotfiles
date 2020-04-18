@@ -21,6 +21,7 @@
                     1 (match-string 1)))))))
 
 (load! "+posframe")
+(load! "+volume")
 
 (defun sarg/exwm-app-launcher ()
   "Launches an application in your PATH.

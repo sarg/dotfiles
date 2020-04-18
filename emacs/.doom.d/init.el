@@ -11,7 +11,7 @@
  :checkers    syntax
  :lang        (cc +lsp) clojure data hy emacs-lisp
  (org +dragndrop +ipython +pandoc +present +roam)
- rest (sh +fish) plantuml (python +pyenv +lsp) scheme (web +html)
+ rest sh plantuml (python +pyenv +lsp) scheme (web +html)
  :app         calendar (telega +ivy) (rss +org) sauron (emms +volume +spotify)
  :config      (default +bindings +smartparens)
  :sarg        config exwm)

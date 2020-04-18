@@ -50,6 +50,7 @@
         magit-clone-default-directory `,sarg-repos-dir))
 
 (use-package! white-sand-theme)
+(defvar doom-theme-dark 'kaolin-valley-dark)
 (setq doom-theme 'white-sand
       doom-font (font-spec :family "Hack" :size 16)
       doom-serif-font (font-spec :family "Hack")

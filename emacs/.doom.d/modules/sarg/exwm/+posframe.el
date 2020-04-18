@@ -12,6 +12,7 @@
   (load! "window")
 
   (setq ivy-posframe-display-functions-alist '((t . sarg/ivy-posframe-exwm))
+        ivy-posframe-border-width 4
         ivy-posframe-parameters '((parent-frame nil))))
 
 
