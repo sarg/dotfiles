@@ -99,16 +99,16 @@ unless message is edited."
 
   :hook (telega-chat-mode . +telega|init-chatbuf)
 
-  :custom
-  (telega-chat-footer-show-pinned-message nil)
-  (telega-root-show-avatars nil)
-  (telega-inserter-for-msg-button 'sarg/telega-ins--message)
-  (telega-chat-use-markdown-version 1)
-  (telega-animation-play-inline nil)
-  (telega-msg-group-by-sender t)
-  (telega-emoji-custom-alist '((":s:" . "¯\\_(ツ)_/¯")))
+  :init
+  (setq telega-inserter-for-msg-button #'sarg/telega-ins--message)
 
   :config
+
+  (setq
+   telega-root-show-avatars nil
+   telega-chat-use-markdown-version 1
+   telega-animation-play-inline nil
+   telega-emoji-custom-alist '((":s:" . "¯\\_(ツ)_/¯")))
 
   (advice-add #'telega-ins--webpage :override #'ignore)
 
@@ -121,7 +121,7 @@ unless message is edited."
   ;; XX message text                                                    08.04.20✓
   (advice-add #'telega-msg--pp
               :override
-              (lambda (msg) (telega-button--insert 'telega-msg msg)))
+              (apply-partially #'telega-button--insert 'telega-msg))
 
   (defun +telega|init-chatbuf ()
     (setq-local visual-fill-column-width (+ 11 telega-chat-fill-column))

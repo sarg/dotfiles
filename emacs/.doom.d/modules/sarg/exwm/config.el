@@ -265,6 +265,19 @@ Can show completions at point for COMMAND using helm or ido"
   )
 
 
+(use-package! exwm-edit
+  :custom
+  (exwm-edit-bind-default-keys 't)
+
+  :config
+  (defalias 'exwm-edit--display-buffer 'pop-to-buffer)
+
+  :init
+  (set-popup-rule! "^\\*exwm-edit"
+    :side 'bottom :size 0.2
+    :select t :quit nil :ttl t))
+
+
 (defun sarg/with-browser ()
   "Opens browser side-by-side with current window"
   (interactive)
