@@ -17,25 +17,12 @@
         (delete-frame))))
 
 
-(defun org-contacts-filter-not-ignored (&rest args)
-  (-remove (lambda (contact)
-             (-contains?
-              (org-split-string
-               (or (cdr (assoc-string "ALLTAGS" (caddr contact))) "") ":")
-              "ignore"))
-           (org-contacts-db)))
-
-(defun sarg/export-contacts-to-vcard ()
-  (interactive)
-  (cl-letf (((symbol-function 'org-contacts-filter) #'org-contacts-filter-not-ignored))
-    (org-contacts-export-as-vcard)))
-
 (after! org
 
   (sarg/init-org-protocol)
 
   (require 'org-contacts)
-  (setq-default org-contacts-files (list (concat org-directory "contacts.org")))
+  (setq-default org-contacts-files (list (expand-file-name "contacts.org" org-directory)))
 
   (setq
    org-todo-keywords
@@ -92,14 +79,9 @@
 
    ;; agenda
    org-agenda-files
-   (append
-    (list (expand-file-name "~/auto1-cal.org"))
-    (-map (lambda (el) (concat org-directory el))
-          '("work.org"
-            "mirea.org"
-            "projects.org"
-            "teztour.org"
-            "tickler.org")))
+   (-map (lambda (el) (expand-file-name el org-directory))
+         '("projects.org"
+           "tickler.org"))
 
    org-catch-invisible-edits 'show-and-error))
 
@@ -117,4 +99,4 @@
   :after org
   :config
 
-  (setq linkmarks-file (concat org-directory "links.org")))
+  (setq linkmarks-file (expand-file-name "links.org" org-directory)))
