@@ -15,7 +15,7 @@
         :deviceSpec xcb:xkb:ID:UseCoreKbd))
    'group))
 
-(defun exwm-xkb-next-layout (&optional inc)
+(defun exwm-xkb-set-layout (num)
   (interactive)
   (xcb:+request-checked exwm--connection
       (make-instance
@@ -24,12 +24,17 @@
        :affectModLocks 0
        :modLocks 0
        :lockGroup 1
-       :groupLock (mod (+ (or inc 1) (exwm-input--current-group))
-                       exwm-input--numGroups)
+       :groupLock num
        :affectModLatches 0
        :latchGroup 0
        :groupLatch 0))
   (xcb:flush exwm--connection))
+
+(defun exwm-xkb-next-layout (&optional inc)
+  (interactive)
+  (exwm-xkb-set-layout
+   (mod (+ (or inc 1) (exwm-input--current-group))
+        exwm-input--numGroups)))
 
 (advice-add
  'toggle-input-method
@@ -40,5 +45,10 @@
 
 (add-to-list 'exwm-input-prefix-keys ?\C-\\)
 
+(defun exwm-xkb-reset-layout ()
+  (interactive)
+  (exwm-xkb-set-layout 0))
+
+(add-to-list 'doom-switch-window-hook #'exwm-xkb-reset-layout)
 (require 'exwm-xim)
 (exwm-xim-enable)

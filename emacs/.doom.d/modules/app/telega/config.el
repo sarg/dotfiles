@@ -96,13 +96,13 @@ unless message is edited."
   ;;   then doom|protect-visible-functions in kill-buffer-query-functions prevents the close.
   ;; So, to fix this make telega.el chat buffers real.
   :hook (telega-chat-mode . doom-mark-buffer-as-real-h)
-
   :hook (telega-chat-mode . +telega|init-chatbuf)
 
   :init
   (setq telega-inserter-for-msg-button #'sarg/telega-ins--message)
 
   :config
+  (add-hook! telega-root-mode (cd telega-directory))
 
   (setq
    telega-root-show-avatars nil
@@ -124,6 +124,7 @@ unless message is edited."
               (apply-partially #'telega-button--insert 'telega-msg))
 
   (defun +telega|init-chatbuf ()
+    (cd telega-directory)
     (setq-local visual-fill-column-width (+ 11 telega-chat-fill-column))
     (setq-local visual-fill-column-center-text nil)
     (visual-line-mode)

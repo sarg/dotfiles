@@ -49,6 +49,9 @@
   (setq magit-repository-directories `((,sarg-repos-dir . 1))
         magit-clone-default-directory `,sarg-repos-dir))
 
+(after! browse-at-remote
+  (setq browse-at-remote-prefer-symbolic nil))
+
 (use-package! white-sand-theme)
 (defvar doom-theme-dark 'kaolin-valley-dark)
 (setq doom-theme 'white-sand

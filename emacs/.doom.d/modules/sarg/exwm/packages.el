@@ -11,6 +11,7 @@
 (package! color-theme-sanityinc-tomorrow)
 (package! anti-zenburn-theme)
 (package! kaolin-themes)
+(package! bufler)
 (package! nord-theme)
 (package! frame-purpose)
 (package! frame-workflow :recipe (:host github :repo "akirak/frame-workflow"))

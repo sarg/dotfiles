@@ -6,7 +6,7 @@ export QT_QPA_PLATFORMTHEME
 # wmname LG3D
 # xss-lock ~/.local/bin/lock.sh &
 dunst &
-flameshot &
+LANG=C flameshot &
 picom --backend glx --vsync -b
 # mountavfs
 . ~/.local/bin/keymap.sh

@@ -22,6 +22,7 @@
 
 (load! "+posframe")
 (load! "+volume")
+(load! "+bufler")
 
 (defun sarg/exwm-app-launcher ()
   "Launches an application in your PATH.
@@ -189,8 +190,7 @@ Can show completions at point for COMMAND using helm or ido"
     (exwm-input-set-key (kbd "s-i") #'sarg/sauron-show))
 
   (setq exwm-input-prefix-keys
-        '(?\C-\\                        ; xim
-          ?\C-x
+        '(?\C-x
           ?\M-x
           ?\M-m
           ?\C-g
@@ -199,14 +199,10 @@ Can show completions at point for COMMAND using helm or ido"
           ?\C-р                         ; cyrillic
           ))
 
-  (require 'exwm-xim)
-  (exwm-xim-enable)
-
   (define-key exwm-mode-map [?\C-q] 'exwm-input-send-next-key)
   (define-key exwm-mode-map [?\C-c] 'nil)
 
   ;; Undo window configurations
-
 
   (setq exwm-layout-show-all-buffers t
         exwm-workspace-show-all-buffers t)
@@ -221,17 +217,16 @@ Can show completions at point for COMMAND using helm or ido"
   ;; DEST is what EXWM actually sends to application. Note that SRC must be a key
   ;; sequence (of type vector or string), while DEST can also be a single key.
 
-  (exwm-input-set-simulation-keys
+  (setq exwm-input-simulation-keys
    (mapcar (lambda (c) (cons (kbd (car c)) (cdr c)))
-           '(
+           `(
              ;; ("C-b" . left)
              ;; ("C-f" . right)
              ;; ("C-p" . up)
              ("C-m" . return)
              ;; ("C-n" . down)
              ("DEL" . backspace)
-             ("C-р" . backspace)
-             )))
+             ("C-р" . backspace))))
 
   (exwm-input-set-key (kbd "s-.") (lambda () (interactive) (message "%s %s"
                                                                (concat (format-time-string "%Y-%m-%d %T (%a w%W)"))

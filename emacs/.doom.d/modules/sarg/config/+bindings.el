@@ -1,6 +1,3 @@
-(define-key! ivy-switch-buffer-map
-  "C-c C-k" 'ivy-switch-buffer-kill)
-
 (defun ivy-beginning-or-regex (&rest args)
   (interactive)
   (let ((p (point)))
@@ -16,11 +13,23 @@
       (insert "$"))))
 
 (map!
+ "C-x b" #'bufler-switch-buffer
+
+ (:map dired-mode-map
+   :n (kbd "DEL") #'dired-up-directory)
+
+ (:map ivy-switch-buffer-map
+   "C-c C-k" #'ivy-switch-buffer-kill)
+
+ (:map image-mode-map
+   :n "q" #'kill-current-buffer)
+
  (:map dired-mode-map
    :n "K" #'dired-do-kill-lines)
  (:when (featurep! :completion ivy)
    :after ivy
    :map ivy-minibuffer-map
+   "C-b" (lambda () (interactive) (insert "WWW "))
    "C-e" #'ivy-end-or-regex
    "C-a" #'ivy-beginning-or-regex))
 
@@ -51,7 +60,7 @@
    "s-u"     #'winner-undo
    "S-s-U"   #'winner-redo
 
-   "s-b"     #'ivy-switch-buffer
+   "s-b"     #'bufler-switch-buffer
    "s-g"     #'linkmarks-select
 
    "s-h"     #'evil-window-left
