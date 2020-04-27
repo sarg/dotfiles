@@ -10,7 +10,7 @@
  :tools       editorconfig (eval +overlay) (lookup +docsets) magit pdf (pass +auth) docker lsp debugger direnv
  :checkers    syntax
  :lang        (cc +lsp) clojure data hy emacs-lisp
- (org +dragndrop +ipython +pandoc +present +roam)
+ (org +dragndrop +ipython +pandoc +present +hugo)
  rest sh plantuml (python +pyenv +lsp) scheme (web +html)
  :app         calendar (telega +ivy) (rss +org) sauron (emms +volume +spotify)
  :config      (default +bindings +smartparens)

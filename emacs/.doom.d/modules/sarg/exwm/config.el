@@ -81,6 +81,7 @@ Can show completions at point for COMMAND using helm or ido"
   :init
   (set-popup-rule! "^\\*EXWM\\*$" :ignore t)
   (load! "+polybar")
+  (add-hook! 'exwm-init-hook (load! "+xkb"))
 
   ;; (add-hook! 'exwm-init-hook 'gpastel-start-listening)
 
