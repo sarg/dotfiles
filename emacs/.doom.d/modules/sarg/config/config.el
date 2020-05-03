@@ -10,23 +10,33 @@
 (load! "+slack")
 (load! "+selfcontrol")
 
-(after! doom-modeline
-  (setq doom-modeline-height 20
-        doom-modeline-icon t
-        doom-modeline-percent-position nil
-        doom-modeline-major-mode-icon nil
-        doom-modeline-buffer-encoding nil)
+;; (after! doom-modeline
+;;   (setq doom-modeline-height 20
+;;         doom-modeline-icon t
+;;         doom-modeline-percent-position nil
+;;         doom-modeline-major-mode-icon nil
+;;         doom-modeline-buffer-encoding nil)
 
-  (remove-hook 'doom-modeline-mode-hook #'size-indication-mode))
+;;   (remove-hook 'doom-modeline-mode-hook #'size-indication-mode))
+;;
+(setq +modeline-encoding nil
+      +modeline-height 20)
+
+(advice-add '+modeline-format-icon :override
+            (lambda (icon label &optional face &rest args)
+              (propertize (format "X %s" label)
+                          'face face)))
 
 ;; C-h deletes character backwards
 (define-key key-translation-map [?\C-h] [?\C-?])
 
+(setq lsp-keymap-prefix nil)
 (set-popup-rule! "^\\*Async Shell" :ttl nil)
 
 ;; russian layout on C-\
 (setq-default
  default-input-method "russian-computer")
+
 
 ;; set browser
 (setq-default

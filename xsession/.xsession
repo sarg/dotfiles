@@ -1,5 +1,5 @@
 _JAVA_AWT_WM_NONREPARENTING=1
-QT_QPA_PLATFORMTHEME="qt5ct"
+QT_QPA_PLATFORMTHEME="gtk3"
 export _JAVA_AWT_WM_NONREPARENTING
 export QT_QPA_PLATFORMTHEME
 
@@ -18,5 +18,6 @@ udiskie --smart-tray --no-file-manager &
 #exit
 while true; do
     #dbus-launch --exit-with-session x-agent -f $HOME/emacs.log -- emacs --eval '(exwm-enable)'
-    dbus-launch --exit-with-session emacs --eval '(exwm-enable)'
+    emacs --eval '(exwm-enable)'
+    #emacs -q
 done

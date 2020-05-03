@@ -39,4 +39,5 @@
   ;; Don't ask if file is too large when it'll be handled by openwith-mode.
   (advice-add 'abort-if-file-too-large :before-until
               (lambda (size op-type filename &rest args)
-                (openwith-has-association filename))))
+                (and (boundp 'openwith-mode) openwith-mode
+                     (openwith-has-association filename)))))

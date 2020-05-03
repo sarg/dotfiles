@@ -25,6 +25,7 @@
   (setq-default org-contacts-files (list (expand-file-name "contacts.org" org-directory)))
 
   (setq
+   org-src-window-setup 'current-window
    org-todo-keywords
    (quote ((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d)")
            (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)")))
