@@ -75,9 +75,7 @@ label-empty-padding = 1
 
 [bar/panel]
 width = 100%
-height = 20
-offset-x = 0
-offset-y = 0
+height = 1.5%
 fixed-center = true
 enable-ipc = true
 

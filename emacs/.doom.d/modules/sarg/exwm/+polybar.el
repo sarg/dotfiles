@@ -10,7 +10,7 @@
         (exwm-workspace--update-ewmh-desktop-names)
         (setq sarg/polybar-process
               (start-process "polybar" nil
-                             "polybar" "-c" (expand-file-name "~/.config/polybar.conf") "panel")))
+                             "polybar" "panel")))
 
     (when sarg/polybar-process
       (interrupt-process sarg/polybar-process)

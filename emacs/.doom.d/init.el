@@ -7,7 +7,7 @@
  :editor      (evil +everywhere) fold lispy snippets (format +onsave) multiple-cursors
  :emacs       dired electric vc ibuffer undo
  :term        eshell shell term vterm
- :tools       editorconfig (eval +overlay) (lookup +docsets) magit pdf (pass +auth) docker lsp debugger direnv
+ :tools       editorconfig (eval +overlay) (lookup +docsets) magit pdf (pass +auth) docker lsp debugger direnv make
  :checkers    syntax
  :lang        (cc +lsp) clojure data hy emacs-lisp
  (org +dragndrop +ipython +pandoc +present +hugo)

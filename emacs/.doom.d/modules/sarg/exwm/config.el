@@ -63,12 +63,11 @@ Can show completions at point for COMMAND using helm or ido"
 
 ;; props to https://github.com/ch11ng/exwm/issues/593
 (defun my-exwm-workspace-switch-to-buffer (orig-func buffer-or-name &rest args)
-  (when buffer-or-name
-    (if (and (get-buffer buffer-or-name)
-             (or exwm--floating-frame
-                 (with-current-buffer buffer-or-name exwm--floating-frame)))
-        (exwm-workspace-switch-to-buffer buffer-or-name)
-      (apply orig-func buffer-or-name args))))
+  (if-let* ((buf (get-buffer (or buffer-or-name (other-buffer))))
+            (floating-p? (or exwm--floating-frame
+                             (with-current-buffer buf exwm--floating-frame))))
+      (exwm-workspace-switch-to-buffer buffer-or-name)
+    (apply orig-func buffer-or-name args)))
 
 (use-package! dmenu)
 ;; (use-package! gpastel)
@@ -94,7 +93,7 @@ Can show completions at point for COMMAND using helm or ido"
   :config
   (load! "+brightness")
 
-  (advice-add 'switch-to-buffer :around 'my-exwm-workspace-switch-to-buffer)
+  ;; (advice-add 'switch-to-buffer :around 'my-exwm-workspace-switch-to-buffer)
   (advice-add 'ivy--switch-buffer-action :around 'my-exwm-workspace-switch-to-buffer)
 
   (exwm-input-set-key (kbd "M-y") #'my/exwm-counsel-yank-pop)
@@ -151,19 +150,21 @@ Can show completions at point for COMMAND using helm or ido"
   ;;   Its class name may be more suitable for such case.
   ;; In the following example, we use class names for all windows expect for
   ;; Java applications and GIMP.
+  ;;
+  (defun meaningful-title? ()
+      (or (string-prefix-p "sun-awt-X11-" exwm-instance-name)
+          (string= "qutebrowser" exwm-class-name)
+          (string= "OpenSCAD" exwm-class-name)
+          (string= "gimp" exwm-instance-name)))
+
   (add-hook 'exwm-update-class-hook
             (lambda ()
-              (unless (or (string-prefix-p "sun-awt-X11-" exwm-instance-name)
-                          (string= "qutebrowser" exwm-class-name)
-                          (string= "gimp" exwm-instance-name))
+              (unless (meaningful-title?)
                 (exwm-workspace-rename-buffer exwm-class-name))))
 
   (add-hook 'exwm-update-title-hook
             (lambda ()
-              (when (or (not exwm-instance-name)
-                        (string-prefix-p "sun-awt-X11-" exwm-instance-name)
-                        (string= "qutebrowser" exwm-class-name)
-                        (string= "gimp" exwm-instance-name))
+              (when (or (not exwm-instance-name) (meaningful-title?))
                 (exwm-workspace-rename-buffer exwm-title))))
 
   ;; Quick swtiching between workspaces
@@ -218,19 +219,19 @@ Can show completions at point for COMMAND using helm or ido"
   ;; sequence (of type vector or string), while DEST can also be a single key.
 
   (setq exwm-input-simulation-keys
-   (mapcar (lambda (c) (cons (kbd (car c)) (cdr c)))
-           `(
-             ;; ("C-b" . left)
-             ;; ("C-f" . right)
-             ;; ("C-p" . up)
-             ("C-m" . return)
-             ;; ("C-n" . down)
-             ("DEL" . backspace)
-             ("C-р" . backspace))))
+        (mapcar (lambda (c) (cons (kbd (car c)) (cdr c)))
+                `(
+                  ;; ("C-b" . left)
+                  ;; ("C-f" . right)
+                  ;; ("C-p" . up)
+                  ("C-m" . return)
+                  ;; ("C-n" . down)
+                  ("DEL" . backspace)
+                  ("C-р" . backspace))))
 
   (exwm-input-set-key (kbd "s-.") (lambda () (interactive) (message "%s %s"
-                                                               (concat (format-time-string "%Y-%m-%d %T (%a w%W)"))
-                                                               (battery-format "| %L: %p%% (%t)" (funcall battery-status-function)))))
+                                                                    (concat (format-time-string "%Y-%m-%d %T (%a w%W)"))
+                                                                    (battery-format "| %L: %p%% (%t)" (funcall battery-status-function)))))
 
   (setq exwm-manage-configurations
         `(((-any? (lambda (el) (equal exwm-class-name el))
