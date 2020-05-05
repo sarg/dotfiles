@@ -110,7 +110,11 @@ unless message is edited."
    telega-animation-play-inline nil
    telega-emoji-custom-alist '((":s:" . "¯\\_(ツ)_/¯")))
 
-  (advice-add #'telega-ins--webpage :override #'ignore)
+  ;; show previews for photo/video webpages
+  (advice-add #'telega-ins--webpage :before-while
+              (lambda (msg &rest args)
+                (let ((ht (telega--tl-get msg :content :web_page :type)))
+                  (-contains? '("video" "photo") ht))))
 
   ;; insert just content of a message, no headers needed
   ;; -> message text

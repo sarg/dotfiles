@@ -75,7 +75,7 @@ label-empty-padding = 1
 
 [bar/panel]
 width = 100%
-height = 1.5%
+height = 2%
 fixed-center = true
 enable-ipc = true
 
@@ -86,4 +86,5 @@ font-1 = "FontAwesome-10;1"
 font-2 = "Symbola-10"
 
 modules-left = ewmh
-modules-right = wireless-network xkeyboard battery datetime
+modules-center = datetime
+modules-right = wireless-network xkeyboard battery

@@ -30,3 +30,5 @@
 
 (package! magit-todos :disable t)
 (package! powerthesaurus)
+
+(package! scad-mode)

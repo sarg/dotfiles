@@ -131,3 +131,18 @@
         plantuml-java-args '("-Djava.awt.headless=true" "-jar"))
 
   (set-popup-rule! "^\\*PLANTUML" :size 0.4 :select nil :ttl 0 :side 'right))
+
+
+(defun openscad-preview ()
+  (interactive)
+  (select-window (split-window-right))
+  (start-process "openscad" nil "openscad" (buffer-file-name)))
+
+(define-minor-mode eval-autorun-mode
+  "`+eval/buffer' after saving buffer"
+  :init-value nil
+  :global nil
+  :lighter " EAR"
+  (if eval-autorun-mode
+      (add-hook 'after-save-hook '+eval/buffer nil t)
+    (remove-hook 'after-save-hook '+eval/buffer t)))

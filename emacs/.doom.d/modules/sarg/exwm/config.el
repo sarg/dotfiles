@@ -152,10 +152,10 @@ Can show completions at point for COMMAND using helm or ido"
   ;; Java applications and GIMP.
   ;;
   (defun meaningful-title? ()
-      (or (string-prefix-p "sun-awt-X11-" exwm-instance-name)
-          (string= "qutebrowser" exwm-class-name)
-          (string= "OpenSCAD" exwm-class-name)
-          (string= "gimp" exwm-instance-name)))
+    (or (string-prefix-p "sun-awt-X11-" exwm-instance-name)
+        (string= "qutebrowser" exwm-class-name)
+        (string= "OpenSCAD" exwm-class-name)
+        (string= "gimp" exwm-instance-name)))
 
   (add-hook 'exwm-update-class-hook
             (lambda ()

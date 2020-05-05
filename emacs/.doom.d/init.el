@@ -2,7 +2,7 @@
 
 (doom!
  :completion  company (ivy +fuzzy +prescient +childframe)
- :ui          nav-flash (modeline +light) ophints (popup +all +defaults) pretty-code
+ :ui          nav-flash (modeline +light) ophints (popup +all +defaults) pretty-code hydra
               unicode vc-gutter window-select treemacs workspaces zen
  :editor      (evil +everywhere) fold lispy snippets (format +onsave) multiple-cursors
  :emacs       dired electric vc ibuffer undo
