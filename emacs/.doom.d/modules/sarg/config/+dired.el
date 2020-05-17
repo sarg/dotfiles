@@ -28,7 +28,7 @@
   (-any? (lambda (oa) (string-match (car oa) file)) openwith-associations))
 
 (use-package! openwith
-  :hook (after-init-hook . openwith-mode)
+  :hook (after-init . openwith-mode)
   :config
 
   (setq openwith-associations

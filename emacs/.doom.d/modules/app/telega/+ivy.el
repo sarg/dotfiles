@@ -38,3 +38,7 @@
               :require-match 't)))
 
 (setq telega-completing-read-function 'ivy-completing-read)
+(after! ivy-prescient
+  (add-to-list 'ivy-prescient-sort-commands
+               'telega-msg-forward-marked-or-at-point
+               'append))

@@ -65,7 +65,7 @@
 (use-package! white-sand-theme)
 (defvar doom-theme-dark 'kaolin-valley-dark)
 (setq doom-theme 'white-sand
-      doom-font (font-spec :family "Hack" :size 16)
+      doom-font (font-spec :family "Hack" :size 20)
       doom-serif-font (font-spec :family "Hack")
       doom-unicode-font (font-spec :family "Hack"))
 

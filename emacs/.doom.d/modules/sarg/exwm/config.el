@@ -81,7 +81,6 @@ Can show completions at point for COMMAND using helm or ido"
   :init
   (set-popup-rule! "^\\*EXWM\\*$" :ignore t)
   (load! "+polybar")
-  (add-hook! 'exwm-init-hook (load! "+xkb"))
 
   ;; (add-hook! 'exwm-init-hook 'gpastel-start-listening)
 
@@ -259,15 +258,16 @@ Can show completions at point for COMMAND using helm or ido"
 
   ;; Do not forget to enable EXWM. It will start by itself when things are ready.
   ;; (exwm-enable)
+  (load! "+xkb")
   )
 
 
 (use-package! exwm-edit
-  :custom
-  (exwm-edit-bind-default-keys 't)
-
   :config
   (defalias 'exwm-edit--display-buffer 'pop-to-buffer)
+
+  ;; (exwm-input-set-key (kbd "C-c '") #'exwm-edit--compose)
+  ;; (exwm-input-set-key (kbd "C-c C-'") #'exwm-edit--compose)
 
   :init
   (set-popup-rule! "^\\*exwm-edit"

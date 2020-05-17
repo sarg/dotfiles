@@ -1,10 +1,4 @@
-(defvar exwm-input--numGroups
-  (slot-value
-   (xcb:+request-unchecked+reply exwm--connection
-       (make-instance
-        'xcb:xkb:GetControls
-        :deviceSpec xcb:xkb:ID:UseCoreKbd))
-   'numGroups))
+(defvar exwm-input--numGroups 2)
 
 (defun exwm-input--current-group ()
   (interactive)
@@ -39,7 +33,7 @@
 (advice-add
  'toggle-input-method
  :before-until
- (lambda () (interactive)
+ (lambda (&rest args) (interactive)
    (when (eq major-mode 'exwm-mode)
      (exwm-xkb-next-layout) t)))
 
@@ -49,6 +43,25 @@
   (interactive)
   (exwm-xkb-set-layout 0))
 
-(add-to-list 'doom-switch-window-hook #'exwm-xkb-reset-layout)
+(add-hook! exwm-init
+  (setq exwm-input--numGroups
+        (slot-value
+         (xcb:+request-unchecked+reply exwm--connection
+             (make-instance
+              'xcb:xkb:GetControls
+              :deviceSpec xcb:xkb:ID:UseCoreKbd))
+         'numGroups))
+
+  (add-to-list 'doom-switch-window-hook #'exwm-xkb-reset-layout))
+
+;; (use-package reverse-im
+;;   :ensure t
+;;   :custom
+;;   (reverse-im-input-methods '("russian-computer"))
+;;   :config
+;;   (reverse-im-mode t))
+
+;; (setq reverse-im-input-methods '("russian-computer"))
+
 (require 'exwm-xim)
 (exwm-xim-enable)
