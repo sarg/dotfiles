@@ -263,11 +263,11 @@ Can show completions at point for COMMAND using helm or ido"
 
 
 (use-package! exwm-edit
+  :custom
+  (exwm-edit-bind-default-keys nil)
+
   :config
   (defalias 'exwm-edit--display-buffer 'pop-to-buffer)
-
-  ;; (exwm-input-set-key (kbd "C-c '") #'exwm-edit--compose)
-  ;; (exwm-input-set-key (kbd "C-c C-'") #'exwm-edit--compose)
 
   :init
   (set-popup-rule! "^\\*exwm-edit"

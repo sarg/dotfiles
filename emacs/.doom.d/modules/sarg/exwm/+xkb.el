@@ -30,14 +30,8 @@
    (mod (+ (or inc 1) (exwm-input--current-group))
         exwm-input--numGroups)))
 
-(advice-add
- 'toggle-input-method
- :before-until
- (lambda (&rest args) (interactive)
-   (when (eq major-mode 'exwm-mode)
-     (exwm-xkb-next-layout) t)))
-
-(add-to-list 'exwm-input-prefix-keys ?\C-\\)
+(define-key exwm-mode-map
+  (kbd "C-\\") #'exwm-xkb-next-layout)
 
 (defun exwm-xkb-reset-layout ()
   (interactive)
@@ -53,15 +47,6 @@
          'numGroups))
 
   (add-to-list 'doom-switch-window-hook #'exwm-xkb-reset-layout))
-
-;; (use-package reverse-im
-;;   :ensure t
-;;   :custom
-;;   (reverse-im-input-methods '("russian-computer"))
-;;   :config
-;;   (reverse-im-mode t))
-
-;; (setq reverse-im-input-methods '("russian-computer"))
 
 (require 'exwm-xim)
 (exwm-xim-enable)
