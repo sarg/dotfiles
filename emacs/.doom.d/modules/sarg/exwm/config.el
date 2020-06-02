@@ -55,7 +55,7 @@ Can show completions at point for COMMAND using helm or ido"
 (defun sarg/check-battery ()
   "Checks battery level and makes a warning if it is too low."
   (let* ((status (funcall battery-status-function))
-         (charging (string-equal (alist-get ?B status) "Charging"))
+         (charging (string= (s-downcase (alist-get ?B status)) "charging"))
          (remain (string-to-number (alist-get ?p status))))
 
     (if (and (not charging) (< remain 15))

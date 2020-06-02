@@ -17,8 +17,7 @@
         (delete-frame))))
 
 
-(after! org
-
+(defun sarg/org-init ()
   (sarg/init-org-protocol)
 
   (require 'org-contacts)
@@ -48,9 +47,9 @@
    org-refile-use-outline-path 'file
    org-refile-targets '((nil :maxlevel . 9)
                         (org-agenda-files :maxlevel . 9)
-                        ("~/Sync/org/notes.org" :maxlevel . 9)
-                        ("~/Sync/org/someday.org" :maxlevel . 1)
-                        )
+                        ((expand-file-name "notes.org" org-directory) :maxlevel . 9)
+                        ((expand-file-name "someday.org" org-directory) :maxlevel . 1))
+
    org-outline-path-complete-in-steps nil ; Refile in a single go
    org-refile-use-outline-path t
 
@@ -60,13 +59,13 @@
 
    ;; org-mode capture templates
    org-capture-templates
-   '(("t" "TODO" entry (file "~/Sync/org/inbox.org")
+   `(("t" "TODO" entry (file ,(expand-file-name "inbox.org" org-directory))
 
       "* TODO %?\n %i\n %a")
      ;; ("j" "Journal" entry (file+datetree "~/Sync/org/dated.org")
      ;;  "* %?\n%U\n")
 
-     ("w" "work entry" entry (file "~/Sync/org/work.org")
+     ("w" "work entry" entry (file ,(expand-file-name "work.org" org-directory))
       "* TODO %?\n %i\n %a")
 
      ;; ("p" "process-soon" entry (file+headline "~/Sync/org/notes.org" "Inbox")
@@ -84,7 +83,9 @@
          '("projects.org"
            "tickler.org"))
 
-   org-catch-invisible-edits 'show-and-error))
+   org-catch-invisible-edits 'show-and-error
+
+   linkmarks-file (expand-file-name "links.org" org-directory)))
 
 (use-package! es-mode
   :commands (org-babel-execute:es)
@@ -96,8 +97,6 @@
 (after! org-download
   (setq org-download-screenshot-method "xclip -selection clipboard -t image/png -o > %s"))
 
-(use-package! linkmarks
-  :after org
-  :config
+(use-package! linkmarks)
 
-  (setq linkmarks-file (expand-file-name "links.org" org-directory)))
+(add-hook! 'doom-after-init-modules-hook #'sarg/org-init)
