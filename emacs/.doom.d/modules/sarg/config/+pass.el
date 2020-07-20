@@ -1,5 +1,16 @@
+(defun +pass/generate (entry &optional len)
+  (interactive (list (password-store--completing-read)
+                     (when current-prefix-arg
+                       (abs (prefix-numeric-value current-prefix-arg)))))
+  (let ((pass
+         (shell-command-to-string
+          (format "apg -MNCL -m%d -n1 -d"
+                  (or len password-store-password-length)))))
+    (password-store-insert entry pass)))
+
 (after! password-store
-  (advice-add #'password-store-copy :override #'+pass/copy-secret))
+  (advice-add #'password-store-copy :override #'+pass/copy-secret)
+  (advice-add #'password-store-generate :override #'+pass/generate))
 
 (defun +pass/qute (url)
     (auth-source-pass--read-entry

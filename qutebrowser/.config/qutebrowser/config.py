@@ -1,5 +1,8 @@
 import urllog
 
+#c.colors.webpage.darkmode.enabled = True
+
+
 c.auto_save.session = True
 c.backend = 'webengine'
 c.qt.force_platform = 'xcb'
@@ -55,9 +58,8 @@ c.colors.tabs.selected.odd.bg = 'white'
 c.colors.tabs.bar.bg = '#f0f0f0'
 c.fonts.default_family = ["Fira Code", "Terminus", "Fixed"]
 c.fonts.completion.entry = '12pt default_family'
-c.fonts.tabs = '13pt default_family'
 c.fonts.statusbar = '13pt monospace'
-c.fonts.prompts = '12pt sans-serif---' 
+c.fonts.prompts = '12pt sans-serif---'
 
 # bindings
 config.unbind('q', mode='normal')

@@ -38,6 +38,20 @@
  default-input-method "russian-computer")
 
 
+(defun browse-url-qute-private (url &optional new-window)
+  "Make firefox open URL in private-browsing window."
+  (interactive (browse-url-interactive-arg "URL: "))
+  (let ((process-environment (browse-url-process-environment)))
+    (apply 'start-process
+           (concat "qutebrowser " url)
+           nil
+           "qutebrowser"
+           (list (concat ":open -p " url)))))
+
+;; (setq browse-url-browser-function
+;;       '(("^https?://some.addr.com" . browse-url-qute-private)
+;;         ("." . browse-url-default-browser)))
+
 ;; set browser
 (setq-default
  browse-url-browser-function 'browse-url-generic

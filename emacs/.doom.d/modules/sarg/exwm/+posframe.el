@@ -9,7 +9,6 @@
   (ivy-posframe--display str #'sarg/ivy-posframe-poshandler))
 
 (after! ivy-posframe
-  (load! "window")
 
   (setq ivy-posframe-display-functions-alist '((t . sarg/ivy-posframe-exwm))
         ivy-posframe-border-width 4
