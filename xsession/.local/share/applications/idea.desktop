@@ -1,6 +1,6 @@
 [Desktop Entry]
 Version=1.0
 Name=Intellij IDEA
-Exec=/home/sarg/apps/idea-IU-191.7479.19/bin/idea.sh
+Exec=/home/sarg/apps/idea-IU-202.6397.94/bin/idea.sh
 Terminal=false
 Type=Application

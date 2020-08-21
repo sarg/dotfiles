@@ -234,7 +234,7 @@ Can show completions at point for COMMAND using helm or ido"
 
   (setq exwm-manage-configurations
         `(((-any? (lambda (el) (equal exwm-class-name el))
-                  '("Peek" "mpv" "scrcpy"))
+                  '("Peek" "mpv" "scrcpy" "AusweisApp2"))
            floating t
            floating-mode-line nil)
           ((equal exwm-class-name "Slack")
