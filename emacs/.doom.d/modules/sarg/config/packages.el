@@ -30,5 +30,6 @@
 
 (package! magit-todos :disable t)
 (package! powerthesaurus)
+(package! password-generator)
 
 (package! scad-mode)

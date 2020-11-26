@@ -1,11 +1,12 @@
+(use-package! password-generator)
+
 (defun +pass/generate (entry &optional len)
   (interactive (list (password-store--completing-read)
                      (when current-prefix-arg
                        (abs (prefix-numeric-value current-prefix-arg)))))
   (let ((pass
-         (shell-command-to-string
-          (format "apg -MNCL -m%d -n1 -d"
-                  (or len password-store-password-length)))))
+         (password-generator-strong
+          (or len password-store-password-length) t)))
     (password-store-insert entry pass)))
 
 (after! password-store
