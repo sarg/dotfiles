@@ -3,7 +3,7 @@
 
 (defun sarg/redshift-adjust ()
   (interactive)
-  (start-process-shell-command "redshift" nil "redshift" "-m randr -Po"))
+  (start-process-shell-command "redshift" nil "redshift -m randr -Po"))
 
 (defun sarg/redshift-start ()
   (interactive)
@@ -13,9 +13,15 @@
 (defun sarg/redshift-cancel ()
   (interactive)
   (when sarg-redshift-timer (cancel-timer sarg-redshift-timer))
-  (start-process-shell-command "redshift" nil "redshift" "-x"))
+  (start-process-shell-command "redshift" nil "redshift -x"))
 
 (use-package! backlight)
+
+(defhydra hydra-brightness ()
+  ""
+  ("<next>" (backlight-inc 500))
+  ("<prior>" (backlight-dec 500))
+  ("RET" (message "OK") :exit t))
 
 (spacemacs/exwm-bind-command
  "<XF86MonBrightnessUp>"   `backlight

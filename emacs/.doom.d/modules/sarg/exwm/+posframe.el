@@ -5,13 +5,11 @@
     (cons (+ (aref workarea 0) (car return-value))
           (+ (aref workarea 1) (cdr return-value)))))
 
-(defun sarg/ivy-posframe-exwm (str)
+(defun ivy-posframe-display-at-exwm (str)
   (ivy-posframe--display str #'sarg/ivy-posframe-poshandler))
 
 (after! ivy-posframe
-
-  (setq ivy-posframe-display-functions-alist '((t . sarg/ivy-posframe-exwm))
-        ivy-posframe-border-width 4
+  (setq ivy-posframe-border-width 4
+        ivy-posframe-display-functions-alist '((t . ivy-posframe-display))
+        ivy-posframe-style 'exwm
         ivy-posframe-parameters '((parent-frame nil))))
-
-

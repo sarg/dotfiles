@@ -46,7 +46,8 @@
               :deviceSpec xcb:xkb:ID:UseCoreKbd))
          'numGroups))
 
-  (add-to-list 'doom-switch-window-hook #'exwm-xkb-reset-layout))
+  (add-hook! doom-switch-window #'exwm-xkb-reset-layout)
+  (add-hook! exwm-exit (remove-hook! doom-switch-window #'exwm-xkb-reset-layout)))
 
 (require 'exwm-xim)
 (exwm-xim-enable)

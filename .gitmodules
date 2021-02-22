@@ -1,3 +1,4 @@
 [submodule "doom-emacs"]
 	path = emacs/.config/emacs
 	url = https://github.com/hlissner/doom-emacs
+	branch = develop

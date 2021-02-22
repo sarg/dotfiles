@@ -225,7 +225,7 @@ unless message is edited."
     (load! "+ivy"))
 
   (after! dired
-    (load "contrib/telega-dired-dwim.el"))
+    (load "telega-dired-dwim.el"))
 
   (when (featurep! :editor evil)
     (map!
