@@ -1,3 +1,8 @@
+Create Near
+Remove Near
+Expunge Both
+SyncState *
+
 IMAPAccount gmail
 Host imap.gmail.com
 User sarg@sarg.org.ru
@@ -16,29 +21,25 @@ Path ~/.mail/gmail/
 Inbox ~/.mail/gmail/Inbox
 
 Channel gmail-default
-Master :gmail-remote:
-Slave :gmail-local:
+Far :gmail-remote:
+Near :gmail-local:
 Patterns INBOX
 
 Channel gmail-sent
-Master :gmail-remote:"[Gmail]/Sent Mail"
-slave  :gmail-local:sent
+Far :gmail-remote:"[Gmail]/Sent Mail"
+Near  :gmail-local:sent
 
 Channel gmail-trash
-Master :gmail-remote:"[Gmail]/Bin"
-slave  :gmail-local:trash
+Far :gmail-remote:"[Gmail]/Bin"
+Near  :gmail-local:trash
 
 Channel gmail-archive
-Master :gmail-remote:"[Gmail]/All Mail"
-slave  :gmail-local:all
-
-Create Slave
-Remove Slave
-Expunge Both
-SyncState *
+Far :gmail-remote:"[Gmail]/All Mail"
+Near  :gmail-local:all
 
 Group gmail
 Channel gmail-default
 Channel gmail-trash
 Channel gmail-archive
 Channel gmail-sent
+

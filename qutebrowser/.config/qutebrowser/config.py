@@ -9,7 +9,7 @@ c.qt.force_platform = 'xcb'
 
 c.content.cookies.accept = 'no-3rdparty'
 
-c.editor.command = [ 'emacsclient', '-c', '{}' ]
+c.editor.command = ['emacsclient', '-c', '{}']
 c.content.default_encoding = 'utf-8'
 c.scrolling.smooth = True
 c.downloads.remove_finished = 15000
@@ -35,7 +35,6 @@ c.url.start_pages = 'about:blank'
 c.url.searchengines['DEFAULT'] = 'https://duckduckgo.com/lite?q={}'
 c.url.searchengines['gh'] = 'https://github.com/search?utf8=✓&type=Code&q={}'
 c.url.searchengines['gg'] = 'https://www.google.ru/search?hl=ru&q={}'
-c.url.searchengines['aj'] = 'https://wkdauto.atlassian.net/browse/{}'
 
 c.colors.completion.fg = '#333333'
 c.colors.completion.item.selected.bg = 'white'
@@ -70,7 +69,6 @@ config.unbind('<Ctrl-n>', mode='command')
 config.bind('O', 'set-cmd-text :open {url:pretty}')
 config.bind('t', 'set-cmd-text -s :open -t')
 config.bind('T', 'set-cmd-text :open -t -i {url:pretty}')
-
 config.bind('xx', 'spawn -u orgprotocol')
 config.bind('xp', 'spawn -u password_fill')
 config.bind('xo', 'spawn -u qute-pass')
@@ -87,3 +85,5 @@ config.bind('<Ctrl-e>', 'fake-key <End>', mode='insert')
 config.bind('<Ctrl-n>', 'completion-item-focus next', mode='command')
 config.bind('<Ctrl-p>', 'completion-item-focus prev', mode='command')
 config.bind('<Ctrl-w>', 'rl-backward-kill-word', mode='command')
+
+config.load_autoconfig(False)

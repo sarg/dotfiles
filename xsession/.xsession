@@ -1,6 +1,5 @@
 _JAVA_AWT_WM_NONREPARENTING=1
 QT_QPA_PLATFORMTHEME="gtk3"
-XDG_DATA_DIRS=$HOME/.local/share/flatpak/exports/share/:$XDG_DATA_DIRS
 export _JAVA_AWT_WM_NONREPARENTING
 export QT_QPA_PLATFORMTHEME
 
@@ -22,4 +21,5 @@ udiskie --smart-tray --no-file-manager &
 
 while true; do
     emacs-28.0.50 --eval '(exwm-enable)'
+    awesome
 done
