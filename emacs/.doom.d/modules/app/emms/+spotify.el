@@ -7,8 +7,11 @@
 
 (defun sarg/spotify-cut-ads (interface properties &rest ignored)
   (let* ((metadata (cl-caadr (assoc "Metadata" properties)))
-         (url (cl-caadr (assoc "xesam:url" metadata))))
-    (spotify-set-mute (string-prefix-p "https://open.spotify.com/ad/" url))))
+         (url (cl-caadr (assoc "xesam:url" metadata)))
+         (is-ad-p (string-prefix-p "https://open.spotify.com/ad/" url)))
+    (if is-ad-p
+        (spotify-set-mute 't)
+      (run-with-timer 2 nil #'spotify-set-mute nil))))
 
 (defun sarg/name-owner-changed-handler (interface properties &rest args)
   (when (string= "org.mpris.MediaPlayer2.spotify" interface)

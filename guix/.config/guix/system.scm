@@ -1,58 +1,43 @@
 (use-modules (gnu)
              (gnu services)
              (gnu packages)
+             (guix git-download)
              (guix packages)
+             (guix channels)
+             (guix inferior)
              (guix profiles)
              (guix download)
              (guix utils)
              (srfi srfi-1)
-             (pkill9 fhs)
+             ;; (pkill9 fhs)
              (personal packages xdisorg)
              (nongnu packages linux)
              (nongnu system linux-initrd))
 
 (use-package-modules
  linux ssh android suckless dns
- xdisorg pulseaudio connman xorg)
+ xdisorg pulseaudio connman xorg gnome)
 
 (use-service-modules
  desktop ssh networking sysctl
  xorg dbus shepherd sound pm)
 
-(define (corrupt-linux freedo version hash)
-  (package
-    (inherit freedo)
-    (name "linux")
-    (version version)
-    (source (origin
-              (method url-fetch)
-              (uri (list (string-append "https://www.kernel.org/pub/linux/kernel/v"
-                                        (version-major version) ".x/linux-" version ".tar.xz")))
-              (sha256 (base32 hash))))
-    (home-page "https://www.kernel.org/")
-    (synopsis "Linux kernel with nonfree binary blobs included")
-    (description
-     "The unmodified Linux kernel, including nonfree blobs, for running GuixSD
-on hardware which requires nonfree software to function.")))
+(define %linux-5.10
+  (let* ((channels
+          (list (channel
+                 (name 'nonguix)
+                 (url "https://gitlab.com/nonguix/nonguix")
+                 (commit "ef93718373b90cad8d25419e45ad4620403acded"))
+                (channel
+                 (name 'guix)
+                 (url "https://git.savannah.gnu.org/git/guix.git")
+                 (commit "02e5c95db958a434a42c83f19c7f65437776831e"))))
+         (inferior
+          (inferior-for-channels channels)))
+    (first (lookup-inferior-packages inferior "linux" "5.10.9"))))
 
-(define %linux-5.4.21
-  (corrupt-linux linux-libre-5.4 "5.4.21"
-                 "1yjv8qg47kb4j4jkcpi9z7v07p0vz3gszpmhrfji5866j97748vd"))
-
-(define %my-syslog.conf
-  ;; from http://www.linuxfromscratch.org/lfs/view/stable/chapter06/sysklogd.html
-  (plain-file "syslog.conf" "
-auth,authpriv.* -/var/log/auth.log
-*.*;auth,authpriv.none -/var/log/sys.log
-daemon.* -/var/log/daemon.log
-kern.* -/var/log/kern.log
-mail.* -/var/log/mail.log
-user.* -/var/log/user.log
-#*.emerg *
-"))
-
-(define %custom-grub-entry "
-menuentry \"Ubuntu 14.04 ISO\" {
+(define %grub-lubuntu-14 "
+menuentry \"Lubuntu 14.04 ISO\" {
     set isofile=\"/home/sarg/Downloads/focal-desktop-amd64.iso\"
     loopback loop ($root)$isofile
     linux (loop)/casper/vmlinuz boot=casper iso-scan/filename=${isofile} quiet splash
@@ -81,7 +66,8 @@ make_resolv_conf() {
       (start #~(lambda _
                  (zero? (system* #$(file-append kbd "/bin/setkeycodes")
                                  #$@codes))))
-      (respawn? #f)))))
+      (respawn? #f)))
+   (description "Map special keys")))
 
 (define (append-to-computed-file g text)
   #~(begin
@@ -90,6 +76,19 @@ make_resolv_conf() {
       (let ((port (open-file #$output "a")))
         (format port #$text)
         (close port))))
+
+(define libratbag-0.15
+  (package/inherit libratbag
+    (version "0.15")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/libratbag/libratbag")
+             (commit (string-append "v" version))))
+       (sha256
+        (base32 "0z6ps5aqwjmbdvahs80fh9cdgcvp4q4w3kfycmzv4kzgzihjki7b"))))))
+
 
 (define-public (manifest->packages manifest) ;; copied from guix/scripts/refresh.scm, referring to it with (@@ ...) stopped working for some reason, kept saying it's an unbound variable
   "Return the list of packages in MANIFEST."
@@ -139,7 +138,8 @@ make_resolv_conf() {
        (computed-file-name grubcfg-computed-file)
        (append-to-computed-file
         (computed-file-gexp grubcfg-computed-file)
-        %custom-grub-entry)
+        (string-append
+         %grub-lubuntu-14))
        #:options (computed-file-options grubcfg-computed-file)
        ;; #:options '(#:local-build? #t #:substitutable? #f)
        ))))
@@ -164,7 +164,8 @@ make_resolv_conf() {
                   "--no-resolv"
                   "--server=1.1.1.1")
                 #:pid-file "/run/dnsmasq.pid"))
-      (stop #~(make-kill-destructor))))))
+      (stop #~(make-kill-destructor))))
+   (description "Dnsmasq service")))
 
 (define wifi-udev-rule
   (udev-rule
@@ -172,7 +173,7 @@ make_resolv_conf() {
    "SUBSYSTEM==\"net\", ACTION==\"add\", DRIVERS==\"iwlwifi\", KERNEL==\"wl*\", NAME=\"wifi\""))
 
 (operating-system
-  (kernel %linux-5.4.21)
+  (kernel %linux-5.10)
   (kernel-arguments '("quiet" "loglevel=1" "ipv6.disable=1"))
   (initrd microcode-initrd)
   (initrd-modules (cons "i915" %base-initrd-modules))
@@ -187,7 +188,7 @@ make_resolv_conf() {
                  (configuration-file-generator
                   (grub-conf-with-custom-part
                    (bootloader-configuration-file-generator grub-bootloader)))))
-    (target "/dev/sda")
+    (targets '("/dev/sda"))
     (keyboard-layout keyboard-layout)))
   (file-systems
    (cons* (file-system
@@ -252,17 +253,17 @@ make_resolv_conf() {
 
              (udisks-service)
              (service polkit-service-type)
-             (elogind-service)
+             (service elogind-service-type
+                      (elogind-configuration
+                       (handle-lid-switch-external-power 'suspend)))
 
-             (service sysctl-service-type
-                      (sysctl-configuration
-                       (settings '(("kernel.printk" . "2 4 1 7")))))
 
-             (service fhs-binaries-compatibility-service-type
-                      (fhs-configuration
-                       (lib-packages fhs-packages)))
+             ;; (service fhs-binaries-compatibility-service-type
+             ;;          (fhs-configuration
+             ;;           (lib-packages fhs-packages)))
 
              (dbus-service)
+             (simple-service 'ratbagd dbus-root-service-type (list libratbag-0.15))
              x11-socket-directory-service
              (service tlp-service-type
                       (tlp-configuration
@@ -273,18 +274,21 @@ make_resolv_conf() {
                                       (exit-idle-time . -1)))))
              (service alsa-service-type)
 
-             (service openssh-service-type)
+             (service openssh-service-type
+                      (openssh-configuration
+                       (x11-forwarding? #t)))
              (service dnsmasq-service-type 0)
 
              ;; remap lctrl->lalt, lalt->lctrl, capslock->lshift
              (service extrakeys-service-type (list "1d" "56" "38" "29" "3a" "42"))
 
              (modify-services %base-services
-               (syslog-service-type
-                config =>
-                (syslog-configuration
-                 (inherit config)
-                 (config-file %my-syslog.conf)))
+                (sysctl-service-type config =>
+                        (sysctl-configuration
+                         (inherit config)
+                         (settings (append '(("fs.inotify.max_user_watches" . "524288")
+                                             ("net.ipv6.conf.all.disable_ipv6" . "1"))
+                                           (sysctl-configuration-settings config)))))
 
                (udev-service-type
                 config =>

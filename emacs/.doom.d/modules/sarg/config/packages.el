@@ -32,4 +32,4 @@
 (package! powerthesaurus)
 (package! password-generator)
 
-(package! scad-mode)
+;; (package! scad-mode)

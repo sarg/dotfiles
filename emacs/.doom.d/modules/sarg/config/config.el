@@ -7,7 +7,7 @@
 (load! "+org")
 (load! "+pass")
 (load! "+aria2")
-(load! "+slack")
+;; (load! "+slack")
 (load! "+selfcontrol")
 
 ;; (after! doom-modeline
