@@ -2,46 +2,8 @@
     name = Sergey Trofimov
     email = sarg@sarg.org.ru
 
-[color]
-    ui = auto
-[color "branch"]
-    current = yellow reverse
-    local = yellow
-    remote = green
-[color "diff"]
-    meta = yellow bold
-    frag = magenta bold
-    old = red bold
-    new = green bold
-[color "status"]
-    added = yellow
-    changed = green
-    untracked = cyan
-
-[alias]
-    ci = commit
-    co = checkout
-    p = pull
-    s = status
-    st = status
-    b = branch
-    d = diff
-    a = add
-    l = log --pretty=oneline
 [push]
-	default = simple
+    default = simple
 
 [sendemail]
-    smtpserver = /usr/bin/msmtp
-    # smtpEncryption = tls
-    # smtpServer = smtp.gmail.com
-    # smtpUser = sarg@sarg.org.ru
-    # smtpServerPort = 587
-
-[core]
-	#autocrlf = input
-[github]
-	user = sarg
-[http]
-	sslVerify = false
-	postBuffer = 1048576000
+    sendmailcmd = msmtp

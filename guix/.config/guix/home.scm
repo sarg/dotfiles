@@ -6,15 +6,108 @@
   (gnu home services shepherd)
   (gnu services)
   (gnu packages)
+  (srfi srfi-11)
+  (ice-9 match)
+  (ice-9 pretty-print)
+  (guix packages)
   (gnu home services shells))
 
 (define %user "sarg")
 
-(define S specification->package)
+(define %pkg-android
+  '("adb" "fastboot" "fdroidcl" "socat"
+    ;; "scrcpy" pkill9
+    ))
+
+(define %pkg-utils
+  '("aria2" "curl" "rsync"
+    "atool" "p7zip" "unzip" "jq"
+    "ripgrep" "moreutils" "libiconv"
+    "powertop" "graphviz"
+    "git" "git:send-email"
+    "bind:utils"                        ; dig
+
+    "lshw" "strace" "nftables" "file"))
+
+(define %pkg-desktop
+  '("brightnessctl" "pavucontrol"
+    "physlock" "slock" "dunst" "flameshot"
+    "pulseaudio" "dbus" "polybar" "redshift" "st"
+    "awesome" "wpa-supplicant-gui" "udiskie"
+
+    ;; counsel-linux-app uses gtk-launch
+    "gtk+:bin"                 ; for gtk-launch
+    "glib:bin"                 ; for gio-launch-desktop which is used by gtk-launch
+    ))
+
+(define %pkg-fonts
+  '("font-fira-code"
+    "font-google-noto"
+    "font-hack"
+    "font-terminus"))
+
+(define %pkg-emacs
+  '("emacs-emacsql"
+    "emacs-guix"
+    ;; "emacs-next"
+    "emacs-pdf-tools"
+    "emacs-telega"
+    "emacs-telega-contrib"
+    "emacs-vterm"))
+
+(define %pkg-x11
+  '("xf86-input-libinput" "xf86-video-intel" "picom"
+    "xhost" "xinit" "xkbcomp" "xkbset" "xorg-server"
+    "xprop" "xrandr" "xset" "xwininfo"
+    "xev" "xclip" "xinput"
+    "igt-gpu-tools"                     ; intel graphics tool
+    ))
+
+(define %pkg-games
+  '("lierolibre" "chroma" "meandmyshadow" "gcompris-qt"
+    "tipp10" "xonotic" "quake3e" "quakespasm"))
+
+(define %pkg-apps
+  '("glibc-utf8-locales"
+
+    ;; apps
+    ;; "calibre" "goldendict"
+    "anki" "qutebrowser"
+    "syncthing" "openvpn" "openssh"
+    "mu" "msmtp" "isync"
+    "gnupg" "pass-otp" "password-store" "pinentry-tty" "pwgen"
+    "beancount" "piper"
+
+    ;; media
+    "libreoffice" "twinkle" "qview" "stapler" "gimp" "imagemagick"
+    ;; "nomacs"
+    "zathura" "zathura-pdf-mupdf" "zathura-djvu"
+    "youtube-dl" "mpv" "readymedia"
+    "jpegoptim"
+
+    ;; dev
+    "openjdk" "python"))
+
+(pretty-print
+(append %pkg-android
+               %pkg-utils
+               %pkg-desktop
+               %pkg-fonts
+               %pkg-emacs
+               %pkg-x11
+               %pkg-apps)
+ )
 
 (home-environment
  (packages
-  (map specification->package '("aria2" "atool" "readymedia")))
+  (map (compose list specification->package+output)
+       (append %pkg-android
+               %pkg-utils
+               %pkg-desktop
+               %pkg-fonts
+               %pkg-emacs
+               %pkg-x11
+               %pkg-apps)))
 
  (services
   (list (service
@@ -27,11 +120,11 @@
         (simple-service 'minidlna-config
                         home-files-service-type
                         (list (list "config/minidlna.conf"
-                                    (mixed-text-file "minidlna.conf"
-                                                     "media_dir=V,/home/" %user "/Movies/\n"
-                                                     "db_dir=/home/" %user "/.cache/minidlna/\n"
-                                                     "log_dir=/home/" %user "/.cache/minidlna/\n"
-                                                     "wide_links=yes"))))
+                           (mixed-text-file "minidlna.conf"
+                                             "media_dir=V,/home/" %user "/Movies/\n"
+                                             "db_dir=/home/" %user "/.cache/minidlna/\n"
+                                             "log_dir=/home/" %user "/.cache/minidlna/\n"
+                                             "wide_links=yes"))))
 
         (service home-shepherd-service-type
                  (home-shepherd-configuration
@@ -41,7 +134,7 @@
                      (documentation "Run minidlnad")
                      (provision '(minidlnad))
                      (start #~(make-forkexec-constructor
-                               (list #$(file-append (S "readymedia") "/sbin/minidlnad")
+                               (list #$(file-append (specification->package "readymedia") "/sbin/minidlnad")
                                      "-d" "-f" "/home/sarg/.config/minidlna.conf")))
                      (stop #~(make-kill-destructor)))))))
 
