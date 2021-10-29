@@ -1,0 +1,111 @@
+- force X to use intel driver. For that I need a way to make a directory with
+  xorg-configuration with additional file.
+- [X] tinyMediaManager is not starting with
+  #+BEGIN_EXAMPLE
+2020-02-16 21:41:09,067 ERROR [main] org.tinymediamanager.Log4jBackstop:37 - Uncaught exception in thread: main
+java.lang.InternalError: java.lang.reflect.InvocationTargetException
+	at java.desktop/sun.font.FontManagerFactory$1.run(Unknown Source)
+	at java.base/java.security.AccessController.doPrivileged(Unknown Source)
+	at java.desktop/sun.font.FontManagerFactory.getInstance(Unknown Source)
+	at java.desktop/sun.font.SunFontManager.getInstance(Unknown Source)
+	at java.desktop/sun.font.FontDesignMetrics.getMetrics(Unknown Source)
+	at java.desktop/sun.java2d.SunGraphics2D.getFontMetrics(Unknown Source)
+	at org.tinymediamanager.ui.plaf.TmmIcons.createFontIcon(TmmIcons.java:598)
+	at org.tinymediamanager.ui.plaf.TmmIcons.createTextIcon(TmmIcons.java:576)
+	at org.tinymediamanager.ui.IconManager.<clinit>(IconManager.java:104)
+	at org.tinymediamanager.ui.dialogs.MessageDialog.showExceptionWindow(MessageDialog.java:120)
+	at org.tinymediamanager.Log4jBackstop.uncaughtException(Log4jBackstop.java:43)
+	at java.base/java.lang.ThreadGroup.uncaughtException(Unknown Source)
+	at java.base/java.lang.ThreadGroup.uncaughtException(Unknown Source)
+	at java.desktop/java.awt.EventDispatchThread.processException(Unknown Source)
+	at java.desktop/java.awt.EventDispatchThread.pumpOneEventForFilters(Unknown Source)
+	at java.desktop/java.awt.EventDispatchThread.pumpEventsForFilter(Unknown Source)
+	at java.desktop/java.awt.EventDispatchThread.pumpEventsForHierarchy(Unknown Source)
+	at java.desktop/java.awt.EventDispatchThread.pumpEvents(Unknown Source)
+	at java.desktop/java.awt.EventDispatchThread.pumpEvents(Unknown Source)
+	at java.desktop/java.awt.EventDispatchThread.run(Unknown Source)
+Caused by: java.lang.reflect.InvocationTargetException: null
+	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance(Unknown Source)
+	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(Unknown Source)
+	at java.base/java.lang.reflect.Constructor.newInstanceWithCaller(Unknown Source)
+	at java.base/java.lang.reflect.Constructor.newInstance(Unknown Source)
+	... 20 common frames omitted
+Caused by: java.lang.NullPointerException: null
+	at java.desktop/sun.awt.FontConfiguration.getVersion(Unknown Source)
+	at java.desktop/sun.awt.FontConfiguration.readFontConfigFile(Unknown Source)
+	at java.desktop/sun.awt.FontConfiguration.init(Unknown Source)
+	at java.desktop/sun.awt.X11FontManager.createFontConfiguration(Unknown Source)
+	at java.desktop/sun.font.SunFontManager$2.run(Unknown Source)
+	at java.base/java.security.AccessController.doPrivileged(Unknown Source)
+	at java.desktop/sun.font.SunFontManager.<init>(Unknown Source)
+	at java.desktop/sun.awt.FcFontManager.<init>(Unknown Source)
+	at java.desktop/sun.awt.X11FontManager.<init>(Unknown Source)
+	... 25 common frames omitted
+  #+END_EXAMPLE
+
+  the issue was solved by installing fontconfig and adding it to LD_LIBRARY_PATH
+  (and pkill9/fhs maybe?)
+- [X] linux kernel is recompiling almost for every reconfigure. Need to freeze version
+  created my package with pinned version
+- [X] how to run binaries that are dynamically linked?
+  pkill9/fhs solves the issue, but you'll have to find out dependencies manually
+  also some of them might have incompatible versions with those provided by guix
+
+* apps
+- qutebrowser:
+  history at ~/.local/share/qutebrowser
+  config ~/.config/qutebrowser/
+- telega
+  history at ~/.telega
+- gnupg
+  secrets ~/.gnupg
+- Sync
+- emacs
+  ~/.config/emacs
+- fdroidcl
+  ~/.cache/fdroidcl
+- ~/.mail and ~/.mu
+- tinyMediaManager
+  libmediainfo, libzen
+  LD_LIBRARY_PATH=~/.guix-profile/lib ./start.sh
+- minecraft, deadcells
+  LD_LIBRARY_PATH=~/.guix-profile/lib ./start.sh
+  and if it's not starting - strace and see which library is missing
+#+BEGIN_EXAMPLE
+
+[pid 11828] openat(AT_FDCWD, "/home/sarg/.guix-profile/lib/libz.so.1", O_RDONLY|O_CLOEXEC) = 3
+[pid 11829] openat(AT_FDCWD, "/home/sarg/.guix-profile/lib/libnet.so", O_RDONLY|O_CLOEXEC) = 4
+[pid 11829] openat(AT_FDCWD, "/home/sarg/.guix-profile/lib/libX11.so.6", O_RDONLY|O_CLOEXEC <unfinished ...>
+[pid 11829] openat(AT_FDCWD, "/home/sarg/.guix-profile/lib/libxcb.so.1", O_RDONLY|O_CLOEXEC) = 43
+[pid 11829] openat(AT_FDCWD, "/home/sarg/.guix-profile/lib/libXau.so.6", O_RDONLY|O_CLOEXEC) = 43
+[pid 11829] openat(AT_FDCWD, "/home/sarg/.guix-profile/lib/libXdmcp.so.6", O_RDONLY|O_CLOEXEC) = 43
+[pid 11829] openat(AT_FDCWD, "/home/sarg/.guix-profile/lib/libXxf86vm.so.1", O_RDONLY|O_CLOEXEC) = 44
+[pid 11829] openat(AT_FDCWD, "/home/sarg/.guix-profile/lib/libXext.so.6", O_RDONLY|O_CLOEXEC) = 44
+[pid 11829] openat(AT_FDCWD, "/home/sarg/.guix-profile/lib/libXi.so.6", O_RDONLY|O_CLOEXEC) = 44
+[pid 11829] openat(AT_FDCWD, "/home/sarg/.guix-profile/lib/libXrandr.so.2", O_RDONLY|O_CLOEXEC) = 44
+[pid 11829] openat(AT_FDCWD, "/home/sarg/.guix-profile/lib/libXrender.so.1", O_RDONLY|O_CLOEXEC) = 44
+[pid 11829] openat(AT_FDCWD, "/home/sarg/.guix-profile/lib/libXcursor.so.1", O_RDONLY|O_CLOEXEC) = 44
+[pid 11829] openat(AT_FDCWD, "/home/sarg/.guix-profile/lib/libXfixes.so.3", O_RDONLY|O_CLOEXEC) = 44
+[pid 11829] openat(AT_FDCWD, "/home/sarg/.guix-profile/lib/libXinerama.so.1", O_RDONLY|O_CLOEXEC) = 44
+[pid 11829] openat(AT_FDCWD, "/home/sarg/.guix-profile/lib/libX11-xcb.so.1", O_RDONLY|O_CLOEXEC) = 44
+[pid 11829] openat(AT_FDCWD, "/home/sarg/.guix-profile/lib/libGL.so.1", O_RDONLY|O_CLOEXEC) = 45
+[pid 11829] openat(AT_FDCWD, "/home/sarg/.guix-profile/lib/libglapi.so.0", O_RDONLY|O_CLOEXEC) = 45
+[pid 11829] openat(AT_FDCWD, "/home/sarg/.guix-profile/lib/libdrm.so.2", O_RDONLY|O_CLOEXEC) = 45
+[pid 11829] openat(AT_FDCWD, "/home/sarg/.guix-profile/lib/libxcb-glx.so.0", O_RDONLY|O_CLOEXEC) = 45
+[pid 11829] openat(AT_FDCWD, "/home/sarg/.guix-profile/lib/libxcb-dri2.so.0", O_RDONLY|O_CLOEXEC) = 45
+[pid 11829] openat(AT_FDCWD, "/home/sarg/.guix-profile/lib/libXdamage.so.1", O_RDONLY|O_CLOEXEC) = 45
+[pid 11829] openat(AT_FDCWD, "/home/sarg/.guix-profile/lib/libexpat.so.1", O_RDONLY|O_CLOEXEC) = 45
+[pid 11829] openat(AT_FDCWD, "/home/sarg/.guix-profile/lib/libxcb-dri3.so.0", O_RDONLY|O_CLOEXEC) = 45
+[pid 11829] openat(AT_FDCWD, "/home/sarg/.guix-profile/lib/libxcb-present.so.0", O_RDONLY|O_CLOEXEC) = 45
+[pid 11829] openat(AT_FDCWD, "/home/sarg/.guix-profile/lib/libxcb-sync.so.1", O_RDONLY|O_CLOEXEC) = 45
+[pid 11829] openat(AT_FDCWD, "/home/sarg/.guix-profile/lib/libxshmfence.so.1", O_RDONLY|O_CLOEXEC) = 45
+[pid 11829] openat(AT_FDCWD, "/home/sarg/.guix-profile/lib/libdrm_intel.so.1", O_RDONLY|O_CLOEXEC) = 47
+[pid 11829] openat(AT_FDCWD, "/home/sarg/.guix-profile/lib/libdrm_radeon.so.1", O_RDONLY|O_CLOEXEC) = 47
+[pid 11829] openat(AT_FDCWD, "/home/sarg/.guix-profile/lib/libdrm_nouveau.so.2", O_RDONLY|O_CLOEXEC) = 47
+[pid 11829] openat(AT_FDCWD, "/home/sarg/.guix-profile/lib/libpciaccess.so.0", O_RDONLY|O_CLOEXEC) = 47
+
+
+#+END_EXAMPLE
+
+sudo guix system reconfigure ~/.config/guix/config.scm -L ~/.config/guix/pkill9
