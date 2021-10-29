@@ -31,6 +31,7 @@
    "emacs-next"
    "emacs-pdf-tools"
    "emacs-telega"
+   "emacs-telega-contrib"
    "emacs-vterm"
 
    "glibc-utf8-locales"

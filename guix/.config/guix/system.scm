@@ -158,6 +158,8 @@ make_resolv_conf() {
                   "--pid-file=/run/dnsmasq.pid"
                   "--no-hosts"
                   "--local-service"
+                  ;; "--enable-dbus"
+                  ;; "--addn-hosts=/etc/hosts.coldturkey"
                   "--address=/dev.local/127.0.0.1"
                   "--address=/local/127.0.0.1"
                   "--servers-file=/etc/dnsmasq.servers"
