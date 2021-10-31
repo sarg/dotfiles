@@ -28,7 +28,7 @@
     "atool" "p7zip" "unzip" "jq"
     "ripgrep" "moreutils" "libiconv"
     "powertop" "graphviz"
-    "git" "git:send-email"
+    "git" "git:send-email" "git-crypt"
     "bind:utils"                        ; dig
 
     "lshw" "strace" "nftables" "file"))
@@ -49,6 +49,11 @@
     "font-google-noto"
     "font-hack"
     "font-terminus"))
+
+(define %emacs-next
+  ((options->transformation
+    '((with-commit . "emacs-next=90bd80d47b7601d8a9a3936a02d085731500c4c9")))
+   (specification->package "emacs-next")))
 
 (define %pkg-emacs
   '("avfs"
@@ -135,15 +140,15 @@
 
 (home-environment
  (packages
-  (cons xorg-conf-intel
-        (map (compose list specification->package+output)
-             (append %pkg-android
-                     %pkg-utils
-                     %pkg-desktop
-                     %pkg-fonts
-                     %pkg-emacs
-                     %pkg-x11
-                     %pkg-apps))))
+  (append (list xorg-conf-intel %emacs-next)
+          (map (compose list specification->package+output)
+               (append %pkg-android
+                       %pkg-utils
+                       %pkg-desktop
+                       %pkg-fonts
+                       %pkg-emacs
+                       %pkg-x11
+                       %pkg-apps))))
 
  (services
   (list (service

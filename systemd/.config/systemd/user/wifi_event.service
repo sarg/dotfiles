@@ -1,0 +1,10 @@
+[Unit]
+Description=Wifi events logging service
+
+[Service]
+Type=simple
+Restart=always
+ExecStart=/sbin/wpa_cli -a %h/.events/wlan.sh
+
+[Install]
+WantedBy=default.target
