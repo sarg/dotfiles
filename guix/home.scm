@@ -1,10 +1,12 @@
 (use-modules
   (guix transformations)
   (guix gexp)
+  (guix store)
   (guix utils)
   (gnu home)
   (gnu home services)
   (gnu home services shepherd)
+  (guix build-system copy)
   (gnu services)
   (gnu packages)
   (srfi srfi-11)
@@ -49,7 +51,8 @@
     "font-terminus"))
 
 (define %pkg-emacs
-  '("emacs-emacsql"
+  '("avfs"
+    "emacs-emacsql"
     "emacs-guix"
     ;; "emacs-next"
     "emacs-pdf-tools"
@@ -59,9 +62,9 @@
 
 (define %pkg-x11
   '("xf86-input-libinput" "xf86-video-intel" "picom"
-    "xhost" "xinit" "xkbcomp" "xkbset" "xorg-server"
+    "xhost" "xkbcomp" "xkbset" "xorg-server"
     "xprop" "xrandr" "xset" "xwininfo"
-    "xev" "xclip" "xinput"
+    "xev" "xclip" "xinput" "xauth"
     "igt-gpu-tools"                     ; intel graphics tool
     ))
 
@@ -88,7 +91,7 @@
     "jpegoptim"
 
     ;; dev
-    "openjdk" "python"))
+    "openjdk:jdk" "python"))
 
 (define (del-prefix p str)
   (if (string-prefix? p str)
@@ -110,16 +113,37 @@
           (lambda (name stat errno result) result)
           '() absolute-dir))))
 
+(define xorg-conf-intel
+  (package
+    (name "xorg-conf-intel")
+    (version "1")
+    (synopsis "xorg conf for intel driver")
+    (description "")
+    (license "")
+    (home-page "")
+    (source (mixed-text-file "intel.conf"
+                              "Section \"Device\"\n"
+                              "  Identifier \"Intel Graphics\"\n"
+                              "  Driver \"intel\"\n"
+                              "EndSection\n"))
+    (build-system copy-build-system)
+    (arguments
+     `(#:install-plan
+       `((,(assoc-ref %build-inputs "source")
+          "share/X11/xorg.conf.d/20-intel.conf"))
+       #:phases (modify-phases %standard-phases (delete 'unpack))))))
+
 (home-environment
  (packages
-  (map (compose list specification->package+output)
-       (append %pkg-android
-               %pkg-utils
-               %pkg-desktop
-               %pkg-fonts
-               %pkg-emacs
-               %pkg-x11
-               %pkg-apps)))
+  (cons xorg-conf-intel
+        (map (compose list specification->package+output)
+             (append %pkg-android
+                     %pkg-utils
+                     %pkg-desktop
+                     %pkg-fonts
+                     %pkg-emacs
+                     %pkg-x11
+                     %pkg-apps))))
 
  (services
   (list (service
@@ -139,12 +163,21 @@
                          (as-local-files "../git")
                          (as-local-files "../qutebrowser")
                          (as-local-files "../desktop")
-                         (list (list "config/minidlna.conf"
-                                     (mixed-text-file "minidlna.conf"
-                                                      "media_dir=V,/home/" %user "/Movies/\n"
-                                                      "db_dir=/home/" %user "/.cache/minidlna/\n"
-                                                      "log_dir=/home/" %user "/.cache/minidlna/\n"
-                                                      "wide_links=yes")))))
+                         `(("gnupg/gpg-agent.conf"
+                            ,(mixed-text-file "gpg-agent.conf"
+                                              "enable-ssh-support\n"
+                                              "allow-emacs-pinentry\n"
+                                              "pinentry-program "
+                                              (specification->package "pinentry-tty")
+                                              "/bin/pinentry-tty\n"
+                                              "default-cache-ttl 34560000\n"
+                                              "max-cache-ttl 34560000\n"))
+                           ("config/minidlna.conf"
+                            ,(mixed-text-file "minidlna.conf"
+                                              "media_dir=/home/" %user "/Movies/\n"
+                                              "db_dir=/home/" %user "/.cache/minidlna/\n"
+                                              "log_dir=/home/" %user "/.cache/minidlna/\n"
+                                              "wide_links=yes")))))
 
 
         (service home-shepherd-service-type
@@ -156,7 +189,7 @@
                      (provision '(minidlnad))
                      (start #~(make-forkexec-constructor
                                (list #$(file-append (specification->package "readymedia") "/sbin/minidlnad")
-                                     "-d" "-f" "/home/sarg/.config/minidlna.conf")))
+                                     "-d" "-P" "/tmp/minidlna.pid" "-f" "/home/sarg/.config/minidlna.conf")))
                      (stop #~(make-kill-destructor)))))))
 
         (simple-service 'additional-env-vars-service

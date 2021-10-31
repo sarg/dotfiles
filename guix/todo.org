@@ -1,5 +1,3 @@
-- force X to use intel driver. For that I need a way to make a directory with
-  xorg-configuration with additional file.
 - [X] tinyMediaManager is not starting with
   #+BEGIN_EXAMPLE
 2020-02-16 21:41:09,067 ERROR [main] org.tinymediamanager.Log4jBackstop:37 - Uncaught exception in thread: main

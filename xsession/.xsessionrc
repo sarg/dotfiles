@@ -1,5 +1,0 @@
-#!/bin/sh
-# export SSH_AUTH_SOCK
-# export NO_AT_BRIDGE=1
-# export QT_GRAPHICSSYSTEM=native
-. ~/.zshenv
