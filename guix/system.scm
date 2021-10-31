@@ -9,6 +9,7 @@
              (guix download)
              (guix utils)
              (srfi srfi-1)
+             (ice-9 textual-ports)
              ;; (pkill9 fhs)
              (personal packages xdisorg)
              (nongnu packages linux)
@@ -234,7 +235,13 @@ make_resolv_conf() {
              (service wpa-supplicant-service-type
                       (wpa-supplicant-configuration
                        (interface "wifi")
-                       (config-file "/etc/network/wpa-supplicant.conf")
+                       (config-file (mixed-text-file
+                                     "wpa_supplicant.conf"
+                                     "ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev\n"
+                                     "update_config=0\n"
+                                     (call-with-input-file
+                                         (string-append (current-source-directory) "/../secure/wifi_connections")
+                                       get-string-all)))
                        (extra-options '("-Dnl80211"))))
 
              (service dhcp-client-service-type)

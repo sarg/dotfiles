@@ -1,7 +1,6 @@
 #!/bin/bash
 
-device=wifi
-wpa_cli="/sbin/wpa_cli -i $device"
+wpa_cli="wpa_cli"
 
 if [ -z "$1" ]; then
     $wpa_cli status
