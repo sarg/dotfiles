@@ -1,11 +1,3 @@
-config/*
-.peru/
-awesome/.config/awesome/themes/
-awesome/.config/awesome/tyrannical/
-awesome/.config/awesome/collision/
-awesome/.config/awesome/redshift/
-vim/.emacs.d
-oh-my-zsh
 fonts/.local
 bootstrap.sh
 rawdog/
@@ -13,3 +5,5 @@ xmonad/.xmonad/xmonad*
 !xmonad/.xmonad/xmonad.hs
 /qutebrowser/.config/qutebrowser/autoconfig.yml
 /qutebrowser/.config/qutebrowser/__pycache__
+/emacs/.doom.d/custom.el
+/guix/current

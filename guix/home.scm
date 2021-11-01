@@ -164,8 +164,7 @@
           (bash-profile `(,(mixed-text-file
                             "bash_profile"
                             "[[ ! $DISPLAY && $XDG_VTNR -eq 1 ]] && "
-                            "exec sx " (local-file "../xsession/.xsession" "sxrc") "\n"
-                            "export GPG_TTY=$(tty)\n")))))
+                            "exec sx sh " (local-file "../xsession/.xsession" "sxrc") "\n")))))
 
         (simple-service 'configs
                         home-files-service-type
@@ -207,6 +206,7 @@
         (simple-service 'additional-env-vars-service
                         home-environment-variables-service-type
                         `(("PATH" . "$HOME/.local/bin:$PATH")
-                          ("SSH_AUTH_SOCK" . "$XDG_RUNTIME_DIR/gnupg/S.gpg-agent.ssh")
+                          ("GPG_TTY" . "$(tty)")
+                          ("SSH_AUTH_SOCK" . "$(gpgconf --list-dir agent-ssh-socket)")
                           ("VISUAL" . "emacsclient")
                           ("EDITOR" . "emacsclient"))))))

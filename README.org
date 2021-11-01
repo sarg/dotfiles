@@ -65,3 +65,20 @@ echo <<EOF | xargs -n1 apt install -y
 zsh default-jdk subversion git openvpn mercurial jq ripgrep
 EOF
 #+END_SRC
+
+* guix
+#+begin_src shell
+mkdir -p ~/.local ~/.config
+
+ln .dotfiles ~/
+ln .events ~/
+ln .gnupg ~/
+ln qutebrowser ~/.local/share/
+
+ln ~/.dotfiles/emacs/.doom.d ~/
+ln ~/.dotfiles/emacs/.config/emacs ~/.config
+ln ~/.dotfiles/guix ~/.config/
+ln /var/guix/profiles/per-user/$USER/guix-profile ~/.guix-profile
+
+guix home reconfigure ~/.dotfiles/guix/home.scm
+#+end_src
