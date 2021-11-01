@@ -8,12 +8,15 @@
   (gnu home services shepherd)
   (guix build-system copy)
   (gnu services)
+  (gnu packages xorg)
+  (gnu services xorg)
   (gnu packages)
   (srfi srfi-11)
   (ice-9 match)
   (ice-9 ftw)
   (ice-9 pretty-print)
   (guix packages)
+  (gnu packages xdisorg)
   (gnu home services shells))
 
 (define %user "sarg")
@@ -66,10 +69,9 @@
     "emacs-vterm"))
 
 (define %pkg-x11
-  '("xf86-input-libinput" "xf86-video-intel" "picom"
-    "xhost" "xkbcomp" "xkbset" "xorg-server"
+  '("picom" "xhost" "xkbcomp" "xkbset"
     "xprop" "xrandr" "xset" "xwininfo"
-    "xev" "xclip" "xinput" "xauth"
+    "xev" "xclip" "xinput"
     "igt-gpu-tools"                     ; intel graphics tool
     ))
 
@@ -118,35 +120,39 @@
           (lambda (name stat errno result) result)
           '() absolute-dir))))
 
-(define xorg-conf-intel
-  (package
-    (name "xorg-conf-intel")
-    (version "1")
-    (synopsis "xorg conf for intel driver")
-    (description "")
-    (license "")
-    (home-page "")
-    (source (mixed-text-file "intel.conf"
-                              "Section \"Device\"\n"
-                              "  Identifier \"Intel Graphics\"\n"
-                              "  Driver \"intel\"\n"
-                              "EndSection\n"))
-    (build-system copy-build-system)
+(define my-sx
+  (package/inherit sx
+    (name "my-sx")
+    (inputs
+     `(("xwrapper" ,(xorg-start-command
+                    (xorg-configuration
+                     (modules (list xf86-video-intel
+                                    xf86-input-libinput
+                                    xf86-input-evdev
+                                    xf86-input-keyboard
+                                    xf86-input-mouse
+                                    xf86-input-synaptics))
+                     (drivers (list "intel")))))
+       ,@(package-inputs sx)))
     (arguments
-     `(#:install-plan
-       `((,(assoc-ref %build-inputs "source")
-          "share/X11/xorg.conf.d/20-intel.conf"))
-       #:phases (modify-phases %standard-phases (delete 'unpack))))))
+     (substitute-keyword-arguments (package-arguments sx)
+       ((#:phases phases '%standard-phases)
+        `(modify-phases ,phases
+           (add-after 'unpack 'refer-to-xorg
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "sx"
+                 (("\\bexec Xorg\\b")
+                  (string-append "exec " (assoc-ref inputs "xwrapper"))))))))))))
 
 (home-environment
  (packages
-  (append (list xorg-conf-intel %emacs-next)
+  (append (list %emacs-next my-sx)
           (map (compose list specification->package+output)
                (append %pkg-android
                        %pkg-utils
                        %pkg-desktop
-                       %pkg-fonts
                        %pkg-emacs
+                       %pkg-fonts
                        %pkg-x11
                        %pkg-apps))))
 
@@ -155,8 +161,11 @@
          home-bash-service-type
          (home-bash-configuration
           (guix-defaults? #t)
-          (bash-profile (list (plain-file "bash_profile"
-                                          "[[ ! $DISPLAY && $XDG_VTNR -eq 1 ]] && exec $HOME/start.sh")))))
+          (bash-profile `(,(mixed-text-file
+                            "bash_profile"
+                            "[[ ! $DISPLAY && $XDG_VTNR -eq 1 ]] && "
+                            "exec sx " (local-file "../xsession/.xsession" "sxrc") "\n"
+                            "export GPG_TTY=$(tty)\n")))))
 
         (simple-service 'configs
                         home-files-service-type
@@ -176,14 +185,7 @@
                                               (specification->package "pinentry-tty")
                                               "/bin/pinentry-tty\n"
                                               "default-cache-ttl 34560000\n"
-                                              "max-cache-ttl 34560000\n"))
-                           ("config/minidlna.conf"
-                            ,(mixed-text-file "minidlna.conf"
-                                              "media_dir=/home/" %user "/Movies/\n"
-                                              "db_dir=/home/" %user "/.cache/minidlna/\n"
-                                              "log_dir=/home/" %user "/.cache/minidlna/\n"
-                                              "wide_links=yes")))))
-
+                                              "max-cache-ttl 34560000\n")))))
 
         (service home-shepherd-service-type
                  (home-shepherd-configuration
@@ -194,11 +196,17 @@
                      (provision '(minidlnad))
                      (start #~(make-forkexec-constructor
                                (list #$(file-append (specification->package "readymedia") "/sbin/minidlnad")
-                                     "-d" "-P" "/tmp/minidlna.pid" "-f" "/home/sarg/.config/minidlna.conf")))
+                                     "-d" "-P" "/tmp/minidlna.pid" "-f"
+                                     #$(mixed-text-file "minidlna.conf"
+                                                        "media_dir=/home/" %user "/Movies/\n"
+                                                        "db_dir=/home/" %user "/.cache/minidlna/\n"
+                                                        "log_dir=/home/" %user "/.cache/minidlna/\n"
+                                                        "wide_links=yes"))))
                      (stop #~(make-kill-destructor)))))))
 
         (simple-service 'additional-env-vars-service
                         home-environment-variables-service-type
                         `(("PATH" . "$HOME/.local/bin:$PATH")
+                          ("SSH_AUTH_SOCK" . "$XDG_RUNTIME_DIR/gnupg/S.gpg-agent.ssh")
                           ("VISUAL" . "emacsclient")
                           ("EDITOR" . "emacsclient"))))))

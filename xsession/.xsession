@@ -17,6 +17,6 @@ dunst &
 udiskie --smart-tray --no-file-manager &
 
 while true; do
-    emacs-28.0.50 --eval '(exwm-enable)'
+    emacs --eval '(exwm-enable)'
     awesome
 done
