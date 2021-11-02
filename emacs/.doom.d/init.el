@@ -1,7 +1,8 @@
 ;; init.el -*- lexical-binding: t; -*-
 
 (doom!
- :completion  company (ivy +fuzzy +prescient +childframe)
+ :completion  company ;; (ivy +fuzzy +prescient +childframe)
+ vertico
  :ui          nav-flash (modeline +light) ophints (popup +all +defaults) ligatures hydra
  vc-gutter window-select treemacs
  :editor      (evil +everywhere) fold lispy snippets (format +onsave) multiple-cursors
@@ -10,7 +11,7 @@
  :tools       editorconfig (eval +overlay) (lookup +docsets) (magit) pdf (pass +auth) docker lsp debugger direnv make
  :checkers    syntax
  :lang        (cc +lsp) clojure data hy emacs-lisp (go +lsp)
- (org +dragndrop +ipython +pandoc +present +hugo)
+ (org +dragndrop +ipython +pandoc +present +hugo) beancount
  rest sh plantuml (python +pyenv +lsp) (web +html) yaml json
  :app         calendar (telega +ivy) (rss +org) (emms +volume +spotify)
  :config      (default +bindings +smartparens)
