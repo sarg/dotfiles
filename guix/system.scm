@@ -214,7 +214,7 @@ make_resolv_conf() {
                  (group "users")
                  (home-directory "/home/sarg")
                  (supplementary-groups
-                  '("wheel" "netdev" "audio" "video" "tty" "input" "adbusers")))
+                  '("wheel" "netdev" "audio" "video" "tty" "input" "adbusers" "kvm")))
                 %base-user-accounts))
 
   (packages

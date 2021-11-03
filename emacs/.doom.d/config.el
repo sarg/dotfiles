@@ -4,6 +4,12 @@
 (setq org-directory (expand-file-name "~/Sync/org/"))
 ;; (defalias 'fit-frame-to-buffer-1 #'fit-frame-to-buffer)
 
+(setq shell-command-switch "-c"
+      shell-file-name "bash-emacs")
+
+(after! tramp
+  (pushnew! tramp-remote-path 'tramp-own-remote-path))
+
 (defun sarg/connect-bt ()
   (interactive)
   (bluetooth--call-method

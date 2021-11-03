@@ -105,12 +105,13 @@
       (substring/shared str (string-length p))
       str))
 
-(define (as-local-files dir)
-  (let ((absolute-dir (string-append (current-source-directory) "/" dir)))
+(define* (as-local-files dir #:optional (trim-prefix dir))
+  (let ((absolute-dir (string-append (current-source-directory) "/" dir))
+        (to-trim (string-append (current-source-directory) "/" trim-prefix "/")))
     (map (lambda (fn)
            (list
-            (del-prefix "." (del-prefix (string-append absolute-dir "/") fn))
-            (local-file (canonicalize-path fn) (del-prefix "." (basename fn)))))
+            (del-prefix "." (del-prefix to-trim fn))
+            (local-file (canonicalize-path fn) (del-prefix "." (basename fn)) #:recursive? #t)))
          (file-system-fold
           (lambda (path stat result) #t)
           (lambda (path stat result) (cons path result))
@@ -125,14 +126,14 @@
     (name "my-sx")
     (inputs
      `(("xwrapper" ,(xorg-start-command
-                    (xorg-configuration
-                     (modules (list xf86-video-intel
-                                    xf86-input-libinput
-                                    xf86-input-evdev
-                                    xf86-input-keyboard
-                                    xf86-input-mouse
-                                    xf86-input-synaptics))
-                     (drivers (list "intel")))))
+                     (xorg-configuration
+                      (modules (list xf86-video-intel
+                                     xf86-input-libinput
+                                     xf86-input-evdev
+                                     xf86-input-keyboard
+                                     xf86-input-mouse
+                                     xf86-input-synaptics))
+                      (drivers (list "intel")))))
        ,@(package-inputs sx)))
     (arguments
      (substitute-keyword-arguments (package-arguments sx)
@@ -176,6 +177,7 @@
                          (as-local-files "../git")
                          (as-local-files "../qutebrowser")
                          (as-local-files "../desktop")
+                         (as-local-files "../emacs/.local/bin" "../emacs")
                          `(("gnupg/gpg-agent.conf"
                             ,(mixed-text-file "gpg-agent.conf"
                                               "enable-ssh-support\n"
