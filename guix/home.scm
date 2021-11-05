@@ -186,7 +186,10 @@
                                               (specification->package "pinentry-tty")
                                               "/bin/pinentry-tty\n"
                                               "default-cache-ttl 34560000\n"
-                                              "max-cache-ttl 34560000\n")))))
+                                              "max-cache-ttl 34560000\n"))
+                           ("gnupg/gpg.conf"
+                            ,(mixed-text-file "gpg.conf"
+                                              "keyid-format 0xlong\n")))))
 
         (service home-shepherd-service-type
                  (home-shepherd-configuration

@@ -10,7 +10,6 @@
     (password-store-insert entry pass)))
 
 (after! password-store
-  (advice-add #'password-store-copy :override #'+pass/copy-secret)
   (advice-add #'password-store-generate :override #'+pass/generate))
 
 (defun +pass/qute (url)
