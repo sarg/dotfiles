@@ -7,6 +7,7 @@
              (guix inferior)
              (guix profiles)
              (guix download)
+             (guix transformations)
              (guix utils)
              (srfi srfi-1)
              (ice-9 textual-ports)
@@ -78,18 +79,10 @@ make_resolv_conf() {
         (format port #$text)
         (close port))))
 
-(define libratbag-0.15
-  (package/inherit libratbag
-    (version "0.15")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/libratbag/libratbag")
-             (commit (string-append "v" version))))
-       (sha256
-        (base32 "0z6ps5aqwjmbdvahs80fh9cdgcvp4q4w3kfycmzv4kzgzihjki7b"))))))
-
+(define libratbag-0.16
+  ((options->transformation
+    '((with-commit . "libratbag=v0.16")))
+   libratbag))
 
 (define-public (manifest->packages manifest) ;; copied from guix/scripts/refresh.scm, referring to it with (@@ ...) stopped working for some reason, kept saying it's an unbound variable
   "Return the list of packages in MANIFEST."
@@ -184,22 +177,32 @@ make_resolv_conf() {
   (locale "en_GB.utf8")
   (timezone "Europe/Berlin")
   (keyboard-layout (keyboard-layout "us"))
+  ;; (bootloader
+  ;;  (bootloader-configuration
+  ;;   (bootloader (bootloader
+  ;;                (inherit grub-bootloader)
+  ;;                (configuration-file-generator
+  ;;                 (grub-conf-with-custom-part
+  ;;                  (bootloader-configuration-file-generator grub-bootloader)))))
+  ;;   (targets '("/dev/sda"))
+  ;;   (keyboard-layout keyboard-layout)))
   (bootloader
    (bootloader-configuration
-    (bootloader (bootloader
-                 (inherit grub-bootloader)
-                 (configuration-file-generator
-                  (grub-conf-with-custom-part
-                   (bootloader-configuration-file-generator grub-bootloader)))))
-    (targets '("/dev/sda"))
-    (keyboard-layout keyboard-layout)))
+    (bootloader grub-efi-bootloader)
+    (targets '("/boot"))))
   (file-systems
    (cons* (file-system
             (mount-point "/")
-            (device
-             (uuid "b2c8548b-de1a-4d6c-8ada-2a60dc50e41b"
-                   'ext4))
+            (device (uuid "b2c8548b-de1a-4d6c-8ada-2a60dc50e41b" 'ext4))
             (type "ext4"))
+          (file-system
+           (mount-point "/boot")
+           (device (uuid "298B-1EF1" 'fat32))
+           (type "vfat"))
+          (file-system
+           (mount-point "/media/sarg/500GB")
+           (device (uuid "8ae97db9-a22c-4476-b7ad-2e82646f5fec" 'ext4))
+           (type "ext4"))
           %base-file-systems))
   (host-name "thinkpad")
 
@@ -221,10 +224,9 @@ make_resolv_conf() {
    (cons*
     (specification->package "nss-certs")
     (specification->package "bluez")
-    ;; xorg-server
-    ;; xf86-input-libinput xf86-video-intel
     brightnessctl
     tlp
+    libratbag-0.16
     (filter (lambda (p)
               (not (member (package-name p)
                            '("wireless-tools" "info-reader" "nano" "zile"))))
@@ -272,7 +274,7 @@ make_resolv_conf() {
              ;;           (lib-packages fhs-packages)))
 
              (dbus-service)
-             (simple-service 'ratbagd dbus-root-service-type (list libratbag-0.15))
+             (simple-service 'ratbagd dbus-root-service-type `(,libratbag-0.16))
              x11-socket-directory-service
              (service tlp-service-type
                       (tlp-configuration

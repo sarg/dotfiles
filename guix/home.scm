@@ -27,7 +27,7 @@
     ))
 
 (define %pkg-utils
-  '("aria2" "curl" "rsync"
+  '("aria2" "curl" "rsync" "plocate"
     "atool" "p7zip" "unzip" "jq"
     "ripgrep" "moreutils" "libiconv"
     "powertop" "graphviz"

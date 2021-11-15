@@ -177,16 +177,17 @@ unless message is edited."
 
   (setq
    telega-root-show-avatars nil
-   telega-chat-use-markdown-version 1
+   telega-chat-input-markups '("markdown2" nil)
    telega-animation-play-inline nil
 
    telega-emoji-custom-alist '((":s:" . "¯\\_(ツ)_/¯")))
 
+  (setq telega-hide-previews 't)
   ;; show previews for photo/video webpages
   (advice-add #'telega-ins--webpage :before-while
               (lambda (msg &rest args)
                 (let ((ht (telega--tl-get msg :content :web_page :type)))
-                  (-contains? '("video" "photo") ht))))
+                  (and telega-hide-previews (-contains? '("video" "photo") ht)))))
 
   ;; insert just content of a message, no headers needed
   ;; -> message text
