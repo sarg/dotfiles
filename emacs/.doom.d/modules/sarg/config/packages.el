@@ -16,7 +16,7 @@
 (package! web-search)
 (package! keyfreq)
 (package! dictcc)
-(package! goldendict)
+;;(package! goldendict)
 (package! mpv)
 (package! el-patch)
 (package! linkmarks :recipe (:host github :repo "dustinlacewell/linkmarks"))

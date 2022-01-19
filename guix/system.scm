@@ -24,23 +24,23 @@
  desktop ssh networking sysctl
  xorg dbus shepherd sound pm)
 
-(define %linux-5.10
+(define %linux-5.15
   (let* ((channels
           (list (channel
                  (name 'nonguix)
                  (url "https://gitlab.com/nonguix/nonguix")
-                 (commit "ef93718373b90cad8d25419e45ad4620403acded"))
+                 (commit "458fb69acf9e4f663776c896b32ad5be55068d17"))
                 (channel
                  (name 'guix)
                  (url "https://git.savannah.gnu.org/git/guix.git")
-                 (commit "02e5c95db958a434a42c83f19c7f65437776831e"))))
+                 (commit "d118b3a5a6cc150305629726eb75db10a5bd7a1b"))))
          (inferior
           (inferior-for-channels channels)))
-    (first (lookup-inferior-packages inferior "linux" "5.10.9"))))
+    (first (lookup-inferior-packages inferior "linux" "5.15.13"))))
 
 (define %grub-lubuntu-14 "
 menuentry \"Lubuntu 14.04 ISO\" {
-    set isofile=\"/home/sarg/Downloads/focal-desktop-amd64.iso\"
+    set isofile=\"/home/sarg/focal-desktop-amd64.iso\"
     loopback loop ($root)$isofile
     linux (loop)/casper/vmlinuz boot=casper iso-scan/filename=${isofile} quiet splash
     initrd (loop)/casper/initrd
@@ -79,50 +79,12 @@ make_resolv_conf() {
         (format port #$text)
         (close port))))
 
-(define libratbag-0.16
-  ((options->transformation
-    '((with-commit . "libratbag=v0.16")))
-   libratbag))
-
 (define-public (manifest->packages manifest) ;; copied from guix/scripts/refresh.scm, referring to it with (@@ ...) stopped working for some reason, kept saying it's an unbound variable
   "Return the list of packages in MANIFEST."
   (filter-map (lambda (entry)
                 (let ((item (manifest-entry-item entry)))
                   (if (package? item) item #f)))
               (manifest-entries manifest)))
-
-
-(define fhs-packages ;; list of packages to use for fhs-service
-  (manifest->packages
-   (specifications->manifest
-    (list
-     "libmediainfo" "libxscrnsaver" "eudev" "alsa-lib" "libzen"
-     "fontconfig" "zlib" "pulseaudio" "libx11"
-     "libnet" "libxcb" "libxau" "libxdmcp" "libxxf86vm" "libxext" "libxi"
-     "libxrandr" "libxrender" "libxcursor" "libxfixes" "libxinerama" "libxcb"
-     "glu" "libdrm" "libxdamage" "expat" "libpciaccess"
-
-     ;; "libxcomposite" "libxtst" "libxaw" "libxt" "libxrandr" "libxext" "libx11"
-     ;; "libxfixes" "glib" "gtk+" "gtk+@2" "bzip2" "zlib" "gdk-pixbuf" "libxinerama"
-     ;; "libxdamage" "libxcursor" "libxrender" "libxscrnsaver" "libxxf86vm"
-     ;; "libxi" "libsm" "libice" "gconf" "freetype" "curl" "nspr" "nss" "fontconfig"
-     ;; "cairo" "pango" "expat" "dbus" "cups" "libcap" "sdl2" "libusb" "dbus-glib"
-     ;; "atk" "eudev" "network-manager" "pulseaudio" "openal" "alsa-lib" "mesa"
-     ;; "libxmu" "libxcb" "glu" "util-linux" "libogg" "libvorbis" "sdl" "sdl2-image"
-     ;; "glew" "openssl" "libidn" "tbb" "flac" "freeglut" "libjpeg" "libpng" "libpng@1.2"
-     ;; "libsamplerate" "libmikmod" "libtheora" "libtiff" "pixman" "speex" "sdl-image"
-     ;; "sdl-ttf" "sdl-mixer" "sdl2-ttf" "sdl2-mixer" "gstreamer" "gst-plugins-base"
-     ;; "glu" "libcaca" "libcanberra" "libgcrypt" "libvpx"
-     ;;"librsvg" ;; currently requires compiling, but shouldn't, it's being weird
-     ;; "libxft" "libvdpau" "gst-plugins-ugly" "libdrm" "xkeyboard-config" "libpciaccess"
-     ;;"ffmpeg@3.4" ;; Disable this because test fails at livf-something (373grdi4fc369v2h29g10672whmv0mvb-ffmpeg-3.4.7.drv)
-     ;; "libpng" "libgpg-error" "sqlite" "libnotify"
-
-     ;; "fuse" "e2fsprogs" "p11-kit" "xz" "keyutils" "xcb-util-keysyms" "libselinux"
-     ;; "ncurses" "jack" "jack2" "vulkan-loader" "at-spi2-atk" "at-spi2-core" "libsigc++"
-     ))))
-
-
 
 (define* (grub-conf-with-custom-part fn)
   ;; fn returns computed-file
@@ -169,7 +131,7 @@ make_resolv_conf() {
    "SUBSYSTEM==\"net\", ACTION==\"add\", DRIVERS==\"iwlwifi\", KERNEL==\"wl*\", NAME=\"wifi\""))
 
 (operating-system
-  (kernel %linux-5.10)
+  (kernel %linux-5.15)
   (kernel-arguments '("quiet" "loglevel=1" "ipv6.disable=1"))
   (initrd microcode-initrd)
   (initrd-modules (cons "i915" %base-initrd-modules))
@@ -217,7 +179,7 @@ make_resolv_conf() {
                  (group "users")
                  (home-directory "/home/sarg")
                  (supplementary-groups
-                  '("wheel" "netdev" "audio" "video" "tty" "input" "adbusers" "kvm")))
+                  '("wheel" "netdev" "audio" "video" "tty" "input" "adbusers" "kvm" "dialout")))
                 %base-user-accounts))
 
   (packages
@@ -226,7 +188,7 @@ make_resolv_conf() {
     (specification->package "bluez")
     brightnessctl
     tlp
-    libratbag-0.16
+    libratbag
     (filter (lambda (p)
               (not (member (package-name p)
                            '("wireless-tools" "info-reader" "nano" "zile"))))
@@ -274,8 +236,7 @@ make_resolv_conf() {
              ;;           (lib-packages fhs-packages)))
 
              (dbus-service)
-             (simple-service 'ratbagd dbus-root-service-type `(,libratbag-0.16))
-             x11-socket-directory-service
+             (simple-service 'ratbagd dbus-root-service-type `(,libratbag))
              (service tlp-service-type
                       (tlp-configuration
                        (restore-device-state-on-startup? #t)))
