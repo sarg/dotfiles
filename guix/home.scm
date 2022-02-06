@@ -55,7 +55,7 @@
 
 (define %emacs-next
   ((options->transformation
-    '((with-commit . "emacs-next=90bd80d47b7601d8a9a3936a02d085731500c4c9")))
+    '((with-commit . "emacs-next=9396b7d0b425a114eb6e8695c439be3d30490f98")))
    (specification->package "emacs-next")))
 
 (define %pkg-emacs
