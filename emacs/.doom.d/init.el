@@ -14,5 +14,6 @@
  (org +dragndrop +ipython +pandoc +present +hugo) beancount
  rest sh plantuml (python +pyenv +lsp) (web +html) yaml json
  :app         calendar (telega +ivy) (rss +org) (emms +volume +spotify)
+ :email       (mu4e +gmail)
  :config      (default +bindings +smartparens)
  :sarg        config exwm)
