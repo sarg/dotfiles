@@ -55,7 +55,7 @@
 
 (define %emacs-next
   ((options->transformation
-    '((with-commit . "emacs-next=9396b7d0b425a114eb6e8695c439be3d30490f98")))
+    '((with-commit . "emacs-next=ac3bb7e75413c1df60cf2de5c29e999df518a62d")))
    (specification->package "emacs-next")))
 
 (define %pkg-emacs
@@ -80,9 +80,7 @@
     "tipp10" "xonotic" "quake3e" "quakespasm"))
 
 (define %pkg-apps
-  '("glibc-utf8-locales"
-
-    ;; apps
+  '(;; apps
     "calibre" ;; "goldendict"
     "anki" "qutebrowser"
     "syncthing" "openvpn" "openssh"
@@ -110,7 +108,7 @@
         (to-trim (string-append (current-source-directory) "/" trim-prefix "/")))
     (map (lambda (fn)
            (list
-            (del-prefix "." (del-prefix to-trim fn))
+            (del-prefix to-trim fn)
             (local-file (canonicalize-path fn) (del-prefix "." (basename fn)) #:recursive? #t)))
          (file-system-fold
           (lambda (path stat result) #t)
@@ -178,7 +176,7 @@
                          (as-local-files "../qutebrowser")
                          (as-local-files "../desktop")
                          (as-local-files "../emacs/.local/bin" "../emacs")
-                         `(("gnupg/gpg-agent.conf"
+                         `((".gnupg/gpg-agent.conf"
                             ,(mixed-text-file "gpg-agent.conf"
                                               "enable-ssh-support\n"
                                               "allow-emacs-pinentry\n"
@@ -187,7 +185,7 @@
                                               "/bin/pinentry-tty\n"
                                               "default-cache-ttl 34560000\n"
                                               "max-cache-ttl 34560000\n"))
-                           ("gnupg/gpg.conf"
+                           (".gnupg/gpg.conf"
                             ,(mixed-text-file "gpg.conf"
                                               "keyid-format 0xlong\n")))))
 
