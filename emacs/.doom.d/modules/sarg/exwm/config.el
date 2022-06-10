@@ -34,14 +34,15 @@ Can show completions at point for COMMAND using helm or ido"
             :action (lambda (command) (start-process-shell-command command nil command))
             :caller 'sarg/exwm-app-launcher))
 
-(defun sarg/run-or-raise (NAME PROGRAM)
+(defun sarg/run-or-raise (NAME PROGRAM &rest ARGS)
   (interactive)
   (let ((buf (cl-find-if
               (lambda (buf) (string= NAME (buffer-name buf)))
               (buffer-list))))
 
     (if buf (switch-to-buffer buf)
-      (start-process NAME nil "setsid" "-w" PROGRAM))))
+      (apply #'start-process
+             (append (list NAME nil "setsid" "-w" PROGRAM) ARGS)))))
 
 (defun sarg/shell-cmd (command)
   `(lambda ()

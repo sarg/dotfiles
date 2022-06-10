@@ -87,7 +87,7 @@
 
    "s-E"     #'sarg/with-browser
    "s-e"    `(lambda () (interactive)
-               (sarg/run-or-raise "qutebrowser" "qutebrowser")
+               (sarg/run-or-raise "qutebrowser" "qutebrowser" "--qt-arg" "no-sandbox" "true")
                (exwm-workspace-switch (exwm-workspace-name-to-index "brow")))
    "s-s"    `(lambda () (interactive) (sarg/run-or-raise "Slack" "slack"))
 
