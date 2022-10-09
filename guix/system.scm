@@ -24,19 +24,19 @@
  desktop ssh networking sysctl
  xorg dbus shepherd sound pm)
 
-(define %linux-5.15
+(define %linux-5.19
   (let* ((channels
           (list (channel
                  (name 'nonguix)
                  (url "https://gitlab.com/nonguix/nonguix")
-                 (commit "458fb69acf9e4f663776c896b32ad5be55068d17"))
+                 (commit "f373a7c30b15f6da30db22a37401fd39b7f91957"))
                 (channel
                  (name 'guix)
                  (url "https://git.savannah.gnu.org/git/guix.git")
-                 (commit "d118b3a5a6cc150305629726eb75db10a5bd7a1b"))))
+                 (commit "31b4eea5c0d361dfbca119c27cbc1e8c6f65782a"))))
          (inferior
           (inferior-for-channels channels)))
-    (first (lookup-inferior-packages inferior "linux" "5.15.13"))))
+    (first (lookup-inferior-packages inferior "linux" "5.19.5"))))
 
 (define %grub-lubuntu-14 "
 menuentry \"Lubuntu 14.04 ISO\" {
@@ -131,7 +131,7 @@ make_resolv_conf() {
    "SUBSYSTEM==\"net\", ACTION==\"add\", DRIVERS==\"iwlwifi\", KERNEL==\"wl*\", NAME=\"wifi\""))
 
 (operating-system
-  (kernel %linux-5.15)
+  (kernel %linux-5.19)
   (kernel-arguments '("quiet" "loglevel=1" "ipv6.disable=1"))
   (initrd microcode-initrd)
   (initrd-modules (cons "i915" %base-initrd-modules))
@@ -164,6 +164,8 @@ make_resolv_conf() {
           (file-system
            (mount-point "/media/sarg/500GB")
            (device (uuid "8ae97db9-a22c-4476-b7ad-2e82646f5fec" 'ext4))
+           (mount? #f)
+           (create-mount-point? #t)
            (type "ext4"))
           %base-file-systems))
   (host-name "thinkpad")

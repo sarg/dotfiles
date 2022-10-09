@@ -55,7 +55,7 @@
 
 (define %emacs-next
   ((options->transformation
-    '((with-commit . "emacs-next=ac3bb7e75413c1df60cf2de5c29e999df518a62d")))
+    '((with-commit . "emacs-next=97a54d132732131fb7635d91a45cf2088e98b60b")))
    (specification->package "emacs-next")))
 
 (define %pkg-emacs
@@ -89,14 +89,15 @@
     "beancount" "piper"
 
     ;; media
-    "libreoffice" "twinkle" "qview" "stapler" "gimp" "imagemagick"
+    "libreoffice" "qview" "stapler" "gimp" "imagemagick"
     ;; "nomacs"
     "zathura" "zathura-pdf-mupdf" "zathura-djvu"
     "youtube-dl" "mpv" "readymedia"
     "jpegoptim"
 
     ;; dev
-    "openjdk:jdk" "python"))
+    ;; "openjdk:jdk"
+    "python"))
 
 (define (del-prefix p str)
   (if (string-prefix? p str)

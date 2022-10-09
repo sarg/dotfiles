@@ -17,6 +17,7 @@
 (package! frame-workflow :recipe (:host github :repo "akirak/frame-workflow"))
 (package! backlight)
 (package! exwm-edit)
+(package! app-launcher :recipe (:host github :repo "SebastienWae/app-launcher"))
 ;; :recipe (:host github :repo "sarg/exwm-edit" :branch "fix-display")
 
 ;; (package! exwm-mff :recipe (:host github :repo "ieure/exwm-mff"))

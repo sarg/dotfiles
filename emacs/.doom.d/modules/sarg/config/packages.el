@@ -2,6 +2,7 @@
 ;;; private/sarg/packages.el
 
 (package! puppet-mode)
+(package! org-contacts)
 (package! nginx-mode)
 (package! multitran)
 (package! slack)

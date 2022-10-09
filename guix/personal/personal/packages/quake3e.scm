@@ -20,13 +20,10 @@
 
 (define-public quake3e
   ;; We follow master since it seems that there won't be releases after 1.3.6.
-  (let ((commit
-         "b357e02bb66f694619a2a55e742c63b61a6ca1c5"
-         ;; "0923f61ee9364d3529f0e2cb455cc96d619fa2f1"
-         ))
+  (let ((commit "862c454cbccd69ef0ec863008d9e013201bdacd4"))
     (package
       (name "quake3e")
-      (version "2021-03-28-1")
+      (version "2022-09-09-1")
       (source
        (origin
          (method git-fetch)
@@ -35,10 +32,7 @@
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32
-           "0r9gz62xlwlfavkjim4wkqqw0v958sv7lprdmk5j85lail5l3f3y"
-           ;; "0vb93zhw7sf57cvy3g0fh7arrpcx1yji28d6snb6pm4p2nzsabm5"
-           ))))
+          (base32 "1y4alhpnnxvbi0p2zmiav8hc40v97ygpms0gsxh11qyzi2q7r7gz"))))
       (build-system gnu-build-system)
       (inputs
        `(("sdl2" ,sdl2)

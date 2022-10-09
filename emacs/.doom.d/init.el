@@ -1,8 +1,7 @@
 ;; init.el -*- lexical-binding: t; -*-
 
 (doom!
- :completion  company ;; (ivy +fuzzy +prescient +childframe)
- vertico
+ :completion  company (vertico +childframe)          ;(ivy +fuzzy +prescient +childframe)
  :ui          nav-flash (modeline +light) ophints (popup +all +defaults) ligatures hydra
  vc-gutter window-select treemacs
  :editor      (evil +everywhere) fold lispy snippets (format +onsave) multiple-cursors

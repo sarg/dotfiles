@@ -1,9 +1,11 @@
 (use-package! bufler
   :config
+
+  (after! evil-collection
   (evil-collection-define-key 'normal 'bufler-list-mode-map
     (kbd "C-k") 'bufler-list-buffer-kill
     "r" 'bufler
-    (kbd "RET") 'bufler-list-buffer-switch)
+    (kbd "RET") 'bufler-list-buffer-switch))
 
   (setq bufler-groups
         (bufler-defgroups

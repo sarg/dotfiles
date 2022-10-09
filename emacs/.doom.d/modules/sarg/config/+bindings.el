@@ -61,7 +61,7 @@
    "s-f"     #'exwm-layout-toggle-fullscreen
    "<s-tab>" #'exwm-jump-to-last-exwm
    "s-w"     #'exwm-workspace-switch
-   "s-r"     #'counsel-linux-app
+   "s-r"     #'app-launcher-run-app
    "s-c"     #'kill-buffer-and-window
 
    "s-u"     #'winner-undo

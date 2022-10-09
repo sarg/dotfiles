@@ -113,9 +113,9 @@ Can show completions at point for COMMAND using helm or ido"
 
   ;; Disable dialog boxes since they are unusable in EXWM
   (setq use-dialog-box nil)
-  (setq exwm-workspace-number 5)
+  (setq exwm-workspace-number 4)
   (defvar exwm-workspace-names
-    '("code" "brow" "extr" "slac" "lisp" ))
+    '("code" "brow" "extr" "lisp" ))
 
   (defsubst exwm-workspace-name-to-index (name)
     (-elem-index name exwm-workspace-names))
