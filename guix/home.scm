@@ -22,7 +22,7 @@
 (define %user "sarg")
 
 (define %pkg-android
-  '("adb" "fastboot" "fdroidcl" "socat"
+  '("adb" "fdroidcl" "socat"
     ;; "scrcpy" pkill9
     ))
 
@@ -86,7 +86,7 @@
     "syncthing" "openvpn" "openssh"
     "mu" "msmtp" "isync"
     "gnupg" "pass-otp" "password-store" "pinentry-tty" "pwgen"
-    "beancount" "piper"
+    ;; "piper"
 
     ;; media
     "libreoffice" "qview" "stapler" "gimp" "imagemagick"

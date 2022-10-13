@@ -182,6 +182,8 @@ unless message is edited."
 
    telega-emoji-custom-alist '((":s:" . "¯\\_(ツ)_/¯")))
 
+  (advice-add #'telega-ins--chat-sponsored-message :override #'ignore)
+
   (setq telega-hide-previews 't)
   ;; show previews for photo/video webpages
   (advice-add #'telega-ins--webpage :before-while
@@ -231,5 +233,5 @@ unless message is edited."
   (when (featurep! :editor evil)
     (map!
      (:map telega-msg-button-map
-       "k" nil
-       "l" nil))))
+           "k" nil
+           "l" nil))))

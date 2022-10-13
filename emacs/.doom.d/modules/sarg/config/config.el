@@ -121,7 +121,7 @@
   (add-hook 'eshell-first-time-mode-hook
             (lambda ()
               (map! :map eshell-mode-map
-                    :ni "C-r" #'counsel-esh-history))))
+                    :ni "C-r" #'+eshell/search-history))))
 
 (after! ivy-rich
   (setq counsel-linux-app-format-function #'counsel-linux-app-format-function-name-only)

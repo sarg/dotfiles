@@ -99,4 +99,4 @@
 
 (use-package! linkmarks)
 
-(add-hook! 'doom-after-init-modules-hook #'sarg/org-init)
+(add-hook! 'after-init-hook #'sarg/org-init)
