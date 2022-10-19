@@ -55,14 +55,14 @@
 
 (define %emacs-next
   ((options->transformation
-    '((with-commit . "emacs-next=97a54d132732131fb7635d91a45cf2088e98b60b")))
+    '((with-commit . "emacs-next=1e9341672d53fa9b297858dc47f7318974abc80e")))
    (specification->package "emacs-next")))
 
 (define %pkg-emacs
   '("avfs"
     "emacs-emacsql"
     "emacs-guix"
-    ;; "emacs-next"
+    "emacs-next"
     "emacs-pdf-tools"
     "emacs-telega"
     "emacs-telega-contrib"
@@ -146,7 +146,7 @@
 
 (home-environment
  (packages
-  (append (list %emacs-next my-sx)
+  (append (list my-sx)
           (map (compose list specification->package+output)
                (append %pkg-android
                        %pkg-utils
