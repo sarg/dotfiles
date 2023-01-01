@@ -49,8 +49,8 @@
 (after! exwm
   ;; EXWM
   (spacemacs/exwm-bind-command
-   "<XF86AudioRaiseVolume>" #'pulseaudio-control-increase-volume
-   "<XF86AudioLowerVolume>" #'pulseaudio-control-decrease-volume
+   "<XF86AudioRaiseVolume>" #'pulseaudio-control-increase-sink-volume
+   "<XF86AudioLowerVolume>" #'pulseaudio-control-decrease-sink-volume
    "<XF86AudioMute>"        #'pulseaudio-control-toggle-current-sink-mute
    "<XF86AudioMicMute>"     #'pulseaudio-control-toggle-current-source-mute
 

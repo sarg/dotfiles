@@ -7,14 +7,15 @@ primary = #ffb52a
 secondary = #e60053
 underline-1 = #89AAEB
 
+[settings]
+format-padding = 3px
+
 [module/datetime]
 type = internal/date
 interval = 1.0
 date = "%a %d"
 time = "%H:%M"
 label = "%date% %time%"
-format-padding = 0
-label-padding = 1
 
 [module/xkeyboard]
 type = internal/xkeyboard
@@ -22,10 +23,8 @@ type = internal/xkeyboard
 [module/wireless-network]
 type = internal/network
 interface = wifi
-label-connected = 📶
+label-connected = 
 label-disconnected = ⊘
-label-connected-padding = 1
-label-disconnected-padding = 1
 
 [module/battery]
 type = internal/battery
@@ -61,7 +60,6 @@ animation-charging-framerate = 750
 [module/ewmh]
 type = internal/xworkspaces
 #pin-workspaces = true
-enable-click = false
 enable-scroll = false
 label-active = "%name%"
 label-empty = "%name%"
@@ -83,7 +81,6 @@ tray-position = right
 
 font-0 = "Terminus-10"
 font-1 = "FontAwesome-10;1"
-font-2 = "Symbola-10"
 
 modules-left = ewmh
 modules-center = datetime

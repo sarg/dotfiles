@@ -22,9 +22,7 @@
 (define %user "sarg")
 
 (define %pkg-android
-  '("adb" "fdroidcl" "socat"
-    ;; "scrcpy" pkill9
-    ))
+  '("adb" "fdroidcl" "socat" "scrcpy"))
 
 (define %pkg-utils
   '("aria2" "curl" "rsync" "plocate"
@@ -37,8 +35,7 @@
     "lshw" "strace" "nftables" "file"))
 
 (define %pkg-desktop
-  '("brightnessctl" "pavucontrol"
-    "physlock" "slock" "dunst" "flameshot"
+  '("pavucontrol" "dunst" "flameshot"
     "pulseaudio" "dbus" "polybar" "redshift" "st"
     "awesome" "wpa-supplicant-gui" "udiskie"
 
@@ -92,7 +89,7 @@
     "libreoffice" "qview" "stapler" "gimp" "imagemagick"
     ;; "nomacs"
     "zathura" "zathura-pdf-mupdf" "zathura-djvu"
-    "youtube-dl" "mpv" "readymedia"
+    "yt-dlp" "mpv" "readymedia"
     "jpegoptim"
 
     ;; dev
@@ -142,7 +139,7 @@
              (lambda* (#:key inputs #:allow-other-keys)
                (substitute* "sx"
                  (("\\bexec Xorg\\b")
-                  (string-append "exec " (assoc-ref inputs "xwrapper"))))))))))))
+                  (string-join (list "exec" (assoc-ref inputs "xwrapper")))))))))))))
 
 (home-environment
  (packages
@@ -163,8 +160,7 @@
           (guix-defaults? #t)
           (bash-profile `(,(mixed-text-file
                             "bash_profile"
-                            "[[ ! $DISPLAY && $XDG_VTNR -eq 1 ]] && "
-                            "exec sx sh " (local-file "../xsession/.xsession" "sxrc") "\n")))))
+                            "[[ ! $DISPLAY && $(tty) == /dev/tty1 ]] && exec sx sh ~/.xsession""")))))
 
         (simple-service 'configs
                         home-files-service-type

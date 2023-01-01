@@ -7,14 +7,12 @@
              (guix inferior)
              (guix profiles)
              (guix download)
-             (guix transformations)
              (guix utils)
              (srfi srfi-1)
-             (ice-9 textual-ports)
-             ;; (pkill9 fhs)
              (personal packages xdisorg)
+             (nongnu system linux-initrd)
              (nongnu packages linux)
-             (nongnu system linux-initrd))
+             (ice-9 textual-ports))
 
 (use-package-modules
  linux ssh android suckless dns
@@ -23,20 +21,6 @@
 (use-service-modules
  desktop ssh networking sysctl
  xorg dbus shepherd sound pm)
-
-(define %linux-5.19
-  (let* ((channels
-          (list (channel
-                 (name 'nonguix)
-                 (url "https://gitlab.com/nonguix/nonguix")
-                 (commit "f373a7c30b15f6da30db22a37401fd39b7f91957"))
-                (channel
-                 (name 'guix)
-                 (url "https://git.savannah.gnu.org/git/guix.git")
-                 (commit "31b4eea5c0d361dfbca119c27cbc1e8c6f65782a"))))
-         (inferior
-          (inferior-for-channels channels)))
-    (first (lookup-inferior-packages inferior "linux" "5.19.5"))))
 
 (define %grub-lubuntu-14 "
 menuentry \"Lubuntu 14.04 ISO\" {
@@ -131,7 +115,7 @@ make_resolv_conf() {
    "SUBSYSTEM==\"net\", ACTION==\"add\", DRIVERS==\"iwlwifi\", KERNEL==\"wl*\", NAME=\"wifi\""))
 
 (operating-system
-  (kernel %linux-5.19)
+  (kernel linux)
   (kernel-arguments '("quiet" "loglevel=1" "ipv6.disable=1"))
   (initrd microcode-initrd)
   (initrd-modules (cons "i915" %base-initrd-modules))
@@ -181,7 +165,7 @@ make_resolv_conf() {
                  (group "users")
                  (home-directory "/home/sarg")
                  (supplementary-groups
-                  '("wheel" "netdev" "audio" "video" "tty" "input" "adbusers" "kvm" "dialout")))
+                  '("wheel" "netdev" "audio" "video" "tty" "input" "adbusers" "kvm" "dialout" "cdrom")))
                 %base-user-accounts))
 
   (packages
@@ -197,7 +181,6 @@ make_resolv_conf() {
             %base-packages)))
 
   (services (cons*
-             ;; (service connman-service-type)
              (service wpa-supplicant-service-type
                       (wpa-supplicant-configuration
                        (interface "wifi")
@@ -219,7 +202,6 @@ make_resolv_conf() {
                                              "send host-name = gethostname();"))
 
              (screen-locker-service physlock)
-             ;; (screen-locker-service xlockmore "xlock")
 
              ;; Add polkit rules, so that non-root users in the wheel group can
              ;; perform administrative tasks (similar to "sudo").
@@ -232,11 +214,6 @@ make_resolv_conf() {
                       (elogind-configuration
                        (handle-lid-switch-external-power 'suspend)))
 
-
-             ;; (service fhs-binaries-compatibility-service-type
-             ;;          (fhs-configuration
-             ;;           (lib-packages fhs-packages)))
-
              (dbus-service)
              (simple-service 'ratbagd dbus-root-service-type `(,libratbag))
              (service tlp-service-type
@@ -245,6 +222,7 @@ make_resolv_conf() {
              (service pulseaudio-service-type
                       (pulseaudio-configuration
                        (daemon-conf '((flat-volumes . no)
+                                      (avoid-resampling . yes)
                                       (exit-idle-time . -1)))))
              (service alsa-service-type)
 
@@ -257,12 +235,12 @@ make_resolv_conf() {
              (service extrakeys-service-type (list "1d" "56" "38" "29" "3a" "42"))
 
              (modify-services %base-services
-                (sysctl-service-type config =>
-                        (sysctl-configuration
-                         (inherit config)
-                         (settings (append '(("fs.inotify.max_user_watches" . "524288")
-                                             ("net.ipv6.conf.all.disable_ipv6" . "1"))
-                                           (sysctl-configuration-settings config)))))
+               (sysctl-service-type config =>
+                                    (sysctl-configuration
+                                     (inherit config)
+                                     (settings (append '(("fs.inotify.max_user_watches" . "524288")
+                                                         ("net.ipv6.conf.all.disable_ipv6" . "1"))
+                                                       (sysctl-configuration-settings config)))))
 
                (udev-service-type
                 config =>
