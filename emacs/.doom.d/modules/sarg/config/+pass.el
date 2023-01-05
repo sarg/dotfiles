@@ -14,10 +14,9 @@
 
 (defun +pass/qute (url)
     (auth-source-pass--read-entry
-     (ivy-read "Pass: "
+     (completing-read "Pass: "
                (password-store-list)
-               :initial-input url
-               :caller '+pass/qute)))
+               nil t url)))
 
 (after! ivy
   (ivy-add-actions
