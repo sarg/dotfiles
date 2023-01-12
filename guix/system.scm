@@ -120,7 +120,7 @@ make_resolv_conf() {
   (initrd microcode-initrd)
   (initrd-modules (cons "i915" %base-initrd-modules))
   (firmware (cons* iwlwifi-firmware broadcom-bt-firmware %base-firmware))
-  (locale "en_GB.utf8")
+  (locale "en_GB.UTF-8")
   (timezone "Europe/Berlin")
   (keyboard-layout (keyboard-layout "us"))
   ;; (bootloader
@@ -222,6 +222,8 @@ make_resolv_conf() {
              (service pulseaudio-service-type
                       (pulseaudio-configuration
                        (daemon-conf '((flat-volumes . no)
+                                      (default-sample-rate . 192000)
+                                      (default-sample-format . s32le)
                                       (avoid-resampling . yes)
                                       (exit-idle-time . -1)))))
              (service alsa-service-type)

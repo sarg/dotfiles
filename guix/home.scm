@@ -31,7 +31,6 @@
     "powertop" "graphviz"
     "git" "git:send-email" "git-crypt"
     "bind:utils"                        ; dig
-
     "lshw" "strace" "nftables" "file"))
 
 (define %pkg-desktop
@@ -58,6 +57,9 @@
 (define %pkg-emacs
   '("avfs"
     "emacs-emacsql"
+    "emacs-calibredb" "sqlite"
+    "emacs-eat"
+    "emacs-detached"
     "emacs-guix"
     "emacs-next"
     "emacs-pdf-tools"
@@ -69,12 +71,14 @@
   '("picom" "xhost" "xkbcomp" "xkbset"
     "xprop" "xrandr" "xset" "xwininfo"
     "xev" "xclip" "xinput"
+    "hicolor-icon-theme" "adwaita-icon-theme" "papirus-icon-theme"
     "igt-gpu-tools"                     ; intel graphics tool
     ))
 
 (define %pkg-games
-  '("lierolibre" "chroma" "meandmyshadow" "gcompris-qt"
-    "tipp10" "xonotic" "quake3e" "quakespasm"))
+  '(;; "lierolibre" "chroma" "meandmyshadow" "gcompris-qt"
+    ;; "tipp10" "quakespasm"
+    "quake3e" "xonotic"))
 
 (define %pkg-apps
   '(;; apps
@@ -83,10 +87,12 @@
     "syncthing" "openvpn" "openssh"
     "mu" "msmtp" "isync"
     "gnupg" "pass-otp" "password-store" "pinentry-tty" "pwgen"
-    ;; "piper"
+    "piper"
 
     ;; media
     "libreoffice" "qview" "stapler" "gimp" "imagemagick"
+    "graphicsmagick" "libwebp"
+
     ;; "nomacs"
     "zathura" "zathura-pdf-mupdf" "zathura-djvu"
     "yt-dlp" "mpv" "readymedia"
@@ -146,6 +152,7 @@
   (append (list my-sx)
           (map (compose list specification->package+output)
                (append %pkg-android
+                       %pkg-games
                        %pkg-utils
                        %pkg-desktop
                        %pkg-emacs
@@ -158,9 +165,16 @@
          home-bash-service-type
          (home-bash-configuration
           (guix-defaults? #t)
-          (bash-profile `(,(mixed-text-file
-                            "bash_profile"
-                            "[[ ! $DISPLAY && $(tty) == /dev/tty1 ]] && exec sx sh ~/.xsession""")))))
+
+          (bashrc
+           (list (plain-file
+                  "eat"
+                  "[ -n \"$EAT_SHELL_INTEGRATION_DIR\" ] && source \"$EAT_SHELL_INTEGRATION_DIR/bash\"")))
+
+          (bash-profile
+           (list (plain-file
+                  "bash_profile"
+                  "[[ ! $DISPLAY && $(tty) == /dev/tty1 ]] && exec sx sh ~/.xsession")))))
 
         (simple-service 'configs
                         home-files-service-type

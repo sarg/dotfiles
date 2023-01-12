@@ -29,7 +29,7 @@ EOF
 xset r rate 250 50
 xset m 15/10 4
 
-export XMODIFIERS=@im=exwm-xim
-export GTK_IM_MODULE=xim
-export QT_IM_MODULE=xim
-export CLUTTER_IM_MODULE=xim
+# export XMODIFIERS=@im=exwm-xim
+# export GTK_IM_MODULE=xim
+# export QT_IM_MODULE=xim
+# export CLUTTER_IM_MODULE=xim

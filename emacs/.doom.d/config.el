@@ -35,3 +35,19 @@
   (setq calibredb-root-dir (expand-file-name "~/Calibre Library"))
   (setq calibredb-db-dir (concat calibredb-root-dir "/metadata.db"))
   (setq calibredb-library-alist '(("~/Calibre Library"))))
+
+(use-package! eat
+  :hook (eshell-load-hook . (eat-eshell-mode eat-eshell-visual-command-mode)))
+
+(use-package! detached
+  :init
+  (detached-init)
+  :bind (;; Replace `async-shell-command' with `detached-shell-command'
+         ([remap async-shell-command] . detached-shell-command)
+         ;; Replace `compile' with `detached-compile'
+         ([remap compile] . detached-compile)
+         ([remap recompile] . detached-compile-recompile)
+         ;; Replace built in completion of sessions with `consult'
+         ([remap detached-open-session] . detached-consult-session))
+  :custom ((detached-show-output-on-attach t)
+           (detached-terminal-data-command system-type)))

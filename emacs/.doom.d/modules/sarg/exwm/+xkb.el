@@ -49,5 +49,5 @@
   (add-hook! doom-switch-window #'exwm-xkb-reset-layout)
   (add-hook! exwm-exit (remove-hook! doom-switch-window #'exwm-xkb-reset-layout)))
 
-(require 'exwm-xim)
-(exwm-xim-enable)
+;; (require 'exwm-xim)
+;; (exwm-xim-enable)
