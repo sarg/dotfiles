@@ -32,8 +32,7 @@
   :config
 
   (setq openwith-associations
-        '(("\\.pdf\\'" "zathura" (file))
-          ("\\.epub\\'" "llpp" (file))
+        '(("\\.\\(?:pdf\\|epub\\)\\'" "zathura" (file))
           ("\\.\\(?:mkv\\|webm\\|avi\\|mp4\\)\\'" "mpv" (file))))
   ;; (openwith-mode)
   ;; Don't ask if file is too large when it'll be handled by openwith-mode.

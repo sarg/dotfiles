@@ -1,18 +1,17 @@
 ;; -*- no-byte-compile: t; -*-
 ;;; private/sarg/packages.el
 
-(package! puppet-mode)
+;; (package! puppet-mode)
 (package! org-contacts)
-(package! nginx-mode)
+;; (package! nginx-mode)
 (package! multitran)
-(package! slack)
+;; (package! slack)
 (package! webpaste)
 (package! dired-filter)
 (package! dired-avfs)
 (package! dired-du)
 (package! dired-collapse)
-;; (package! aria2
-  ;; :recipe (:host gitlab :repo "ukaszg/aria2" :branch "remake"))
+(package! aria2 :recipe (:host gitlab :repo "ukaszg/aria2" :branch "remake"))
 (package! openwith)
 (package! web-search)
 (package! keyfreq)
@@ -34,3 +33,5 @@
 (package! password-generator)
 
 ;; (package! scad-mode)
+(package! bluetooth)
+(package! bufler)

@@ -16,7 +16,7 @@
 
 (use-package-modules
  linux ssh android suckless dns
- xdisorg pulseaudio connman xorg gnome)
+ pulseaudio connman xorg gnome)
 
 (use-service-modules
  desktop ssh networking sysctl

@@ -22,10 +22,11 @@
 (setq +modeline-encoding nil
       +modeline-height 20)
 
-(advice-add '+modeline-format-icon :override
-            (lambda (icon label &optional face &rest args)
-              (propertize (format "X %s" label)
-                          'face face)))
+;; debug icons in modeline, find out their names
+;; (advice-add '+modeline-format-icon :override
+;;             (lambda (icon label &optional face &rest args)
+;;               (propertize (format "X %s" label)
+;;                           'face face)))
 
 ;; C-h deletes character backwards
 (define-key key-translation-map [?\C-h] [?\C-?])
@@ -95,8 +96,8 @@
   :mode
   ("\\.epub\\'" . nov-mode))
 
-(use-package! puppet-mode)
-(use-package! nginx-mode)
+;; (use-package! puppet-mode)
+;; (use-package! nginx-mode)
 
 (use-package! webpaste)
 ;; (use-package! ranger
@@ -117,7 +118,6 @@
   (keyfreq-autosave-mode 1))
 
 (after! eshell
-  (setenv "PAGER" "cat")
   (add-hook 'eshell-first-time-mode-hook
             (lambda ()
               (map! :map eshell-mode-map
@@ -160,3 +160,27 @@
   (if eval-autorun-mode
       (add-hook 'after-save-hook '+eval/buffer nil t)
     (remove-hook 'after-save-hook '+eval/buffer t)))
+
+(use-package! bluetooth)
+
+(use-package! calibredb
+  :config
+  (setq calibredb-root-dir (expand-file-name "~/Calibre Library"))
+  (setq calibredb-db-dir (concat calibredb-root-dir "/metadata.db"))
+  (setq calibredb-library-alist '(("~/Calibre Library"))))
+
+(use-package! eat
+  :hook (eshell-load-hook . (eat-eshell-mode eat-eshell-visual-command-mode)))
+
+(use-package! detached
+  :init
+  (detached-init)
+  :bind (;; Replace `async-shell-command' with `detached-shell-command'
+         ([remap async-shell-command] . detached-shell-command)
+         ;; Replace `compile' with `detached-compile'
+         ([remap compile] . detached-compile)
+         ([remap recompile] . detached-compile-recompile)
+         ;; Replace built in completion of sessions with `consult'
+         ([remap detached-open-session] . detached-consult-session))
+  :custom ((detached-show-output-on-attach t)
+           (detached-terminal-data-command system-type)))

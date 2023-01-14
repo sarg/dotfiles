@@ -1,36 +1,6 @@
-(defun archive-torrent-summarize()
-  (let* ((data (bencode-decode-from-buffer))
-         (retfiles '())
-         (info (plist-get data :info))
-         (files (or (plist-get info :files)
-                    (list info))))
-
-    (read-only-mode)
-    (goto-char (point-min))
-    (insert (format "M     Size  Name") "\n")
-
-    (archive-summarize-files
-     (seq-map-indexed (lambda (file index)
-               (let* ((size (plist-get file :length))
-                      (name (string-join (or (plist-get file :path)
-                                             (list (plist-get file :name)))
-                                         "/"))
-                      (text (format "  %8s  %s" (file-size-human-readable size) name)))
-
-                 ;; [EXT-FILE-NAME INT-FILE-NAME CASE-FIDDLED MODE ...]")
-                 (push (vector name name nil nil (1+ index)) retfiles)
-                 (vector text 2 (length text)))) files))
-
-    (apply #'vector (nreverse retfiles))))
-
 (use-package! bencode
-  :mode ("\\.torrent\\'" . archive-mode)
   :config
-
-  (advice-add 'archive-find-type :before-until
-              (lambda ()
-                (when (string-match-p "\\.torrent$" (or buffer-file-name (buffer-name)))
-                  'torrent))))
+  (load! "torrent-mode"))
 
 (el-patch-feature aria2)
 (after! aria2
@@ -38,9 +8,9 @@
     "Return entries to be displayed in downloads list."
     (let (entries
           (info (append
-                 (tellActive aria2--cc aria2--tell-keys)
-                 (tellWaiting aria2--cc nil nil aria2--tell-keys)
-                 (tellStopped aria2--cc nil nil aria2--tell-keys)
+                 (Active aria2--bin aria2--tell-keys)
+                 (Waiting aria2--bin nil nil aria2--tell-keys)
+                 (Stopped aria2--bin nil nil aria2--tell-keys)
                  nil)))
       (dolist (e info entries)
         (push (list
@@ -57,7 +27,6 @@
               entries)))))
 
 (use-package! aria2
-  :disabled
   :config
   (add-to-list 'evil-normal-state-modes 'aria2-mode)
 
@@ -80,36 +49,11 @@
                               nil
                               t)))
 
-  (mapc (lambda (file) (make-request aria2--cc "aria2.addTorrent"
+  (mapc (lambda (file) (Post aria2--bin "aria2.addTorrent"
                                 (aria2--base64-encode-file file)
                                 []
                                 (list :dir dest-dir)))
         (dired-get-marked-files)))
-
-(defun sarg/aria2-marked-files (dest-dir)
-  "Download selected files in torrent with aria2 to DEST-DIR."
-  (interactive
-   (list (read-directory-name "Directory: "
-                              (or (dired-dwim-target-directory)
-                                  aria2-download-directory)
-                              nil
-                              t)))
-
-  (let (indexes base64-file)
-    (setq indexes (string-join
-                   (mapcar (lambda (f) (number-to-string (aref f 4))) (archive-get-marked ?*))
-                   ","))
-
-    (save-restriction
-      (widen)
-
-      ;; aria2.addTorrent([secret, ]torrent[, uris[, options[, position]]])
-      (make-request aria2--cc "aria2.addTorrent"
-                    (base64-encode-string
-                     (buffer-substring archive-proper-file-start (1+ (buffer-size))) t)
-                    []
-                    (list :select-file indexes :dir dest-dir)))))
-
 
 (defsubst aria2--entry-Done (e)
   (let ((total (float (string-to-number (alist-get 'length e))))
@@ -121,9 +65,9 @@
 (defvar-local aria2-entry-gid nil)
 (defun aria2--list-entry-files ()
   (let* (entries
-         (status (tellStatus aria2--cc aria2-entry-gid))
+         (status (GidStatus aria2--bin aria2-entry-gid))
          (dirPrefixLen (1+ (length (alist-get 'dir status))))
-         (info (append (getFiles aria2--cc aria2-entry-gid) nil)))
+         (info (append (GidFiles aria2--bin aria2-entry-gid) nil)))
 
     (dolist (e info entries)
       (push (list e (vector
@@ -159,6 +103,27 @@
   (tabulated-list-init-header)
   (hl-line-mode 1))
 
+(defun torrent-do-download-selected (dest-dir)
+  "Download ARG entries."
+  (interactive
+   (list (read-directory-name "Directory: "
+                              (or (dired-dwim-target-directory)
+                                  aria2-download-directory)
+                              nil
+                              t))
+   'torrent-mode)
+
+  ;; aria2.addTorrent([secret, ]torrent[, uris[, options[, position]]])
+  (Post aria2--bin "aria2.addTorrent"
+        (aria2--base64-encode-file buffer-file-name)
+        []
+        `(:select-file ,(seq-map #'car (tablist-get-marked-items))
+          :dir ,dest-dir)))
+
+(evil-collection-define-key 'normal 'torrent-mode-map
+  "D" 'torrent-do-download-selected
+  "d" nil
+  "m" 'tablist-mark-forward)
 
 ;; ; Replace continuous spans of integers in sorted array with '(spanStart . spanEnd)
 ;; (assert (equal '((1 . 2) (5 . 7) 10 13)
