@@ -6,13 +6,13 @@
  vc-gutter window-select treemacs
  :editor      (evil +everywhere) fold lispy snippets (format +onsave) multiple-cursors word-wrap
  :emacs       dired electric vc ibuffer undo
- :term        eshell shell term vterm
- :tools       editorconfig (eval +overlay) (lookup +docsets) (magit) pdf (pass +auth) docker lsp debugger direnv make
+ :term        eshell vterm
+ :tools       editorconfig (eval +overlay) (lookup +docsets) (magit) pdf (pass +auth) direnv make
  :checkers    syntax
- :lang        (cc +lsp) clojure data hy emacs-lisp (go +lsp)
+ :lang        clojure data emacs-lisp
  (org +dragndrop +ipython +pandoc +present +hugo) beancount
  rest sh plantuml (python +pyenv +lsp) (web +html) yaml json
- :app         calendar telega (rss +org) (emms +volume +spotify)
+ :app         calendar telega (rss +org) (emms +volume +spotify) wpa
  :email       (mu4e +gmail)
  :config      (default +bindings +smartparens)
  :sarg        config exwm)

@@ -1,22 +1,21 @@
 (use-modules (gnu)
              (gnu services)
              (gnu packages)
-             (guix git-download)
+             (guix transformations)
              (guix packages)
              (guix channels)
              (guix inferior)
-             (guix profiles)
-             (guix download)
              (guix utils)
              (srfi srfi-1)
              (personal packages xdisorg)
+             (personal packages wpa-policy)
              (nongnu system linux-initrd)
              (nongnu packages linux)
              (ice-9 textual-ports))
 
 (use-package-modules
  linux ssh android suckless dns
- pulseaudio connman xorg gnome)
+ pulseaudio connman xorg gnome admin)
 
 (use-service-modules
  desktop ssh networking sysctl
@@ -31,12 +30,15 @@ menuentry \"Lubuntu 14.04 ISO\" {
 }
 ")
 
+
 (define dhclient-enter-hooks "
 make_resolv_conf() {
     touch /etc/dnsmasq.servers
-    sed -i \"/#dhcp/,+1d;
-             $ a #dhcp\\nserver=/${new_domain_name}/${new_domain_name_servers}\\n\" \\
-        /etc/dnsmasq.servers
+    sed -i '/#dhcp/,+1d' /etc/dnsmasq.servers
+    cat <<EOF >>/etc/dnsmasq.servers
+#dhcp
+server=/${new_domain_name}/${new_domain_name_servers}
+EOF
 
     kill -HUP $(cat /run/dnsmasq.pid)
 }
