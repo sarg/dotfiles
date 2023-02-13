@@ -22,16 +22,16 @@
   ;; We follow master since it seems that there won't be releases after 1.3.6.
   (package
     (name "quake3e")
-    (version "2022-12-31")
+    (version "2023-02-12")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/ec-/Quake3e")
-             (commit "f9f923672940f35cd9afc4c0a5f0aa6ddacb3fa6")))
+             (commit "47f3b98fd29e1de2c1d62f0121f8258a2761be7c")))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0p2yr67bav0imwfpmqn8d5jwlgz5ycsn6d1ipx9ssld84zhdvpvh"))))
+        (base32 "0psf4ff1d3xrihaah0qrd83sp85v93ghcv15hr95sk53p0h32bv8"))))
     (build-system gnu-build-system)
     (inputs (list sdl2 libjpeg-turbo openal curl opusfile opus libvorbis freetype libogg))
     (native-inputs (list which pkg-config)) ; which used to find SDL_version.h
