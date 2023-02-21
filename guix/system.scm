@@ -8,7 +8,6 @@
              (guix utils)
              (srfi srfi-1)
              (personal packages xdisorg)
-             (personal packages wpa-policy)
              (nongnu system linux-initrd)
              (nongnu packages linux)
              (ice-9 textual-ports))
