@@ -70,13 +70,21 @@ Can show completions at point for COMMAND using helm or ido"
       (exwm-workspace-switch-to-buffer buffer-or-name)
     (apply orig-func buffer-or-name args)))
 
+(defun exwm-set-default-cursor ()
+  ;; set default cursor to left_ptr (instead of default black cross)
+  (xcb:+request exwm--connection
+      (make-instance 'xcb:ChangeWindowAttributes
+                     :window exwm--root
+                     :value-mask xcb:CW:Cursor
+                     :cursor (xcb:cursor:load-cursor exwm--connection "left_ptr"))))
+
 (use-package! dmenu)
 ;; (use-package! gpastel)
 ;; (use-package! exwm-mff)
 (use-package! xelb)
 (use-package! exwm
   :commands (exwm-enable exwm-init)
-  ;; :hook (exwm-init . exwm-mff-mode)
+  :hook (exwm-init . exwm-set-default-cursor)
   :hook (exwm-mode . doom-mark-buffer-as-real-h)
 
   :init
