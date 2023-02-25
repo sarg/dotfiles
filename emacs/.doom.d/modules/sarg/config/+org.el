@@ -20,7 +20,6 @@
 (defun sarg/org-init ()
   (sarg/init-org-protocol)
 
-  (require 'org-contacts)
   (setq-default org-contacts-files (list (expand-file-name "contacts.org" org-directory)))
 
   (setq

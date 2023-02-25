@@ -10,7 +10,7 @@
  :tools       editorconfig (eval +overlay) (lookup +docsets) (magit) pdf (pass +auth) direnv make
  :checkers    syntax
  :lang        clojure data emacs-lisp
- (org +dragndrop +ipython +pandoc +present +hugo) beancount
+ (org +contacts +dragndrop +pandoc +present +hugo +roam2) beancount
  rest sh plantuml (python +pyenv +lsp) (web +html) yaml json
  :app         calendar telega (rss +org) (emms +volume +spotify) wpa
  :email       (mu4e +gmail)
