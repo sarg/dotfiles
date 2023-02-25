@@ -23,7 +23,7 @@
   ("<prior>" (backlight-dec 500))
   ("RET" (message "OK") :exit t))
 
-(spacemacs/exwm-bind-command
+(exwm-bind-command
  "<XF86MonBrightnessUp>"   `backlight
  "<XF86MonBrightnessDown>" `backlight)
 

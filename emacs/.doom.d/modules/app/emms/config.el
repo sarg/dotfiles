@@ -8,7 +8,7 @@
            (message (format "Error: %s - No dbus" ex))))
         retval)))
 
-(when (featurep! :app emms +spotify)
+(when (modulep! :app emms +spotify)
   (if (dbus-capable)
       (load! "+spotify")))
 

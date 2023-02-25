@@ -16,7 +16,4 @@ LANG=C flameshot &
 dunst &
 udiskie --smart-tray --no-file-manager &
 
-while true; do
-    emacs --eval '(exwm-enable)'
-    awesome
-done
+emacs --eval '(exwm-enable)'

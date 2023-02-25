@@ -224,7 +224,7 @@ unless message is edited."
     :quit t
     :select t)
 
-  (when (featurep! :completion ivy)
+  (when (modulep! :completion ivy)
     (load! "+ivy"))
 
   (after! dired

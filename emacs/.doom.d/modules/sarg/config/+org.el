@@ -20,7 +20,15 @@
 (defun sarg/org-init ()
   (sarg/init-org-protocol)
 
-  (setq-default org-contacts-files (list (expand-file-name "contacts.org" org-directory)))
+
+  (when (featurep! :lang org +roam2)
+    (setq org-roam-db-node-include-function
+          (lambda ()
+            (not (member "ATTACH" (org-get-tags))))))
+
+  (when (featurep! :lang org +contacts)
+    (setq-default org-contacts-files
+                  (list (expand-file-name "contacts.org" org-directory))))
 
   (setq
    org-src-window-setup 'current-window

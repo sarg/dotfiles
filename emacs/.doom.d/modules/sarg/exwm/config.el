@@ -1,86 +1,17 @@
 ;;; private/exwm/config.el -*- lexical-binding: t; -*-
 
-(defun exwm-change-screen-hook ()
-  (interactive)
-  (let ((xrandr-output-regexp "\n\\([^ ]+\\) connected ")
-        default-output)
-    (with-temp-buffer
-      (call-process "xrandr" nil t nil)
-      (goto-char (point-min))
-      (re-search-forward xrandr-output-regexp nil 'noerror)
-      (setq default-output (match-string 1))
-      (forward-line)
-      (if (not (re-search-forward xrandr-output-regexp nil 'noerror))
-          (call-process "xrandr" nil nil nil "--auto")
-        (call-process
-         "xrandr" nil nil nil
-         "--output" (match-string 1) "--primary" "--auto"
-         "--output" default-output "--below" (match-string 1))
-        (setq exwm-randr-workspace-output-plist
-              (list 0 default-output
-                    1 (match-string 1)))))))
-
 (load! "+posframe")
 (load! "+volume")
 (load! "+bufler")
 
-(defun sarg/exwm-app-launcher ()
-  "Launches an application in your PATH.
-Can show completions at point for COMMAND using helm or ido"
-  (interactive)
-  (unless dmenu--cache-executable-files
-    (dmenu--cache-executable-files))
-  (ivy-read "Run a command: " dmenu--cache-executable-files
-            :action (lambda (command) (start-process-shell-command command nil command))
-            :caller 'sarg/exwm-app-launcher))
-
-(defun sarg/run-or-raise (NAME PROGRAM &rest ARGS)
-  (interactive)
-  (let ((buf (cl-find-if
-              (lambda (buf) (string= NAME (buffer-name buf)))
-              (buffer-list))))
-
-    (if buf (switch-to-buffer buf)
-      (apply #'start-process
-             (append (list NAME nil "setsid" "-w" PROGRAM) ARGS)))))
-
-(defun sarg/shell-cmd (command)
-  `(lambda ()
-     (interactive)
-     (start-process-shell-command ,command nil ,command)))
-
-
-(battery) ; initializes battery-status-function
-(run-at-time nil 60 #'sarg/check-battery)
-(require 'notifications)
-(defun sarg/check-battery ()
-  "Checks battery level and makes a warning if it is too low."
-  (let* ((status (funcall battery-status-function))
-         (charging (string= (s-downcase (alist-get ?B status)) "charging"))
-         (remain (string-to-number (alist-get ?p status))))
-
-    (if (and (not charging) (< remain 15))
-        (notifications-notify :body "Battery too low! Please charge now!" :urgency 'critical))))
-
-;; props to https://github.com/ch11ng/exwm/issues/593
-(defun my-exwm-workspace-switch-to-buffer (orig-func buffer-or-name &rest args)
-  (if-let* ((buf (get-buffer (or buffer-or-name (other-buffer))))
-            (floating-p? (or exwm--floating-frame
-                             (with-current-buffer buf exwm--floating-frame))))
-      (exwm-workspace-switch-to-buffer buffer-or-name)
-    (apply orig-func buffer-or-name args)))
-
 (defun exwm-set-default-cursor ()
-  ;; set default cursor to left_ptr (instead of default black cross)
+  "Sets default cursor to left_ptr (instead of default black cross)."
   (xcb:+request exwm--connection
       (make-instance 'xcb:ChangeWindowAttributes
                      :window exwm--root
                      :value-mask xcb:CW:Cursor
                      :cursor (xcb:cursor:load-cursor exwm--connection "left_ptr"))))
 
-(use-package! dmenu)
-;; (use-package! gpastel)
-;; (use-package! exwm-mff)
 (use-package! xelb)
 (use-package! exwm
   :commands (exwm-enable exwm-init)
@@ -89,56 +20,18 @@ Can show completions at point for COMMAND using helm or ido"
 
   :init
   (set-popup-rule! "^\\*EXWM\\*$" :ignore t)
-  (load! "+polybar")
-
-  ;; (add-hook! 'exwm-init-hook 'gpastel-start-listening)
-
-  ;; (require 'exwm-systemtray)
-  ;; (exwm-systemtray-enable)
-  ;; (setq mouse-autoselect-window t
-  ;;       focus-follows-mouse t)
 
   :config
+  (load! "+workspaces")
+  (load! "+polybar")
+  (load! "+bindings")
   (load! "+brightness")
+  (load! "+xkb")
 
   ;; (advice-add 'switch-to-buffer :around 'my-exwm-workspace-switch-to-buffer)
-  (advice-add 'ivy--switch-buffer-action :around 'my-exwm-workspace-switch-to-buffer)
-
-  (exwm-input-set-key (kbd "M-y") #'my/exwm-counsel-yank-pop)
-
-  (defun my/exwm-counsel-yank-pop ()
-    "Same as `counsel-yank-pop' and paste into exwm buffer."
-    (interactive)
-    (let ((inhibit-read-only t)
-          ;; Make sure we send selected yank-pop candidate to
-          ;; clipboard:
-          (yank-pop-change-selection t))
-      (call-interactively #'counsel-yank-pop))
-    (when (derived-mode-p 'exwm-mode)
-      ;; https://github.com/ch11ng/exwm/issues/413#issuecomment-386858496
-      (exwm-input--set-focus (exwm--buffer->id (window-buffer (selected-window))))
-      (exwm-input--fake-key ?\C-v)))
 
   ;; Disable dialog boxes since they are unusable in EXWM
   (setq use-dialog-box nil)
-  (setq exwm-workspace-number 4)
-  (defvar exwm-workspace-names
-    '("code" "brow" "extr" "lisp" ))
-
-  (defsubst exwm-workspace-name-to-index (name)
-    (-elem-index name exwm-workspace-names))
-
-  (setq exwm-workspace-index-map
-        (lambda (index)
-          (if (< index (length exwm-workspace-names))
-              (elt exwm-workspace-names index)
-            (number-to-string index))))
- 
-  ;; You may want Emacs to show you the time
-  ;; (display-time-mode t)
-  ;; (setq display-time-24hr-format t)
-  ;; (setq-default display-time-format "%H:%M")
-  ;; (setq display-time-default-load-average nil)
 
   (add-to-list 'evil-emacs-state-modes 'exwm-mode)
   (add-hook 'exwm-mode-hook 'evil-emacs-state)
@@ -175,29 +68,6 @@ Can show completions at point for COMMAND using helm or ido"
               (when (or (not exwm-instance-name) (meaningful-title?))
                 (exwm-workspace-rename-buffer exwm-title))))
 
-  ;; Quick swtiching between workspaces
-  (defvar exwm-toggle-workspace 0
-    "Previously selected workspace. Used with `exwm-jump-to-last-exwm'.")
-
-  (defun exwm-jump-to-last-exwm ()
-    (interactive)
-    (exwm-workspace-switch exwm-toggle-workspace))
-
-  (defadvice exwm-workspace-switch (before save-toggle-workspace activate)
-    (setq exwm-toggle-workspace exwm-workspace-current-index))
-
-  ;; + Set shortcuts to switch to a certain workspace.
-  (dotimes (i exwm-workspace-number)
-    (exwm-input-set-key (kbd (format "s-%d" (1+ i)))
-                        `(lambda ()
-                           (interactive)
-                           (exwm-workspace-switch ,i))))
-
-
-
-  (when (featurep! :app telega +ivy)
-    (exwm-input-set-key (kbd "s-i") #'sarg/sauron-show))
-
   (setq exwm-input-prefix-keys
         '(?\C-x
           ?\M-x
@@ -211,15 +81,9 @@ Can show completions at point for COMMAND using helm or ido"
   (define-key exwm-mode-map [?\C-q] 'exwm-input-send-next-key)
   (define-key exwm-mode-map [?\C-c] 'nil)
 
-  ;; Undo window configurations
-
   (setq exwm-layout-show-all-buffers t
         exwm-workspace-show-all-buffers t)
 
-  (require 'exwm-randr)
-  ;; (setq exwm-randr-workspace-output-plist '(0 "VGA1"))
-  (add-hook 'exwm-randr-screen-change-hook #'exwm-change-screen-hook)
-  (exwm-randr-enable)
   ;; The following example demonstrates how to use simulation keys to mimic the
   ;; behavior of Emacs. The argument to `exwm-input-set-simulation-keys' is a
   ;; list of cons cells (SRC . DEST), where SRC is the key sequence you press and
@@ -237,37 +101,17 @@ Can show completions at point for COMMAND using helm or ido"
                   ("DEL" . backspace)
                   ("C-р" . backspace))))
 
-  (exwm-input-set-key (kbd "s-.") (lambda () (interactive) (message "%s %s"
-                                                                    (concat (format-time-string "%Y-%m-%d %T (%a w%W)"))
-                                                                    (battery-format "| %L: %p%% (%t)" (funcall battery-status-function)))))
 
   (setq exwm-manage-configurations
         `(((-any? (lambda (el) (equal exwm-class-name el))
-                  '("Peek" "mpv" "scrcpy" "AusweisApp2"))
+            '("Peek" "mpv" "scrcpy" "AusweisApp2"))
            floating t
            floating-mode-line nil)
-          ((equal exwm-class-name "Slack")
-           workspace ,(exwm-workspace-name-to-index "slac"))
           ((equal exwm-instance-name "sun-awt-X11-XDialogPeer")
            managed t
            floating t)
-          ((equal exwm-class-name "jetbrains-idea")
-           workspace ,(exwm-workspace-name-to-index "code"))
           ((equal exwm-class-name "qutebrowser")
-           workspace ,(exwm-workspace-name-to-index "brow"))
-          ((equal exwm-class-name "TelegramDesktop")
-           floating t
-           floating-mode-line nil
-           x 0.73
-           y 0.02
-           width 0.25
-           height 0.8)))
-
-  ;; (exwm-input-set-simulation-keys nil)
-
-  ;; Do not forget to enable EXWM. It will start by itself when things are ready.
-  ;; (exwm-enable)
-  (load! "+xkb"))
+           workspace ,(exwm-workspace-name-to-index "brow")))))
 
 (use-package! exwm-ss
   :defer t
