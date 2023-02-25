@@ -267,9 +267,12 @@ Can show completions at point for COMMAND using helm or ido"
 
   ;; Do not forget to enable EXWM. It will start by itself when things are ready.
   ;; (exwm-enable)
-  (load! "+xkb")
-  )
+  (load! "+xkb"))
 
+(use-package! exwm-ss
+  :defer t
+  :after exwm
+  :init (exwm-ss-mode 1))
 
 (use-package! exwm-edit
   :custom

@@ -15,6 +15,7 @@
 (package! nord-theme)
 (package! frame-purpose)
 (package! frame-workflow :recipe (:host github :repo "akirak/frame-workflow"))
+(package! exwm-ss :recipe (:host codeberg :repo "emacs-weirdware/exwm-ss"))
 (package! backlight)
 (package! exwm-edit)
 (package! app-launcher :recipe (:host github :repo "sarg/app-launcher"))
