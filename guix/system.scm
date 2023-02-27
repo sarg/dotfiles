@@ -178,7 +178,7 @@ EOF
     libratbag
     (filter (lambda (p)
               (not (member (package-name p)
-                           '("wireless-tools" "info-reader" "nano" "zile"))))
+                           '("wireless-tools" "info-reader" "nano" "mg"))))
             %base-packages)))
 
   (services (cons*

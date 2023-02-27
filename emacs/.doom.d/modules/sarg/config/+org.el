@@ -20,13 +20,12 @@
 (defun sarg/org-init ()
   (sarg/init-org-protocol)
 
-
-  (when (featurep! :lang org +roam2)
+  (when (modulep! :lang org +roam2)
     (setq org-roam-db-node-include-function
           (lambda ()
             (not (member "ATTACH" (org-get-tags))))))
 
-  (when (featurep! :lang org +contacts)
+  (when (modulep! :lang org +contacts)
     (setq-default org-contacts-files
                   (list (expand-file-name "contacts.org" org-directory))))
 
@@ -90,9 +89,9 @@
          '("projects.org"
            "tickler.org"))
 
-   org-catch-invisible-edits 'show-and-error
+   linkmarks-file (expand-file-name "links.org" org-directory)
 
-   linkmarks-file (expand-file-name "links.org" org-directory)))
+   org-fold-catch-invisible-edits 'show-and-error))
 
 (use-package! es-mode
   :commands (org-babel-execute:es)
@@ -102,7 +101,7 @@
    +org-babel-mode-alist '((es . elasticsearch))))
 
 (after! org-download
-  (setq org-download-screenshot-method "xclip -selection clipboard -t image/png -o > %s"))
+  (setq org-download-screenshot-method "flameshot gui --raw > %s"))
 
 (use-package! linkmarks)
 
