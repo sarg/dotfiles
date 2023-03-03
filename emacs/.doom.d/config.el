@@ -1,4 +1,5 @@
-(setq org-directory (expand-file-name "~/Sync/org/"))
+(setq org-directory (expand-file-name "~/Sync/org/")
+      locate-command "/storage/locator")
 
 (after! tramp
   (pushnew! tramp-remote-path 'tramp-own-remote-path))
