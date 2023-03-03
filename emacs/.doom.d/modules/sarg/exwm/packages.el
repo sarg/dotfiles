@@ -13,6 +13,7 @@
 (package! kaolin-themes)
 (package! bufler)
 (package! nord-theme)
+(package! pulseaudio-control)
 (package! frame-purpose)
 (package! frame-workflow :recipe (:host github :repo "akirak/frame-workflow"))
 (package! exwm-ss :recipe (:host codeberg :repo "emacs-weirdware/exwm-ss"))
