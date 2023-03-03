@@ -11,6 +11,7 @@ argument - MSG to insert additional information after header."
          (chat (telega-msg-chat msg))
          (sender (telega-msg-sender msg))
          (channel-post-p (plist-get msg :is_channel_post))
+         (saved-msgs-p (eq telega--me-id (plist-get msg :chat_id)))
          (private-chat-p (eq 'chatTypePrivate (telega--tl-type (plist-get chat :type))))
          (tfaces (list (if (telega-msg-by-me-p msg)
                            'telega-msg-self-title
@@ -31,6 +32,8 @@ argument - MSG to insert additional information after header."
 
           ;; Message title itself
           (cond
+           (saved-msgs-p
+            (telega-ins--date (plist-get msg :date)))
            (private-chat-p
             (telega-ins (if (telega-msg-by-me-p msg) "-> " "<- ")))
            ((not channel-post-p)
@@ -107,6 +110,7 @@ unless message is edited."
         ;;                    :no-display-if (not telega-chat-show-avatars))
         )
 
+      (telega-ins " ")
       (setq ccol (telega-current-column))
       (telega-ins--fwd-info-inline (plist-get msg :forward_info))
       (telega-ins--msg-reply-inline msg)
