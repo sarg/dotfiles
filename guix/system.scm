@@ -13,12 +13,12 @@
              (ice-9 textual-ports))
 
 (use-package-modules
- linux ssh android suckless dns
+ linux ssh android suckless
  pulseaudio connman xorg gnome admin)
 
 (use-service-modules
  desktop ssh networking sysctl
- xorg dbus shepherd sound pm)
+ xorg dbus shepherd sound pm dns)
 
 (define %grub-lubuntu-14 "
 menuentry \"Lubuntu 14.04 ISO\" {
@@ -85,31 +85,6 @@ EOF
        ;; #:options '(#:local-build? #t #:substitutable? #f)
        ))))
 
-(define dnsmasq-service-type
-  (shepherd-service-type
-   'dnsmasq
-   (lambda (a)
-     (shepherd-service
-      (provision '(dnsmasq))
-      (requirement '(networking))
-      (documentation "Run the dnsmasq DNS server.")
-      (start #~(make-forkexec-constructor
-                '(#$(file-append dnsmasq "/sbin/dnsmasq")
-                  "--keep-in-foreground"
-                  "--pid-file=/run/dnsmasq.pid"
-                  "--no-hosts"
-                  "--local-service"
-                  ;; "--enable-dbus"
-                  ;; "--addn-hosts=/etc/hosts.coldturkey"
-                  "--address=/dev.local/127.0.0.1"
-                  "--address=/local/127.0.0.1"
-                  "--servers-file=/etc/dnsmasq.servers"
-                  "--no-resolv"
-                  "--server=1.1.1.1")
-                #:pid-file "/run/dnsmasq.pid"))
-      (stop #~(make-kill-destructor))))
-   (description "Dnsmasq service")))
-
 (define wifi-udev-rule
   (udev-rule
    "80-wifi.rules"
@@ -154,11 +129,6 @@ EOF
            (type "ext4"))
           %base-file-systems))
   (host-name "thinkpad")
-
-  (groups (cons* (user-group
-                  (system? #t)
-                  (name "adbusers"))
-                 %base-groups))
 
   (users (cons* (user-account
                  (name "sarg")
@@ -207,15 +177,15 @@ EOF
              ;; Add polkit rules, so that non-root users in the wheel group can
              ;; perform administrative tasks (similar to "sudo").
              polkit-wheel-service
-             (bluetooth-service)
+             (service bluetooth-service-type)
 
-             (udisks-service)
+             (service udisks-service-type)
              (service polkit-service-type)
              (service elogind-service-type
                       (elogind-configuration
                        (handle-lid-switch-external-power 'suspend)))
 
-             (dbus-service)
+             (service dbus-root-service-type)
              (simple-service 'ratbagd dbus-root-service-type `(,libratbag))
              (service tlp-service-type
                       (tlp-configuration
@@ -232,12 +202,31 @@ EOF
              (service openssh-service-type
                       (openssh-configuration
                        (x11-forwarding? #t)))
-             (service dnsmasq-service-type 0)
+             (service dnsmasq-service-type
+                      (dnsmasq-configuration
+                       (no-hosts? #t)
+                       (no-resolv? #t)
+                       ;; https://issues.guix.gnu.org/61956
+                       ;; (servers-file "/etc/dnsmasq.servers")
+                       (addresses '("/dev.local/127.0.0.1"
+                                    "/local/127.0.0.1"))
+                       (servers '("1.1.1.1"))))
 
              ;; remap lctrl->lalt, lalt->lctrl, capslock->lshift
              (service extrakeys-service-type (list "1d" "56" "38" "29" "3a" "42"))
+             (udev-rules-service 'android android-udev-rules #:groups '("adbusers"))
+             (udev-rules-service 'wifi wifi-udev-rule)
+             (udev-rules-service 'brightness brightnessctl)
+
+             (service sysctl-service-type
+                      (sysctl-configuration
+                       (settings (append
+                                  %default-sysctl-settings
+                                  '(("fs.inotify.max_user_watches" . "524288")
+                                    ("net.ipv6.conf.all.disable_ipv6" . "1"))))))
 
              (modify-services %base-services
+               (delete sysctl-service-type)
                (guix-service-type config =>
                                   (guix-configuration
                                    (inherit config)
@@ -247,21 +236,4 @@ EOF
                                    (authorized-keys
                                     (append (list (plain-file "non-guix.pub"
                                                               "(public-key (ecc (curve Ed25519) (q #C1FD53E5D4CE971933EC50C9F307AE2171A2D3B52C804642A7A35F84F3A4EA98#)))"))
-                                            %default-authorized-guix-keys))))
-
-               (sysctl-service-type config =>
-                                    (sysctl-configuration
-                                     (inherit config)
-                                     (settings (append '(("fs.inotify.max_user_watches" . "524288")
-                                                         ("net.ipv6.conf.all.disable_ipv6" . "1"))
-                                                       (sysctl-configuration-settings config)))))
-
-               (udev-service-type
-                config =>
-                (udev-configuration
-                 (inherit config)
-                 (rules (cons*
-                         brightnessctl
-                         android-udev-rules
-                         wifi-udev-rule
-                         (udev-configuration-rules config)))))))))
+                                            %default-authorized-guix-keys))))))))
