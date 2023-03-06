@@ -16,6 +16,26 @@
     (if (equal "emacs-capture" (frame-parameter nil 'name))
         (delete-frame))))
 
+;; https://isamert.net/2022/01/04/dealing-with-apis-jsons-and-databases-in-org-mode.html
+(defun org-babel-execute:json (body params)
+  (let ((jq (cdr (assoc :jq params)))
+        (node (cdr (assoc :node params))))
+    (cond
+     (jq
+      (with-temp-buffer
+        ;; Insert the JSON into the temp buffer
+        (insert body)
+        ;; Run jq command on the whole buffer, and replace the buffer
+        ;; contents with the result returned from jq
+        (shell-command-on-region (point-min) (point-max) (format "jq -r \"%s\"" jq) nil 't)
+        ;; Return the contents of the temp buffer as the result
+        (buffer-string)))
+     (node
+      (with-temp-buffer
+        (insert (format "const it = %s;" body))
+        (insert node)
+        (shell-command-on-region (point-min) (point-max) "node -p" nil 't)
+        (buffer-string))))))
 
 (defun sarg/org-init ()
   (sarg/init-org-protocol)
