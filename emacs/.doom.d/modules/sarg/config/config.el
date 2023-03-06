@@ -165,9 +165,17 @@
 
 (use-package! calibredb
   :config
-  (setq calibredb-root-dir (expand-file-name "~/Calibre Library"))
-  (setq calibredb-db-dir (concat calibredb-root-dir "/metadata.db"))
-  (setq calibredb-library-alist '(("~/Calibre Library"))))
+  (setq calibredb-root-dir (expand-file-name "~/Calibre Library")
+        calibredb-db-dir (concat calibredb-root-dir "/metadata.db")
+        calibredb-library-alist '(("~/Calibre Library"))
+        calibredb-preferred-format 'epub
+
+        calibredb-date-width 0
+        calibredb-format-width 0
+        calibredb-tag-width 0
+        calibredb-comment-width 0)
+
+  (defalias 'calibredb-open-with-default-tool #'find-file))
 
 (use-package! eat
   :hook (eshell-load-hook . (eat-eshell-mode eat-eshell-visual-command-mode)))
