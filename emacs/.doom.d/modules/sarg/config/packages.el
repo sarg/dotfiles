@@ -20,7 +20,7 @@
 (package! mpv)
 (package! el-patch)
 (package! linkmarks :recipe (:host github :repo "dustinlacewell/linkmarks"))
-(package! bencode :recipe (:host github :repo "skeeto/emacs-bencode"))
+(package! torrent-mode :recipe (:host github :repo "sarg/torrent-mode.el"))
 (package! google-translate)
 (package! nov)
 (package! es-mode)

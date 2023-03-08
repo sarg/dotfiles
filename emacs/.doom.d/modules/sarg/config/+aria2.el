@@ -1,6 +1,4 @@
-(use-package! bencode
-  :config
-  (load! "torrent-mode"))
+(use-package! torrent-mode)
 
 (el-patch-feature aria2)
 (after! aria2

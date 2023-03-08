@@ -10,6 +10,7 @@
 ;; (load! "+slack")
 (load! "+selfcontrol")
 
+(use-package! torrent-mode)
 ;; (after! doom-modeline
 ;;   (setq doom-modeline-height 20
 ;;         doom-modeline-icon t
