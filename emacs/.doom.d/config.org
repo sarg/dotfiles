@@ -1,4 +1,4 @@
-#+OPTIONS: toc:nil num:nil
+#+OPTIONS: num:nil
 * Org Mode
 #+begin_src emacs-lisp
 (setq org-directory (expand-file-name "~/Sync/org/")
@@ -139,3 +139,41 @@ Function to set default cursor which otherwise looks like ugly black cross.
       "c" 'wpa-manager-connect
       (kbd "RET") 'wpa-manager-connect)))
 #+end_src
+** password-store
+#+begin_src elisp :tangle packages.el
+(package! password-generator)
+#+end_src
+
+#+begin_src elisp
+(use-package! password-generator
+  :after password-store
+
+  :config
+  (defadvice! +password-store-generate-strong (entry &optional len)
+    :override #'password-store-generate
+    (interactive (list (password-store--completing-read)
+                       (when current-prefix-arg
+                         (abs (prefix-numeric-value current-prefix-arg)))))
+    (let ((pass
+           (password-generator-strong
+            (or len password-store-password-length) t)))
+      (password-store-insert entry pass))))
+#+end_src
+
+*** Qutebrowser integration
+#+begin_src elisp
+(defun +pass/qute (url)
+  (auth-source-pass--read-entry
+   (completing-read "Pass: "
+                    (password-store-list)
+                    nil t url)))
+#+end_src
+
+See [[../../qutebrowser/.config/qutebrowser/password_fill_rc]]
+
+*** Wrapper for CLI
+#+begin_src elisp
+(defalias '+pass/read-entry #'auth-source-pass--read-entry)
+#+end_src
+
+See [[../.local/bin/pass]]

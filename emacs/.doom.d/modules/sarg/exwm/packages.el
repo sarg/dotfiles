@@ -5,8 +5,6 @@
 (package! bluetooth)
 ;; (package! gpastel)
 (package! color-theme-sanityinc-tomorrow)
-(package! anti-zenburn-theme)
-(package! kaolin-themes)
 (package! bufler)
 (package! nord-theme)
 (package! pulseaudio-control)
