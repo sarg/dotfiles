@@ -16,6 +16,34 @@
     (if (equal "emacs-capture" (frame-parameter nil 'name))
         (delete-frame))))
 
+(defun sarg/eval-org-src-block (name)
+  "Eval elisp block NAME. To be used in org files in Local variables section.
+
+Example:
+#+NAME: api
+#+begin_src emacs-lisp
+(message \"This will run on opening up an org-mode file.\")
+#+end_src
+
+# Local Variables:
+# eval: (sarg/eval-org-src-block \"api\")
+# End:
+"
+  (save-excursion
+    (org-babel-goto-named-src-block name)
+    (let* ((block-info (org-babel-get-src-block-info))
+           (lang (nth 0 block-info))
+           (body (nth 1 block-info)))
+      (if (or (string= lang "emacs-lisp")
+              (string= lang "elisp"))
+          (cl-loop with next = 0
+                   with maxlen = (length body)
+                   for (sexp . next) = (read-from-string body next)
+                   do (eval sexp)
+                   while (< next maxlen))
+
+        (error "%s is not an emacs-lisp src block" name)))))
+
 ;; https://isamert.net/2022/01/04/dealing-with-apis-jsons-and-databases-in-org-mode.html
 (defun org-babel-execute:json (body params)
   (let ((jq (cdr (assoc :jq params)))
