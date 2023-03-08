@@ -1,4 +1,4 @@
-;;; private/sarg/config.el -*- lexical-binding: t; -*-
+;;; modules/sarg/config.el -*- lexical-binding: t; -*-
 
 (load! "+bindings")
 (load! "+elfeed")

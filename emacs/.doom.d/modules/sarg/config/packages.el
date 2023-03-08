@@ -11,7 +11,7 @@
 (package! dired-avfs)
 (package! dired-du)
 (package! dired-collapse)
-(package! aria2 :recipe (:host gitlab :repo "ukaszg/aria2" :branch "remake"))
+(package! aria2 :recipe (:host gitlab :repo "sarg/aria2"))
 (package! openwith)
 (package! web-search)
 (package! keyfreq)
