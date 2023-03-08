@@ -1,2 +1,5 @@
-(load! "wpa-manager")
-(when (modulep! :editor evil +everywhere) (load! "+evil"))
+(use-package! wpa-manager
+  :init
+
+  (when (modulep! :editor evil +everywhere)
+    (load! "+evil")))
