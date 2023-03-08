@@ -24,13 +24,13 @@
 
 (use-package! aria2
   :config
-  (add-to-list 'evil-normal-state-modes 'aria2-mode)
+  (load! "aria2-entry")
 
   (set-popup-rule! aria2-list-buffer-name :ignore t)
 
   (setq aria2-download-directory (expand-file-name "~/Downloads")
         aria2-start-rpc-server t
-        ;; aria2-add-evil-quirks t
+        aria2-add-evil-quirks t
         aria2-custom-args '("--rpc-save-upload-metadata=false"))
 
   (defun sarg/aria2-file-at-point (dest-dir)
