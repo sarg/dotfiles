@@ -47,20 +47,8 @@
  browse-url-browser-function 'browse-url-generic
  browse-url-generic-program "qutebrowser")
 
-(after! magit
-  (let ((sarg-repos-dir (expand-file-name "~/devel/")))
-    (setq magit-repository-directories `((,sarg-repos-dir . 2))
-          magit-clone-default-directory `,sarg-repos-dir)))
-
 (after! browse-at-remote
   (setq browse-at-remote-prefer-symbolic nil))
-
-(use-package! white-sand-theme)
-(defvar doom-theme-dark 'kaolin-valley-dark)
-(setq doom-theme 'white-sand
-      doom-font (font-spec :family "Hack" :size 20)
-      doom-serif-font (font-spec :family "Hack")
-      doom-unicode-font (font-spec :family "Hack"))
 
 (use-package! web-search
   :custom
@@ -100,20 +88,6 @@
   (if eval-autorun-mode
       (add-hook 'after-save-hook '+eval/buffer nil t)
     (remove-hook 'after-save-hook '+eval/buffer t)))
-
-(use-package! calibredb
-  :config
-  (setq calibredb-root-dir (expand-file-name "~/Calibre Library")
-        calibredb-db-dir (concat calibredb-root-dir "/metadata.db")
-        calibredb-library-alist '(("~/Calibre Library"))
-        calibredb-preferred-format 'epub
-
-        calibredb-date-width 0
-        calibredb-format-width 0
-        calibredb-tag-width 0
-        calibredb-comment-width 0)
-
-  (defalias 'calibredb-open-with-default-tool #'find-file))
 
 (use-package! eat
   :hook (eshell-load-hook . (eat-eshell-mode eat-eshell-visual-command-mode)))

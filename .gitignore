@@ -7,3 +7,5 @@ xmonad/.xmonad/xmonad*
 /qutebrowser/.config/qutebrowser/__pycache__
 /emacs/.doom.d/custom.el
 /guix/current
+/emacs/.doom.d/packages.el
+/emacs/.doom.d/config.el

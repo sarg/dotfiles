@@ -4,19 +4,6 @@
 (load! "+volume")
 (load! "+bufler")
 
-(defun exwm-set-default-cursor ()
-  "Sets default cursor to left_ptr (instead of default black cross)."
-  (xcb:+request exwm--connection
-      (make-instance 'xcb:ChangeWindowAttributes
-                     :window exwm--root
-                     :value-mask xcb:CW:Cursor
-                     :cursor (xcb:cursor:load-cursor exwm--connection "left_ptr"))))
-
-(defun doom/exwm-new-window-hook ()
-  (doom-mark-buffer-as-real-h)
-  (+modeline-mode -1)
-  (hide-mode-line-mode +1))
-
 (use-package! bluetooth)
 (use-package! exwm
   :commands (exwm-enable exwm-init)

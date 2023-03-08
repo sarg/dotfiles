@@ -1,0 +1,141 @@
+#+OPTIONS: toc:nil num:nil
+* Org Mode
+#+begin_src emacs-lisp
+(setq org-directory (expand-file-name "~/Sync/org/")
+      locate-command "/storage/locator")
+#+end_src
+
+* Magit
+#+begin_src elisp
+(after! magit
+  (let ((sarg-repos-dir (expand-file-name "~/devel/")))
+    (setq magit-repository-directories `((,sarg-repos-dir . 2))
+          magit-clone-default-directory `,sarg-repos-dir)))
+#+end_src
+* EXWM
+** Base
+#+begin_src elisp :tangle packages.el
+(package! exwm)
+(package! exwm-ss :recipe (:host codeberg :repo "emacs-weirdware/exwm-ss"))
+(package! exwm-edit)
+#+end_src
+
+Function to set default cursor which otherwise looks like ugly black cross.
+
+#+begin_src elisp
+(defun exwm-set-default-cursor ()
+  "Sets default cursor to left_ptr (instead of default black cross)."
+  (xcb:+request exwm--connection
+      (make-instance 'xcb:ChangeWindowAttributes
+                     :window exwm--root
+                     :value-mask xcb:CW:Cursor
+                     :cursor (xcb:cursor:load-cursor exwm--connection "left_ptr"))))
+#+end_src
+
+** Screen brightness
+#+begin_src elisp :tangle packages.el
+(package! backlight)
+(package! circadian)
+(package! white-sand-theme)
+(package! kaolin-themes)
+#+end_src
+
+*** Theme
+#+begin_src elisp
+(use-package! white-sand-theme)
+(defvar doom-theme-dark 'kaolin-valley-dark)
+(setq doom-theme 'white-sand
+      doom-font (font-spec :family "Hack" :size 20)
+      doom-serif-font (font-spec :family "Hack")
+      doom-unicode-font (font-spec :family "Hack"))
+
+;; Change color theme based on day time
+(use-package! circadian
+  :config
+  (setq calendar-latitude 52.516667
+        calendar-longitude 13.388889
+        circadian-themes
+        `((:sunrise . ,doom-theme)
+          (:sunset . ,doom-theme-dark)))
+  (circadian-setup))
+#+end_src
+
+*** Backlight
+#+begin_src elisp
+(use-package! backlight)
+
+(defvar sarg-redshift-timer 'nil
+  "Stores redshift-adjust timer")
+
+(defun sarg/redshift-adjust ()
+  (interactive)
+  (start-process-shell-command "redshift" nil "redshift -m randr -Po"))
+
+(defun sarg/redshift-start ()
+  (interactive)
+  (unless sarg-redshift-timer
+    (setq sarg-redshift-timer (run-at-time nil 60 #'sarg/redshift-adjust))))
+
+(defun sarg/redshift-cancel ()
+  (interactive)
+  (when sarg-redshift-timer (cancel-timer sarg-redshift-timer))
+  (start-process-shell-command "redshift" nil "redshift -x"))
+
+(sarg/redshift-start)
+#+end_src
+
+** Managing windows
+#+begin_src elisp
+(defun doom/exwm-new-window-hook ()
+  (doom-mark-buffer-as-real-h)
+  ;; no modelines please
+  (+modeline-mode -1)
+  (hide-mode-line-mode +1))
+#+end_src
+* Tramp
+#+begin_src elisp
+(after! tramp
+  (pushnew! tramp-remote-path 'tramp-own-remote-path))
+#+end_src
+* Applications
+** calibre
+#+begin_src elisp :tangle packages.el
+(package! calibredb :built-in 'prefer)
+#+end_src
+
+#+begin_src elisp
+(use-package! calibredb
+  :config
+  (setq calibredb-root-dir (expand-file-name "~/Calibre Library")
+        calibredb-db-dir (concat calibredb-root-dir "/metadata.db")
+        calibredb-library-alist '(("~/Calibre Library"))
+        calibredb-preferred-format 'epub ;; just open it, don't ask
+
+        ;; hide extra columns
+        calibredb-date-width 0
+        calibredb-format-width 0
+        calibredb-tag-width 0
+        calibredb-comment-width 0)
+
+  (defalias 'calibredb-open-with-default-tool #'find-file))
+#+end_src
+
+** wpa-manager
+#+begin_src elisp :tangle packages.el
+(package! wpa-manager
+  :recipe (:host github :repo "sarg/wpa-manager.el"))
+#+end_src
+
+#+begin_src elisp
+(use-package! wpa-manager
+  :init
+  (when (modulep! :editor evil +everywhere)
+
+    (evil-collection-inhibit-insert-state 'wpa-manager-mode-map)
+    (evil-set-initial-state 'wpa-manager-mode-map 'normal)
+    (evil-collection-define-key 'normal 'wpa-manager-mode-map
+      "s" 'wpa-manager-scan
+      "r" 'revert-buffer
+      "c" 'wpa-manager-connect
+      (kbd "RET") 'wpa-manager-connect)))
+#+end_src

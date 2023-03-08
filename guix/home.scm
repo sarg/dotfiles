@@ -194,6 +194,7 @@
                                               "pinentry-program "
                                               (specification->package "pinentry-tty")
                                               "/bin/pinentry-tty\n"
+                                              "log-file /home/sarg/gpg-agent.log\n"
                                               "default-cache-ttl 34560000\n"
                                               "max-cache-ttl 34560000\n"))
                            (".gnupg/gpg.conf"
