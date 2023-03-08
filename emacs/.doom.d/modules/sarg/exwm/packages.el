@@ -3,6 +3,7 @@
 
 (package! dmenu)
 (package! circadian)
+(package! bluetooth)
 ;; (package! gpastel)
 (package! xelb
   :recipe (:host github :repo "ch11ng/xelb"))

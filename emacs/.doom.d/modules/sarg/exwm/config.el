@@ -12,11 +12,16 @@
                      :value-mask xcb:CW:Cursor
                      :cursor (xcb:cursor:load-cursor exwm--connection "left_ptr"))))
 
-(use-package! xelb)
+(defun doom/exwm-new-window-hook ()
+  (doom-mark-buffer-as-real-h)
+  (+modeline-mode -1)
+  (hide-mode-line-mode +1))
+
+(use-package! bluetooth)
 (use-package! exwm
   :commands (exwm-enable exwm-init)
   :hook (exwm-init . exwm-set-default-cursor)
-  :hook (exwm-mode . doom-mark-buffer-as-real-h)
+  :hook (exwm-mode . doom/exwm-new-window-hook)
 
   :init
   (set-popup-rule! "^\\*EXWM\\*$" :ignore t)
@@ -34,8 +39,6 @@
   (setq use-dialog-box nil)
 
   (add-to-list 'evil-emacs-state-modes 'exwm-mode)
-  (add-hook 'exwm-mode-hook 'evil-emacs-state)
-  (add-hook 'exwm-mode-hook 'hide-mode-line-mode)
 
   ;; All buffers created in EXWM mode are named "*EXWM*". You may want to change
   ;; it in `exwm-update-class-hook' and `exwm-update-title-hook', which are run
@@ -119,6 +122,7 @@
   :init (exwm-ss-mode 1))
 
 (use-package! exwm-edit
+  :disabled
   :custom
   (exwm-edit-bind-default-keys nil)
 
@@ -129,13 +133,6 @@
   (set-popup-rule! "^\\*exwm-edit"
     :side 'bottom :size 0.2
     :select t :quit nil :ttl t))
-
-
-(defun sarg/with-browser ()
-  "Opens browser side-by-side with current window"
-  (interactive)
-  (delete-other-windows)
-  (set-window-buffer (split-window-horizontally) "qutebrowser"))
 
 (use-package! fate
   :disabled

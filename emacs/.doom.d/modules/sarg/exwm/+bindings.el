@@ -4,6 +4,12 @@
     (setq key     (pop bindings)
           command (pop bindings))))
 
+(defun sarg/with-browser ()
+  "Opens browser side-by-side with current window"
+  (interactive)
+  (delete-other-windows)
+  (set-window-buffer (split-window-horizontally) "qutebrowser"))
+
 (defun sarg/run-or-raise (NAME PROGRAM &rest ARGS)
   (interactive)
   (let ((buf (cl-find-if

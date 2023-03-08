@@ -1,4 +1,6 @@
 (use-package! torrent-mode
+  :mode ("\\.torrent\\'" . 'torrent-mode)
+
   :config
   (defun torrent-do-download-selected (dest-dir)
     "Download ARG entries."

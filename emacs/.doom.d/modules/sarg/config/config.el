@@ -10,16 +10,6 @@
 ;; (load! "+slack")
 (load! "+selfcontrol")
 
-(use-package! torrent-mode)
-;; (after! doom-modeline
-;;   (setq doom-modeline-height 20
-;;         doom-modeline-icon t
-;;         doom-modeline-percent-position nil
-;;         doom-modeline-major-mode-icon nil
-;;         doom-modeline-buffer-encoding nil)
-
-;;   (remove-hook 'doom-modeline-mode-hook #'size-indication-mode))
-;;
 (setq +modeline-encoding nil
       +modeline-height 20)
 
@@ -32,12 +22,7 @@
 ;; C-h deletes character backwards
 (define-key key-translation-map [?\C-h] [?\C-?])
 
-(setq lsp-keymap-prefix nil)
-(set-popup-rule! "^\\*Async Shell" :ttl nil)
-
-;; russian layout on C-\
-(setq-default
- default-input-method "russian-computer")
+;; (set-popup-rule! "^\\*Async Shell" :ttl nil)
 
 
 (defun browse-url-qute-private (url &optional new-window)
@@ -54,26 +39,18 @@
 ;;       '(("^https?://some.addr.com" . browse-url-qute-private)
 ;;         ("." . browse-url-default-browser)))
 
-;; set browser
 (setq-default
+ ;; russian layout on C-\
+ default-input-method "russian-computer"
+
+ ;; set browser
  browse-url-browser-function 'browse-url-generic
  browse-url-generic-program "qutebrowser")
 
-(defun oleh-term-exec-hook ()
-  (let* ((buff (current-buffer))
-         (proc (get-buffer-process buff)))
-    (set-process-sentinel
-     proc
-     `(lambda (process event)
-        (if (string= event "finished\n")
-            (kill-buffer ,buff))))))
-
-(add-hook 'term-exec-hook 'oleh-term-exec-hook)
-
-(setq sarg-repos-dir (expand-file-name "~/devel/ext"))
 (after! magit
-  (setq magit-repository-directories `((,sarg-repos-dir . 1))
-        magit-clone-default-directory `,sarg-repos-dir))
+  (let ((sarg-repos-dir (expand-file-name "~/devel/")))
+    (setq magit-repository-directories `((,sarg-repos-dir . 2))
+          magit-clone-default-directory `,sarg-repos-dir)))
 
 (after! browse-at-remote
   (setq browse-at-remote-prefer-symbolic nil))
@@ -90,28 +67,14 @@
   (web-search-default-provider "DuckDuckGo"))
 
 (use-package! nov
+  :mode ("\\.epub\\'" . nov-mode)
+
   :custom
   (nov-variable-pitch nil)
-  (nov-text-width t)
-
-  :mode
-  ("\\.epub\\'" . nov-mode))
-
-;; (use-package! puppet-mode)
-;; (use-package! nginx-mode)
+  (nov-text-width t))
 
 (use-package! webpaste)
-;; (use-package! ranger
-;;   :config
-;;   (ranger-override-dired-mode t))
-
-(use-package! multitran
-  :config
-
-  (defadvice! multitran-fix-useragent (orig-fn &rest args)
-    :around #'multitran--url
-    (let ((url-privacy-level 'paranoid))
-      (apply orig-fn args))))
+(use-package! multitran)
 
 (use-package! keyfreq
   :config
@@ -123,30 +86,6 @@
             (lambda ()
               (map! :map eshell-mode-map
                     :ni "C-r" #'+eshell/search-history))))
-
-(after! ivy-rich
-  (setq counsel-linux-app-format-function #'counsel-linux-app-format-function-name-only)
-
-  (plist-put! ivy-rich-display-transformers-list
-              'ivy-switch-buffer
-              '(:columns
-                ((ivy-rich-candidate
-                  (:width (lambda (x)
-                            (if (eq 'exwm-mode (ivy-rich--local-values x 'major-mode))
-                                x
-                              (ivy-rich-normalize-width x 30)))))
-                 (ivy-rich-switch-buffer-path
-                  (:width (lambda (x) (ivy-rich-switch-buffer-shorten-path x (ivy-rich-minibuffer-width 0.3))))))))
-
-  ;; reload to make new display-transformer work
-  (ivy-rich-reload))
-
-(after! plantuml
-  (setq plantuml-default-exec-mode 'jar
-        plantuml-java-args '("-Djava.awt.headless=true" "-jar"))
-
-  (set-popup-rule! "^\\*PLANTUML" :size 0.4 :select nil :ttl 0 :side 'right))
-
 
 (defun openscad-preview ()
   (interactive)
@@ -161,8 +100,6 @@
   (if eval-autorun-mode
       (add-hook 'after-save-hook '+eval/buffer nil t)
     (remove-hook 'after-save-hook '+eval/buffer t)))
-
-(use-package! bluetooth)
 
 (use-package! calibredb
   :config
