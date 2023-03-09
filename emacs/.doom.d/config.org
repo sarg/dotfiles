@@ -270,12 +270,9 @@ subprocess.call(['emacs-capture',
 #+end_src
 
 #+begin_src bash :tangle ~/.config/qutebrowser/password_fill_rc
-choose_entry() { file="ok"; true; }
-no_entries_found() {
-    if [ 0 -eq "${#lines[@]}" ]; then
-        die "No entry found for »$simple_url«"
-    fi
-}
+init() { file="not used"; }
+choose_entry() { true ; }
+no_entries_found() { if [ 0 -eq "${#lines[@]}" ]; then exit 0; fi }
 
 open_entry() {
     local firstline=1
