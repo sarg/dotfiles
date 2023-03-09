@@ -422,10 +422,11 @@ qutebrowser --nowindow --target tab-bg-silent $@
 #+begin_src elisp :tangle packages.el
 (package! webpaste)
 (package! web-search)
+(package! mpv)
 #+end_src
 
 #+begin_src elisp
-(defun browse-url-qute-private (url &optional new-window)
+(defun browse-url-qute-private (url &rest _)
   "Make firefox open URL in private-browsing window."
   (interactive (browse-url-interactive-arg "URL: "))
   (let ((process-environment (browse-url-process-environment)))
@@ -435,9 +436,10 @@ qutebrowser --nowindow --target tab-bg-silent $@
            "qutebrowser"
            (list (concat ":open -p " url)))))
 
-;; (setq browse-url-browser-function
-;;       '(("^https?://some.addr.com" . browse-url-qute-private)
-;;         ("." . browse-url-default-browser)))
+(setq browse-url-handlers
+      `(("youtu\\.?be" . ,(lambda (url &rest _) (mpv-play-url url)))
+       ; ("^https?://some.addr.com" . browse-url-qute-private)
+        ("." . browse-url-generic)))
 
 (setq-default
  browse-url-browser-function 'browse-url-generic
