@@ -2,8 +2,6 @@
 
 (load! "+bindings")
 
-;; (set-popup-rule! "^\\*Async Shell" :ttl nil)
-
 (define-minor-mode eval-autorun-mode
   "`+eval/buffer' after saving buffer"
   :init-value nil

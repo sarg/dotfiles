@@ -249,6 +249,11 @@ subprocess.call(['emacs-capture',
   :after password-store
 
   :config
+  (defadvice! +password-store-edit-locally (entry)
+    :override #'password-store-edit
+    (interactive (list (password-store--completing-read t)))
+    (find-file (password-store--entry-to-file entry)))
+
   (defadvice! +password-store-generate-strong (entry &optional len)
     :override #'password-store-generate
     (interactive (list (password-store--completing-read)
