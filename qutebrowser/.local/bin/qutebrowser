@@ -1,0 +1,3 @@
+#!/bin/sh
+# fix for broken fonts: https://lists.gnu.org/archive/html/guix-devel/2023-01/msg00021.html
+~/.guix-home/profile/bin/qutebrowser --qt-arg no-sandbox true $@

@@ -44,7 +44,7 @@
    "M-s-l"   #'enlarge-window-horizontally
 
    "s-e"    `(lambda () (interactive)
-               (sarg/run-or-raise "qutebrowser" "qutebrowser" "--qt-arg" "no-sandbox" "true")
+               (sarg/run-or-raise "qutebrowser" "qutebrowser")
                (exwm-workspace-switch (exwm-workspace-name-to-index "brow")))
 
    "<s-return>"   #'+eshell/here
