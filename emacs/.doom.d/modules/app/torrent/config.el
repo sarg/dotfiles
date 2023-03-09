@@ -23,6 +23,7 @@
       "D" 'torrent-do-download-selected
       "d" nil
       "m" 'tablist-mark-forward)))
+
 (defun sarg/aria2-file-at-point (dest-dir)
   "Download selected files to DEST-DIR. Dwim if DEST-DIR is not
 provided and then fallback to `aria2-download-directory'."
