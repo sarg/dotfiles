@@ -1,3 +1,0 @@
-#!/bin/sh
-
-emacsclient -F '((name . "emacs-capture") (height . 10) (width . 80))' "$@"

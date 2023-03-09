@@ -24,3 +24,12 @@
           (if comment
               (concat " - " comment)
             "")))
+
+(ivy-add-actions
+ '+pass/qute
+ '(("o" +pass/copy-secret "copy password")
+   ("e" +pass/edit-entry "edit entry")
+   ("u" +pass/copy-user "copy username")
+   ("b" +pass/copy-url "open url in browser")
+   ("t" password-store-otp-token-copy "copy otp token")
+   ("f" +pass/copy-field "get field")))

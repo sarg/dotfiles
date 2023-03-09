@@ -1,3 +1,0 @@
-#!/bin/sh
-
-qutebrowser --nowindow --target tab-bg-silent $@

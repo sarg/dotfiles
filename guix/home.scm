@@ -220,7 +220,7 @@
 
         (simple-service 'additional-env-vars-service
                         home-environment-variables-service-type
-                        `(("PATH" . "$HOME/.local/bin:$PATH")
+                        `(("PATH" . "$HOME/.local/bin:$HOME/.config/emacs/bin:$PATH")
                           ("GPG_TTY" . "$(tty)")
                           ("SSH_AUTH_SOCK" . "$(gpgconf --list-dir agent-ssh-socket)")
                           ("VISUAL" . "emacsclient")
