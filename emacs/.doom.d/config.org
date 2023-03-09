@@ -62,7 +62,7 @@ Debug icons in modeline, find out their names.
 #+begin_src elisp
 (use-package! bufler
   :config
-  (when (modulep! :app exwm)
+  (after! exwm
     (exwm-input-set-key (kbd "s-b") #'bufler-switch-buffer))
 
   (after! evil-collection
@@ -108,7 +108,8 @@ Debug icons in modeline, find out their names.
   :custom
   (linkmarks-file (expand-file-name "links.org" org-directory))
 
-  (when (modulep! :app exwm)
+  :config
+  (after! exwm
     (exwm-input-set-key (kbd "s-g") #'linkmarks-select)))
 
 (after! org-download
@@ -587,8 +588,7 @@ qutebrowser --nowindow --target tab-bg-silent $@
 
 #+RESULTS:
 #+begin_example elisp
-(("s-b" . bufler-switch-buffer)
- ("s-<tab>" . exwm-jump-to-last-exwm)
+(("s-<tab>" . exwm-jump-to-last-exwm)
  ("s-1" lambda nil
   (interactive)
   (exwm-workspace-switch 0))
@@ -617,9 +617,6 @@ qutebrowser --nowindow --target tab-bg-silent $@
   (interactive)
   (exwm-workspace-switch 8))
  ("<s-w>" . exwm-workspace-switch)
- ("<XF86AudioPlay>" . emms-pause)
- ("<XF86AudioNext>" . emms-next)
- ("<XF86AudioPrev>" . emms-previous)
  ("s-f" . exwm-layout-toggle-fullscreen)
  ("s-r" . app-launcher-run-app)
  ("s-c" . kill-buffer-and-window)
@@ -639,7 +636,7 @@ qutebrowser --nowindow --target tab-bg-silent $@
  ("M-s-l" . enlarge-window-horizontally)
  ("s-e" lambda nil
   (interactive)
-  (sarg/run-or-raise "qutebrowser" "qutebrowser" "--qt-arg" "no-sandbox" "true")
+  (sarg/run-or-raise "qutebrowser" "qutebrowser")
   (exwm-workspace-switch
    (exwm-workspace-name-to-index "brow")))
  ("s-<return>" . +eshell/here)
@@ -655,7 +652,9 @@ qutebrowser --nowindow --target tab-bg-silent $@
  ("<XF86AudioMute>" . pulseaudio-control-toggle-current-sink-mute)
  ("<XF86AudioMicMute>" . pulseaudio-control-toggle-current-source-mute)
  ("<XF86MonBrightnessUp>" . backlight)
- ("<XF86MonBrightnessDown>" . backlight))
+ ("<XF86MonBrightnessDown>" . backlight)
+ ("s-b" . bufler-switch-buffer)
+ ("s-g" . linkmarks-select))
 #+end_example
 
 * archive
