@@ -531,3 +531,79 @@ qutebrowser --nowindow --target tab-bg-silent $@
  (:map image-mode-map
    :n "q" #'kill-current-buffer))
 #+end_src
+* exwm bindings
+#+begin_src elisp :results value pp :wrap src elisp
+(-map (lambda (el) (cons (key-description (car el)) (cdr el)))
+      exwm-input-global-keys)
+#+end_src
+
+#+RESULTS:
+#+begin_src elisp
+(("s-1" lambda nil
+  (interactive)
+  (exwm-workspace-switch 0))
+ ("s-2" lambda nil
+  (interactive)
+  (exwm-workspace-switch 1))
+ ("s-3" lambda nil
+  (interactive)
+  (exwm-workspace-switch 2))
+ ("s-4" lambda nil
+  (interactive)
+  (exwm-workspace-switch 3))
+ ("s-5" lambda nil
+  (interactive)
+  (exwm-workspace-switch 4))
+ ("s-6" lambda nil
+  (interactive)
+  (exwm-workspace-switch 5))
+ ("s-7" lambda nil
+  (interactive)
+  (exwm-workspace-switch 6))
+ ("s-8" lambda nil
+  (interactive)
+  (exwm-workspace-switch 7))
+ ("<XF86AudioPlay>" . emms-pause)
+ ("<XF86AudioNext>" . emms-next)
+ ("<XF86AudioPrev>" . emms-previous)
+ ("s-f" . exwm-layout-toggle-fullscreen)
+ ("s-<tab>" . exwm-jump-to-last-exwm)
+ ("s-w" . exwm-workspace-switch)
+ ("s-r" . app-launcher-run-app)
+ ("s-c" . kill-buffer-and-window)
+ ("s-u" . winner-undo)
+ ("S-s-U" . winner-redo)
+ ("s-b" . bufler-switch-buffer)
+ ("s-g" . linkmarks-select)
+ ("s-h" . evil-window-left)
+ ("s-j" . evil-window-down)
+ ("s-k" . evil-window-up)
+ ("s-l" . evil-window-right)
+ ("s-H" . evil-window-move-far-left)
+ ("s-J" . evil-window-move-very-bottom)
+ ("s-K" . evil-window-move-very-top)
+ ("s-L" . evil-window-move-far-right)
+ ("M-s-h" . shrink-window-horizontally)
+ ("M-s-j" . shrink-window)
+ ("M-s-k" . enlarge-window)
+ ("M-s-l" . enlarge-window-horizontally)
+ ("s-e" lambda nil
+  (interactive)
+  (sarg/run-or-raise "qutebrowser" "qutebrowser" "--qt-arg" "no-sandbox" "true")
+  (exwm-workspace-switch
+   (exwm-workspace-name-to-index "brow")))
+ ("s-<return>" . +eshell/here)
+ ("S-s-<return>" . +vterm/here)
+ ("s-<f12>" lambda nil
+  (interactive)
+  (start-process "flameshot" nil "flameshot" "gui"))
+ ("s-<delete>" lambda nil
+  (interactive)
+  (start-process "lock" nil "lock.sh"))
+ ("<XF86AudioRaiseVolume>" . pulseaudio-control-increase-sink-volume)
+ ("<XF86AudioLowerVolume>" . pulseaudio-control-decrease-sink-volume)
+ ("<XF86AudioMute>" . pulseaudio-control-toggle-current-sink-mute)
+ ("<XF86AudioMicMute>" . pulseaudio-control-toggle-current-source-mute)
+ ("<XF86MonBrightnessUp>" . backlight)
+ ("<XF86MonBrightnessDown>" . backlight))
+#+end_src
