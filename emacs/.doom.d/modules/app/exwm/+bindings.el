@@ -20,16 +20,11 @@
    "<XF86AudioPrev>"    #'emms-previous
 
    "s-f"     #'exwm-layout-toggle-fullscreen
-   "<s-tab>" #'exwm-jump-to-last-exwm
-   "s-w"     #'exwm-workspace-switch
    "s-r"     #'app-launcher-run-app
    "s-c"     #'kill-buffer-and-window
 
    "s-u"     #'winner-undo
    "S-s-U"   #'winner-redo
-
-   "s-b"     #'bufler-switch-buffer
-   "s-g"     #'linkmarks-select
 
    "s-h"     #'evil-window-left
    "s-j"     #'evil-window-down

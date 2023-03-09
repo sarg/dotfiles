@@ -20,8 +20,7 @@
 (defadvice exwm-workspace-switch (before save-toggle-workspace activate)
   (setq exwm-toggle-workspace exwm-workspace-current-index))
 
-(-map (lambda (el) (cons (key-description (car el)) (cdr el)))
-      exwm-input-global-keys)
+(exwm-input-set-key (kbd "<s-tab>") #'exwm-jump-to-last-exwm)
 
 ;; + Set shortcuts to switch to a certain workspace.
 ;; use all digits, so that if new workspace created it could be switched to
@@ -30,6 +29,8 @@
                       `(lambda ()
                          (interactive)
                          (exwm-workspace-switch ,i))))
+
+(exwm-input-set-key (kbd "<s-w>") #'exwm-workspace-switch)
 
 ;; EWMH integration
 (defun exwm-workspace--update-ewmh-desktop-names ()

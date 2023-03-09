@@ -1,8 +1,8 @@
 (use-package! pulseaudio-control
   :custom
   (pulseaudio-control-use-default-sink t)
+  (pulseaudio-control-use-default-source t)
   (pulseaudio-control-volume-step "5%")
-  (pulseaudio-control--current-source "@DEFAULT_SOURCE@")
 
   :config
   (exwm-bind-command

@@ -62,6 +62,8 @@ Debug icons in modeline, find out their names.
 #+begin_src elisp
 (use-package! bufler
   :config
+  (when (modulep! :app exwm)
+    (exwm-input-set-key (kbd "s-b") #'bufler-switch-buffer))
 
   (after! evil-collection
     (evil-collection-define-key 'normal 'bufler-list-mode-map
@@ -104,7 +106,10 @@ Debug icons in modeline, find out their names.
 
 (use-package! linkmarks
   :custom
-  (linkmarks-file (expand-file-name "links.org" org-directory)))
+  (linkmarks-file (expand-file-name "links.org" org-directory))
+
+  (when (modulep! :app exwm)
+    (exwm-input-set-key (kbd "s-g") #'linkmarks-select)))
 
 (after! org-download
   (setq org-download-screenshot-method "flameshot gui --raw > %s"))
@@ -532,14 +537,16 @@ qutebrowser --nowindow --target tab-bg-silent $@
    :n "q" #'kill-current-buffer))
 #+end_src
 * exwm bindings
-#+begin_src elisp :results value pp :wrap src elisp
+#+begin_src elisp :tangle no :results value pp :wrap example elisp
 (-map (lambda (el) (cons (key-description (car el)) (cdr el)))
       exwm-input-global-keys)
 #+end_src
 
 #+RESULTS:
-#+begin_src elisp
-(("s-1" lambda nil
+#+begin_example elisp
+(("s-b" . bufler-switch-buffer)
+ ("s-<tab>" . exwm-jump-to-last-exwm)
+ ("s-1" lambda nil
   (interactive)
   (exwm-workspace-switch 0))
  ("s-2" lambda nil
@@ -563,18 +570,18 @@ qutebrowser --nowindow --target tab-bg-silent $@
  ("s-8" lambda nil
   (interactive)
   (exwm-workspace-switch 7))
+ ("s-9" lambda nil
+  (interactive)
+  (exwm-workspace-switch 8))
+ ("<s-w>" . exwm-workspace-switch)
  ("<XF86AudioPlay>" . emms-pause)
  ("<XF86AudioNext>" . emms-next)
  ("<XF86AudioPrev>" . emms-previous)
  ("s-f" . exwm-layout-toggle-fullscreen)
- ("s-<tab>" . exwm-jump-to-last-exwm)
- ("s-w" . exwm-workspace-switch)
  ("s-r" . app-launcher-run-app)
  ("s-c" . kill-buffer-and-window)
  ("s-u" . winner-undo)
  ("S-s-U" . winner-redo)
- ("s-b" . bufler-switch-buffer)
- ("s-g" . linkmarks-select)
  ("s-h" . evil-window-left)
  ("s-j" . evil-window-down)
  ("s-k" . evil-window-up)
@@ -606,4 +613,4 @@ qutebrowser --nowindow --target tab-bg-silent $@
  ("<XF86AudioMicMute>" . pulseaudio-control-toggle-current-source-mute)
  ("<XF86MonBrightnessUp>" . backlight)
  ("<XF86MonBrightnessDown>" . backlight))
-#+end_src
+#+end_example
