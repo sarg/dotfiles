@@ -442,6 +442,11 @@ qutebrowser --nowindow --target tab-bg-silent $@
   (web-search-default-provider "DuckDuckGo"))
 #+end_src
 * shell
+#+begin_src elisp :tangle packages.el
+(package! eat)
+(package! detached)
+#+end_src
+
 #+begin_src elisp
 (after! eshell
   (add-hook 'eshell-first-time-mode-hook
