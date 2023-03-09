@@ -26,6 +26,17 @@
   (circadian-setup))
 #+end_src
 
+* gpg
+#+begin_src elisp :tangle packages.el
+(package! pinentry)
+#+end_src
+
+#+begin_src elisp
+(use-package! pinentry
+  :config
+  (pinentry-start))
+
+#+end_src
 * miscellaneous
 #+begin_src elisp :tangle packages.el
 (package! keyfreq)

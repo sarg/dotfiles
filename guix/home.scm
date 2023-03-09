@@ -35,12 +35,12 @@
 
 (define %pkg-desktop
   '("pavucontrol" "dunst" "flameshot"
-    "pulseaudio" "dbus" "polybar" "redshift" "st"
-    "awesome" "wpa-supplicant-gui" "udiskie"
+    "pulseaudio" "dbus" "polybar"
+    "redshift" "udiskie"
 
     ;; counsel-linux-app uses gtk-launch
-    "gtk+:bin"                 ; for gtk-launch
-    "glib:bin"                 ; for gio-launch-desktop which is used by gtk-launch
+    "gtk+:bin"              ; for gtk-launch
+    "glib:bin"              ; for gio-launch-desktop which is used by gtk-launch
     ))
 
 (define %pkg-fonts
@@ -86,7 +86,7 @@
     "anki" "qutebrowser"
     "syncthing" "openvpn" "openssh"
     "mu" "msmtp" "isync"
-    "gnupg" "pass-otp" "password-store" "pinentry-tty" "pwgen"
+    "gnupg" "pass-otp" "password-store" "pinentry-emacs" "pwgen"
     "piper"
 
     ;; media
@@ -191,11 +191,9 @@
                                               "enable-ssh-support\n"
                                               "allow-emacs-pinentry\n"
                                               "pinentry-program "
-                                              (specification->package "pinentry-tty")
-                                              "/bin/pinentry-tty\n"
+                                              (specification->package "pinentry-emacs")
+                                              "/bin/pinentry-emacs\n"
                                               "log-file /home/sarg/gpg-agent.log\n"
-                                              "default-cache-ttl 34560000\n"
-                                              "max-cache-ttl 34560000\n"))
                                               "default-cache-ttl 86400\n"
                                               "max-cache-ttl 86400\n"))
                            (".gnupg/gpg.conf"
