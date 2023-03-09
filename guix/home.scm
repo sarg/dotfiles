@@ -71,7 +71,7 @@
   '("picom" "xhost" "xkbcomp" "xkbset"
     "xprop" "xrandr" "xset" "xwininfo"
     "xev" "xclip" "xinput"
-    "hicolor-icon-theme" "adwaita-icon-theme" "papirus-icon-theme"
+    "hicolor-icon-theme" "adwaita-icon-theme"
     "igt-gpu-tools"                     ; intel graphics tool
     ))
 

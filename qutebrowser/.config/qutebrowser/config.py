@@ -32,9 +32,14 @@ c.content.webgl = False
 
 c.url.default_page = 'about:blank'
 c.url.start_pages = 'about:blank'
-c.url.searchengines['DEFAULT'] = 'https://duckduckgo.com/lite?q={}'
-c.url.searchengines['gh'] = 'https://github.com/search?utf8=✓&type=Code&q={}'
-c.url.searchengines['gg'] = 'https://www.google.ru/search?hl=ru&q={}'
+
+c.url.searchengines = {
+    '!yt': 'https://www.youtube.com/results?search_query={}',
+    'DEFAULT': 'https://duckduckgo.com/lite?q={}',
+    '!g': 'https://www.google.ru/search?hl=en&q={}',
+    '!gh': 'https://github.com/search?utf8=✓&type=Code&q={}',
+    '!gm': 'https://www.google.com/maps?hl=en&q={}'
+}
 
 c.colors.completion.fg = '#333333'
 c.colors.completion.item.selected.bg = 'white'
