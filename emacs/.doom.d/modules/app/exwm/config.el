@@ -1,8 +1,17 @@
 ;;; private/exwm/config.el -*- lexical-binding: t; -*-
+(defun exwm-set-default-cursor ()
+  "Sets default cursor to left_ptr (instead of default black cross)."
+  (xcb:+request exwm--connection
+      (make-instance 'xcb:ChangeWindowAttributes
+                     :window exwm--root
+                     :value-mask xcb:CW:Cursor
+                     :cursor (xcb:cursor:load-cursor exwm--connection "left_ptr"))))
 
-(load! "+posframe")
-(load! "+volume")
-(load! "+bufler")
+(defun doom/exwm-new-window-hook ()
+  (doom-mark-buffer-as-real-h)
+  ;; no modelines please
+  (+modeline-mode -1)
+  (hide-mode-line-mode +1))
 
 (use-package! bluetooth)
 (use-package! exwm
@@ -17,10 +26,10 @@
   (load! "+workspaces")
   (load! "+polybar")
   (load! "+bindings")
+  (load! "+volume")
+  (load! "+redshift")
   (load! "+brightness")
-  (load! "+xkb")
-
-  ;; (advice-add 'switch-to-buffer :around 'my-exwm-workspace-switch-to-buffer)
+  (load! "+xkb-layout-switch")
 
   ;; Disable dialog boxes since they are unusable in EXWM
   (setq use-dialog-box nil)

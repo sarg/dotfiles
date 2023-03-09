@@ -1,4 +1,30 @@
 #+OPTIONS: num:nil
+* Theme
+#+begin_src elisp :tangle packages.el
+(package! circadian)
+(package! white-sand-theme)
+(package! kaolin-themes)
+#+end_src
+
+#+begin_src elisp
+(use-package! white-sand-theme)
+(defvar doom-theme-dark 'kaolin-valley-dark)
+(setq doom-theme 'white-sand
+      doom-font (font-spec :family "Hack" :size 20)
+      doom-serif-font (font-spec :family "Hack")
+      doom-unicode-font (font-spec :family "Hack"))
+
+;; Change color theme based on day time
+(use-package! circadian
+  :config
+  (setq calendar-latitude 52.516667
+        calendar-longitude 13.388889
+        circadian-themes
+        `((:sunrise . ,doom-theme)
+          (:sunset . ,doom-theme-dark)))
+  (circadian-setup))
+#+end_src
+
 * miscellaneous
 #+begin_src elisp :tangle packages.el
 (package! keyfreq)
@@ -34,7 +60,32 @@ Debug icons in modeline, find out their names.
 #+end_src
 
 #+begin_src elisp
-(use-package! bufler)
+(use-package! bufler
+  :config
+
+  (after! evil-collection
+    (evil-collection-define-key 'normal 'bufler-list-mode-map
+      (kbd "C-k") 'bufler-list-buffer-kill
+      "r" 'bufler
+      (kbd "RET") 'bufler-list-buffer-switch))
+
+  :custom
+  (bufler-groups
+   (bufler-defgroups
+     (group (mode-match "Telega" (rx bos "telega-chat")))
+     (group
+      (lambda (buffer)
+        (and
+         (funcall (mode-match "exwm-mode" (rx bos "exwm-mode")) buffer)
+         "X11"))
+      (group
+       (lambda (buffer)
+         (and
+          (string= "qutebrowser"
+                   (buffer-local-value 'exwm-class-name buffer))
+          "WWW"))))
+     (group (auto-project))
+     (auto-directory))))
 #+end_src
 * org mode
 #+begin_src elisp :tangle packages.el
@@ -122,86 +173,6 @@ subprocess.call(['emacs-capture',
 
 (after! browse-at-remote
   (setq browse-at-remote-prefer-symbolic nil))
-#+end_src
-* EXWM
-** Base
-#+begin_src elisp :tangle packages.el
-(package! exwm)
-(package! exwm-ss :recipe (:host codeberg :repo "emacs-weirdware/exwm-ss"))
-(package! exwm-edit)
-#+end_src
-
-Function to set default cursor which otherwise looks like ugly black cross.
-
-#+begin_src elisp
-(defun exwm-set-default-cursor ()
-  "Sets default cursor to left_ptr (instead of default black cross)."
-  (xcb:+request exwm--connection
-      (make-instance 'xcb:ChangeWindowAttributes
-                     :window exwm--root
-                     :value-mask xcb:CW:Cursor
-                     :cursor (xcb:cursor:load-cursor exwm--connection "left_ptr"))))
-#+end_src
-
-** Screen brightness
-#+begin_src elisp :tangle packages.el
-(package! backlight)
-(package! circadian)
-(package! white-sand-theme)
-(package! kaolin-themes)
-#+end_src
-
-*** Theme
-#+begin_src elisp
-(use-package! white-sand-theme)
-(defvar doom-theme-dark 'kaolin-valley-dark)
-(setq doom-theme 'white-sand
-      doom-font (font-spec :family "Hack" :size 20)
-      doom-serif-font (font-spec :family "Hack")
-      doom-unicode-font (font-spec :family "Hack"))
-
-;; Change color theme based on day time
-(use-package! circadian
-  :config
-  (setq calendar-latitude 52.516667
-        calendar-longitude 13.388889
-        circadian-themes
-        `((:sunrise . ,doom-theme)
-          (:sunset . ,doom-theme-dark)))
-  (circadian-setup))
-#+end_src
-
-*** Backlight
-#+begin_src elisp
-(use-package! backlight)
-
-(defvar sarg-redshift-timer 'nil
-  "Stores redshift-adjust timer")
-
-(defun sarg/redshift-adjust ()
-  (interactive)
-  (start-process-shell-command "redshift" nil "redshift -m randr -Po"))
-
-(defun sarg/redshift-start ()
-  (interactive)
-  (unless sarg-redshift-timer
-    (setq sarg-redshift-timer (run-at-time nil 60 #'sarg/redshift-adjust))))
-
-(defun sarg/redshift-cancel ()
-  (interactive)
-  (when sarg-redshift-timer (cancel-timer sarg-redshift-timer))
-  (start-process-shell-command "redshift" nil "redshift -x"))
-
-(sarg/redshift-start)
-#+end_src
-
-** Managing windows
-#+begin_src elisp
-(defun doom/exwm-new-window-hook ()
-  (doom-mark-buffer-as-real-h)
-  ;; no modelines please
-  (+modeline-mode -1)
-  (hide-mode-line-mode +1))
 #+end_src
 * tramp
 #+begin_src elisp
