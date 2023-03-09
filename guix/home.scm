@@ -186,7 +186,6 @@
                          (as-local-files "../git")
                          (as-local-files "../qutebrowser")
                          (as-local-files "../desktop")
-                         (as-local-files "../emacs/.local/bin" "../emacs")
                          `((".gnupg/gpg-agent.conf"
                             ,(mixed-text-file "gpg-agent.conf"
                                               "enable-ssh-support\n"
@@ -197,6 +196,8 @@
                                               "log-file /home/sarg/gpg-agent.log\n"
                                               "default-cache-ttl 34560000\n"
                                               "max-cache-ttl 34560000\n"))
+                                              "default-cache-ttl 86400\n"
+                                              "max-cache-ttl 86400\n"))
                            (".gnupg/gpg.conf"
                             ,(mixed-text-file "gpg.conf"
                                               "keyid-format 0xlong\n")))))

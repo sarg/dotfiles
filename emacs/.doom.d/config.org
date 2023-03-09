@@ -16,12 +16,13 @@
 
 ;; Change color theme based on day time
 (use-package! circadian
+  :custom
+  (calendar-latitude 52.516667)
+  (calendar-longitude 13.388889)
+  (circadian-themes
+   `((:sunrise . ,doom-theme)
+     (:sunset . ,doom-theme-dark)))
   :config
-  (setq calendar-latitude 52.516667
-        calendar-longitude 13.388889
-        circadian-themes
-        `((:sunrise . ,doom-theme)
-          (:sunset . ,doom-theme-dark)))
   (circadian-setup))
 #+end_src
 
@@ -449,8 +450,8 @@ qutebrowser --nowindow --target tab-bg-silent $@
 #+end_src
 * shell
 #+begin_src elisp :tangle packages.el
-(package! eat)
-(package! detached)
+(package! eat :built-in 'prefer)
+(package! detached :built-in 'prefer)
 #+end_src
 
 #+begin_src elisp
