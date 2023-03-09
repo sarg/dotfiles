@@ -18,7 +18,6 @@ alias tb='nc termbin.com 9999'
 alias agrep=ack-grep
 alias g=git
 alias t=task
-alias em=emacs-one-frame.sh
 
 function ff() { find ${2:-.} -name "*$1*" ; }
 

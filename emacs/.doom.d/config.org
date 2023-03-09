@@ -1,5 +1,5 @@
 #+OPTIONS: num:nil
-* Theme
+* theme
 #+begin_src elisp :tangle packages.el
 (package! circadian)
 (package! white-sand-theme)
@@ -134,7 +134,7 @@ subprocess.call(['emacs-capture',
   )
 ])
 #+end_src
-** Agenda
+** agenda
 #+begin_src elisp
 (setq
  org-agenda-files
@@ -143,7 +143,7 @@ subprocess.call(['emacs-capture',
          "tickler.org")))
 #+end_src
 
-** Roam
+** roam
 #+begin_src elisp
 (after! org-roam
   (setq org-roam-db-node-include-function
@@ -265,7 +265,7 @@ subprocess.call(['emacs-capture',
       (password-store-insert entry pass))))
 #+end_src
 
-** Qutebrowser integration
+** qutebrowser integration
 #+begin_src elisp
 (defun +pass/qute (url)
   (auth-source-pass--read-entry
@@ -304,7 +304,7 @@ query_entries() {
 }
 #+end_src
 
-** Wrapper for CLI
+** wrapper for CLI
 #+begin_src elisp
 (defalias '+pass/read-entry #'auth-source-pass--read-entry)
 #+end_src
@@ -657,3 +657,22 @@ qutebrowser --nowindow --target tab-bg-silent $@
  ("<XF86MonBrightnessUp>" . backlight)
  ("<XF86MonBrightnessDown>" . backlight))
 #+end_example
+
+* archive
+** emacs-one-frame
+#+begin_src sh :tangle no :shebang #!/bin/bash
+# https://taingram.org/2017/05/09/using-emacsclient-to-speed-up-editing/
+# if no args open new frame
+if [ $# -eq 0 ]; then
+    emacsclient -c -n
+    exit
+fi
+
+emacsclient -e "(frames-on-display-list \"$DISPLAY\")" &>/dev/null
+
+if [ $? -eq 0 ]; then
+    emacsclient -n "$*"
+else
+    emacsclient -c -n "$*"
+fi
+#+end_src
