@@ -4,12 +4,6 @@
     (setq key     (pop bindings)
           command (pop bindings))))
 
-(defun sarg/with-browser ()
-  "Opens browser side-by-side with current window"
-  (interactive)
-  (delete-other-windows)
-  (set-window-buffer (split-window-horizontally) "qutebrowser"))
-
 (defun sarg/run-or-raise (NAME PROGRAM &rest ARGS)
   (interactive)
   (let ((buf (cl-find-if
@@ -21,11 +15,6 @@
              (append (list NAME nil "setsid" "-w" PROGRAM) ARGS)))))
 
 (exwm-bind-command
-   "<XF86AudioRaiseVolume>" #'pulseaudio-control-increase-sink-volume
-   "<XF86AudioLowerVolume>" #'pulseaudio-control-decrease-sink-volume
-   "<XF86AudioMute>"        #'pulseaudio-control-toggle-current-sink-mute
-   "<XF86AudioMicMute>"     #'pulseaudio-control-toggle-current-source-mute
-
    "<XF86AudioPlay>"    #'emms-pause
    "<XF86AudioNext>"    #'emms-next
    "<XF86AudioPrev>"    #'emms-previous
@@ -57,13 +46,12 @@
    "M-s-k"   #'enlarge-window
    "M-s-l"   #'enlarge-window-horizontally
 
-   "s-E"     #'sarg/with-browser
    "s-e"    `(lambda () (interactive)
                (sarg/run-or-raise "qutebrowser" "qutebrowser" "--qt-arg" "no-sandbox" "true")
                (exwm-workspace-switch (exwm-workspace-name-to-index "brow")))
 
    "<s-return>"   #'+eshell/here
-   "<S-s-return>" #'vterm
+   "<S-s-return>" #'+vterm/here
 
    "<s-f12>" `(lambda () (interactive) (start-process "flameshot" nil "flameshot" "gui"))
    "<s-delete>" `(lambda () (interactive) (start-process "lock" nil "lock.sh")))
