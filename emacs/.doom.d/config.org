@@ -35,13 +35,8 @@
 (use-package! pinentry
   :config
   (pinentry-start))
-
 #+end_src
 * miscellaneous
-#+begin_src elisp :tangle packages.el
-(package! keyfreq)
-#+end_src
-
 #+begin_src elisp
 (setq +modeline-encoding nil
       +modeline-height 20
@@ -53,11 +48,6 @@
 (setq-default
  ;; russian layout on C-\
  default-input-method "russian-computer")
-
-(use-package! keyfreq
-  :config
-  (keyfreq-mode 1)
-  (keyfreq-autosave-mode 1))
 #+end_src
 
 Debug icons in modeline, find out their names.
