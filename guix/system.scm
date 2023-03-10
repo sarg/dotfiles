@@ -172,7 +172,9 @@ EOF
                                  (plain-file "dhclient.conf"
                                              "send host-name = gethostname();"))
 
-             (screen-locker-service physlock)
+             (service screen-locker-service-type
+                      (screen-locker-configuration
+                       "physlock" (file-append physlock "/bin/physlock") #f))
 
              ;; Add polkit rules, so that non-root users in the wheel group can
              ;; perform administrative tasks (similar to "sudo").
