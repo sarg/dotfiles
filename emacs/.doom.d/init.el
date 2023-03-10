@@ -12,6 +12,6 @@
  :lang        clojure data emacs-lisp
  (org +contacts +dragndrop +pandoc +present +hugo +roam2) beancount
  rest sh plantuml (python +pyenv +lsp) (web +html) yaml json
- :app         calendar telega (rss +org) torrent exwm
+ :app         calendar telega (rss +org) torrent exwm irc
  :email       (mu4e +gmail)
  :config      (default +bindings +smartparens) literate)
