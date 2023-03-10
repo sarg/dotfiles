@@ -308,21 +308,6 @@ query_entries() {
 }
 #+end_src
 
-** wrapper for CLI
-#+begin_src elisp
-(defalias '+pass/read-entry #'auth-source-pass--read-entry)
-#+end_src
-
-#+begin_src sh :tangle ~/.local/bin/pass :shebang #!/bin/sh
-OTHER_PASS=$(which -a pass | fgrep -v $0)
-
-if [ "$1" = "show" ] && [ -n "$DISPLAY" ]; then
-    emacsclient -a false -e "(+pass/read-entry \"$2\")" | xargs echo -ne
-else
-    $OTHER_PASS $@
-fi
-#+end_src
-
 * elfeed
 #+begin_src elisp
 (defun ambrevar/elfeed-play-with-mpv ()
