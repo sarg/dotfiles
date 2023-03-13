@@ -316,7 +316,7 @@ query_entries() {
   (let ((entry (elfeed-search-selected :single)))
     (if (seq-contains-p (elfeed-entry-tags entry) 'youtube)
         (elfeed-search-browse-url)
-      (elfeed-show-entry entry))))
+      (elfeed-search-show-entry entry))))
 
 (defun sarg/elfeed-strip-content (entry)
   (when (seq-contains-p (elfeed-entry-tags entry) 'rmbody)
@@ -388,17 +388,17 @@ qutebrowser --nowindow --target tab-bg-silent $@
 
 #+begin_src elisp
 (defun browse-url-qute-private (url &rest _)
-  "Make firefox open URL in private-browsing window."
+  "Make qutebrowser open URL in private-browsing window."
   (interactive (browse-url-interactive-arg "URL: "))
   (let ((process-environment (browse-url-process-environment)))
-    (apply 'start-process
-           (concat "qutebrowser " url)
-           nil
-           "qutebrowser"
-           (list (concat ":open -p " url)))))
+    (start-process "qutebrowser-private" nil
+           "qutebrowser" "--target" "private-window" url)))
+
+(defun browse-url-mpv (url &rest _)
+  (mpv-play-url url))
 
 (setq browse-url-handlers
-      `(("youtu\\.?be" . ,(lambda (url &rest _) (mpv-play-url url)))))
+      '(("youtu\\.?be" . browse-url-mpv)))
 
 (setq-default
  browse-url-browser-function 'browse-url-generic
