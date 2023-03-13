@@ -84,7 +84,7 @@
   '(;; apps
     "calibre" ;; "goldendict"
     "anki" "qutebrowser"
-    "syncthing" "openvpn" "openssh"
+    "openvpn" "openssh"
     "mu" "msmtp" "isync"
     "gnupg" "pass-otp" "password-store" "pinentry-emacs" "pwgen"
     "piper"

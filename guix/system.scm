@@ -18,7 +18,7 @@
 
 (use-service-modules
  desktop ssh networking sysctl
- xorg dbus shepherd sound pm dns)
+ xorg dbus shepherd sound pm dns syncthing)
 
 (define %grub-lubuntu-14 "
 menuentry \"Lubuntu 14.04 ISO\" {
@@ -164,6 +164,8 @@ EOF
                                        get-string-all)))
                        (extra-options '("-Dnl80211"))))
 
+             (service syncthing-service-type
+                      (syncthing-configuration (user "sarg")))
              (service dhcp-client-service-type)
              (extra-special-file "/etc/dhclient-enter-hooks"
                                  (plain-file "dhclient-enter-hooks"
