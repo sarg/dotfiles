@@ -47,18 +47,18 @@
 (define %pkg-x11
   '("picom" "xhost" "xkbcomp" "xkbset"
     "xprop" "xrandr" "xset" "xwininfo"
-    "xev" "xclip" "xinput"
+    "xev" "xclip" "xinput" "unclutter"
     "hicolor-icon-theme" "tango-icon-theme"
     "igt-gpu-tools"                     ; intel graphics tool
     ))
 
 (define %pkg-games
   '(;; "lierolibre" "chroma" "meandmyshadow" "gcompris-qt"
-    ;; "tipp10" "quakespasm"
+    ;; "tipp10" "quakespasm" "sgtpuzzles"
     "quake3e" "xonotic"))
 
 (define %pkg-apps
-  '(;; apps
+  '(          ;; apps
     "calibre" ;; "goldendict"
     "anki" "qutebrowser"
     "openvpn" "openssh"
@@ -66,6 +66,7 @@
     "gnupg" "pass-otp" "password-store" "pinentry-emacs" "pwgen"
     "piper"
 
+    ;; "zeal" "qalculate-gtk" "simplescreenrecorder"
     ;; media
     "libreoffice" "qview" "stapler" "gimp" "imagemagick"
     "graphicsmagick" "libwebp"
