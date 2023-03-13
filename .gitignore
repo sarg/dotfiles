@@ -9,3 +9,4 @@ xmonad/.xmonad/xmonad*
 /guix/current
 /emacs/.doom.d/packages.el
 /emacs/.doom.d/config.el
+/guix/emacs-home.scm

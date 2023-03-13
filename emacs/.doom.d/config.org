@@ -1,4 +1,26 @@
 #+OPTIONS: num:nil
+#+SETUPFILE: ~/devel/ext/org-html-themes/org/theme-readtheorg-local.setup
+* guix
+To define guix dependencies add a source code block with =:noweb-ref guix-pkg :tangle no :exports none= as header arguments. It'll be then tangled to =~/.dotfiles/guix/emacs-packages.scm= and merged with the main =home-environment=.
+
+#+begin_src scheme :noweb yes :tangle ~/.dotfiles/guix/emacs-home.scm
+(use-modules
+ (gnu packages)
+ (gnu home))
+(home-environment
+ (packages
+  (map (compose list specification->package+output)
+       '("emacs-next"
+         "emacs-emacsql"
+         "emacs-pdf-tools"
+         "emacs-telega"
+         "emacs-telega-contrib"
+         "emacs-vterm"
+         "avfs"
+         "emacs-guix"
+         <<guix-pkg>>
+         ))))
+#+end_src
 * theme
 #+begin_src elisp :tangle packages.el
 (package! circadian)
@@ -36,11 +58,33 @@
   :config
   (pinentry-start))
 #+end_src
+* emacs screencast recording
+#+begin_src elisp :tangle packages.el
+(package! command-log-mode)
+;(package! camcorder) autoloads fail because of names.el usage. todo: debug
+#+end_src
+
+#+begin_src elisp
+(use-package! command-log-mode
+  :commands command-log-mode)
+;; (use-package! camcorder
+;;   :commands camcorder-mode
+;;   :hook (camcorder-mode-hook . clm/command-log-clear))
+#+end_src
+
+#+begin_src scheme :noweb-ref guix-pkg :tangle no :exports none
+"recordmydesktop" "ffmpeg"
+#+end_src
 * miscellaneous
+#+begin_src sh :tangle ~/.local/bin/locator :shebang #!/bin/sh
+plocate -d /storage/2tb.plocate $1
+plocate -d /storage/500gb.plocate $1
+#+end_src
+
 #+begin_src elisp
 (setq +modeline-encoding nil
       +modeline-height 20
-      locate-command "/storage/locator")
+      locate-command "locator")
 
 ;; C-h deletes character backwards
 (define-key key-translation-map [?\C-h] [?\C-?])
@@ -138,7 +182,15 @@ subprocess.call(['emacs-capture',
 ])
 #+end_src
 ** agenda
+#+begin_src elisp :tangle packages.el
+(package! german-holidays)
+#+end_src
+
 #+begin_src elisp
+(use-package! german-holidays
+  :custom
+  (calendar-holidays holiday-german-BE-holidays))
+
 (setq
  org-agenda-files
  (-map (lambda (el) (expand-file-name el org-directory))
@@ -188,7 +240,11 @@ subprocess.call(['emacs-capture',
 * book reading
 #+begin_src elisp :tangle packages.el
 (package! calibredb :built-in 'prefer)
-;(package! nov)
+(package! nov)
+#+end_src
+
+#+begin_src scheme :noweb-ref guix-pkg :tangle no :exports none
+"emacs-calibredb" "sqlite"
 #+end_src
 
 #+begin_src elisp :tangle no
@@ -227,8 +283,7 @@ subprocess.call(['emacs-capture',
 #+begin_src elisp
 (use-package! wpa-manager
   :init
-  (when (modulep! :editor evil +everywhere)
-
+  (after! evil-collection
     (evil-collection-inhibit-insert-state 'wpa-manager-mode-map)
     (evil-set-initial-state 'wpa-manager-mode-map 'normal)
     (evil-collection-define-key 'normal 'wpa-manager-mode-map
@@ -413,6 +468,10 @@ qutebrowser --nowindow --target tab-bg-silent $@
 #+begin_src elisp :tangle packages.el
 (package! eat :built-in 'prefer)
 (package! detached :built-in 'prefer)
+#+end_src
+
+#+begin_src scheme :noweb-ref guix-pkg :tangle no :exports none
+"emacs-eat" "emacs-detached"
 #+end_src
 
 #+begin_src elisp
@@ -618,7 +677,7 @@ qutebrowser --nowindow --target tab-bg-silent $@
  ("s-g" . linkmarks-select))
 #+end_example
 
-* archive
+* archive :noexport:
 ** emacs-one-frame
 #+begin_src sh :tangle no :shebang #!/bin/bash
 # https://taingram.org/2017/05/09/using-emacsclient-to-speed-up-editing/

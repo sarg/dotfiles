@@ -210,8 +210,7 @@ EOF
                       (dnsmasq-configuration
                        (no-hosts? #t)
                        (no-resolv? #t)
-                       ;; https://issues.guix.gnu.org/61956
-                       ;; (servers-file "/etc/dnsmasq.servers")
+                       (servers-file "/etc/dnsmasq.servers")
                        (addresses '("/dev.local/127.0.0.1"
                                     "/local/127.0.0.1"))
                        (servers '("1.1.1.1"))))

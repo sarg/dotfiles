@@ -1,20 +1,15 @@
 (use-modules
-  (guix transformations)
   (guix gexp)
-  (guix store)
   (guix utils)
   (gnu home)
   (gnu home services)
   (gnu home services shepherd)
-  (guix build-system copy)
   (gnu services)
   (gnu packages xorg)
   (gnu services xorg)
-  (gnu packages)
   (srfi srfi-11)
   (ice-9 match)
   (ice-9 ftw)
-  (ice-9 pretty-print)
   (guix packages)
   (gnu packages xdisorg)
   (gnu home services shells))
@@ -48,24 +43,6 @@
     "font-google-noto"
     "font-hack"
     "font-terminus"))
-
-(define %emacs-next
-  ((options->transformation
-    '((with-commit . "emacs-next=1e9341672d53fa9b297858dc47f7318974abc80e")))
-   (specification->package "emacs-next")))
-
-(define %pkg-emacs
-  '("avfs"
-    "emacs-emacsql"
-    "emacs-calibredb" "sqlite"
-    "emacs-eat"
-    "emacs-detached"
-    "emacs-guix"
-    "emacs-next"
-    "emacs-pdf-tools"
-    "emacs-telega"
-    "emacs-telega-contrib"
-    "emacs-vterm"))
 
 (define %pkg-x11
   '("picom" "xhost" "xkbcomp" "xkbset"
@@ -147,15 +124,16 @@
                  (("\\bexec Xorg\\b")
                   (string-join (list "exec" (assoc-ref inputs "xwrapper")))))))))))))
 
+(define %emacs-home (load "./emacs-home.scm"))
 (home-environment
  (packages
   (append (list my-sx)
+          (home-environment-packages %emacs-home)
           (map (compose list specification->package+output)
                (append %pkg-android
                        %pkg-games
                        %pkg-utils
                        %pkg-desktop
-                       %pkg-emacs
                        %pkg-fonts
                        %pkg-x11
                        %pkg-apps))))

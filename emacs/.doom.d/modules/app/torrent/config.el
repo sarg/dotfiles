@@ -18,7 +18,7 @@
                   []
                   `(:select-file ,(seq-map #'car (tablist-get-marked-items)) :dir ,(expand-file-name dest-dir))))
 
-  (when (modulep! :editor evil +everywhere)
+  (after! evil-collection
     (evil-collection-define-key 'normal 'torrent-mode-map
       "D" 'torrent-do-download-selected
       "d" nil
