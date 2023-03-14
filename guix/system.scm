@@ -115,18 +115,12 @@ EOF
   (file-systems
    (cons* (file-system
             (mount-point "/")
-            (device (uuid "b2c8548b-de1a-4d6c-8ada-2a60dc50e41b" 'ext4))
+            (device (file-system-label "Guix_image"))
             (type "ext4"))
           (file-system
            (mount-point "/boot")
-           (device (uuid "298B-1EF1" 'fat32))
+           (device (file-system-label "GNU-ESP"))
            (type "vfat"))
-          (file-system
-           (mount-point "/media/sarg/500GB")
-           (device (uuid "8ae97db9-a22c-4476-b7ad-2e82646f5fec" 'ext4))
-           (mount? #f)
-           (create-mount-point? #t)
-           (type "ext4"))
           %base-file-systems))
   (host-name "thinkpad")
 
