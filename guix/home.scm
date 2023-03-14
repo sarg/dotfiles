@@ -193,7 +193,7 @@
 
  (services
   (append
-   ;; (home-environment-services %emacs-home)
+   (home-environment-user-services %emacs-home)
    (list (service
           home-bash-service-type
           (home-bash-configuration

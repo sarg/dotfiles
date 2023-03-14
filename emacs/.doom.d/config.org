@@ -478,13 +478,11 @@ qutebrowser --nowindow --target tab-bg-silent $@
 #+end_src
 
 #+begin_src scheme :noweb-ref guix-srv :tangle no :exports none
-(service home-bash-service-type
-         (home-bash-configuration
-          (bashrc
-           (list
-            (plain-file
-             "eat"
-             "[ -n \"$EAT_SHELL_INTEGRATION_DIR\" ] && source \"$EAT_SHELL_INTEGRATION_DIR/bash\"")))))
+(simple-service 'eat-bash-integration home-bash-service-type
+ (home-bash-extension
+  (bashrc (list
+           (plain-file "eat"
+            "[ -n \"$EAT_SHELL_INTEGRATION_DIR\" ] && source \"$EAT_SHELL_INTEGRATION_DIR/bash\"")))))
 #+end_src
 
 #+begin_src elisp
