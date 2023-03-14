@@ -36,12 +36,7 @@
 (define %pkg-desktop
   '("pavucontrol" "dunst" "flameshot"
     "pulseaudio" "dbus" "polybar"
-    "redshift" "udiskie"
-
-    ;; counsel-linux-app uses gtk-launch
-    "gtk+:bin"              ; for gtk-launch
-    "glib:bin"              ; for gio-launch-desktop which is used by gtk-launch
-    ))
+    "redshift" "udiskie"))
 
 (define %pkg-fonts
   '("font-fira-code"
@@ -59,7 +54,7 @@
 
 (define %pkg-games
   '(;; "lierolibre" "chroma" "meandmyshadow" "gcompris-qt"
-    ;; "tipp10" "quakespasm" "sgtpuzzles" "xonotic"
+    ;; "tipp10" "quakespasm" "sgt-puzzles" "xonotic"
     "quake3e"))
 
 (define %pkg-apps
@@ -197,77 +192,71 @@
                        %pkg-apps))))
 
  (services
-  (list (service
-         home-bash-service-type
-         (home-bash-configuration
-          (guix-defaults? #t)
+  (append
+   ;; (home-environment-services %emacs-home)
+   (list (service
+          home-bash-service-type
+          (home-bash-configuration
+           (bash-profile
+            (list (plain-file
+                   "bash_profile"
+                   "[[ ! $DISPLAY && $(tty) == /dev/tty1 ]] && exec sx sh ~/.xsession")))))
 
-          (bashrc
-           (list (plain-file
-                  "eat"
-                  "[ -n \"$EAT_SHELL_INTEGRATION_DIR\" ] && source \"$EAT_SHELL_INTEGRATION_DIR/bash\"")))
+         (service home-dbus-service-type)
+         (simple-service 'symlinks
+                         home-activation-service-type
+                         symlinks-activation)
 
-          (bash-profile
-           (list (plain-file
-                  "bash_profile"
-                  "[[ ! $DISPLAY && $(tty) == /dev/tty1 ]] && exec sx sh ~/.xsession")))))
+         (simple-service 'configs
+                         home-files-service-type
+                         (append
+                          (as-local-files "../android")
+                          (as-local-files "../email")
+                          (as-local-files "../xsession")
+                          (as-local-files "../git")
+                          (as-local-files "../qutebrowser")
+                          (as-local-files "../desktop")
+                          `((".gtkrc-2.0.mine"
+                             ,(plain-file "gtk.conf"
+                                          "gtk-icon-theme-name=\"Tango\"")))
+                          `((".gnupg/gpg-agent.conf"
+                             ,(mixed-text-file "gpg-agent.conf"
+                                               "enable-ssh-support\n"
+                                               "allow-emacs-pinentry\n"
+                                               "pinentry-program "
+                                               (specification->package "pinentry-emacs")
+                                               "/bin/pinentry-emacs\n"
+                                               "default-cache-ttl 86400\n"
+                                               "max-cache-ttl 86400\n"))
+                            (".gnupg/gpg.conf"
+                             ,(mixed-text-file "gpg.conf"
+                                               "keyid-format 0xlong\n")))))
 
-        (service home-dbus-service-type)
-        (simple-service 'symlinks
-                        home-activation-service-type
-                        symlinks-activation)
+         (simple-service 'extra-channels
+                         home-channels-service-type
+                         (list
+                          (channel
+                           (name 'nonguix)
+                           (url "https://gitlab.com/nonguix/nonguix")
+                           ;; Enable signature verification:
+                           (introduction
+                            (make-channel-introduction
+                             "897c1a470da759236cc11798f4e0a5f7d4d59fbc"
+                             (openpgp-fingerprint
+                              "2A39 3FFF 68F4 EF7A 3D29  12AF 6F51 20A0 22FB B2D5"))))
 
-        (simple-service 'configs
-                        home-files-service-type
-                        (append
-                         (as-local-files "../android")
-                         (as-local-files "../email")
-                         (as-local-files "../xsession")
-                         (as-local-files "../git")
-                         (as-local-files "../qutebrowser")
-                         (as-local-files "../desktop")
-                         `((".gtkrc-2.0.mine"
-                            ,(plain-file "gtk.conf"
-                                        "gtk-icon-theme-name=\"Tango\"")))
-                         `((".gnupg/gpg-agent.conf"
-                            ,(mixed-text-file "gpg-agent.conf"
-                                              "enable-ssh-support\n"
-                                              "allow-emacs-pinentry\n"
-                                              "pinentry-program "
-                                              (specification->package "pinentry-emacs")
-                                              "/bin/pinentry-emacs\n"
-                                              "default-cache-ttl 86400\n"
-                                              "max-cache-ttl 86400\n"))
-                           (".gnupg/gpg.conf"
-                            ,(mixed-text-file "gpg.conf"
-                                              "keyid-format 0xlong\n")))))
+                          (channel
+                           (name 'personal)
+                           (url (string-append "file://" (dirname (current-filename)) "/personal")))))
 
-        (simple-service 'extra-channels
-                        home-channels-service-type
-                        (list
-                         (channel
-                          (name 'nonguix)
-                          (url "https://gitlab.com/nonguix/nonguix")
-                          ;; Enable signature verification:
-                          (introduction
-                           (make-channel-introduction
-                            "897c1a470da759236cc11798f4e0a5f7d4d59fbc"
-                            (openpgp-fingerprint
-                             "2A39 3FFF 68F4 EF7A 3D29  12AF 6F51 20A0 22FB B2D5"))))
+         ;; (service home-shepherd-service-type
+         ;;          (home-shepherd-configuration
+         ;;           (services
+         ;;            (list minidlna-service))))
 
-                         (channel
-                          (name 'personal)
-                          (url (string-append "file://" (dirname (current-filename)) "/personal")))))
-
-        ;; (service home-shepherd-service-type
-        ;;          (home-shepherd-configuration
-        ;;           (services
-        ;;            (list minidlna-service))))
-
-        (simple-service 'additional-env-vars-service
-                        home-environment-variables-service-type
-                        `(("PATH" . "$HOME/.local/bin:$HOME/.config/emacs/bin:$PATH")
-                          ("GPG_TTY" . "$(tty)")
-                          ("SSH_AUTH_SOCK" . "$(gpgconf --list-dir agent-ssh-socket)")
-                          ("VISUAL" . "emacsclient")
-                          ("EDITOR" . "emacsclient"))))))
+         (simple-service 'additional-env-vars-service
+                         home-environment-variables-service-type
+                         `(("PATH" . "$HOME/.local/bin:$HOME/.config/emacs/bin:$PATH")
+                           ("SSH_AUTH_SOCK" . "$(gpgconf --list-dir agent-ssh-socket)")
+                           ("VISUAL" . "emacsclient")
+                           ("EDITOR" . "emacsclient")))))))

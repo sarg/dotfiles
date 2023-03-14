@@ -1,12 +1,11 @@
-#+PROPERTY: tangle bootstrap.sh
 Notes:
-1. partition labels should match those in operating-system fr
-2. root partition should be named Guix_image as it's hardcoded in install-efi-loader
-3. efi partition is named GNU-ESP just to match the name of =esp-partition=
+1. partition labels should match those in =operating-system=
+2. root partition should be named =Guix_image= as it's hardcoded in =install-efi-loader=
+3. efi partition is named =GNU-ESP= just to match the name in =esp-partition=
 
 * Back up
 #+begin_src sh
-cd /media/sarg/500GB
+cd /media/sarg/backup
 rsync --no-checksum -a --info=progress2 --exclude=.avfs /home/sarg sarg
 rsync --no-checksum -a --info=progress2 /storage .
 #+end_src
@@ -14,13 +13,11 @@ rsync --no-checksum -a --info=progress2 /storage .
 * Preparing disk image
 #+begin_src sh
 cp $(guix system image ~/devel/dotfiles/guix/image.scm) \
-    /media/sarg/500GB/thinkpad.img
+    /media/sarg/ventoy/thinkpad.img
 #+end_src
 
-cp result to usb stick
-
 * Deploying image to a target machine
-Boot from live cd
+Boot from Ventoy into some linux Live CD
 
 #+begin_src sh
 dd thinkpad.img of=/dev/sda status=progress
@@ -37,7 +34,6 @@ resize2fs /dev/sda2
 mkfs.ext4 /dev/sda3 -L STORAGE
 #+end_src
 
-mount storage, rsync it from backup
 #+begin_src sh
 mkdir /storage
 mount /dev/sda3 /storage
@@ -53,12 +49,10 @@ reboot
 log in as root (empty pass)
 
 #+begin_src sh
+passwd root
 passwd sarg
-logout
-#+end_src
+login sarg
 
-log in as sarg
-#+begin_src shell
 cd /storage/devel/dotfiles/guix
 guix pull -C /run/current-system/channels.scm
 sudo guix system reconfigure system.scm
@@ -67,4 +61,18 @@ guix home reconfigure home.scm
 doom sync
 mu init -m ~/.mail
 mu index
+
+logout # sarg
+logout # root
 #+end_src
+
+* To improve:
+- [ ] Implement backup
+- [ ] Fix hardcoded =Guix_image= root partition name
+- [ ] Add support of =partition-table-type= to =guix system image=
+- [ ] Fix =gnupg= symlink\\
+  =guix home= =update-symlinks= creates =~/.gnupg= before my symlink activation service runs
+  therefore gnupg private keys are not symlinked\\
+  Target state:
+  - =~/.gnupg= is a symlink to =/storage/data/gnupg=
+  - =gpg-agent.conf= and =gpg.conf= are managed by =guix home=
