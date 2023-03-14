@@ -7,7 +7,7 @@
  :editor      (evil +everywhere) fold lispy snippets (format +onsave) multiple-cursors word-wrap
  :emacs       dired electric vc ibuffer undo
  :term        eshell vterm
- :tools       editorconfig (eval +overlay) (lookup +docsets) (magit) pdf (pass +auth) direnv make tree-sitter
+ :tools       editorconfig (eval +overlay) (lookup +docsets) (magit) pdf (pass +auth) direnv make tree-sitter lsp
  :checkers    syntax
  :lang        clojure data emacs-lisp
  (org +contacts +dragndrop +pandoc +present +hugo +roam2) beancount
