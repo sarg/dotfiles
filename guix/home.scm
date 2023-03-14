@@ -36,7 +36,7 @@
 (define %pkg-desktop
   '("pavucontrol" "dunst" "flameshot"
     "pulseaudio" "dbus" "polybar"
-    "redshift" "udiskie"))
+    "redshift"))
 
 (define %pkg-fonts
   '("font-fira-code"

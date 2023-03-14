@@ -13,3 +13,6 @@
 (package! exwm)
 (package! exwm-ss :recipe (:host codeberg :repo "emacs-weirdware/exwm-ss"))
 (package! exwm-edit)
+
+;; udisks
+(package! discomfort :recipe (:host codeberg :repo "emacs-weirdware/discomfort"))

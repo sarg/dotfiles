@@ -23,6 +23,7 @@
   (set-popup-rule! "^\\*EXWM\\*$" :ignore t)
 
   :config
+  (load! "+udisks")
   (load! "+workspaces")
   (load! "+polybar")
   (load! "+bindings")

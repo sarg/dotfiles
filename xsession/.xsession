@@ -12,6 +12,5 @@ xhost +
 
 LANG=C flameshot &
 dunst &
-udiskie --smart-tray --file-manager emacsclient &
 
 emacs --eval '(exwm-enable)'

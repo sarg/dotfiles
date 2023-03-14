@@ -68,6 +68,7 @@ logout # root
 
 * To improve:
 - [ ] Implement backup
+- [ ] Put =guix home= dependencies in =/gnu/store=
 - [ ] Fix hardcoded =Guix_image= root partition name
 - [ ] Add support of =partition-table-type= to =guix system image=
 - [ ] Fix =gnupg= symlink\\
