@@ -2,10 +2,12 @@
   (guix gexp)
   (guix modules)
   (guix utils)
+  (guix channels)
   (gnu home)
   (gnu packages)
   (gnu home services)
   (gnu home services shepherd)
+  (gnu home services guix)
   (gnu services)
   (gnu packages xorg)
   (gnu services xorg)
@@ -146,8 +148,6 @@
     ("Resources" "Resources")
     ("devel" "devel")
     ("devel/dotfiles" ".dotfiles")
-    ;; todo: define channels in guix home service
-    ("devel/dotfiles/guix/channels.scm" ".config/guix/channels.scm")
     ("Sync/pass" ".password-store")
     ("data/telega" ".telega")
     ("data/mail" ".mail")
@@ -237,6 +237,23 @@
                            (".gnupg/gpg.conf"
                             ,(mixed-text-file "gpg.conf"
                                               "keyid-format 0xlong\n")))))
+
+        (simple-service 'extra-channels
+                        home-channels-service-type
+                        (list
+                         (channel
+                          (name 'nonguix)
+                          (url "https://gitlab.com/nonguix/nonguix")
+                          ;; Enable signature verification:
+                          (introduction
+                           (make-channel-introduction
+                            "897c1a470da759236cc11798f4e0a5f7d4d59fbc"
+                            (openpgp-fingerprint
+                             "2A39 3FFF 68F4 EF7A 3D29  12AF 6F51 20A0 22FB B2D5"))))
+
+                         (channel
+                          (name 'personal)
+                          (url (string-append "file://" (dirname (current-filename)) "/personal")))))
 
         ;; (service home-shepherd-service-type
         ;;          (home-shepherd-configuration

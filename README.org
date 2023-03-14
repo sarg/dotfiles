@@ -60,7 +60,7 @@ logout
 log in as sarg
 #+begin_src shell
 cd /storage/devel/dotfiles/guix
-guix pull -C channels.scm
+guix pull -C /run/current-system/channels.scm
 sudo guix system reconfigure system.scm
 guix home reconfigure home.scm
 
