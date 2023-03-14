@@ -14,6 +14,6 @@ eval $(dbus-launch --sh-syntax --exit-with-x11)
 
 LANG=C flameshot &
 dunst &
-udiskie --smart-tray --no-file-manager &
+udiskie --smart-tray --file-manager emacsclient &
 
 emacs --eval '(exwm-enable)'

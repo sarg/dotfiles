@@ -225,6 +225,9 @@
                          (as-local-files "../git")
                          (as-local-files "../qutebrowser")
                          (as-local-files "../desktop")
+                         `((".gtkrc-2.0.mine"
+                            ,(plain-file "gtk.conf"
+                                        "gtk-icon-theme-name=\"Tango\"")))
                          `((".gnupg/gpg-agent.conf"
                             ,(mixed-text-file "gpg-agent.conf"
                                               "enable-ssh-support\n"
