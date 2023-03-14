@@ -1,10 +1,8 @@
 (use-modules (gnu)
              (gnu services)
              (gnu packages)
-             (guix transformations)
              (guix packages)
              (guix channels)
-             (guix inferior)
              (guix utils)
              (srfi srfi-1)
              (personal packages xdisorg)
@@ -20,15 +18,6 @@
  desktop ssh networking sysctl
  xorg dbus shepherd sound pm dns)
 
-(define %grub-lubuntu-14 "
-menuentry \"Lubuntu 14.04 ISO\" {
-    set isofile=\"/home/sarg/focal-desktop-amd64.iso\"
-    loopback loop ($root)$isofile
-    linux (loop)/casper/vmlinuz boot=casper iso-scan/filename=${isofile} quiet splash
-    initrd (loop)/casper/initrd
-}
-")
-
 (define extrakeys-service-type
   (shepherd-service-type
    'extrakeys
@@ -41,35 +30,6 @@ menuentry \"Lubuntu 14.04 ISO\" {
                                  #$@codes))))
       (respawn? #f)))
    (description "Map special keys")))
-
-(define (append-to-computed-file g text)
-  #~(begin
-      #$g
-
-      (let ((port (open-file #$output "a")))
-        (format port #$text)
-        (close port))))
-
-(define-public (manifest->packages manifest) ;; copied from guix/scripts/refresh.scm, referring to it with (@@ ...) stopped working for some reason, kept saying it's an unbound variable
-  "Return the list of packages in MANIFEST."
-  (filter-map (lambda (entry)
-                (let ((item (manifest-entry-item entry)))
-                  (if (package? item) item #f)))
-              (manifest-entries manifest)))
-
-(define* (grub-conf-with-custom-part fn)
-  ;; fn returns computed-file
-  (lambda* (#:rest r)
-    (let ((grubcfg-computed-file (apply fn r)))
-      (computed-file
-       (computed-file-name grubcfg-computed-file)
-       (append-to-computed-file
-        (computed-file-gexp grubcfg-computed-file)
-        (string-append
-         %grub-lubuntu-14))
-       #:options (computed-file-options grubcfg-computed-file)
-       ;; #:options '(#:local-build? #t #:substitutable? #f)
-       ))))
 
 (define wifi-udev-rule
   (udev-rule
@@ -94,15 +54,6 @@ menuentry \"Lubuntu 14.04 ISO\" {
   (locale "en_GB.UTF-8")
   (timezone "Europe/Berlin")
   (keyboard-layout (keyboard-layout "us"))
-  ;; (bootloader
-  ;;  (bootloader-configuration
-  ;;   (bootloader (bootloader
-  ;;                (inherit grub-bootloader)
-  ;;                (configuration-file-generator
-  ;;                 (grub-conf-with-custom-part
-  ;;                  (bootloader-configuration-file-generator grub-bootloader)))))
-  ;;   (targets '("/dev/sda"))
-  ;;   (keyboard-layout keyboard-layout)))
   (bootloader
    (bootloader-configuration
     (bootloader grub-efi-bootloader)
@@ -158,11 +109,11 @@ menuentry \"Lubuntu 14.04 ISO\" {
                        (extra-options '("-Dnl80211"))))
 
              (service dhcp-client-service-type)
-             (extra-special-file "/etc/dhclient-enter-hooks"
-                                 (local-file "./files/dhclient-enter-hooks"))
-             (extra-special-file "/etc/dhclient.conf"
-                                 (plain-file "dhclient.conf"
-                                             "send host-name = gethostname();"))
+             (simple-service 'dhclient-wan etc-service-type
+                             (list `("dhclient-enter-hooks"
+                                     ,(local-file "./files/dhclient-enter-hooks"))
+                                   `("dhclient.conf"
+                                     ,(plain-file "dhclient.conf" "send host-name = gethostname();"))))
 
              (service screen-locker-service-type
                       (screen-locker-configuration
