@@ -12,11 +12,9 @@
                                 t))
      'torrent-mode)
 
-    ;; aria2.addTorrent([secret, ]torrent[, uris[, options[, position]]])
-    (make-request aria2--cc "aria2.addTorrent"
-                  (aria2--base64-encode-file buffer-file-name)
-                  []
-                  `(:select-file ,(seq-map #'car (tablist-get-marked-items)) :dir ,(expand-file-name dest-dir))))
+    (addTorrent aria2--cc original-buffer-file-name
+                :select-file (seq-map #'car (tablist-get-marked-items))
+                :dir (expand-file-name dest-dir)))
 
   (after! evil-collection
     (evil-collection-define-key 'normal 'torrent-mode-map
@@ -35,7 +33,8 @@ provided and then fallback to `aria2-download-directory'."
                               nil
                               t)))
 
-  (mapc (apply-partially 'addTorrent aria2--cc) (dired-get-marked-files)))
+  (mapc (lambda (fn) (addTorrent aria2--cc fn :dir (expand-file-name dest-dir)))
+        (dired-get-marked-files)))
 
 (use-package! aria2
   :config
