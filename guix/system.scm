@@ -90,6 +90,28 @@ EOF
    "80-wifi.rules"
    "SUBSYSTEM==\"net\", ACTION==\"add\", DRIVERS==\"iwlwifi\", KERNEL==\"wl*\", NAME=\"wifi\""))
 
+
+(define polkit-udisks-wheel
+  (file-union
+   "polkit-udisks-wheel"
+   `(("share/polkit-1/rules.d/udisks-wheel.rules"
+      ,(plain-file
+        "udisks-wheel.rules"
+        "
+// Allow udisks2 to mount devices without authentication
+// for users in the 'wheel' group.
+polkit.addRule(function(action, subject) {
+    if ((action.id == \"org.freedesktop.udisks2.filesystem-mount-system\" ||
+         action.id == \"org.freedesktop.udisks2.filesystem-mount\") &&
+        subject.isInGroup(\"wheel\")) {
+        return polkit.Result.YES;
+    }
+});
+")))))
+
+(define polkit-udisks-wheel-service
+  (simple-service 'polkit-udisks-wheel polkit-service-type (list polkit-udisks-wheel)))
+
 (operating-system
   (kernel linux)
   (kernel-arguments '("quiet" "loglevel=1" "ipv6.disable=1"))
@@ -177,6 +199,7 @@ EOF
              ;; Add polkit rules, so that non-root users in the wheel group can
              ;; perform administrative tasks (similar to "sudo").
              polkit-wheel-service
+             polkit-udisks-wheel-service
              (service bluetooth-service-type)
 
              (service udisks-service-type)
