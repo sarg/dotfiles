@@ -18,7 +18,7 @@
 
 (use-service-modules
  desktop ssh networking sysctl
- xorg dbus shepherd sound pm dns syncthing)
+ xorg dbus shepherd sound pm dns)
 
 (define %grub-lubuntu-14 "
 menuentry \"Lubuntu 14.04 ISO\" {
@@ -121,6 +121,10 @@ EOF
            (mount-point "/boot")
            (device (file-system-label "GNU-ESP"))
            (type "vfat"))
+	  (file-system
+           (mount-point "/storage")
+           (device (file-system-label "STORAGE"))
+           (type "ext4"))
           %base-file-systems))
   (host-name "thinkpad")
 
@@ -158,8 +162,6 @@ EOF
                                        get-string-all)))
                        (extra-options '("-Dnl80211"))))
 
-             (service syncthing-service-type
-                      (syncthing-configuration (user "sarg")))
              (service dhcp-client-service-type)
              (extra-special-file "/etc/dhclient-enter-hooks"
                                  (plain-file "dhclient-enter-hooks"

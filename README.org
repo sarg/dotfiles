@@ -1,84 +1,70 @@
 #+PROPERTY: tangle bootstrap.sh
-* My dotfiles.
-  First clone the source.
-  #+BEGIN_SRC sh
-  git clone https://github.com/sarg/dotfiles.git ~/.dotfiles
-  #+END_SRC
-   
-  Then install [[https://www.gnu.org/software/stow/][stow]] utility and peru
-  #+BEGIN_SRC sh :dir /sudo::
-  apt -y install stow python3-pip
-  #+END_SRC
+Notes:
+1. partition labels should match those in operating-system fr
+2. root partition should be named Guix_image as it's hardcoded in install-efi-loader
+3. efi partition is named GNU-ESP just to match the name of =esp-partition=
 
-  Run peru to synchronize external repositories
-  #+BEGIN_SRC sh
-  pip3 install --user peru
-  cd ~/.dotfiles && peru sync
-  #+END_SRC
+* Back up
+#+begin_src sh
+cd /media/sarg/500GB
+rsync --no-checksum -a --info=progress2 --exclude=.avfs /home/sarg sarg
+rsync --no-checksum -a --info=progress2 /storage .
+#+end_src
 
-  Run stow to create symlinks
-  #+BEGIN_SRC sh
-  stow -d ~/.dotfiles zsh awesome git vim
-  #+END_SRC
-* List of software
-** firefox plugins
-[[https://github.com/willsALMANJ/pentadactyl-signed/releases/latest][pentadactyl]]
-** debian software
-firmware-iwlwifi
+* Preparing disk image
+#+begin_src sh
+cp $(guix system image ~/devel/dotfiles/guix/image.scm) \
+    /media/sarg/500GB/thinkpad.img
+#+end_src
 
-qutebrowser-webengine
-antibody curl atool
-st-patches (libx11-dev libxft-dev)
-openvpn strace pavucontrol notify-osd expect mlocate
-lightdm-mini-greeter
-pulseaudio pulseaudio-module-bluetooth
+cp result to usb stick
 
-#+BEGIN_SRC sh :dir /sudo:: :results none
-# tools
-chsh zsh
-apt install -y rsync htop syncthing unzip silversearcher-ag suckless-tools
+* Deploying image to a target machine
+Boot from live cd
 
-# fonts
-echo <<EOF | xargs -n 1 apt install -y
-fonts-hack
-fonts-symbola
-fonts-firacode
-fonts-dejavu
-EOF
+#+begin_src sh
+dd thinkpad.img of=/dev/sda status=progress
 
-# desktop environment
-echo <<EOF | xargs -n 1 apt install -y
-lightdm dunst xss-lock udiskie dbus-x11 avfs x11-xserver-utils xsetroot
-xkbset mpv nomacs
-gnupg pass pass-extension-otp rofi
-xclip flameshot
-zathura zathura-djvu feh
-alsa-utils 
-unclutter xautolock hsetroot
-syncthing htop zsh apg atool
-calibre chromium expect
-laptop-mode-tools
-EOF
+parted /dev/sda print
+# Warning: Not all of the space available to /dev/sda appears to be used, you
+# can fix the GPT to use all of the space (an extra 346740088 blocks) or
+# continue with the current setting?
+# Fix/Ignore? fix
 
-# development
-echo <<EOF | xargs -n1 apt install -y
-zsh default-jdk subversion git openvpn mercurial jq ripgrep
-EOF
-#+END_SRC
+parted -s /dev/sda resizepart 2 60g mkpart STORAGE ext4 60g 100%
+fsck /dev/sda2
+resize2fs /dev/sda2
+mkfs.ext4 /dev/sda3 -L STORAGE
+#+end_src
 
-* guix
+mount storage, rsync it from backup
+#+begin_src sh
+mkdir /storage
+mount /dev/sda3 /storage
+cd /storage
+rsync -a --info=progress2 /mnt/backup/storage/ .
+#+end_src
+
+#+begin_src sh
+reboot
+#+end_src
+
+* Initial setup
+log in as root (empty pass)
+
+#+begin_src sh
+passwd sarg
+logout
+#+end_src
+
+log in as sarg
 #+begin_src shell
-mkdir -p ~/.local ~/.config
+cd /storage/devel/dotfiles/guix
+guix pull -C channels.scm
+sudo guix system reconfigure system.scm
+guix home reconfigure home.scm
 
-ln .dotfiles ~/
-ln .events ~/
-ln .gnupg ~/
-ln qutebrowser ~/.local/share/
-
-ln ~/.dotfiles/emacs/.doom.d ~/
-ln ~/.dotfiles/emacs/.config/emacs ~/.config
-ln ~/.dotfiles/guix ~/.config/
-ln /var/guix/profiles/per-user/$USER/guix-profile ~/.guix-profile
-
-guix home reconfigure ~/.dotfiles/guix/home.scm
+doom sync
+mu init -m ~/.mail
+mu index
 #+end_src

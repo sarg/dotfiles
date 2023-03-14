@@ -11,7 +11,7 @@
 
  (channel
   (name 'personal)
-  (url "file:///home/sarg/.config/guix/personal"))
+  (url (string-append "file://" (dirname (current-filename)) "/personal")))
 
  (channel
   (name 'guix)

@@ -1,5 +1,6 @@
 (use-modules
   (guix gexp)
+  (guix modules)
   (guix utils)
   (gnu home)
   (gnu packages)
@@ -41,7 +42,7 @@
 
 (define %pkg-fonts
   '("font-fira-code"
-    "font-google-noto"
+    ;; "font-google-noto"
     "font-hack"
     "font-terminus"))
 
@@ -55,8 +56,8 @@
 
 (define %pkg-games
   '(;; "lierolibre" "chroma" "meandmyshadow" "gcompris-qt"
-    ;; "tipp10" "quakespasm" "sgtpuzzles"
-    "quake3e" "xonotic"))
+    ;; "tipp10" "quakespasm" "sgtpuzzles" "xonotic"
+    "quake3e"))
 
 (define %pkg-apps
   '(          ;; apps
@@ -140,6 +141,46 @@
                                       "wide_links=yes"))))
    (stop #~(make-kill-destructor))))
 
+(define symlinks
+  '(("Sync" "Sync")
+    ("Resources" "Resources")
+    ("devel" "devel")
+    ("devel/dotfiles" ".dotfiles")
+    ;; todo: define channels in guix home service
+    ("devel/dotfiles/guix/channels.scm" ".config/guix/channels.scm")
+    ("Sync/pass" ".password-store")
+    ("data/telega" ".telega")
+    ("data/mail" ".mail")
+    ("data/gnupg" ".gnupg")
+    ("data/events" ".events")
+    ("data/syncthing" ".config/syncthing")
+    ("data/qutebrowser" ".local/share/qutebrowser")
+    ("devel/dotfiles/emacs/.config/emacs" ".config/emacs")
+    ("devel/dotfiles/emacs/.doom.d" ".doom.d")
+    ("apps/quake3" ".q3a")))
+
+(define symlinks-activation
+  (with-imported-modules (source-module-closure
+                          '((gnu build activation)))
+    #~(begin
+        (use-modules (gnu build activation))
+
+        (define (no-follow-file-exists? file)
+          "Return #t if file exists, even if it's a dangling symlink."
+          (->bool (false-if-exception (lstat file))))
+
+        (let ((home (string-append (getenv "HOME") "/"))
+              (storage "/storage/"))
+          (for-each
+           (lambda (src-tgt)
+             (let ((source-file (string-append storage (car src-tgt)))
+                   (target-file (string-append home (cadr src-tgt))))
+
+               (unless (no-follow-file-exists? target-file)
+                 (symlink source-file target-file))))
+
+           '#$symlinks)))))
+
 (define %emacs-home (load "./emacs-home.scm"))
 (home-environment
  (packages
@@ -169,6 +210,10 @@
            (list (plain-file
                   "bash_profile"
                   "[[ ! $DISPLAY && $(tty) == /dev/tty1 ]] && exec sx sh ~/.xsession")))))
+
+        (simple-service 'symlinks
+                        home-activation-service-type
+                        symlinks-activation)
 
         (simple-service 'configs
                         home-files-service-type
