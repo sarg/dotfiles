@@ -1,0 +1,35 @@
+From: Ben Hutchings <benh@debian.org>
+Date: Sun, 22 Jan 2023 22:58:43 +0100
+Subject: Install both 48x48 and 96x96 icons
+Bug-Debian: https://bugs.debian.org/887982
+
+gnome-shell prefers to use 96x96 icons, so install them as well as the
+48x48 icons.  Install them in size-specific directories instead of
+using suffixes to the filename, and change the desktop files
+accordingly.
+
+---
+--- a/cmake/platforms/unix.cmake
++++ b/cmake/platforms/unix.cmake
+@@ -107,7 +107,9 @@ function(set_platform_puzzle_target_prop
+     endif()
+     configure_file(${CMAKE_SOURCE_DIR}/puzzle.desktop.in ${binary_name}.desktop)
+     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/icons/${NAME}-48d24.png
+-      DESTINATION share/pixmaps OPTIONAL RENAME ${binary_name}-48d24.png)
++      DESTINATION share/icons/hicolor/48x48/apps OPTIONAL RENAME ${binary_name}.png)
++    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/icons/${NAME}-96d24.png
++      DESTINATION share/icons/hicolor/96x96/apps OPTIONAL RENAME ${binary_name}.png)
+     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${binary_name}.desktop
+       DESTINATION share/applications)
+   endif()
+--- a/puzzle.desktop.in
++++ b/puzzle.desktop.in
+@@ -4,7 +4,7 @@ Type=Application
+ Name=${displayname}
+ Comment=${description}
+ Exec=${binary_name}
+-Icon=${binary_name}-48d24
++Icon=${binary_name}
+ StartupNotify=false
+ Categories=Game;LogicGame;
+ Terminal=false
