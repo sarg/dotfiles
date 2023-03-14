@@ -2,6 +2,7 @@
   (guix gexp)
   (guix utils)
   (gnu home)
+  (gnu packages)
   (gnu home services)
   (gnu home services shepherd)
   (gnu services)
@@ -125,6 +126,20 @@
                  (("\\bexec Xorg\\b")
                   (string-join (list "exec" (assoc-ref inputs "xwrapper")))))))))))))
 
+(define minidlna-service
+  (shepherd-service
+   (documentation "Run minidlnad")
+   (provision '(minidlnad))
+   (start #~(make-forkexec-constructor
+             (list #$(file-append (specification->package "readymedia") "/sbin/minidlnad")
+                   "-d" "-P" "/tmp/minidlna.pid" "-f"
+                   #$(mixed-text-file "minidlna.conf"
+                                      "media_dir=/home/" %user "/Movies/\n"
+                                      "db_dir=/home/" %user "/.cache/minidlna/\n"
+                                      "log_dir=/home/" %user "/.cache/minidlna/\n"
+                                      "wide_links=yes"))))
+   (stop #~(make-kill-destructor))))
+
 (define %emacs-home (load "./emacs-home.scm"))
 (home-environment
  (packages
@@ -172,29 +187,16 @@
                                               "pinentry-program "
                                               (specification->package "pinentry-emacs")
                                               "/bin/pinentry-emacs\n"
-                                              "log-file /home/sarg/gpg-agent.log\n"
                                               "default-cache-ttl 86400\n"
                                               "max-cache-ttl 86400\n"))
                            (".gnupg/gpg.conf"
                             ,(mixed-text-file "gpg.conf"
                                               "keyid-format 0xlong\n")))))
 
-        (service home-shepherd-service-type
-                 (home-shepherd-configuration
-                  (services
-                   (list
-                    (shepherd-service
-                     (documentation "Run minidlnad")
-                     (provision '(minidlnad))
-                     (start #~(make-forkexec-constructor
-                               (list #$(file-append (specification->package "readymedia") "/sbin/minidlnad")
-                                     "-d" "-P" "/tmp/minidlna.pid" "-f"
-                                     #$(mixed-text-file "minidlna.conf"
-                                                        "media_dir=/home/" %user "/Movies/\n"
-                                                        "db_dir=/home/" %user "/.cache/minidlna/\n"
-                                                        "log_dir=/home/" %user "/.cache/minidlna/\n"
-                                                        "wide_links=yes"))))
-                     (stop #~(make-kill-destructor)))))))
+        ;; (service home-shepherd-service-type
+        ;;          (home-shepherd-configuration
+        ;;           (services
+        ;;            (list minidlna-service))))
 
         (simple-service 'additional-env-vars-service
                         home-environment-variables-service-type
