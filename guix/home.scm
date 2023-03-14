@@ -7,6 +7,7 @@
   (gnu packages)
   (gnu home services)
   (gnu home services shepherd)
+  (gnu home services desktop)
   (gnu home services guix)
   (gnu services)
   (gnu packages xorg)
@@ -211,6 +212,7 @@
                   "bash_profile"
                   "[[ ! $DISPLAY && $(tty) == /dev/tty1 ]] && exec sx sh ~/.xsession")))))
 
+        (service home-dbus-service-type)
         (simple-service 'symlinks
                         home-activation-service-type
                         symlinks-activation)
@@ -220,7 +222,6 @@
                         (append
                          (as-local-files "../android")
                          (as-local-files "../email")
-                         (as-local-files "../ssh")
                          (as-local-files "../xsession")
                          (as-local-files "../git")
                          (as-local-files "../qutebrowser")

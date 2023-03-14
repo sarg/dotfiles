@@ -10,8 +10,6 @@ mountavfs
 . ~/.local/bin/keymap.sh
 xhost +
 
-eval $(dbus-launch --sh-syntax --exit-with-x11)
-
 LANG=C flameshot &
 dunst &
 udiskie --smart-tray --file-manager emacsclient &
