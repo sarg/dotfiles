@@ -29,20 +29,6 @@ menuentry \"Lubuntu 14.04 ISO\" {
 }
 ")
 
-
-(define dhclient-enter-hooks "
-make_resolv_conf() {
-    touch /etc/dnsmasq.servers
-    sed -i '/#dhcp/,+1d' /etc/dnsmasq.servers
-    cat <<EOF >>/etc/dnsmasq.servers
-#dhcp
-server=/${new_domain_name}/${new_domain_name_servers}
-EOF
-
-    kill -HUP $(cat /run/dnsmasq.pid)
-}
-")
-
 (define extrakeys-service-type
   (shepherd-service-type
    'extrakeys
@@ -90,24 +76,11 @@ EOF
    "80-wifi.rules"
    "SUBSYSTEM==\"net\", ACTION==\"add\", DRIVERS==\"iwlwifi\", KERNEL==\"wl*\", NAME=\"wifi\""))
 
-
 (define polkit-udisks-wheel
   (file-union
    "polkit-udisks-wheel"
    `(("share/polkit-1/rules.d/udisks-wheel.rules"
-      ,(plain-file
-        "udisks-wheel.rules"
-        "
-// Allow udisks2 to mount devices without authentication
-// for users in the 'wheel' group.
-polkit.addRule(function(action, subject) {
-    if ((action.id == \"org.freedesktop.udisks2.filesystem-mount-system\" ||
-         action.id == \"org.freedesktop.udisks2.filesystem-mount\") &&
-        subject.isInGroup(\"wheel\")) {
-        return polkit.Result.YES;
-    }
-});
-")))))
+      ,(local-file "./files/udisks-wheel.rules")))))
 
 (define polkit-udisks-wheel-service
   (simple-service 'polkit-udisks-wheel polkit-service-type (list polkit-udisks-wheel)))
@@ -136,14 +109,14 @@ polkit.addRule(function(action, subject) {
     (targets '("/boot"))))
   (file-systems
    (cons* (file-system
-            (mount-point "/")
-            (device (file-system-label "Guix_image"))
-            (type "ext4"))
+           (mount-point "/")
+           (device (file-system-label "Guix_image"))
+           (type "ext4"))
           (file-system
            (mount-point "/boot")
            (device (file-system-label "GNU-ESP"))
            (type "vfat"))
-	  (file-system
+          (file-system
            (mount-point "/storage")
            (device (file-system-label "STORAGE"))
            (type "ext4"))
@@ -186,8 +159,7 @@ polkit.addRule(function(action, subject) {
 
              (service dhcp-client-service-type)
              (extra-special-file "/etc/dhclient-enter-hooks"
-                                 (plain-file "dhclient-enter-hooks"
-                                             dhclient-enter-hooks))
+                                 (local-file "./files/dhclient-enter-hooks"))
              (extra-special-file "/etc/dhclient.conf"
                                  (plain-file "dhclient.conf"
                                              "send host-name = gethostname();"))
