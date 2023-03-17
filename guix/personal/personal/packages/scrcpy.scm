@@ -12,7 +12,7 @@
   #:use-module (guix packages))
 
 (define scrcpy-server
-  (let* ((version "1.25"))
+  (let* ((version "2.0"))
     (origin
      (method url-fetch)
      (uri (string-append "https://github.com/Genymobile/scrcpy"
@@ -20,21 +20,23 @@
                          "scrcpy-server-v" version))
      (sha256
       (base32
-       "1nwvxixbdv0k72lf0wfycmd9jx1pwc7frxq6dlpyfsnhpg3hc0yf")))))
+       "1hnx45pqzwaj3402n257a2f6mkyyxc6h049knh5nkkbqylaic94y")))))
 
 (define-public scrcpy
   (package
    (name "scrcpy")
-   (version "1.25")
+   (version "2.0-fix")
    (source (origin
             (method git-fetch)
             (uri (git-reference
                   (url "https://github.com/Genymobile/scrcpy")
-                  (commit (string-append "v" version))))
+                  (commit
+                   "45717733a10b8e73ae70b25722b2ddf5922c1c07"
+                   ;; (string-append "v" version)
+                   )))
             (file-name (git-file-name name version))
             (sha256
-             (base32
-              "1qyrwsx53xky2a5nzssz95gpz5mfb7br6vzw99ckichyia3c4kz1"))))
+             (base32 "1nil2zb9avirahn697fkh54akp20jlsfxv7xv8ggc2p9r8m9w2hm"))))
    (build-system meson-build-system)
    (native-inputs (list pkg-config))
    (inputs (list ffmpeg sdl2 libusb scrcpy-server adb))

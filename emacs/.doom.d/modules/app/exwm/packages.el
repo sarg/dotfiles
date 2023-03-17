@@ -15,4 +15,5 @@
 (package! exwm-edit)
 
 ;; udisks
+(package! debase :recipe (:host codeberg :repo "emacs-weirdware/debase"))
 (package! discomfort :recipe (:host codeberg :repo "emacs-weirdware/discomfort"))

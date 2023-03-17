@@ -29,7 +29,7 @@
     "atool" "p7zip" "unzip" "jq"
     "ripgrep" "moreutils" "libiconv"
     "powertop" "graphviz"
-    "git" "git:send-email" "git-crypt"
+    "git" "git:send-email" "git-crypt" "perl" ;for some git commands
     "bind:utils"                        ; dig
     "lshw" "strace" "nftables" "file"))
 
@@ -40,7 +40,8 @@
 
 (define %pkg-fonts
   '("font-fira-code"
-    ;; "font-google-noto"
+    "font-openmoji"
+    "font-google-noto-emoji"
     "font-hack"
     "font-terminus"))
 

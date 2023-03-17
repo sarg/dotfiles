@@ -79,15 +79,15 @@ To define guix dependencies add a source code block with =:noweb-ref guix-pkg :t
 "recordmydesktop" "ffmpeg"
 #+end_src
 * miscellaneous
-#+begin_src sh :tangle ~/.local/bin/locator :shebang #!/bin/sh
-plocate -d /storage/2tb.plocate $1
-plocate -d /storage/500gb.plocate $1
+#+begin_src sh :tangle ~/.local/bin/locate :shebang #!/bin/sh
+plocate -d /storage/storage.plocate $@
+plocate -d /storage/2tb.plocate $@
+plocate -d /storage/500gb.plocate $@
 #+end_src
 
 #+begin_src elisp
 (setq +modeline-encoding nil
-      +modeline-height 20
-      locate-command "locator")
+      +modeline-height 20)
 
 ;; C-h deletes character backwards
 (define-key key-translation-map [?\C-h] [?\C-?])
@@ -139,6 +139,8 @@ Debug icons in modeline, find out their names.
      (auto-directory))))
 #+end_src
 * org mode
+- [[https://github.com/jdtsmith/org-modern-indent/blob/main/org-modern-indent.el][org-modern-indent/org-modern-indent.el]]
+- org-modern
 #+begin_src elisp :tangle packages.el
 (package! linkmarks :recipe (:host github :repo "dustinlacewell/linkmarks"))
 #+end_src

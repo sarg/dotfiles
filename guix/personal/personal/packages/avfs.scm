@@ -11,7 +11,7 @@
 (define-public avfs
   (package
     (name "avfs")
-    (version "1.1.4")
+    (version "1.1.5")
     (source
      (origin
        (method url-fetch)
@@ -19,7 +19,7 @@
         (string-append "mirror://sourceforge/avf/avfs/"
                        version "/avfs-" version ".tar.bz2"))
        (sha256
-        (base32 "0ax1zbw4pmggx1b784bfabdqyn39k7109cnl22p69y2phnpq2y9s"))))
+        (base32 "1kvjaaj2dlps98alpc8rhnzhk4vriw46f3y7b2h0jq2d21j3p7xd"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
