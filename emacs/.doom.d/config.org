@@ -139,10 +139,10 @@ Debug icons in modeline, find out their names.
      (auto-directory))))
 #+end_src
 * org mode
-- [[https://github.com/jdtsmith/org-modern-indent/blob/main/org-modern-indent.el][org-modern-indent/org-modern-indent.el]]
-- org-modern
 #+begin_src elisp :tangle packages.el
 (package! linkmarks :recipe (:host github :repo "dustinlacewell/linkmarks"))
+(package! org-modern-indent :recipe (:host github :repo "jdtsmith/org-modern-indent"))
+(package! org-modern)
 #+end_src
 
 #+begin_src elisp
@@ -154,6 +154,12 @@ Debug icons in modeline, find out their names.
 (use-package! org-contacts
   :custom
   (org-contacts-files (list (expand-file-name "contacts.org" org-directory))))
+
+(use-package! org-modern
+  :hook (org-mode org-agenda-finalize))
+
+(use-package! org-modern-indent
+  :hook org-mode)
 
 (use-package! linkmarks
   :custom
