@@ -28,12 +28,13 @@ To define guix dependencies add a source code block with =:noweb-ref guix-pkg :t
 #+begin_src elisp :tangle packages.el
 (package! circadian)
 (package! white-sand-theme)
-(package! kaolin-themes)
+;(package! kaolin-themes)
+(package! doom-themes)
 #+end_src
 
 #+begin_src elisp
 (use-package! white-sand-theme)
-(defvar doom-theme-dark 'kaolin-valley-dark)
+(defvar doom-theme-dark 'doom-one)
 (setq doom-theme 'white-sand
       doom-font (font-spec :family "Hack" :size 20)
       doom-serif-font (font-spec :family "Hack")
@@ -52,8 +53,12 @@ To define guix dependencies add a source code block with =:noweb-ref guix-pkg :t
 #+end_src
 
 * gpg
+#+begin_src scheme :noweb-ref guix-pkg :tangle no :exports none
+"emacs-pinentry"
+#+end_src
+
 #+begin_src elisp :tangle packages.el
-(package! pinentry)
+(package! pinentry :built-in 'prefer)
 #+end_src
 
 #+begin_src elisp
@@ -139,6 +144,7 @@ Debug icons in modeline, find out their names.
      (auto-directory))))
 #+end_src
 * org mode
+- [ ] Replace linkmarks with bookmark+
 #+begin_src elisp :tangle packages.el
 (package! linkmarks :recipe (:host github :repo "dustinlacewell/linkmarks"))
 (package! org-modern-indent :recipe (:host github :repo "jdtsmith/org-modern-indent"))
@@ -251,11 +257,11 @@ subprocess.call(['emacs-capture',
 * book reading
 #+begin_src elisp :tangle packages.el
 (package! calibredb :built-in 'prefer)
-(package! nov)
+(package! nov :built-in 'prefer)
 #+end_src
 
 #+begin_src scheme :noweb-ref guix-pkg :tangle no :exports none
-"emacs-calibredb" "sqlite"
+"emacs-calibredb" "sqlite" "emacs-nov-el"
 #+end_src
 
 #+begin_src elisp :tangle no
@@ -519,22 +525,29 @@ qutebrowser --nowindow --target tab-bg-silent $@
 
 * dired
 #+begin_src elisp :tangle packages.el
-(package! dired-filter)
-(package! dired-avfs)
-(package! dired-du)
+(package! dired-filter :built-in 'prefer)
+(package! dired-avfs :built-in 'prefer)
+(package! dired-du :built-in 'prefer)
 (package! dired-collapse)
-(package! dired-git-info :recipe (:host github :repo "clemera/dired-git-info"))
-(package! openwith)
+(package! dired-git-info
+  :recipe (:host github :repo "clemera/dired-git-info")
+  :built-in 'prefer)
+(package! openwith :built-in 'prefer)
+#+end_src
+
+#+begin_src scheme :noweb-ref guix-pkg :tangle no :exports none
+"emacs-dired-hacks" "emacs-dired-du"
+"emacs-dired-git-info" "emacs-openwith"
 #+end_src
 
 #+begin_src elisp
 (use-package! dired-filter
-  :hook (dired-mode . dired-filter-mode)
+  :hook dired-mode
   :custom
   (dired-filter-stack '((omit) (dot-files))))
 
 (use-package! dired-collapse
-  :hook (dired-mode . dired-collapse-mode))
+  :hook dired-mode)
 
 (use-package! dired-git-info
   :custom

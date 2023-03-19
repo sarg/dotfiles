@@ -12,6 +12,7 @@
   (gnu services)
   (gnu packages xorg)
   (gnu services xorg)
+  (srfi srfi-1)
   (srfi srfi-11)
   (ice-9 match)
   (ice-9 ftw)
@@ -140,9 +141,9 @@
    (stop #~(make-kill-destructor))))
 
 (define symlinks
-  '(("Sync" "Sync")
-    ("Resources" "Resources")
-    ("devel" "devel")
+  '(("Sync")
+    ("Resources")
+    ("devel")
     ("devel/dotfiles" ".dotfiles")
     ("Sync/pass" ".password-store")
     ("data/telega" ".telega")
@@ -168,9 +169,9 @@
         (let ((home (string-append (getenv "HOME") "/"))
               (storage "/storage/"))
           (for-each
-           (lambda (src-tgt)
-             (let ((source-file (string-append storage (car src-tgt)))
-                   (target-file (string-append home (cadr src-tgt))))
+           (lambda (s)
+             (let ((source-file (string-append storage (first s)))
+                   (target-file (string-append home (last s))))
 
                (unless (no-follow-file-exists? target-file)
                  (symlink source-file target-file))))
