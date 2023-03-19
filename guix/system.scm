@@ -45,6 +45,11 @@
 (define polkit-udisks-wheel-service
   (simple-service 'polkit-udisks-wheel polkit-service-type (list polkit-udisks-wheel)))
 
+(define %non-guix.pub
+  (plain-file
+   "non-guix.pub"
+   "(public-key (ecc (curve Ed25519) (q #C1FD53E5D4CE971933EC50C9F307AE2171A2D3B52C804642A7A35F84F3A4EA98#)))"))
+
 (operating-system
   (kernel linux)
   (kernel-arguments '("quiet" "loglevel=1" "ipv6.disable=1"))
@@ -60,17 +65,17 @@
     (targets '("/boot"))))
   (file-systems
    (cons* (file-system
-           (mount-point "/")
-           (device (file-system-label "Guix_image"))
-           (type "ext4"))
+            (mount-point "/")
+            (device (file-system-label "Guix_image"))
+            (type "ext4"))
           (file-system
-           (mount-point "/boot")
-           (device (file-system-label "GNU-ESP"))
-           (type "vfat"))
+            (mount-point "/boot")
+            (device (file-system-label "GNU-ESP"))
+            (type "vfat"))
           (file-system
-           (mount-point "/storage")
-           (device (file-system-label "STORAGE"))
-           (type "ext4"))
+            (mount-point "/storage")
+            (device (file-system-label "STORAGE"))
+            (type "ext4"))
           %base-file-systems))
   (host-name "thinkpad")
 
@@ -163,22 +168,20 @@
              (udev-rules-service 'wifi wifi-udev-rule)
              (udev-rules-service 'brightness brightnessctl)
 
-             (service sysctl-service-type
-                      (sysctl-configuration
-                       (settings (append
-                                  %default-sysctl-settings
-                                  '(("fs.inotify.max_user_watches" . "524288")
-                                    ("net.ipv6.conf.all.disable_ipv6" . "1"))))))
-
              (modify-services %base-services
-               (delete sysctl-service-type)
+               (sysctl-service-type config =>
+                                    (sysctl-configuration
+                                     (inherit config)
+                                     (settings (append
+                                                (sysctl-configuration-settings config)
+                                                '(("fs.inotify.max_user_watches" . "524288")
+                                                  ("net.ipv6.conf.all.disable_ipv6" . "1"))))))
                (guix-service-type config =>
                                   (guix-configuration
                                    (inherit config)
                                    (substitute-urls
-                                    (append (list "https://substitutes.nonguix.org")
-                                            %default-substitute-urls))
+                                    (append (guix-configuration-substitute-urls config)
+                                            '("https://substitutes.nonguix.org")))
                                    (authorized-keys
-                                    (append (list (plain-file "non-guix.pub"
-                                                              "(public-key (ecc (curve Ed25519) (q #C1FD53E5D4CE971933EC50C9F307AE2171A2D3B52C804642A7A35F84F3A4EA98#)))"))
-                                            %default-authorized-guix-keys))))))))
+                                    (append (guix-configuration-authorized-keys config)
+                                            `(,%non-guix.pub)))))))))
