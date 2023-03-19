@@ -1,6 +1,7 @@
 (define-module (personal packages quake3e)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
+  #:use-module (guix gexp)
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (guix git-download)
@@ -35,34 +36,35 @@
     (inputs (list sdl2 libjpeg-turbo openal curl opusfile opus libvorbis freetype libogg))
     (native-inputs (list which pkg-config)) ; which used to find SDL_version.h
     (arguments
-     `(#:tests? #f                     ; No tests.
-       #:make-flags (list (string-append "CC=" ,(cc-for-target))
-                          (string-append "DESTDIR=" (assoc-ref %outputs "out") "/bin")
-                          "BUILD_SERVER=0"
-                          "USE_INTERNAL_LIBS=0"
-                          "USE_RENDERER_DLOPEN=0"
-                          "USE_SYSTEM_JPEG=1"
-                          "USE_VULKAN=0"
-                          "USE_VULKAN_API=0"
-                          "USE_CURL_DLOPEN=0")
-       #:phases (modify-phases %standard-phases
-                  (delete 'configure)
-                  (add-after 'install 'create-desktop-entry
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      (let ((share (string-append (assoc-ref outputs "out") "/share")))
-                        ;; Create desktop file.
-                        (let ((apps (string-append share "/applications"))
-                              (icons (string-append share "/icons/hicolor/scalable/apps")))
-                          (install-file "code/unix/quake3.svg" icons)
-                          (make-desktop-entry-file
-                           (string-append apps "/quake3e.desktop")
-                           #:name "Quake 3 Arena"
-                           #:exec "quake3e.x64"
-                           #:icon "quake3"
-                           #:keywords '("first person shooter" "fps" "3d" "deathmatch"
-                                        "ctf" "capture the flag" "quake iii arena" )
-                           #:categories '("Game" "ActionGame"))))
-                      #t)))))
+     (list #:tests? #f                      ; No tests.
+           #:make-flags
+           #~(list (string-append "CC=" #$(cc-for-target))
+                   (string-append "DESTDIR=" #$output "/bin")
+                   "BUILD_SERVER=0"
+                   "USE_INTERNAL_LIBS=0"
+                   "USE_RENDERER_DLOPEN=0"
+                   "USE_SYSTEM_JPEG=1"
+                   "USE_VULKAN=0"
+                   "USE_VULKAN_API=0"
+                   "USE_CURL_DLOPEN=0")
+           #:phases
+           #~(modify-phases %standard-phases
+               (delete 'configure)
+               (add-after 'install 'create-desktop-entry
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   (let ((share (string-append #$output "/share")))
+                     ;; Create desktop file.
+                     (let ((apps (string-append share "/applications"))
+                           (icons (string-append share "/icons/hicolor/scalable/apps")))
+                       (install-file "code/unix/quake3.svg" icons)
+                       (make-desktop-entry-file
+                        (string-append apps "/quake3e.desktop")
+                        #:name "Quake 3 Arena"
+                        #:exec "quake3e.x64"
+                        #:icon "quake3"
+                        #:keywords '("first person shooter" "fps" "3d" "deathmatch"
+                                     "ctf" "capture the flag" "quake iii arena" )
+                        #:categories '("Game" "ActionGame")))))))))
     (home-page "https://github.com/ec-/Quake3e")
     (synopsis "FPS game engine based on Quake 3")
     (description "This is a modern Quake III Arena engine aimed to be fast, secure and compatible
