@@ -1,24 +1,25 @@
 (use-modules
-  (guix gexp)
-  (guix modules)
-  (guix utils)
-  (guix channels)
-  (gnu home)
-  (gnu packages)
-  (gnu home services)
-  (gnu home services shepherd)
-  (gnu home services desktop)
-  (gnu home services guix)
-  (gnu services)
-  (gnu packages xorg)
-  (gnu services xorg)
-  (srfi srfi-1)
-  (srfi srfi-11)
-  (ice-9 match)
-  (ice-9 ftw)
-  (guix packages)
-  (gnu packages xdisorg)
-  (gnu home services shells))
+ (gnu)
+ (guix)
+ (guix gexp)
+ (guix modules)
+ (guix utils)
+ (guix channels)
+ (gnu home)
+ (gnu services)
+ (gnu packages)
+ (gnu packages xorg)
+ (gnu packages xdisorg)
+ (gnu home services)
+ (gnu home services shepherd)
+ (gnu home services desktop)
+ (gnu home services shells)
+ (gnu home services guix)
+ (srfi srfi-1)
+ (srfi srfi-11)
+ (ice-9 match)
+ (ice-9 ftw)
+ (guix packages))
 
 (define %pkg-android
   '("adb" "fdroidcl" "socat" "scrcpy"))
@@ -35,7 +36,7 @@
 (define %pkg-desktop
   '("pavucontrol" "dunst" "flameshot"
     "pulseaudio" "dbus" "polybar"
-    "redshift"))
+    "redshift" "unclutter"))
 
 (define %pkg-fonts
   '("font-fira-code"
@@ -47,20 +48,19 @@
 (define %pkg-x11
   '("picom" "xhost" "xkbcomp" "xkbset"
     "xprop" "xrandr" "xset" "xwininfo"
-    "xev" "xclip" "xinput" "unclutter"
+    "xev" "xclip" "xinput"
     "hicolor-icon-theme" "tango-icon-theme"
-    "igt-gpu-tools"                     ; intel graphics tool
-    ))
+    "igt-gpu-tools"))
 
 (define %pkg-games
   '(;; "lierolibre" "chroma" "meandmyshadow" "gcompris-qt"
     ;; "tipp10" "quakespasm" "sgt-puzzles" "xonotic"
-    "quake3e"))
+    "quake3e"
+    ))
 
 (define %pkg-apps
-  '(          ;; apps
-    "calibre" ;; "goldendict"
-    "anki" "qutebrowser"
+  '(;; apps
+    "calibre" "anki" "qutebrowser"
     "openvpn" "openssh"
     "mu" "msmtp" "isync"
     "gnupg" "pass-otp" "password-store" "pinentry-emacs" "pwgen"
@@ -68,13 +68,12 @@
 
     ;; "zeal" "qalculate-gtk" "simplescreenrecorder"
     ;; media
-    "libreoffice" "qview" "stapler" "gimp" "imagemagick"
-    "graphicsmagick" "libwebp"
+    "libreoffice" "qview" "stapler" "gimp"
+    "graphicsmagick" "libwebp" "jpegoptim"
 
     ;; "nomacs"
     "zathura" "zathura-pdf-mupdf" "zathura-djvu"
-    "yt-dlp" "mpv" "readymedia"
-    "jpegoptim"
+    "yt-dlp" "mpv"
 
     ;; dev
     ;; "openjdk:jdk"
@@ -100,41 +99,6 @@
           (lambda (name stat result) result)
           (lambda (name stat errno result) result)
           '() absolute-dir))))
-
-(define my-sx
-  (package/inherit sx
-    (name "my-sx")
-    (inputs
-     `(("xwrapper" ,(xorg-start-command
-                     (xorg-configuration
-                      (modules (list xf86-video-intel
-                                     xf86-input-libinput))
-                      (drivers (list "intel")))))
-       ,@(package-inputs sx)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sx)
-       ((#:phases phases '%standard-phases)
-        `(modify-phases ,phases
-           (add-after 'unpack 'refer-to-xorg
-             (lambda* (#:key inputs #:allow-other-keys)
-               (substitute* "sx"
-                 (("\\bexec Xorg\\b")
-                  (string-join (list "exec" (assoc-ref inputs "xwrapper")))))))))))))
-
-(define minidlna-service
-  (shepherd-service
-   (documentation "Run minidlnad")
-   (provision '(minidlnad))
-   (modules '((shepherd support)))      ;for 'user-homedir'
-   (start #~(make-forkexec-constructor
-             (list #$(file-append (specification->package "readymedia") "/sbin/minidlnad")
-                   "-d" "-P" "/var/run/minidlna.pid" "-f"
-                   #$(mixed-text-file "minidlna.conf"
-                                      "media_dir=" #~user-homedir "/Movies/\n"
-                                      "db_dir=" #~user-homedir "/.cache/minidlna/\n"
-                                      "log_dir=" #~user-homedir "/.cache/minidlna/\n"
-                                      "wide_links=yes"))))
-   (stop #~(make-kill-destructor))))
 
 (define symlinks
   '(("Sync")
@@ -177,8 +141,7 @@
 (define %emacs-home (load "./emacs-home.scm"))
 (home-environment
  (packages
-  (append (list my-sx)
-          (home-environment-packages %emacs-home)
+  (append (home-environment-packages %emacs-home)
           (map (compose list specification->package+output)
                (append %pkg-android
                        %pkg-games
@@ -191,13 +154,20 @@
  (services
   (append
    (home-environment-user-services %emacs-home)
-   (list (service
-          home-bash-service-type
-          (home-bash-configuration
+   (list (service home-bash-service-type)
+
+         (service home-xorg-server-service-type
+                  (xorg-configuration
+                   (modules (list xf86-video-intel xf86-input-libinput))
+                   (drivers (list "intel"))))
+
+         (simple-service
+          'sx-autostart home-bash-service-type
+          (home-bash-extension
            (bash-profile
-            (list (plain-file
-                   "bash_profile"
-                   "[[ ! $DISPLAY && $(tty) == /dev/tty1 ]] && exec sx sh ~/.xsession")))))
+            (list (mixed-text-file
+                   "sx-autostart"
+                   "[[ ! $DISPLAY && $(tty) == /dev/tty1 ]] && exec " sx "/bin/sx")))))
 
          (service home-dbus-service-type)
          (simple-service 'symlinks
