@@ -108,11 +108,7 @@
      `(("xwrapper" ,(xorg-start-command
                      (xorg-configuration
                       (modules (list xf86-video-intel
-                                     xf86-input-libinput
-                                     xf86-input-evdev
-                                     xf86-input-keyboard
-                                     xf86-input-mouse
-                                     xf86-input-synaptics))
+                                     xf86-input-libinput))
                       (drivers (list "intel")))))
        ,@(package-inputs sx)))
     (arguments
