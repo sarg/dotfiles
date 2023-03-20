@@ -418,6 +418,23 @@ qutebrowser --nowindow --target tab-bg-silent $@
 (package! powerthesaurus)
 #+end_src
 * email
+#+begin_src desktop :tangle ~/.local/share/applications/emacsclient-mail.desktop
+[Desktop Entry]
+Categories=Network;Email;
+Comment=GNU Emacs is an extensible, customizable text editor - and more
+Exec=emacs-mail %u
+Icon=emacs
+Name=Emacs (Mail, Client)
+MimeType=x-scheme-handler/mailto;
+NoDisplay=true
+Terminal=false
+Type=Application
+Keywords=emacsclient;
+Actions=new-window;new-instance;
+#+end_src
+#+begin_src shell :tangle ~/.local/bin/emacs-mail :shebang #!/bin/sh
+emacsclient --eval "(message-mailto \"$1\")"
+#+end_src
 #+begin_src elisp
 (defun sarg/ensure-msmtp-pass-available ()
   (interactive)
