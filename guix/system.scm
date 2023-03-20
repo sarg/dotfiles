@@ -72,10 +72,7 @@
             (mount-point "/boot")
             (device (file-system-label "GNU-ESP"))
             (type "vfat"))
-          (file-system
-            (mount-point "/storage")
-            (device (file-system-label "STORAGE"))
-            (type "ext4"))
+
           %base-file-systems))
   (host-name "thinkpad")
 
