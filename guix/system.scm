@@ -89,16 +89,15 @@
                 %base-user-accounts))
 
   (packages
-   (cons*
-    (specification->package "nss-certs")
-    (specification->package "bluez")
-    brightnessctl
-    tlp
-    libratbag
+   (append
     (filter (lambda (p)
               (not (member (package-name p)
                            '("wireless-tools" "info-reader" "nano" "mg"))))
-            %base-packages)))
+            %base-packages)
+
+    (map specification->package
+         '("nss-certs" "bluez" "borgmatic"
+           "tlp" "brightnessctl" "libratbag"))))
 
   (services (cons*
              (service wpa-supplicant-service-type
@@ -137,7 +136,7 @@
                        (handle-lid-switch-external-power 'suspend)))
 
              (service dbus-root-service-type)
-             (simple-service 'ratbagd dbus-root-service-type `(,libratbag))
+             (simple-service 'ratbagd dbus-root-service-type (list libratbag))
              (service tlp-service-type
                       (tlp-configuration
                        (restore-device-state-on-startup? #t)))

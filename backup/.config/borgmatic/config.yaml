@@ -1,15 +1,7 @@
 location:
   # List of source directories to backup. Globs are expanded.
   source_directories:
-    - ~/.emacs.d/.local/elfeed
-    - ~/Calibre Library
-    - ~/.gnupg
-    - ~/ledger
-    - ~/.mail
-    - ~/.ssh
-    - ~/.telega
-    - ~/Android
-    - ~/Sync
+    - /storage
 
   # Paths to local or remote repositories.
   repositories:

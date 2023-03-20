@@ -177,6 +177,7 @@
          (simple-service 'configs
                          home-files-service-type
                          (append
+                          (as-local-files "../backup")
                           (as-local-files "../android")
                           (as-local-files "../email")
                           (as-local-files "../xsession")
