@@ -144,7 +144,7 @@ Debug icons in modeline, find out their names.
      (auto-directory))))
 #+end_src
 * org mode
-- [ ] Replace linkmarks with bookmark+
+- [ ] TODO: Replace linkmarks with bookmark+
 #+begin_src elisp :tangle packages.el
 (package! linkmarks :recipe (:host github :repo "dustinlacewell/linkmarks"))
 (package! org-modern-indent :recipe (:host github :repo "jdtsmith/org-modern-indent"))
@@ -418,6 +418,7 @@ qutebrowser --nowindow --target tab-bg-silent $@
 (package! powerthesaurus)
 #+end_src
 * email
+- [ ] TODO: fix mu4e popping up for mailto urls
 #+begin_src desktop :tangle ~/.local/share/applications/emacsclient-mail.desktop
 [Desktop Entry]
 Categories=Network;Email;
