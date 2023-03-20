@@ -10,7 +10,8 @@
 ;; (package! exwm-mff :recipe (:host github :repo "ieure/exwm-mff"))
 
 (package! backlight)
-(package! exwm)
+(package! xelb :built-in 'prefer)
+(package! exwm :built-in 'prefer)
 (package! exwm-ss :recipe (:host codeberg :repo "emacs-weirdware/exwm-ss"))
 (package! exwm-edit)
 
