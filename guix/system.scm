@@ -11,11 +11,11 @@
              (ice-9 textual-ports))
 
 (use-package-modules
- linux ssh android suckless
+ linux ssh android suckless xorg
  pulseaudio connman xorg gnome admin)
 
 (use-service-modules
- desktop ssh networking sysctl
+ desktop ssh networking sysctl xorg
  xorg dbus shepherd sound pm dns)
 
 (define extrakeys-service-type
@@ -58,11 +58,13 @@
   (firmware (cons* iwlwifi-firmware broadcom-bt-firmware %base-firmware))
   (locale "en_GB.UTF-8")
   (timezone "Europe/Berlin")
+  (host-name "thinkpad")
   (keyboard-layout (keyboard-layout "us"))
   (bootloader
    (bootloader-configuration
     (bootloader grub-efi-bootloader)
     (targets '("/boot"))))
+
   (file-systems
    (cons* (file-system
             (mount-point "/")
@@ -72,9 +74,7 @@
             (mount-point "/boot")
             (device (file-system-label "GNU-ESP"))
             (type "vfat"))
-
           %base-file-systems))
-  (host-name "thinkpad")
 
   (users (cons* (user-account
                  (name "sarg")
@@ -108,6 +108,11 @@
                                          (string-append (current-source-directory) "/../secure/wifi_connections")
                                        get-string-all)))
                        (extra-options '("-Dnl80211"))))
+
+             (service xorg-server-service-type
+                      (xorg-configuration
+                       (modules (list xf86-video-intel xf86-input-libinput))
+                       (drivers (list "intel"))))
 
              (service dhcp-client-service-type)
              (simple-service 'dhclient-wan etc-service-type

@@ -8,8 +8,6 @@
  (gnu home)
  (gnu services)
  (gnu packages)
- (gnu packages xorg)
- (gnu packages xdisorg)
  (gnu home services)
  (gnu home services shepherd)
  (gnu home services desktop)
@@ -138,6 +136,14 @@
 
            '#$symlinks)))))
 
+(define (sx-autostart-on tty)
+  (simple-service
+   'sx-autostart home-shell-profile-service-type
+   (list (mixed-text-file
+          "sx-autostart"
+          "[[ ! $DISPLAY && $(tty) == /dev/" tty " ]] && "
+          "exec " (@ (gnu packages xdisorg) sx) "/bin/sx"))))
+
 (define %emacs-home (load "./emacs-home.scm"))
 (home-environment
  (packages
@@ -157,18 +163,7 @@
    (home-environment-user-services %emacs-home)
    (list (service home-bash-service-type)
 
-         (service home-xorg-server-service-type
-                  (xorg-configuration
-                   (modules (list xf86-video-intel xf86-input-libinput))
-                   (drivers (list "intel"))))
-
-         (simple-service
-          'sx-autostart home-bash-service-type
-          (home-bash-extension
-           (bash-profile
-            (list (mixed-text-file
-                   "sx-autostart"
-                   "[[ ! $DISPLAY && $(tty) == /dev/tty1 ]] && exec " sx "/bin/sx")))))
+         (sx-autostart-on "tty1")
 
          (service home-dbus-service-type)
          (simple-service 'symlinks
