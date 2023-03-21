@@ -29,13 +29,12 @@
     "atool" "p7zip" "unzip" "jq"
     "ripgrep" "moreutils" "libiconv"
     "powertop" "graphviz"
-    "git" "git:send-email" "git-crypt" "perl" ;for some git commands
     "bind:utils"                        ; dig
     "lshw" "strace" "nftables" "file"))
 
 (define %pkg-desktop
   '("pavucontrol" "dunst" "flameshot"
-    "pulseaudio" "dbus" "polybar"
+    "pulseaudio" "polybar"
     "redshift" "unclutter"))
 
 (define %pkg-fonts
@@ -55,8 +54,7 @@
 (define %pkg-games
   '(;; "lierolibre" "chroma" "meandmyshadow" "gcompris-qt"
     ;; "tipp10" "quakespasm" "sgt-puzzles" "xonotic"
-    "quake3e"
-    ))
+    "quake3e"))
 
 (define %pkg-apps
   '(;; apps
@@ -73,11 +71,13 @@
 
     ;; "nomacs"
     "zathura" "zathura-pdf-mupdf" "zathura-djvu"
-    "yt-dlp" "mpv"
+    "yt-dlp" "mpv"))
 
-    ;; dev
+(define %pkg-dev
+  '("python" "emacs-debbugs" "gnu-standards"
+    "git" "git:send-email" "git-crypt" "perl" ;for some git commands
     ;; "openjdk:jdk"
-    "python"))
+    ))
 
 (define (del-prefix p str)
   (if (string-prefix? p str)
@@ -149,6 +149,7 @@
                        %pkg-desktop
                        %pkg-fonts
                        %pkg-x11
+                       %pkg-dev
                        %pkg-apps))))
 
  (services
