@@ -457,7 +457,7 @@ emacsclient --eval "(message-mailto \"$1\")"
 #+begin_src elisp
 (defun sarg/ensure-msmtp-pass-available ()
   (interactive)
-  (+pass/read-entry (concat "Email/" user-mail-address)))
+  (auth-source-pass-get (concat "Email/" user-mail-address) 'secret))
 
 (after! mu4e
   (setq mu4e-filter-inbox "flag:unread AND NOT flag:trashed AND maildir:/gmail/Inbox"
@@ -471,7 +471,7 @@ emacsclient --eval "(message-mailto \"$1\")"
               :before #'sarg/ensure-msmtp-pass-available)
 
   (setq sendmail-program (executable-find "msmtp")
-        send-mail-function #'smtpmail-send-it
+        send-mail-function #'sendmail-send-it
         mu4e-compose-format-flowed t ; visual-line-mode + auto-fill upon sending
         message-sendmail-f-is-evil t
         message-sendmail-extra-arguments '("--read-envelope-from")
