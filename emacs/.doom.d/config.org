@@ -44,10 +44,10 @@ To define guix dependencies add a source code block with =:noweb-ref guix-pkg :t
 #+end_src
 * theme
 #+begin_src elisp :tangle packages.el
-(package! circadian)
-(package! white-sand-theme)
+(package! circadian :pin "52e336d9bb66cfd6d6dc5b9213ea21796ac873d4")
+(package! white-sand-theme :pin "729dd52cc1936250183d6761eed406c4be514a71")
 ;(package! kaolin-themes)
-(package! doom-themes)
+(package! doom-themes :pin "4c239dbe42232e81c28901000f435746de2a55ab")
 #+end_src
 
 #+begin_src elisp
@@ -76,7 +76,7 @@ To define guix dependencies add a source code block with =:noweb-ref guix-pkg :t
 #+end_src
 
 #+begin_src elisp :tangle packages.el
-(package! pinentry :built-in 'prefer)
+(package! pinentry :built-in t)
 #+end_src
 
 #+begin_src elisp
@@ -86,7 +86,7 @@ To define guix dependencies add a source code block with =:noweb-ref guix-pkg :t
 #+end_src
 * emacs screencast recording
 #+begin_src elisp :tangle packages.el
-(package! command-log-mode)
+(package! command-log-mode :pin "af600e6b4129c8115f464af576505ea8e789db27")
 ;(package! camcorder) autoloads fail because of names.el usage. todo: debug
 #+end_src
 
@@ -128,7 +128,7 @@ Debug icons in modeline, find out their names.
 #+end_src
 * buffers
 #+begin_src elisp :tangle packages.el
-(package! bufler)
+(package! bufler :pin "9eba735988c13d5e5e898f44655d9225e444ce02")
 #+end_src
 
 #+begin_src elisp
@@ -164,9 +164,14 @@ Debug icons in modeline, find out their names.
 * org mode
 - [ ] TODO: Replace linkmarks with bookmark+
 #+begin_src elisp :tangle packages.el
-(package! linkmarks :recipe (:host github :repo "dustinlacewell/linkmarks"))
-(package! org-modern-indent :recipe (:host github :repo "jdtsmith/org-modern-indent"))
-(package! org-modern)
+(package! linkmarks :recipe (:host github :repo "dustinlacewell/linkmarks") :pin "914bcb9172c5a9c7cab88de31e359de595e85021")
+(package! org-modern-indent
+    :recipe (:host github :repo "jdtsmith/org-modern-indent")
+    :pin "c5a50f302dc1053d5b498e0ea2bc0ee233e8e1b8")
+(package! org-modern :built-in t)
+#+end_src
+#+begin_src scheme :noweb-ref guix-pkg :tangle no :exports none
+"emacs-org-modern"
 #+end_src
 
 #+begin_src elisp
@@ -218,7 +223,7 @@ subprocess.call(['emacs-capture',
 #+end_src
 ** agenda
 #+begin_src elisp :tangle packages.el
-(package! german-holidays)
+(package! german-holidays :pin "a8462dffccaf2b665f2032e646b5370e993a386a")
 #+end_src
 
 #+begin_src elisp
@@ -242,7 +247,7 @@ subprocess.call(['emacs-capture',
 #+end_src
 ** elasticsearch
 #+begin_src elisp :tangle no
-(package! es-mode)
+(package! es-mode :pin "e82465fd785688bb58918ea62ca4de06a2a23a1e")
 #+end_src
 
 #+begin_src elisp :tangle no
@@ -274,8 +279,8 @@ subprocess.call(['emacs-capture',
 #+end_src
 * book reading
 #+begin_src elisp :tangle packages.el
-(package! calibredb :built-in 'prefer)
-(package! nov :built-in 'prefer)
+(package! calibredb :built-in t)
+(package! nov :built-in t)
 #+end_src
 
 #+begin_src scheme :noweb-ref guix-pkg :tangle no :exports none
@@ -312,7 +317,8 @@ subprocess.call(['emacs-capture',
 * wpa-manager
 #+begin_src elisp :tangle packages.el
 (package! wpa-manager
-  :recipe (:host github :repo "sarg/wpa-manager.el"))
+  :recipe (:host github :repo "sarg/wpa-manager.el")
+  :pin "ec21a9300b5259a8242e6810d2e497b3e4b8d4e0")
 #+end_src
 
 #+begin_src elisp
@@ -329,7 +335,10 @@ subprocess.call(['emacs-capture',
 #+end_src
 * password-store
 #+begin_src elisp :tangle packages.el
-(package! password-generator)
+(package! password-generator :built-in t)
+#+end_src
+#+begin_src scheme :noweb-ref guix-pkg :tangle no :exports none
+"emacs-password-generator"
 #+end_src
 
 #+begin_src elisp
@@ -430,10 +439,10 @@ qutebrowser --nowindow --target tab-bg-silent $@
 
 * dict
 #+begin_src elisp :tangle packages.el
-(package! dictcc)
-(package! multitran)
-(package! google-translate)
-(package! powerthesaurus)
+(package! dictcc :pin "30b505759e5a97c2aaa8b0e8ea5e187fdf625c65")
+(package! multitran :pin "6244e227bcf57eed391eecb34bae445f9c17e809")
+(package! google-translate :pin "e60dd6eeb9cdb931d9d8bfbefc29a48ef9a21bd9")
+(package! powerthesaurus :pin "8bcc2a7f7d1751e34291a1983885da3ebb8c3023")
 #+end_src
 * email
 - [ ] TODO: fix mu4e popping up for mailto urls
@@ -489,11 +498,13 @@ emacsclient --eval "(message-mailto \"$1\")"
 
 * browsing
 #+begin_src elisp :tangle packages.el
-(package! webpaste)
-(package! web-search)
-(package! mpv)
+(package! webpaste :built-in t)
+(package! web-search :pin "a22cbdc663a1895d5a5b69de91e1e3b9eb64b92f")
+(package! mpv :built-in t)
 #+end_src
-
+#+begin_src scheme :noweb-ref guix-pkg :tangle no :exports none
+"emacs-mpv" "emacs-webpaste"
+#+END_src
 #+begin_src elisp
 (defun browse-url-qute-private (url &rest _)
   "Make qutebrowser open URL in private-browsing window."
@@ -519,8 +530,8 @@ emacsclient --eval "(message-mailto \"$1\")"
 #+end_src
 * shell
 #+begin_src elisp :tangle packages.el
-(package! eat :built-in 'prefer)
-(package! detached :built-in 'prefer)
+(package! eat :built-in t)
+(package! detached :built-in t)
 #+end_src
 
 #+begin_src scheme :noweb-ref guix-pkg :tangle no :exports none
@@ -561,14 +572,14 @@ emacsclient --eval "(message-mailto \"$1\")"
 
 * dired
 #+begin_src elisp :tangle packages.el
-(package! dired-filter :built-in 'prefer)
-(package! dired-avfs :built-in 'prefer)
-(package! dired-du :built-in 'prefer)
-(package! dired-collapse)
+(package! dired-filter :built-in t)
+(package! dired-avfs :built-in t)
+(package! dired-du :built-in t)
+(package! dired-collapse :pin "1596e516835099b96cb65d1dc372cfbdff6aea96")
 (package! dired-git-info
   :recipe (:host github :repo "clemera/dired-git-info")
-  :built-in 'prefer)
-(package! openwith :built-in 'prefer)
+  :built-in t)
+(package! openwith :built-in t)
 #+end_src
 
 #+begin_src scheme :noweb-ref guix-pkg :tangle no :exports none
