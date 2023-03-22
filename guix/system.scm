@@ -93,7 +93,7 @@
             %base-packages)
 
     (map specification->package
-         '("nss-certs" "bluez" "borgmatic"
+         '("nss-certs" "bluez"
            "tlp" "brightnessctl" "libratbag"))))
 
   (services (cons*

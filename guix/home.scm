@@ -28,6 +28,7 @@
     "ripgrep" "moreutils" "libiconv"
     "powertop" "graphviz"
     "bind:utils"                        ; dig
+    "borgmatic"
     "lshw" "strace" "nftables" "file"))
 
 (define %pkg-desktop
