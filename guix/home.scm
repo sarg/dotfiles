@@ -222,6 +222,7 @@
          (simple-service 'additional-env-vars-service
                          home-environment-variables-service-type
                          `(("PATH" . "$HOME/.local/bin:$HOME/.config/emacs/bin:$PATH")
-                           ("SSH_AUTH_SOCK" . "$(gpgconf --list-dir agent-ssh-socket)")
+                           ("DOOMLOCALDIR" . "$HOME/.local/doom/")
+                           ("SSH_AUTH_SOCK" . "$XDG_RUNTIME_DIR/gnupg/S.gpg-agent.ssh")
                            ("VISUAL" . "emacsclient")
                            ("EDITOR" . "emacsclient")))))))

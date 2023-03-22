@@ -423,6 +423,7 @@ query_entries() {
     (elfeed-untag entry 'rmbody)))
 
 (after! elfeed
+  (setq elfeed-db-directory "/storage/data/elfeed")
   (add-hook 'elfeed-new-entry-hook #'sarg/elfeed-strip-content)
   (add-hook 'elfeed-show-mode-hook (lambda () (setq-local browse-url-generic-program "qutebrowser-background")))
 
