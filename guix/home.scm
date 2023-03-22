@@ -33,7 +33,7 @@
 
 (define %pkg-desktop
   '("pavucontrol" "dunst" "flameshot"
-    "pulseaudio" "polybar"
+    "pulseaudio" "polybar" "xss-lock"
     "redshift" "unclutter"))
 
 (define %pkg-fonts
@@ -44,7 +44,7 @@
     "font-terminus"))
 
 (define %pkg-x11
-  '("picom" "xhost" "xkbcomp" "xkbset"
+  '("picom" "xhost" "xkbcomp" "xkbset" "xkb-switch"
     "xprop" "xrandr" "xset" "xwininfo"
     "xev" "xclip" "xinput"
     "hicolor-icon-theme" "tango-icon-theme"

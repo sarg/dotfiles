@@ -96,90 +96,100 @@
          '("nss-certs" "bluez"
            "tlp" "brightnessctl" "libratbag"))))
 
-  (services (cons*
-             (service wpa-supplicant-service-type
-                      (wpa-supplicant-configuration
-                       (interface "wifi")
-                       (config-file (mixed-text-file
-                                     "wpa_supplicant.conf"
-                                     "ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev\n"
-                                     "update_config=0\n"
-                                     (call-with-input-file
-                                         (string-append (current-source-directory) "/../secure/wifi_connections")
-                                       get-string-all)))
-                       (extra-options '("-Dnl80211"))))
+  (services
+   (append
+    (modify-services %base-services
+      (delete mingetty-service-type)
+      (delete console-font-service-type)
+      (sysctl-service-type config =>
+                           (sysctl-configuration
+                            (inherit config)
+                            (settings (append
+                                       (sysctl-configuration-settings config)
+                                       '(("fs.inotify.max_user_watches" . "524288")
+                                         ("net.ipv6.conf.all.disable_ipv6" . "1")))))))
 
-             (service xorg-server-service-type
-                      (xorg-configuration
-                       (modules (list xf86-video-intel xf86-input-libinput))
-                       (drivers (list "intel"))))
+    (list
+     (service mingetty-service-type (mingetty-configuration (tty "tty1")
+                                                            (auto-login "sarg")))
 
-             (service dhcp-client-service-type)
-             (simple-service 'dhclient-wan etc-service-type
-                             (list `("dhclient-enter-hooks"
-                                     ,(local-file "./files/dhclient-enter-hooks"))
-                                   `("dhclient.conf"
-                                     ,(plain-file "dhclient.conf" "send host-name = gethostname();"))))
+     (service mingetty-service-type (mingetty-configuration (tty "tty2")))
 
-             (service screen-locker-service-type
-                      (screen-locker-configuration
-                       "physlock" (file-append physlock "/bin/physlock") #f))
+     (service wpa-supplicant-service-type
+              (wpa-supplicant-configuration
+               (interface "wifi")
+               (config-file (mixed-text-file
+                             "wpa_supplicant.conf"
+                             "ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev\n"
+                             "update_config=0\n"
+                             (call-with-input-file
+                                 (string-append (current-source-directory) "/../secure/wifi_connections")
+                               get-string-all)))
+               (extra-options '("-Dnl80211"))))
 
-             ;; Add polkit rules, so that non-root users in the wheel group can
-             ;; perform administrative tasks (similar to "sudo").
-             polkit-wheel-service
-             polkit-udisks-wheel-service
-             (service bluetooth-service-type)
+     (service xorg-server-service-type
+              (xorg-configuration
+               (modules (list xf86-video-intel xf86-input-libinput))
+               (drivers (list "intel"))))
+     (service dhcp-client-service-type)
 
-             (service udisks-service-type)
-             (service polkit-service-type)
-             (service elogind-service-type
-                      (elogind-configuration
-                       (handle-lid-switch-external-power 'suspend)))
+     (simple-service 'dhclient-wan etc-service-type
+                     (list `("dhclient-enter-hooks"
+                             ,(local-file "./files/dhclient-enter-hooks"))
+                           `("dhclient.conf"
+                             ,(plain-file "dhclient.conf" "send host-name = gethostname();"))))
 
-             (service dbus-root-service-type)
-             (simple-service 'ratbagd dbus-root-service-type (list libratbag))
-             (service tlp-service-type
-                      (tlp-configuration
-                       (restore-device-state-on-startup? #t)))
-             (service pulseaudio-service-type
-                      (pulseaudio-configuration
-                       (daemon-conf '((flat-volumes . no)
-                                      (default-sample-rate . 192000)
-                                      (default-sample-format . s32le)
-                                      (avoid-resampling . yes)
-                                      (exit-idle-time . -1)))))
-             (service alsa-service-type)
 
-             (service openssh-service-type
-                      (openssh-configuration
-                       (x11-forwarding? #t)))
-             (service dnsmasq-service-type
-                      (dnsmasq-configuration
-                       (no-hosts? #t)
-                       (no-resolv? #t)
-                       (servers-file "/etc/dnsmasq.servers")
-                       (addresses '("/dev.local/127.0.0.1"
-                                    "/local/127.0.0.1"))
-                       (servers '("1.1.1.1"))))
+     (service screen-locker-service-type
+              (screen-locker-configuration
+               "slock" (file-append slock "/bin/slock") #f))
+     ;; Add polkit rules, so that non-root users in the wheel group can
+     ;; perform administrative tasks (similar to "sudo").
+     polkit-wheel-service
+     polkit-udisks-wheel-service
 
-             ;; remap lctrl->lalt, lalt->lctrl, capslock->lshift
-             (service extrakeys-service-type (list "1d" "56" "38" "29" "3a" "42"))
-             (udev-rules-service 'android android-udev-rules #:groups '("adbusers"))
-             (udev-rules-service 'wifi wifi-udev-rule)
-             (udev-rules-service 'brightness brightnessctl)
+     (service bluetooth-service-type)
+     (service udisks-service-type)
+     (service polkit-service-type)
 
-             (simple-service
-              'nongux-substitutes guix-service-type
-              (guix-extension
-               (substitute-urls '("https://substitutes.nonguix.org"))
-               (authorized-keys (list %non-guix.pub))))
+     (service elogind-service-type
+              (elogind-configuration
+               (handle-lid-switch-external-power 'suspend)))
+     (service dbus-root-service-type)
+     (simple-service 'ratbagd dbus-root-service-type (list libratbag))
+     (service tlp-service-type
+              (tlp-configuration
+               (restore-device-state-on-startup? #t)))
+     (service pulseaudio-service-type
+              (pulseaudio-configuration
+               (daemon-conf '((flat-volumes . no)
+                              (default-sample-rate . 192000)
+                              (default-sample-format . s32le)
+                              (avoid-resampling . yes)
+                              (exit-idle-time . -1)))))
 
-             (modify-services %base-services
-               (sysctl-service-type config =>
-                                    (sysctl-configuration
-                                     (inherit config)
-                                     (settings (append
-                                                (sysctl-configuration-settings config)
-                                                '(("fs.inotify.max_user_watches" . "524288")
-                                                  ("net.ipv6.conf.all.disable_ipv6" . "1"))))))))))
+     (service alsa-service-type)
+     (service openssh-service-type
+              (openssh-configuration
+               (x11-forwarding? #t)))
+
+     (service dnsmasq-service-type
+              (dnsmasq-configuration
+               (no-hosts? #t)
+               (no-resolv? #t)
+               (servers-file "/etc/dnsmasq.servers")
+               (addresses '("/dev.local/127.0.0.1"
+                            "/local/127.0.0.1"))
+               (servers '("1.1.1.1"))))
+     ;; remap lctrl->lalt, lalt->lctrl, capslock->lshift
+     (service extrakeys-service-type (list "1d" "56" "38" "29" "3a" "42"))
+     (udev-rules-service 'android android-udev-rules #:groups '("adbusers"))
+     (udev-rules-service 'wifi wifi-udev-rule)
+
+     (udev-rules-service 'brightness brightnessctl)
+
+     (simple-service
+      'nongux-substitutes guix-service-type
+      (guix-extension
+       (substitute-urls '("https://substitutes.nonguix.org"))
+       (authorized-keys (list %non-guix.pub))))))))

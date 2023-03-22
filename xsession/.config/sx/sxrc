@@ -1,10 +1,12 @@
+slock & # for autologin
+
 _JAVA_AWT_WM_NONREPARENTING=1
 QT_QPA_PLATFORMTHEME="gtk3"
 export _JAVA_AWT_WM_NONREPARENTING
 export QT_QPA_PLATFORMTHEME
 
 # wmname LG3D
-# xss-lock ~/.local/bin/lock.sh &
+xss-lock lock.sh &
 picom --backend glx --vsync -b
 mountavfs
 . ~/.local/bin/keymap.sh
