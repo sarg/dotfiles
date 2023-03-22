@@ -169,6 +169,12 @@
              (udev-rules-service 'wifi wifi-udev-rule)
              (udev-rules-service 'brightness brightnessctl)
 
+             (simple-service
+              'nongux-substitutes guix-service-type
+              (guix-extension
+               (substitute-urls '("https://substitutes.nonguix.org"))
+               (authorized-keys (list %non-guix.pub))))
+
              (modify-services %base-services
                (sysctl-service-type config =>
                                     (sysctl-configuration
@@ -176,13 +182,4 @@
                                      (settings (append
                                                 (sysctl-configuration-settings config)
                                                 '(("fs.inotify.max_user_watches" . "524288")
-                                                  ("net.ipv6.conf.all.disable_ipv6" . "1"))))))
-               (guix-service-type config =>
-                                  (guix-configuration
-                                   (inherit config)
-                                   (substitute-urls
-                                    (append (guix-configuration-substitute-urls config)
-                                            '("https://substitutes.nonguix.org")))
-                                   (authorized-keys
-                                    (append (guix-configuration-authorized-keys config)
-                                            `(,%non-guix.pub)))))))))
+                                                  ("net.ipv6.conf.all.disable_ipv6" . "1"))))))))))
