@@ -9,6 +9,7 @@
  (gnu services)
  (gnu packages)
  (gnu home services)
+ (gnu home services syncthing)
  (gnu home services shepherd)
  (gnu home services desktop)
  (gnu home services shells)
@@ -166,6 +167,8 @@
 
          (sx-autostart-on "tty1")
 
+         (service home-syncthing-service-type)
+
          (service home-dbus-service-type)
          (simple-service 'symlinks
                          home-activation-service-type
@@ -213,11 +216,6 @@
                           (channel
                            (name 'personal)
                            (url (string-append "file://" (dirname (current-filename)) "/personal")))))
-
-         ;; (service home-shepherd-service-type
-         ;;          (home-shepherd-configuration
-         ;;           (services
-         ;;            (list minidlna-service))))
 
          (simple-service 'additional-env-vars-service
                          home-environment-variables-service-type
