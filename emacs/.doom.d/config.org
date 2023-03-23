@@ -555,7 +555,7 @@ emacsclient --eval "(message-mailto \"$1\")"
                     :ni "C-r" #'+eshell/search-history))))
 
 (use-package! eat
-  :hook (eshell-load-hook . (eat-eshell-mode eat-eshell-visual-command-mode)))
+  :hook (eshell-load . (eat-eshell-mode eat-eshell-visual-command-mode)))
 
 (use-package! detached
   :init
