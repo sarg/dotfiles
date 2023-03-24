@@ -14,6 +14,7 @@
  (gnu home services desktop)
  (gnu home services shells)
  (gnu home services guix)
+ (personal services symlinks)
  (srfi srfi-1)
  (srfi srfi-11)
  (ice-9 match)
@@ -101,42 +102,21 @@
           '() absolute-dir))))
 
 (define symlinks
-  '(("Sync")
-    ("Resources")
-    ("devel")
-    ("devel/dotfiles" ".dotfiles")
-    ("Sync/pass" ".password-store")
-    ("data/telega" ".telega")
-    ("data/mail" ".mail")
-    ("data/gnupg" ".gnupg")
-    ("data/events" ".events")
-    ("data/syncthing" ".config/syncthing")
-    ("data/qutebrowser" ".local/share/qutebrowser")
-    ("devel/dotfiles/emacs/.config/emacs" ".config/emacs")
-    ("devel/dotfiles/emacs/.doom.d" ".doom.d")
-    ("apps/quake3" ".q3a")))
-
-(define symlinks-activation
-  (with-imported-modules (source-module-closure
-                          '((gnu build activation)))
-    #~(begin
-        (use-modules (gnu build activation))
-
-        (define (no-follow-file-exists? file)
-          "Return #t if file exists, even if it's a dangling symlink."
-          (->bool (false-if-exception (lstat file))))
-
-        (let ((home (string-append (getenv "HOME") "/"))
-              (storage "/storage/"))
-          (for-each
-           (lambda (s)
-             (let ((source-file (string-append storage (first s)))
-                   (target-file (string-append home (last s))))
-
-               (unless (no-follow-file-exists? target-file)
-                 (symlink source-file target-file))))
-
-           '#$symlinks)))))
+  (resolve-relative-to "/storage/"
+   '(("Sync")
+     ("Resources")
+     ("devel")
+     ("devel/dotfiles" . ".dotfiles")
+     ("Sync/pass" . ".password-store")
+     ("data/telega" . ".telega")
+     ("data/mail" . ".mail")
+     ("data/gnupg" . ".gnupg")
+     ("data/events" . ".events")
+     ("data/syncthing" . ".config/syncthing")
+     ("data/qutebrowser" . ".local/share/qutebrowser")
+     ("devel/dotfiles/emacs/.config/emacs" . ".config/emacs")
+     ("devel/dotfiles/emacs/.doom.d" . ".doom.d")
+     ("apps/quake3" . ".q3a"))))
 
 (define (sx-autostart-on tty)
   (simple-service
@@ -167,12 +147,9 @@
 
          (sx-autostart-on "tty1")
 
+         (service home-symlinks-service-type symlinks)
          (service home-syncthing-service-type)
-
          (service home-dbus-service-type)
-         (simple-service 'symlinks
-                         home-activation-service-type
-                         symlinks-activation)
 
          (simple-service 'configs
                          home-files-service-type
