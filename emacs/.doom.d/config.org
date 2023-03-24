@@ -1,5 +1,6 @@
 #+OPTIONS: num:nil
 #+SETUPFILE: ~/devel/ext/org-html-themes/org/theme-readtheorg-local.setup
+#+PROPERTY: header-args:scheme :tangle no :exports none
 * guix
 To define guix dependencies add a source code block with =:noweb-ref guix-pkg :tangle no :exports none= as header arguments. It'll be then tangled to =~/.dotfiles/guix/emacs-packages.scm= and merged with the main =home-environment=.
 
@@ -24,7 +25,13 @@ To define guix dependencies add a source code block with =:noweb-ref guix-pkg :t
          <<guix-pkg>>
          ))))
 #+end_src
+
+#+begin_src elisp
+(after! guix
+  (setq guix-repl-use-server nil))
+#+end_src
 * doom
+** init.el
 #+begin_src elisp :tangle init.el
 (doom!
  :completion  company vertico ;(ivy +fuzzy +prescient +childframe)
@@ -38,12 +45,12 @@ To define guix dependencies add a source code block with =:noweb-ref guix-pkg :t
  :lang        clojure data emacs-lisp
  (org +contacts +dragndrop +pandoc +present +hugo +roam2) beancount
  rest sh plantuml (python +pyenv +lsp) (web +html) yaml json
- :app         calendar telega (rss +org) torrent exwm irc
+ :app         calendar telega (rss +org) torrent exwm irc (emms +spotify)
  :email       (mu4e +gmail)
  :config      (default +bindings +smartparens) literate)
 #+end_src
 * theme
-#+begin_src elisp :tangle packages.el
+#+begin_src elisp :tangle packages.el :exports none
 (package! circadian :pin "52e336d9bb66cfd6d6dc5b9213ea21796ac873d4")
 (package! white-sand-theme :pin "729dd52cc1936250183d6761eed406c4be514a71")
 ;(package! kaolin-themes)
@@ -71,11 +78,11 @@ To define guix dependencies add a source code block with =:noweb-ref guix-pkg :t
 #+end_src
 
 * gpg
-#+begin_src scheme :noweb-ref guix-pkg :tangle no :exports none
+#+begin_src scheme :noweb-ref guix-pkg
 "emacs-pinentry"
 #+end_src
 
-#+begin_src elisp :tangle packages.el
+#+begin_src elisp :tangle packages.el :exports none
 (package! pinentry :built-in t)
 #+end_src
 
@@ -98,11 +105,11 @@ To define guix dependencies add a source code block with =:noweb-ref guix-pkg :t
 ;;   :hook (camcorder-mode-hook . clm/command-log-clear))
 #+end_src
 
-#+begin_src scheme :noweb-ref guix-pkg :tangle no :exports none
+#+begin_src scheme :noweb-ref guix-pkg
 "recordmydesktop" "ffmpeg"
 #+end_src
 * miscellaneous
-#+begin_src sh :tangle ~/.local/bin/locate :shebang #!/bin/sh
+#+begin_src sh :tangle ~/.local/bin/locate :shebang #!/bin/sh :exports none
 plocate -d /storage/storage.plocate $@
 plocate -d /storage/2tb.plocate $@
 plocate -d /storage/500gb.plocate $@
@@ -120,14 +127,14 @@ plocate -d /storage/500gb.plocate $@
  default-input-method "russian-computer")
 #+end_src
 
-Debug icons in modeline, find out their names.
+** Debug icons in modeline, find out their names. :noexport:
 #+begin_src elisp :tangle no
 (defadvice! +debug-modeline-format-icon (icon-set icon label &optional face &rest args)
   :override +modeline-format-icon
   (propertize (format "X %s" label) 'face face))
 #+end_src
 * buffers
-#+begin_src elisp :tangle packages.el
+#+begin_src elisp :tangle packages.el :exports none
 (package! bufler :pin "9eba735988c13d5e5e898f44655d9225e444ce02")
 #+end_src
 
@@ -170,7 +177,7 @@ Debug icons in modeline, find out their names.
     :pin "c5a50f302dc1053d5b498e0ea2bc0ee233e8e1b8")
 (package! org-modern :built-in t)
 #+end_src
-#+begin_src scheme :noweb-ref guix-pkg :tangle no :exports none
+#+begin_src scheme :noweb-ref guix-pkg
 "emacs-org-modern"
 #+end_src
 
@@ -203,7 +210,7 @@ Debug icons in modeline, find out their names.
 
 (load! "org-defuns")
 #+end_src
-** capture
+** capture :noexport:
 #+begin_src shell :tangle ~/.local/bin/emacs-capture :shebang #!/bin/sh
 emacsclient -F '((name . "doom-capture") (height . 10) (width . 80))' "$@"
 #+end_src
@@ -222,7 +229,7 @@ subprocess.call(['emacs-capture',
 ])
 #+end_src
 ** agenda
-#+begin_src elisp :tangle packages.el
+#+begin_src elisp :tangle packages.el :exports none
 (package! german-holidays :pin "a8462dffccaf2b665f2032e646b5370e993a386a")
 #+end_src
 
@@ -245,7 +252,7 @@ subprocess.call(['emacs-capture',
         (lambda ()
           (not (member "ATTACH" (org-get-tags))))))
 #+end_src
-** elasticsearch
+** elasticsearch :noexport:
 #+begin_src elisp :tangle no
 (package! es-mode :pin "e82465fd785688bb58918ea62ca4de06a2a23a1e")
 #+end_src
@@ -283,7 +290,7 @@ subprocess.call(['emacs-capture',
 (package! nov :built-in t)
 #+end_src
 
-#+begin_src scheme :noweb-ref guix-pkg :tangle no :exports none
+#+begin_src scheme :noweb-ref guix-pkg
 "emacs-calibredb" "sqlite" "emacs-nov-el"
 #+end_src
 
@@ -315,7 +322,7 @@ subprocess.call(['emacs-capture',
 #+end_src
 
 * wpa-manager
-#+begin_src elisp :tangle packages.el
+#+begin_src elisp :tangle packages.el :exports none
 (package! wpa-manager
   :recipe (:host github :repo "sarg/wpa-manager.el")
   :pin "ec21a9300b5259a8242e6810d2e497b3e4b8d4e0")
@@ -334,10 +341,10 @@ subprocess.call(['emacs-capture',
       (kbd "RET") 'wpa-manager-connect)))
 #+end_src
 * password-store
-#+begin_src elisp :tangle packages.el
+#+begin_src elisp :tangle packages.el :exports none
 (package! password-generator :built-in t)
 #+end_src
-#+begin_src scheme :noweb-ref guix-pkg :tangle no :exports none
+#+begin_src scheme :noweb-ref guix-pkg
 "emacs-password-generator"
 #+end_src
 
@@ -377,7 +384,7 @@ subprocess.call(['emacs-capture',
                     nil t url)))
 #+end_src
 
-#+begin_src bash :tangle ~/.config/qutebrowser/password_fill_rc
+#+begin_src bash :tangle ~/.config/qutebrowser/password_fill_rc :exports none
 init() { file="not used"; }
 choose_entry() { true ; }
 no_entries_found() { if [ 0 -eq "${#lines[@]}" ]; then exit 0; fi }
@@ -434,7 +441,7 @@ query_entries() {
     (kbd "RET") 'elfeed-open-special))
 #+end_src
 
-#+begin_src sh :tangle ~/.local/bin/qutebrowser-background :shebang #!/bin/sh
+#+begin_src sh :tangle ~/.local/bin/qutebrowser-background :shebang #!/bin/sh :exports none
 qutebrowser --nowindow --target tab-bg-silent $@
 #+end_src
 
@@ -630,45 +637,6 @@ emacsclient --eval "(message-mailto \"$1\")"
                      (openwith-has-association filename)))))
 #+end_src
 
-* openscad
-#+begin_src elisp :tangle no
-(defun openscad-preview ()
-  (interactive)
-  (select-window (split-window-right))
-  (start-process "openscad" nil "openscad" (buffer-file-name)))
-#+end_src
-
-* selfcontrol
-#+begin_src elisp :tangle no
-(defun sarg/ad-selfcontrol-time-restriction (orig-fun &rest args)
-  (if (or (= 0 (mod
-                (calendar-day-of-week (calendar-current-date))
-                6)) ; 0 and 6 - Sunday and Saturday
-          (> (nth 2 (decode-time)) 18))
-      (apply orig-fun args)
-    (message "It's not the time yet!")))
-
-(defun sarg/ad-selfcontrol-otp-confirm (proc &rest args)
-  "Asks to enter random string as confirmation before executing PROC."
-  (interactive)
-  (let* ((pass (format "%06x%06x%06x"
-                       (random (expt 16 6))
-                       (random (expt 16 6))
-                       (random (expt 16 6))))
-
-         (input (read-string (format "Enter %s if you wish to proceed: " pass))))
-
-    (if (string= input pass)
-        (apply proc args))))
-
-(after! elfeed
-  (advice-add 'elfeed-update :around #'sarg/ad-selfcontrol-otp-confirm)
-  (advice-add '=rss :around #'sarg/ad-selfcontrol-otp-confirm)
-  (advice-add 'elfeed-update :around #'sarg/selfcontrol-time-restriction))
-
-(after! telega
-  (advice-add 'ivy-telega-chat-with :around #'sarg/ad-selfcontrol-otp-confirm))
-#+end_src
 * bindings
 #+begin_src elisp
 (map!
@@ -781,4 +749,43 @@ if [ $? -eq 0 ]; then
 else
     emacsclient -c -n "$*"
 fi
+#+end_src
+** openscad
+#+begin_src elisp :tangle no
+(defun openscad-preview ()
+  (interactive)
+  (select-window (split-window-right))
+  (start-process "openscad" nil "openscad" (buffer-file-name)))
+#+end_src
+
+** selfcontrol
+#+begin_src elisp :tangle no
+(defun sarg/ad-selfcontrol-time-restriction (orig-fun &rest args)
+  (if (or (= 0 (mod
+                (calendar-day-of-week (calendar-current-date))
+                6)) ; 0 and 6 - Sunday and Saturday
+          (> (nth 2 (decode-time)) 18))
+      (apply orig-fun args)
+    (message "It's not the time yet!")))
+
+(defun sarg/ad-selfcontrol-otp-confirm (proc &rest args)
+  "Asks to enter random string as confirmation before executing PROC."
+  (interactive)
+  (let* ((pass (format "%06x%06x%06x"
+                       (random (expt 16 6))
+                       (random (expt 16 6))
+                       (random (expt 16 6))))
+
+         (input (read-string (format "Enter %s if you wish to proceed: " pass))))
+
+    (if (string= input pass)
+        (apply proc args))))
+
+(after! elfeed
+  (advice-add 'elfeed-update :around #'sarg/ad-selfcontrol-otp-confirm)
+  (advice-add '=rss :around #'sarg/ad-selfcontrol-otp-confirm)
+  (advice-add 'elfeed-update :around #'sarg/selfcontrol-time-restriction))
+
+(after! telega
+  (advice-add 'ivy-telega-chat-with :around #'sarg/ad-selfcontrol-otp-confirm))
 #+end_src
