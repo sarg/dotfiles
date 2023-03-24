@@ -11,7 +11,7 @@
              (ice-9 textual-ports))
 
 (use-package-modules
- linux ssh android suckless xorg
+ linux ssh android suckless xorg fonts
  pulseaudio connman xorg gnome admin)
 
 (use-service-modules
@@ -110,10 +110,14 @@
                                          ("net.ipv6.conf.all.disable_ipv6" . "1")))))))
 
     (list
-     (service mingetty-service-type (mingetty-configuration (tty "tty1")
-                                                            (auto-login "sarg")))
+     (service mingetty-service-type
+              (mingetty-configuration (tty "tty1") (auto-login "sarg")))
 
-     (service mingetty-service-type (mingetty-configuration (tty "tty2")))
+     (service mingetty-service-type
+              (mingetty-configuration (tty "tty2")))
+
+     (service console-font-service-type
+              `(("tty2" . "LatGrkCyr-8x16")))
 
      (service wpa-supplicant-service-type
               (wpa-supplicant-configuration
