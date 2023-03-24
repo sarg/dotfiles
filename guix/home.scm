@@ -2,8 +2,9 @@
  (gnu)
  (guix)
  (guix gexp)
- (guix modules)
+ (guix build utils)
  (guix utils)
+ (guix modules)
  (guix channels)
  (gnu home)
  (gnu services)
@@ -15,11 +16,9 @@
  (gnu home services shells)
  (gnu home services guix)
  (personal services symlinks)
+ (personal utils)
  (srfi srfi-1)
- (srfi srfi-11)
- (ice-9 match)
- (ice-9 ftw)
- (guix packages))
+ (srfi srfi-11))
 
 (define %pkg-android
   '("adb" "fdroidcl" "socat" "scrcpy"))
@@ -80,27 +79,6 @@
     ;; "openjdk:jdk"
     ))
 
-(define (del-prefix p str)
-  (if (string-prefix? p str)
-      (substring/shared str (string-length p))
-      str))
-
-(define* (as-local-files dir #:optional (trim-prefix dir))
-  (let ((absolute-dir (string-append (current-source-directory) "/" dir))
-        (to-trim (string-append (current-source-directory) "/" trim-prefix "/")))
-    (map (lambda (fn)
-           (list
-            (del-prefix to-trim fn)
-            (local-file (canonicalize-path fn) (del-prefix "." (basename fn)) #:recursive? #t)))
-         (file-system-fold
-          (lambda (path stat result) #t)
-          (lambda (path stat result) (cons path result))
-          (lambda (name stat result) result)
-          (lambda (name stat result) result)
-          (lambda (name stat result) result)
-          (lambda (name stat errno result) result)
-          '() absolute-dir))))
-
 (define symlinks
   (resolve-relative-to "/storage/"
    '(("Sync")
@@ -153,18 +131,19 @@
 
          (simple-service 'configs
                          home-files-service-type
-                         (append
-                          (as-local-files "../backup")
-                          (as-local-files "../android")
-                          (as-local-files "../email")
-                          (as-local-files "../xsession")
-                          (as-local-files "../git")
-                          (as-local-files "../qutebrowser")
-                          (as-local-files "../desktop")
+                         (append!
+                          (with-directory-excursion (current-source-directory)
+                            `(,@(as-local-files "../backup")
+                              ,@(as-local-files "../android")
+                              ,@(as-local-files "../email")
+                              ,@(as-local-files "../xsession")
+                              ,@(as-local-files "../git")
+                              ,@(as-local-files "../qutebrowser")
+                              ,@(as-local-files "../desktop")))
                           `((".gtkrc-2.0.mine"
-                             ,(plain-file "gtk.conf"
-                                          "gtk-icon-theme-name=\"Tango\"")))
-                          `((".gnupg/gpg-agent.conf"
+                             ,(plain-file "gtk.conf" "gtk-icon-theme-name=\"Tango\""))
+
+                            (".gnupg/gpg-agent.conf"
                              ,(mixed-text-file "gpg-agent.conf"
                                                "enable-ssh-support\n"
                                                "allow-emacs-pinentry\n"
@@ -174,8 +153,7 @@
                                                "default-cache-ttl 86400\n"
                                                "max-cache-ttl 86400\n"))
                             (".gnupg/gpg.conf"
-                             ,(mixed-text-file "gpg.conf"
-                                               "keyid-format 0xlong\n")))))
+                             ,(mixed-text-file "gpg.conf" "keyid-format 0xlong\n")))))
 
          (simple-service 'extra-channels
                          home-channels-service-type
