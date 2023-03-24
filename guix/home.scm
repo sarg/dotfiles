@@ -29,7 +29,7 @@
     "ripgrep" "moreutils" "libiconv"
     "powertop" "graphviz"
     "bind:utils"                        ; dig
-    "borgmatic"
+    "borgmatic" "flatpak" "flatpak-xdg-utils"
     "lshw" "strace" "nftables" "file"))
 
 (define %pkg-desktop
@@ -175,6 +175,7 @@
          (simple-service 'additional-env-vars-service
                          home-environment-variables-service-type
                          `(("PATH" . "$HOME/.local/bin:$HOME/.config/emacs/bin:$PATH")
+                           ("XDG_DATA_DIRS" . "$XDG_DATA_DIRS:$HOME/.local/share/flatpak/exports/share")
                            ("DOOMLOCALDIR" . "$HOME/.local/doom/")
                            ("SSH_AUTH_SOCK" . "$XDG_RUNTIME_DIR/gnupg/S.gpg-agent.ssh")
                            ("VISUAL" . "emacsclient")
