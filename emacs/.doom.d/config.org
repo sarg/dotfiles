@@ -2,7 +2,7 @@
 #+SETUPFILE: ~/devel/ext/org-html-themes/org/theme-readtheorg-local.setup
 #+PROPERTY: header-args:scheme :tangle no :exports none
 * guix
-To define guix dependencies add a source code block with =:noweb-ref guix-pkg :tangle no :exports none= as header arguments. It'll be then tangled to =~/.dotfiles/guix/emacs-packages.scm= and merged with the main =home-environment=.
+To define guix dependencies add a source code block with =:noweb-ref guix-pkg= as header arguments. It'll be then tangled to =~/.dotfiles/guix/emacs-packages.scm= and merged with the main =home-environment=.
 
 #+begin_src scheme :noweb yes :tangle ~/.dotfiles/guix/emacs-home.scm
 (use-modules
@@ -45,7 +45,7 @@ To define guix dependencies add a source code block with =:noweb-ref guix-pkg :t
  :lang        clojure data emacs-lisp
  (org +contacts +dragndrop +pandoc +present +hugo +roam2) beancount
  rest sh plantuml (python +pyenv +lsp) (web +html) yaml json
- :app         calendar telega (rss +org) torrent exwm irc (emms +spotify)
+ :app         calendar telega (rss +org) torrent exwm irc
  :email       (mu4e +gmail)
  :config      (default +bindings +smartparens) literate)
 #+end_src
@@ -414,6 +414,61 @@ query_entries() {
 }
 #+end_src
 
+* music
+#+begin_src scheme :noweb-ref guix-pkg
+"emacs-emms"
+#+end_src
+#+begin_src elisp :tangle packages.el
+(package! emms :built-in 'prefer)
+(package! emms-player-spotify :recipe (:host nil :repo "/home/sarg/devel/emms-spotify.el"))
+(package! pulseaudio-control)
+(package! counsel-spotify)
+#+end_src
+#+begin_src elisp
+(defun dbus-capable ()
+  "Check if dbus is available"
+  (unwind-protect
+      (let (retval)
+        (condition-case ex
+            (setq retval (dbus-ping :session "org.freedesktop.Notifications"))
+          ('error
+           (message (format "Error: %s - No dbus" ex))))
+        retval)))
+
+(use-package! emms
+  :custom
+  (emms-playlist-buffer-name "*Music*")
+  (emms-source-file-default-directory (expand-file-name "~/Music/"))
+  (emms-source-file-directory-tree-function 'emms-source-file-directory-tree-find)
+  (emms-browser-covers 'emms-browser-cache-thumbnail)
+
+  :config
+  (emms-all)
+  (emms-history-load)
+  (setq emms-player-list (list emms-player-mpv)))
+
+(use-package! emms-player-spotify
+  :config
+  (emms-player-spotify-adblock t)
+  (add-to-list 'emms-player-list emms-player-spotify))
+
+(use-package! counsel-spotify
+  :defer t
+
+  :config
+  (if (string-empty-p counsel-spotify-client-secret)
+    (setq counsel-spotify-client-id (+pass-get-field "Sites/spotify.com" "client-id")
+          counsel-spotify-client-secret (+pass-get-field "Sites/spotify.com" "client-secret")))
+
+  (cl-defmethod counsel-spotify-do-play ((backend counsel-spotify-linux-backend) (playable counsel-spotify-playable))
+    (with-current-emms-playlist
+      (emms-playlist-last)
+      (emms-add-url (uri playable))
+      (emms-playlist-last)
+      (emms-playlist-mode-play-current-track))))
+
+
+#+end_src
 * elfeed
 #+begin_src elisp
 (defun elfeed-open-special ()
@@ -510,7 +565,7 @@ emacsclient --eval "(message-mailto \"$1\")"
 (package! web-search :pin "a22cbdc663a1895d5a5b69de91e1e3b9eb64b92f")
 (package! mpv :built-in t)
 #+end_src
-#+begin_src scheme :noweb-ref guix-pkg :tangle no :exports none
+#+begin_src scheme :noweb-ref guix-pkg
 "emacs-mpv" "emacs-webpaste"
 #+END_src
 #+begin_src elisp
@@ -542,7 +597,7 @@ emacsclient --eval "(message-mailto \"$1\")"
 (package! detached :built-in t)
 #+end_src
 
-#+begin_src scheme :noweb-ref guix-pkg :tangle no :exports none
+#+begin_src scheme :noweb-ref guix-pkg
 "emacs-eat" "emacs-detached"
 #+end_src
 
@@ -590,7 +645,7 @@ emacsclient --eval "(message-mailto \"$1\")"
 (package! openwith :built-in t)
 #+end_src
 
-#+begin_src scheme :noweb-ref guix-pkg :tangle no :exports none
+#+begin_src scheme :noweb-ref guix-pkg
 "emacs-dired-hacks" "emacs-dired-du"
 "emacs-dired-git-info" "emacs-openwith"
 #+end_src
@@ -652,7 +707,7 @@ emacsclient --eval "(message-mailto \"$1\")"
 * exwm
 EXWM config is too big, so it was extracted to a separate [[../.doom.d/modules/app/exwm][doom app]].
 
-#+begin_src scheme :noweb-ref guix-pkg :tangle no
+#+begin_src scheme :noweb-ref guix-pkg
 "emacs-exwm"
 #+end_src
 
