@@ -93,7 +93,7 @@
             %base-packages)
 
     (map specification->package
-         '("nss-certs" "bluez"
+         '("nss-certs" "bluez" "intel-vaapi-driver"
            "tlp" "brightnessctl" "libratbag"))))
 
   (services
