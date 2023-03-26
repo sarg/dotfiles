@@ -11,3 +11,5 @@ My base apps are:
 - [[https://syncthing.net/][syncthing]]
 - [[https://mpv.io][mpv]] + [[https://github.com/yt-dlp/yt-dlp][yt-dlp]]
 - [[https://calibre-ebook.com/][calibre]]
+
+I use the literate style for my emacs configuration, which you could see [[./emacs/.doom.d/config.org][here]].

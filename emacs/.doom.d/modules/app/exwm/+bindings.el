@@ -14,12 +14,6 @@
       (apply #'start-process
              (append (list NAME nil "setsid" "-w" PROGRAM) ARGS)))))
 
-(when (modulep! :app emms)
-  (exwm-bind-command
-   "<XF86AudioPlay>"    #'emms-pause
-   "<XF86AudioNext>"    #'emms-next
-   "<XF86AudioPrev>"    #'emms-previous))
-
 (exwm-bind-command
    "s-f"     #'exwm-layout-toggle-fullscreen
    "s-r"     #'app-launcher-run-app
