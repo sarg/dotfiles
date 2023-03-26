@@ -1,79 +1,13 @@
-Notes:
-1. partition labels should match those in =operating-system=
-2. root partition should be named =Guix_image= as it's hardcoded in =install-efi-loader=
-3. efi partition is named =GNU-ESP= just to match the name in =esp-partition=
+Hello there!
 
-* Back up
-#+begin_src sh
-cd /media/sarg/backup
-rsync --no-checksum -a --info=progress2 --exclude=.avfs /home/sarg sarg
-rsync --no-checksum -a --info=progress2 /storage .
-#+end_src
+The dotfiles here are managed with [[https://guix.gnu.org/][GNU Guix]]. I have documented how to boostrap
+from this repo on a new laptop in [[http://sarg.org.ru/blog/guix-restore-drill/][a blog post]]. Earlier I have used [[https://www.gnu.org/software/stow/][GNU Stow]] to
+manage symlinks in the ~$HOME~, but nowadays I have a declarative =guix home=
+[[./guix/home.scm][configuration]] for my home directory.
 
-* Preparing disk image
-#+begin_src sh
-cp $(guix system image ~/devel/dotfiles/guix/image.scm) \
-    /media/sarg/ventoy/thinkpad.img
-#+end_src
-
-* Deploying image to a target machine
-Boot from Ventoy into some linux Live CD
-
-#+begin_src sh
-dd thinkpad.img of=/dev/sda status=progress
-
-parted /dev/sda print
-# Warning: Not all of the space available to /dev/sda appears to be used, you
-# can fix the GPT to use all of the space (an extra 346740088 blocks) or
-# continue with the current setting?
-# Fix/Ignore? fix
-
-parted -s /dev/sda resizepart 2 60g mkpart STORAGE ext4 60g 100%
-fsck /dev/sda2
-resize2fs /dev/sda2
-mkfs.ext4 /dev/sda3 -L STORAGE
-#+end_src
-
-#+begin_src sh
-mkdir /storage
-mount /dev/sda3 /storage
-cd /storage
-rsync -a --info=progress2 /mnt/backup/storage/ .
-#+end_src
-
-#+begin_src sh
-reboot
-#+end_src
-
-* Initial setup
-log in as root (empty pass)
-
-#+begin_src sh
-passwd root
-passwd sarg
-login sarg
-
-cd /storage/devel/dotfiles/guix
-guix pull -C /run/current-system/channels.scm
-sudo guix system reconfigure system.scm
-guix home reconfigure home.scm
-
-doom sync
-mu init -m ~/.mail
-mu index
-
-logout # sarg
-logout # root
-#+end_src
-
-* To improve:
-- [ ] Implement backup
-- [ ] Put =guix home= dependencies in =/gnu/store=
-- [ ] Fix hardcoded =Guix_image= root partition name
-- [ ] Add support of =partition-table-type= to =guix system image=
-- [ ] Fix =gnupg= symlink\\
-  =guix home= =update-symlinks= creates =~/.gnupg= before my symlink activation service runs
-  therefore gnupg private keys are not symlinked\\
-  Target state:
-  - =~/.gnupg= is a symlink to =/storage/data/gnupg=
-  - =gpg-agent.conf= and =gpg.conf= are managed by =guix home=
+My base apps are:
+- emacs ([[https://github.com/doomemacs/doomemacs][doomemacs]], [[https://github.com/ch11ng/exwm][EXWM]], [[https://github.com/djcb/mu][mu4e]], org-mode, [[https://github.com/zevlg/telega.el][telega]], [[https://github.com/skeeto/elfeed][elfeed]])
+- [[https://www.qutebrowser.org/][qutebrowser]]
+- [[https://syncthing.net/][syncthing]]
+- [[https://mpv.io][mpv]] + [[https://github.com/yt-dlp/yt-dlp][yt-dlp]]
+- [[https://calibre-ebook.com/][calibre]]
