@@ -234,16 +234,9 @@ plocate -d /storage/500gb.plocate $@
    (bufler-defgroups
      (group (mode-match "Telega" (rx bos "telega-chat")))
      (group
-      (lambda (buffer)
-        (and
-         (funcall (mode-match "exwm-mode" (rx bos "exwm-mode")) buffer)
-         "X11"))
-      (group
-       (lambda (buffer)
-         (and
-          (string= "qutebrowser"
-                   (buffer-local-value 'exwm-class-name buffer))
-          "WWW"))))
+      (group-and "X11" (mode-match "exwm-mode" (rx bos "exwm-mode")))
+      (group-and "WWW"
+       (lambda (b) (string= "qutebrowser" (buffer-local-value 'exwm-class-name b)))))
      (group (auto-project))
      (auto-directory))))
 #+end_src
