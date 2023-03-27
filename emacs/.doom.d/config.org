@@ -61,10 +61,8 @@ EXWM config is too big, so it was extracted to a separate [[../.doom.d/modules/a
 * desktop
 #+begin_src scheme :noweb-ref guix-pkg
 "emacs-desktop-environment"
-"emacs-pulseaudio-control"
 #+end_src
 #+begin_src elisp :tangle packages.el
-(package! pulseaudio-control :built-in t)
 (package! desktop-environment :built-in t)
 #+end_src
 #+begin_src elisp
@@ -482,9 +480,10 @@ query_entries() {
 #+end_src
 #+begin_src elisp :tangle packages.el
 (package! emms :built-in 'prefer)
-(package! emms-player-spotify :recipe (:host nil :repo "/home/sarg/devel/emms-spotify.el"))
-(package! pulseaudio-control)
-(package! counsel-spotify)
+(package! emms-player-spotify
+  :recipe (:host github :repo "sarg/emms-spotify")
+  :pin "5181c1d14b37ca71e01375c89de200fe50e6cadc")
+(package! counsel-spotify :pin "2743ad52a9def53534fd505397fbe1ac49e53015")
 #+end_src
 #+begin_src elisp
 (defun dbus-capable ()
@@ -529,8 +528,6 @@ query_entries() {
       (emms-add-url (uri playable))
       (emms-playlist-last)
       (emms-playlist-mode-play-current-track))))
-
-
 #+end_src
 * elfeed
 #+begin_src elisp
