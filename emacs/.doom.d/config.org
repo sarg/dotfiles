@@ -486,16 +486,6 @@ query_entries() {
 (package! counsel-spotify :pin "2743ad52a9def53534fd505397fbe1ac49e53015")
 #+end_src
 #+begin_src elisp
-(defun dbus-capable ()
-  "Check if dbus is available"
-  (unwind-protect
-      (let (retval)
-        (condition-case ex
-            (setq retval (dbus-ping :session "org.freedesktop.Notifications"))
-          ('error
-           (message (format "Error: %s - No dbus" ex))))
-        retval)))
-
 (use-package! emms
   ;; (emms-source-file-directory-tree-function 'emms-source-file-directory-tree-find)
   ;; (emms-browser-covers 'emms-browser-cache-thumbnail)
@@ -522,12 +512,36 @@ query_entries() {
       (setq counsel-spotify-client-id (+pass-get-field "Sites/spotify.com" "client-id")
             counsel-spotify-client-secret (+pass-get-field "Sites/spotify.com" "client-secret")))
 
+  (defun emms-player-spotify-expand-album (id)
+    (counsel-spotify-with-auth-token (auth-token)
+     (counsel-spotify-with-query-results
+      (auth-token (concat counsel-spotify-spotify-api-url "/albums/" id "/tracks") results)
+
+      (with-current-emms-playlist
+        (goto-char (point-max))
+        (mapc (counsel-spotify-parse-items (list (cons 'tracks results)) 'tracks)
+          (lambda (el)
+            (let ((track (emms-track 'url (uri el))))
+              (emms-track-set track 'info-title (name el))
+              (emms-track-set track 'info-artist (name (artist el)))
+              (emms-track-set track 'info-album (name (album el)))
+              (emms-track-set track 'info-playing-time (millis-to-seconds (duration-in-ms el)))
+              (emms-playlist-insert-track track))))))))
+
   (cl-defmethod counsel-spotify-do-play ((backend counsel-spotify-linux-backend) (playable counsel-spotify-playable))
     (with-current-emms-playlist
       (goto-char (point-max))
-      (emms-add-url (uri playable))
-      (emms-playlist-last)
-      (emms-playlist-mode-play-current-track))))
+      (cond
+       ((counsel-spotify-album-p playable)
+        (emms-player-spotify-expand-album
+         (nth 2 (string-split (uri playable) ":"))))
+
+       (t
+        (let ((track (emms-track 'url (uri playable))))
+          (emms-track-set track 'info-artist "Spotify Playlist")
+          (emms-track-set track 'info-title (name playable))
+          (emms-playlist-insert-track track)
+          (emms-playlist-mode-play-current-track)))))))
 #+end_src
 * elfeed
 #+begin_src elisp
