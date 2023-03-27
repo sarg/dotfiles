@@ -59,9 +59,13 @@ EXWM config is too big, so it was extracted to a separate [[../.doom.d/modules/a
 #+end_src
 
 * desktop
+#+begin_src scheme :noweb-ref guix-pkg
+"emacs-desktop-environment"
+"emacs-pulseaudio-control"
+#+end_src
 #+begin_src elisp :tangle packages.el
-(package! pulseaudio-control :pin "e917e84661b0e2496b295f1bbfba6ad32a656527")
-(package! desktop-environment)
+(package! pulseaudio-control :built-in t)
+(package! desktop-environment :built-in t)
 #+end_src
 #+begin_src elisp
 (use-package! desktop-environment
@@ -106,8 +110,11 @@ EXWM config is too big, so it was extracted to a separate [[../.doom.d/modules/a
       (kbd "RET") 'wpa-manager-connect)))
 #+end_src
 ** bluetooth
+#+begin_src scheme :noweb-ref guix-pkg
+"emacs-bluetooth"
+#+end_src
 #+begin_src elisp :tangle packages.el
-(package! bluetooth :pin "fc6250c25c0f8d77cd5e637f97c5ed8d7937041b")
+(package! bluetooth :built-in t)
 #+end_src
 #+begin_src elisp
 (use-package! bluetooth)
@@ -157,11 +164,9 @@ EXWM config is too big, so it was extracted to a separate [[../.doom.d/modules/a
 #+begin_src scheme :noweb-ref guix-pkg
 "emacs-pinentry"
 #+end_src
-
 #+begin_src elisp :tangle packages.el :exports none
 (package! pinentry :built-in t)
 #+end_src
-
 #+begin_src elisp
 (use-package! pinentry
   :config
@@ -520,7 +525,7 @@ query_entries() {
 
   (cl-defmethod counsel-spotify-do-play ((backend counsel-spotify-linux-backend) (playable counsel-spotify-playable))
     (with-current-emms-playlist
-      (emms-playlist-last)
+      (goto-char (point-max))
       (emms-add-url (uri playable))
       (emms-playlist-last)
       (emms-playlist-mode-play-current-track))))
