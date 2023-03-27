@@ -12,6 +12,7 @@ sleep_delay=1
 pre_lock() {
     echo "$(date +%s%N);lock;on" >> ~/.events/lock
     gpg-connect-agent reloadagent /bye
+    xset dpms force off
     xkb-switch -s us
 }
 
