@@ -512,6 +512,10 @@ query_entries() {
       (setq counsel-spotify-client-id (+pass-get-field "Sites/spotify.com" "client-id")
             counsel-spotify-client-secret (+pass-get-field "Sites/spotify.com" "client-secret")))
 
+  ;; fix utf8 names
+  (cl-defmethod counsel-spotify-format :around (element)
+    (propertize (cl-call-next-method) 'spotify-object element))
+
   (defun emms-player-spotify-expand-album (id)
     (counsel-spotify-with-auth-token (auth-token)
      (counsel-spotify-with-query-results
