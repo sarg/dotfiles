@@ -7,7 +7,11 @@ export QT_QPA_PLATFORMTHEME
 
 # wmname LG3D
 xss-lock -l lock.sh &
-picom --backend glx --vsync -b
+
+# unredir fixes performance in fullscreen apps, e.g. q3
+# https://github.com/chjj/compton/wiki/perf-guide
+picom --backend glx --vsync -b --unredir-if-possible
+
 mountavfs
 . ~/.local/bin/keymap.sh
 xhost +

@@ -48,8 +48,8 @@
   '("picom" "xhost" "xkbcomp" "xkbset" "xkb-switch"
     "xprop" "xrandr" "xset" "xwininfo"
     "xev" "xclip" "xinput"
-    "hicolor-icon-theme" "tango-icon-theme"
-    "igt-gpu-tools"))
+    "hicolor-icon-theme" "tango-icon-theme" "adwaita-icon-theme"
+    "greybird-gtk-theme"))
 
 (define %pkg-games
   '(;; "lierolibre" "chroma" "meandmyshadow" "gcompris-qt"
@@ -140,8 +140,13 @@
                               ,@(as-local-files "../git")
                               ,@(as-local-files "../qutebrowser")
                               ,@(as-local-files "../desktop")))
-                          `((".gtkrc-2.0.mine"
-                             ,(plain-file "gtk.conf" "gtk-icon-theme-name=\"Tango\""))
+                          `((".config/gtk-3.0/settings.ini"
+                             ,(mixed-text-file "gtk3.conf"
+                                               "[Settings]\n"
+                                               "gtk-theme-name=Greybird\n"
+                                               "gtk-icon-theme-name=\"Adwaita\"\n"
+                                               "gtk-font-name=\"Fira Code 12\"\n"
+                                               "gtk-cursor-theme-name=\"Adwaita\""))
 
                             (".gnupg/gpg-agent.conf"
                              ,(mixed-text-file "gpg-agent.conf"
