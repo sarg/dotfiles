@@ -25,12 +25,10 @@
 ;; + Set shortcuts to switch to a certain workspace.
 ;; use all digits, so that if new workspace created it could be switched to
 (dotimes (i 9)
-  (exwm-input-set-key (kbd (format "s-%d" (1+ i)))
+  (exwm-input-set-key (kbd (format "<f13>%d" (1+ i)))
                       `(lambda ()
                          (interactive)
                          (exwm-workspace-switch ,i))))
-
-(exwm-input-set-key (kbd "<s-w>") #'exwm-workspace-switch)
 
 ;; EWMH integration
 (defun exwm-workspace--update-ewmh-desktop-names ()

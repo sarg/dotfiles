@@ -13,23 +13,20 @@
   (+modeline-mode -1)
   (hide-mode-line-mode +1))
 
-(use-package! bluetooth)
 (use-package! exwm
   :commands (exwm-enable exwm-init)
   :hook (exwm-init . exwm-set-default-cursor)
   :hook (exwm-mode . doom/exwm-new-window-hook)
 
   :init
+  (setq exwm-leader-key "<f13>")
   (set-popup-rule! "^\\*EXWM\\*$" :ignore t)
 
   :config
-  (load! "+udisks")
   (load! "+workspaces")
   (load! "+polybar")
   (load! "+bindings")
-  (load! "+volume")
   (load! "+redshift")
-  (load! "+brightness")
   (load! "+xkb-layout-switch")
 
   ;; Disable dialog boxes since they are unusable in EXWM
@@ -68,39 +65,8 @@
               (when (or (not exwm-instance-name) (meaningful-title?))
                 (exwm-workspace-rename-buffer exwm-title))))
 
-  (setq exwm-input-prefix-keys
-        '(?\C-x
-          ?\M-x
-          ?\M-m
-          ?\C-g
-          ?\C-m
-          ?\C-h
-          ?\C-р                         ; cyrillic
-          ))
-
-  (define-key exwm-mode-map [?\C-q] 'exwm-input-send-next-key)
-  (define-key exwm-mode-map [?\C-c] 'nil)
-
   (setq exwm-layout-show-all-buffers t
         exwm-workspace-show-all-buffers t)
-
-  ;; The following example demonstrates how to use simulation keys to mimic the
-  ;; behavior of Emacs. The argument to `exwm-input-set-simulation-keys' is a
-  ;; list of cons cells (SRC . DEST), where SRC is the key sequence you press and
-  ;; DEST is what EXWM actually sends to application. Note that SRC must be a key
-  ;; sequence (of type vector or string), while DEST can also be a single key.
-
-  (setq exwm-input-simulation-keys
-        (mapcar (lambda (c) (cons (kbd (car c)) (cdr c)))
-                `(
-                  ;; ("C-b" . left)
-                  ;; ("C-f" . right)
-                  ;; ("C-p" . up)
-                  ("C-m" . return)
-                  ;; ("C-n" . down)
-                  ("DEL" . backspace)
-                  ("C-р" . backspace))))
-
 
   (setq exwm-manage-configurations
         `(((-any? (lambda (el) (equal exwm-class-name el))

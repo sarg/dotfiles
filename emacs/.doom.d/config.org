@@ -33,6 +33,8 @@ To define guix dependencies add a source code block with =:noweb-ref guix-pkg= a
 * doom
 ** init.el
 #+begin_src elisp :tangle init.el
+(setq doom-leader-key "<f13>"
+      doom-leader-alt-key "<f13>")
 (doom!
  :completion  company vertico ;(ivy +fuzzy +prescient +childframe)
  :ui          nav-flash (modeline +light) ophints (popup +all +defaults) ligatures hydra
@@ -48,6 +50,80 @@ To define guix dependencies add a source code block with =:noweb-ref guix-pkg= a
  :app         calendar telega (rss +org) torrent exwm irc
  :email       (mu4e +gmail)
  :config      (default +bindings +smartparens) literate)
+#+end_src
+* exwm
+EXWM config is too big, so it was extracted to a separate [[../.doom.d/modules/app/exwm][doom app]].
+
+#+begin_src scheme :noweb-ref guix-pkg
+"emacs-exwm"
+#+end_src
+
+* desktop
+#+begin_src elisp :tangle packages.el
+(package! pulseaudio-control :pin "e917e84661b0e2496b295f1bbfba6ad32a656527")
+(package! desktop-environment)
+#+end_src
+#+begin_src elisp
+(use-package! desktop-environment
+  :hook (exwm-init . desktop-environment-mode)
+  :custom
+  (desktop-environment-volume-get-command "pactl get-sink-volume @DEFAULT_SINK@")
+  (desktop-environment-volume-set-command "pactl set-sink-volume @DEFAULT_SINK@ %s")
+  (desktop-environment-volume-toggle-command "pactl set-sink-mute @DEFAULT_SINK@ toggle")
+  (desktop-environment-volume-toggle-microphone-command "pactl set-source-mute @DEFAULT_SOURCE@ toggle")
+  (desktop-environment-volume-small-decrement "-1%")
+  (desktop-environment-volume-small-increment "+1%")
+  (desktop-environment-volume-normal-decrement "-5%")
+  (desktop-environment-volume-normal-increment "+5%")
+  (desktop-environment-screenlock-command "lock.sh")
+  (desktop-environment-screenshot-command "flameshot gui")
+  (desktop-environment-screenshot-directory (expand-file-name "~/Downloads"))
+
+  :config
+  (exwm-input-set-key (kbd "<f13> <f12>") #'desktop-environment-screenshot)
+  (after! emms
+    (advice-add 'desktop-environment-toggle-music :override #'emms-player-pause)
+    (advice-add 'desktop-environment-music-next :override #'emms-next)
+    (advice-add 'desktop-environment-music-previous :override #'emms-previous)))
+#+end_src
+** wpa-manager
+#+begin_src elisp :tangle packages.el :exports none
+(package! wpa-manager
+  :recipe (:host github :repo "sarg/wpa-manager.el")
+  :pin "ec21a9300b5259a8242e6810d2e497b3e4b8d4e0")
+#+end_src
+
+#+begin_src elisp
+(use-package! wpa-manager
+  :init
+  (after! evil-collection
+    (evil-collection-inhibit-insert-state 'wpa-manager-mode-map)
+    (evil-set-initial-state 'wpa-manager-mode-map 'normal)
+    (evil-collection-define-key 'normal 'wpa-manager-mode-map
+      "s" 'wpa-manager-scan
+      "r" 'revert-buffer
+      "c" 'wpa-manager-connect
+      (kbd "RET") 'wpa-manager-connect)))
+#+end_src
+** bluetooth
+#+begin_src elisp :tangle packages.el
+(package! bluetooth :pin "fc6250c25c0f8d77cd5e637f97c5ed8d7937041b")
+#+end_src
+#+begin_src elisp
+(use-package! bluetooth)
+#+end_src
+** udisks
+#+begin_src elisp :tangle packages.el
+(package! debase :recipe (:host codeberg :repo "emacs-weirdware/debase") :pin "0b6fc2af3440d68798e3a85d4c889341aae07936")
+(package! discomfort :recipe (:host codeberg :repo "emacs-weirdware/discomfort") :pin "873eea833bbae7196b92bb1102494b8bf5dc5df6")
+#+end_src
+#+begin_src elisp
+(use-package! discomfort
+  :config
+  (add-to-list 'evil-emacs-state-modes 'discomfort-mode)
+  (define-key discomfort-mode-map
+              "j" #'next-line
+              "k" #'previous-line))
 #+end_src
 * theme
 #+begin_src elisp :tangle packages.el :exports none
@@ -321,25 +397,6 @@ subprocess.call(['emacs-capture',
   (defalias 'calibredb-open-with-default-tool #'find-file))
 #+end_src
 
-* wpa-manager
-#+begin_src elisp :tangle packages.el :exports none
-(package! wpa-manager
-  :recipe (:host github :repo "sarg/wpa-manager.el")
-  :pin "ec21a9300b5259a8242e6810d2e497b3e4b8d4e0")
-#+end_src
-
-#+begin_src elisp
-(use-package! wpa-manager
-  :init
-  (after! evil-collection
-    (evil-collection-inhibit-insert-state 'wpa-manager-mode-map)
-    (evil-set-initial-state 'wpa-manager-mode-map 'normal)
-    (evil-collection-define-key 'normal 'wpa-manager-mode-map
-      "s" 'wpa-manager-scan
-      "r" 'revert-buffer
-      "c" 'wpa-manager-connect
-      (kbd "RET") 'wpa-manager-connect)))
-#+end_src
 * password-store
 #+begin_src elisp :tangle packages.el :exports none
 (package! password-generator :built-in t)
@@ -440,13 +497,9 @@ query_entries() {
   ;; (emms-browser-covers 'emms-browser-cache-thumbnail)
 
   :config
-  (after! exwm
-    (exwm-input-set-key (kbd "<XF86AudioNext>") #'emms-next)
-    (exwm-input-set-key (kbd "<XF86AudioPlay>") #'emms-pause)
-    (exwm-input-set-key (kbd "<XF86AudioPrev>") #'emms-previous))
-
   (emms-all)
   (emms-history-load)
+  (emms-mpris-enable)
   (setq emms-player-list (list emms-player-mpv)
         emms-playlist-buffer-name "*Music*"
         emms-player-mpv-update-metadata t
@@ -538,7 +591,7 @@ emacsclient --eval "(message-mailto \"$1\")"
 
 (after! mu4e
   (setq mu4e-filter-inbox "flag:unread AND NOT flag:trashed AND maildir:/gmail/Inbox"
-        mu4e-bookmarks '((mu4e-filter-inbox "Gmail messages" ?u)
+        mu4e-bookmarks `((,mu4e-filter-inbox "Gmail messages" ?u)
                          ("date:today..now AND NOT flag:trashed AND NOT maildir:/gmail/trash" "Today's messages" 116))
 
         mu4e-alert-interesting-mail-query mu4e-filter-inbox)
@@ -709,91 +762,76 @@ emacsclient --eval "(message-mailto \"$1\")"
  (:map image-mode-map
    :n "q" #'kill-current-buffer))
 #+end_src
-* exwm
-EXWM config is too big, so it was extracted to a separate [[../.doom.d/modules/app/exwm][doom app]].
-
-#+begin_src scheme :noweb-ref guix-pkg
-"emacs-exwm"
-#+end_src
-
-** bindings
+** exwm
 #+begin_src elisp :tangle no :results value pp :wrap example elisp :exports both
 (-map (lambda (el) (cons (key-description (car el)) (cdr el)))
       exwm-input-global-keys)
 #+end_src
 
+#+CAPTION: Just for reference
 #+RESULTS:
 #+begin_example elisp
 (("s-<tab>" . exwm-jump-to-last-exwm)
- ("s-1" lambda nil
+ ("<f13> 1" lambda nil
   (interactive)
   (exwm-workspace-switch 0))
- ("s-2" lambda nil
+ ("<f13> 2" lambda nil
   (interactive)
   (exwm-workspace-switch 1))
- ("s-3" lambda nil
+ ("<f13> 3" lambda nil
   (interactive)
   (exwm-workspace-switch 2))
- ("s-4" lambda nil
+ ("<f13> 4" lambda nil
   (interactive)
   (exwm-workspace-switch 3))
- ("s-5" lambda nil
+ ("<f13> 5" lambda nil
   (interactive)
   (exwm-workspace-switch 4))
- ("s-6" lambda nil
+ ("<f13> 6" lambda nil
   (interactive)
   (exwm-workspace-switch 5))
- ("s-7" lambda nil
+ ("<f13> 7" lambda nil
   (interactive)
   (exwm-workspace-switch 6))
- ("s-8" lambda nil
+ ("<f13> 8" lambda nil
   (interactive)
   (exwm-workspace-switch 7))
- ("s-9" lambda nil
+ ("<f13> 9" lambda nil
   (interactive)
   (exwm-workspace-switch 8))
- ("<s-w>" . exwm-workspace-switch)
- ("s-f" . exwm-layout-toggle-fullscreen)
- ("s-r" . app-launcher-run-app)
- ("s-c" . kill-buffer-and-window)
- ("s-u" . winner-undo)
- ("S-s-U" . winner-redo)
- ("s-h" . evil-window-left)
- ("s-j" . evil-window-down)
- ("s-k" . evil-window-up)
- ("s-l" . evil-window-right)
- ("s-H" . evil-window-move-far-left)
- ("s-J" . evil-window-move-very-bottom)
- ("s-K" . evil-window-move-very-top)
- ("s-L" . evil-window-move-far-right)
- ("M-s-h" . shrink-window-horizontally)
- ("M-s-j" . shrink-window)
- ("M-s-k" . enlarge-window)
- ("M-s-l" . enlarge-window-horizontally)
- ("s-e" lambda nil
+ ("<f13> r" . app-launcher-run-app)
+ ("<f13> h" . evil-window-left)
+ ("<f13> j" . evil-window-down)
+ ("<f13> k" . evil-window-up)
+ ("<f13> l" . evil-window-right)
+ ("<f13> e" lambda nil
   (interactive)
   (sarg/run-or-raise "qutebrowser" "qutebrowser")
   (exwm-workspace-switch
    (exwm-workspace-name-to-index "brow")))
- ("s-<return>" . +eshell/here)
- ("S-s-<return>" . +vterm/here)
- ("s-<f12>" lambda nil
-  (interactive)
-  (start-process "flameshot" nil "flameshot" "gui"))
- ("s-<delete>" lambda nil
-  (interactive)
-  (start-process "lock" nil "lock.sh"))
- ("<XF86AudioRaiseVolume>" . pulseaudio-control-increase-sink-volume)
- ("<XF86AudioLowerVolume>" . pulseaudio-control-decrease-sink-volume)
- ("<XF86AudioMute>" . pulseaudio-control-toggle-current-sink-mute)
- ("<XF86AudioMicMute>" . pulseaudio-control-toggle-current-source-mute)
- ("<XF86MonBrightnessUp>" . backlight)
- ("<XF86MonBrightnessDown>" . backlight)
  ("s-b" . bufler-switch-buffer)
  ("s-g" . linkmarks-select)
- ("<XF86AudioNext>" . emms-next)
- ("<XF86AudioPlay>" . emms-pause)
- ("<XF86AudioPrev>" . emms-previous))
+ ("<f13> <f12>" . desktop-environment-screenshot)
+ ("<XF86AudioStop>" . desktop-environment-music-stop)
+ ("<XF86AudioNext>" . desktop-environment-music-next)
+ ("<XF86AudioPrev>" . desktop-environment-music-previous)
+ ("<XF86AudioPlay>" . desktop-environment-toggle-music)
+ ("<XF86Bluetooth>" . desktop-environment-toggle-bluetooth)
+ ("<XF86WLAN>" . desktop-environment-toggle-wifi)
+ ("<XF86ScreenSaver>" . desktop-environment-lock-screen)
+ ("s-l" . desktop-environment-lock-screen)
+ ("<print>" . desktop-environment-screenshot)
+ ("S-<print>" . desktop-environment-screenshot-part)
+ ("<XF86AudioMicMute>" . desktop-environment-toggle-microphone-mute)
+ ("<XF86AudioMute>" . desktop-environment-toggle-mute)
+ ("S-<XF86AudioLowerVolume>" . desktop-environment-volume-decrement-slowly)
+ ("S-<XF86AudioRaiseVolume>" . desktop-environment-volume-increment-slowly)
+ ("<XF86AudioLowerVolume>" . desktop-environment-volume-decrement)
+ ("<XF86AudioRaiseVolume>" . desktop-environment-volume-increment)
+ ("S-<XF86MonBrightnessDown>" . desktop-environment-brightness-decrement-slowly)
+ ("S-<XF86MonBrightnessUp>" . desktop-environment-brightness-increment-slowly)
+ ("<XF86MonBrightnessDown>" . desktop-environment-brightness-decrement)
+ ("<XF86MonBrightnessUp>" . desktop-environment-brightness-increment))
 #+end_example
 
 * archive :noexport:

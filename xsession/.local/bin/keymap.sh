@@ -18,7 +18,8 @@ xkb_keymap {
   xkb_compat    { include "complete"  };
   xkb_symbols   {
     include "pc+us+ru:2+inet(evdev)"
-    replace key <PRSC> { [ Menu ] };
+    replace key <LWIN> { [ F13 ] };
+    replace key <PRSC> { [ F13 ] };
   };
   xkb_geometry  { include "pc(pc105)"   };
 };
@@ -26,6 +27,7 @@ EOF
 
 # xkbset -bell -feedback sticky -twokey latchlock
 # xkbset exp 64 '=sticky' '=twokey' '=latchlock'
+xset -r 133
 xset r rate 250 50
 xset m 15/10 4
 
