@@ -1,6 +1,9 @@
 #+OPTIONS: num:nil
 #+SETUPFILE: ~/devel/ext/org-html-themes/org/theme-readtheorg-local.setup
 #+PROPERTY: header-args:scheme :tangle no :exports none
+#+begin_src elisp :exports none
+;; -*- lexical-binding: t; -*-
+#+end_src
 * guix
 To define guix dependencies add a source code block with =:noweb-ref guix-pkg= as header arguments. It'll be then tangled to =~/.dotfiles/guix/emacs-packages.scm= and merged with the main =home-environment=.
 
@@ -84,8 +87,11 @@ EXWM config is too big, so it was extracted to a separate [[../.doom.d/modules/a
   :config
   (exwm-input-set-key (kbd "<f13> <f12>") #'desktop-environment-screenshot)
   (after! emms
+    ; default is to use playerctl which doesn't work nicely for exwm + emms-mpris
+    ; seemingly because of the synchronous call, exwm just blocks
     (advice-add 'desktop-environment-toggle-music :override #'emms-player-pause)
-    (advice-add 'desktop-environment-music-next :override #'emms-next)
+    (advice-add 'desktop-environment-music-next :override
+                (lambda () (if emms-random-playlist (emms-random) (emms-next))))
     (advice-add 'desktop-environment-music-previous :override #'emms-previous)))
 #+end_src
 ** wpa-manager
@@ -516,14 +522,14 @@ query_entries() {
 
       (with-current-emms-playlist
         (goto-char (point-max))
-        (mapc (counsel-spotify-parse-items (list (cons 'tracks results)) 'tracks)
-          (lambda (el)
+        (ignore (mapc (lambda (el)
             (let ((track (emms-track 'url (uri el))))
               (emms-track-set track 'info-title (name el))
               (emms-track-set track 'info-artist (name (artist el)))
               (emms-track-set track 'info-album (name (album el)))
               (emms-track-set track 'info-playing-time (millis-to-seconds (duration-in-ms el)))
-              (emms-playlist-insert-track track))))))))
+              (emms-playlist-insert-track track)))
+          (counsel-spotify-parse-items (list (cons 'tracks results)) 'tracks)))))))
 
   (cl-defmethod counsel-spotify-do-play ((backend counsel-spotify-linux-backend) (playable counsel-spotify-playable))
     (with-current-emms-playlist
