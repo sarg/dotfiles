@@ -475,7 +475,7 @@ query_entries() {
 (package! emms :built-in 'prefer)
 (package! emms-player-spotify
   :recipe (:host github :repo "sarg/emms-spotify")
-  :pin "5181c1d14b37ca71e01375c89de200fe50e6cadc")
+  :pin "c953c1bd58067c51e115e3bea3d9bb922ed839ce")
 (package! counsel-spotify :pin "2743ad52a9def53534fd505397fbe1ac49e53015")
 #+end_src
 #+begin_src elisp
