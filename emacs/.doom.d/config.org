@@ -70,7 +70,7 @@ EXWM config is too big, so it was extracted to a separate [[../.doom.d/modules/a
 #+end_src
 #+begin_src elisp
 (use-package! desktop-environment
-  :hook (exwm-init . desktop-environment-mode)
+  :after exwm
   :custom
   (desktop-environment-volume-get-command "pactl get-sink-volume @DEFAULT_SINK@")
   (desktop-environment-volume-set-command "pactl set-sink-volume @DEFAULT_SINK@ %s")
@@ -85,10 +85,12 @@ EXWM config is too big, so it was extracted to a separate [[../.doom.d/modules/a
   (desktop-environment-screenshot-directory (expand-file-name "~/Downloads"))
 
   :config
+  (desktop-environment-mode)
   (exwm-input-set-key (kbd "<f13> <f12>") #'desktop-environment-screenshot)
   (after! emms
-    ; default is to use playerctl which doesn't work nicely for exwm + emms-mpris
-    ; seemingly because of the synchronous call, exwm just blocks
+    ; playerctl doesn't play nicely with emms-mpris under exwm (user input blocks because of singlethreadness)
+    ; and when controlling spotify directly, Next command just pauses, as automatic play is disabled in the app
+    ; so override the controls to point to emms functions
     (advice-add 'desktop-environment-toggle-music :override #'emms-player-pause)
     (advice-add 'desktop-environment-music-next :override
                 (lambda () (if emms-random-playlist (emms-random) (emms-next))))
@@ -492,7 +494,6 @@ query_entries() {
   :config
   (emms-all)
   (emms-history-load)
-  (emms-mpris-enable)
   (setq emms-player-list (list emms-player-mpv)
         emms-playlist-buffer-name "*Music*"
         emms-player-mpv-update-metadata t
