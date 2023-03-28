@@ -486,7 +486,7 @@ query_entries() {
 (package! emms :built-in 'prefer)
 (package! emms-player-spotify
   :recipe (:host github :repo "sarg/emms-spotify")
-  :pin "c953c1bd58067c51e115e3bea3d9bb922ed839ce")
+  :pin "96e1eec3e5cf3595c5ca0f1f15a85ca0275be2b1")
 (package! counsel-spotify :pin "2743ad52a9def53534fd505397fbe1ac49e53015")
 #+end_src
 #+begin_src elisp
@@ -611,6 +611,8 @@ emacsclient --eval "(message-mailto \"$1\")"
   (auth-source-pass-get (concat "Email/" user-mail-address) 'secret))
 
 (after! mu4e
+  (set-popup-rule! "^\\*mu4e-main\\*$" :ignore t)
+  (set-popup-rule! "^\\*mu4e-headers\\*$" :ignore t)
   (setq mu4e-filter-inbox "flag:unread AND NOT flag:trashed AND maildir:/gmail/Inbox"
         mu4e-bookmarks `((,mu4e-filter-inbox "Gmail messages" ?u)
                          ("date:today..now AND NOT flag:trashed AND NOT maildir:/gmail/trash" "Today's messages" 116))
