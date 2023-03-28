@@ -1,19 +1,19 @@
-(defvar sarg/polybar-process nil)
+(defvar exwm/polybar-process nil)
 
-(define-minor-mode sarg/polybar-mode
+(define-minor-mode exwm/polybar-mode
   "Show polybar."
   :init-value nil
   :global t
 
-  (if sarg/polybar-mode
+  (if exwm/polybar-mode
       (progn
         (exwm-workspace--update-ewmh-desktop-names)
-        (setq sarg/polybar-process
+        (setq exwm/polybar-process
               (start-process "polybar" nil
                              "polybar" "panel")))
 
-    (when sarg/polybar-process
-      (interrupt-process sarg/polybar-process)
-      (setq sarg/polybar-process nil))))
+    (when exwm/polybar-process
+      (interrupt-process exwm/polybar-process)
+      (setq exwm/polybar-process nil))))
 
-(add-hook 'exwm-init-hook #'sarg/polybar-mode)
+(add-hook 'exwm-init-hook #'exwm/polybar-mode)

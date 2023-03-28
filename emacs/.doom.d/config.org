@@ -85,6 +85,9 @@ EXWM config is too big, so it was extracted to a separate [[../.doom.d/modules/a
   (desktop-environment-screenshot-directory (expand-file-name "~/Downloads"))
 
   :config
+  ; dunno, but doom resets the fontspec. Let me fix it here
+  (set-fontset-font t 'emoji "Noto Color Emoji") ; 💪
+
   (desktop-environment-mode)
   (exwm-input-set-key (kbd "<f13> <f12>") #'desktop-environment-screenshot)
   (after! emms
@@ -490,13 +493,14 @@ query_entries() {
 (use-package! emms
   ;; (emms-source-file-directory-tree-function 'emms-source-file-directory-tree-find)
   ;; (emms-browser-covers 'emms-browser-cache-thumbnail)
+  :custom
+  (emms-player-mpv-update-metadata t)
 
   :config
   (emms-all)
   (emms-history-load)
   (setq emms-player-list (list emms-player-mpv)
         emms-playlist-buffer-name "*Music*"
-        emms-player-mpv-update-metadata t
         emms-source-file-default-directory (expand-file-name "~/Music/")))
 
 (use-package! emms-player-spotify
@@ -511,10 +515,6 @@ query_entries() {
   (if (string-empty-p counsel-spotify-client-secret)
       (setq counsel-spotify-client-id (+pass-get-field "Sites/spotify.com" "client-id")
             counsel-spotify-client-secret (+pass-get-field "Sites/spotify.com" "client-secret")))
-
-  ;; fix utf8 names
-  (cl-defmethod counsel-spotify-format :around (element)
-    (propertize (cl-call-next-method) 'spotify-object element))
 
   (defun emms-player-spotify-expand-album (id)
     (counsel-spotify-with-auth-token (auth-token)
@@ -543,7 +543,8 @@ query_entries() {
        (t
         (let ((track (emms-track 'url (uri playable))))
           (emms-track-set track 'info-artist "Spotify Playlist")
-          (emms-track-set track 'info-title (name playable))
+          (emms-track-set track 'info-title
+                          (decode-coding-string (string-make-unibyte (name playable)) 'utf-8))
           (emms-playlist-insert-track track)
           (emms-playlist-mode-play-current-track)))))))
 #+end_src
@@ -910,4 +911,29 @@ fi
 
 (after! telega
   (advice-add 'ivy-telega-chat-with :around #'sarg/ad-selfcontrol-otp-confirm))
+#+end_src
+
+** fate
+#+begin_src elisp :tangle no
+(use-package! fate
+  :disabled
+  :load-path "~/devel/ext/fate"
+  :config
+  (setq fate:data-file "~/.events/win")
+
+  (defun fate:buffer-string (buffer)
+    "Return either path or name of BUFFER."
+    (or (buffer-file-name buffer)
+        (buffer-name buffer)))
+
+  (defun fate:log-state (state)
+    "Write STATE to the database file."
+    (write-region state nil fate:data-file 'append :inhibit))
+
+  (defun fate:state-string-base (left right)
+    "Represent state using LEFT and RIGHT."
+    (format "%s;win;%s;%s\n"
+            (format-time-string "%s.%6N")
+            (fate:escape left)
+            (fate:escape right))))
 #+end_src

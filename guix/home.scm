@@ -40,7 +40,7 @@
 (define %pkg-fonts
   '("font-fira-code"
     "font-openmoji"
-    "font-google-noto-emoji"
+    "font-google-noto-emoji" ; 💪
     "font-hack"
     "font-terminus"))
 

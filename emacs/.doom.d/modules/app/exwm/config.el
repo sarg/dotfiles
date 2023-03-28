@@ -79,6 +79,7 @@
           ((equal exwm-class-name "qutebrowser")
            workspace ,(exwm-workspace-name-to-index "brow")))))
 
+;; Minor mode to disable the screensaver when one or more X clients are fullscreen. ;;
 (use-package! exwm-ss
   :defer t
   :after exwm
@@ -96,25 +97,3 @@
   (set-popup-rule! "^\\*exwm-edit"
     :side 'bottom :size 0.2
     :select t :quit nil :ttl t))
-
-(use-package! fate
-  :disabled
-  :load-path "~/devel/ext/fate"
-  :config
-  (setq fate:data-file "~/.events/win")
-
-  (defun fate:buffer-string (buffer)
-    "Return either path or name of BUFFER."
-    (or (buffer-file-name buffer)
-        (buffer-name buffer)))
-
-  (defun fate:log-state (state)
-    "Write STATE to the database file."
-    (write-region state nil fate:data-file 'append :inhibit))
-
-  (defun fate:state-string-base (left right)
-    "Represent state using LEFT and RIGHT."
-    (format "%s;win;%s;%s\n"
-            (format-time-string "%s.%6N")
-            (fate:escape left)
-            (fate:escape right))))
