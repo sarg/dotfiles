@@ -8,10 +8,10 @@
                      :cursor (xcb:cursor:load-cursor exwm--connection "left_ptr"))))
 
 (defun doom/exwm-new-window-hook ()
-  (doom-mark-buffer-as-real-h)
   ;; no modelines please
-  (+modeline-mode -1)
-  (hide-mode-line-mode +1))
+  ;; (+modeline-mode -1)
+  ;; (hide-mode-line-mode +1)
+  (doom-mark-buffer-as-real-h))
 
 (use-package! exwm
   :commands (exwm-enable exwm-init)
@@ -34,36 +34,14 @@
 
   (add-to-list 'evil-emacs-state-modes 'exwm-mode)
 
-  ;; All buffers created in EXWM mode are named "*EXWM*". You may want to change
-  ;; it in `exwm-update-class-hook' and `exwm-update-title-hook', which are run
-  ;; when a new window class name or title is available. Here's some advice on
-  ;; this subject:
-  ;; + Always use `exwm-workspace-rename-buffer` to avoid naming conflict.
-  ;; + Only renaming buffer in one hook and avoid it in the other. There's no
-  ;;   guarantee on the order in which they are run.
-  ;; + For applications with multiple windows (e.g. GIMP), the class names of all
-  ;;   windows are probably the same. Using window titles for them makes more
-  ;;   sense.
-  ;; + Some application change its title frequently (e.g. browser, terminal).
-  ;;   Its class name may be more suitable for such case.
-  ;; In the following example, we use class names for all windows expect for
-  ;; Java applications and GIMP.
-  ;;
-  (defun meaningful-title? ()
-    (or (string-prefix-p "sun-awt-X11-" exwm-instance-name)
-        (string= "qutebrowser" exwm-class-name)
-        (string= "OpenSCAD" exwm-class-name)
-        (string= "gimp" exwm-instance-name)))
-
-  (add-hook 'exwm-update-class-hook
-            (lambda ()
-              (unless (meaningful-title?)
-                (exwm-workspace-rename-buffer exwm-class-name))))
-
   (add-hook 'exwm-update-title-hook
-            (lambda ()
-              (when (or (not exwm-instance-name) (meaningful-title?))
-                (exwm-workspace-rename-buffer exwm-title))))
+            (lambda () (exwm-workspace-rename-buffer exwm-title)))
+
+  (def-modeline! 'exwm
+                 `("" (:propertize (" " (:eval (buffer-name))) face bold))
+                 `("" mode-line-misc-info))
+
+  (set-modeline-hook! 'exwm-mode-hook 'exwm)
 
   (setq exwm-layout-show-all-buffers t
         exwm-workspace-show-all-buffers t)
