@@ -495,13 +495,29 @@ query_entries() {
   ;; (emms-browser-covers 'emms-browser-cache-thumbnail)
   :custom
   (emms-player-mpv-update-metadata t)
+  (emms-playlist-buffer-name "*Music*")
+  (emms-source-file-default-directory (expand-file-name "~/Music/"))
 
   :config
-  (emms-all)
+  ; copied partially from (emms-all)
+  (eval-and-compile
+    (require 'emms-source-file)
+    (require 'emms-source-playlist)
+    (require 'emms-playlist-mode)
+    (require 'emms-info)
+    (require 'emms-player-mpv)
+    (require 'emms-cache)
+    (require 'emms-mark)
+    (require 'emms-last-played)
+    (require 'emms-metaplaylist-mode)
+    (require 'emms-history))
+
+  (setq emms-playlist-default-major-mode #'emms-playlist-mode)
+  (setq emms-track-description-function #'emms-info-track-description)
+  (emms-cache 1)
+  (add-hook 'emms-player-started-hook #'emms-last-played-update-current)
   (emms-history-load)
-  (setq emms-player-list (list emms-player-mpv)
-        emms-playlist-buffer-name "*Music*"
-        emms-source-file-default-directory (expand-file-name "~/Music/")))
+  (setq emms-player-list (list emms-player-mpv)))
 
 (use-package! emms-player-spotify
   :config
