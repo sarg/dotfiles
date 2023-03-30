@@ -86,7 +86,7 @@ EXWM config is too big, so it was extracted to a separate [[../.doom.d/modules/a
 
   :config
   ; dunno, but doom resets the fontspec. Let me fix it here
-  (set-fontset-font t 'emoji "Noto Color Emoji") ; 💪
+  (set-fontset-font t 'unicode "Noto Color Emoji" nil 'append) ; 💪🕹
 
   (desktop-environment-mode)
   (exwm-input-set-key (kbd "<f13> <f12>") #'desktop-environment-screenshot)
@@ -230,6 +230,9 @@ plocate -d /storage/500gb.plocate $@
 
 #+begin_src elisp
 (use-package! bufler
+  :init
+  (set-popup-rule! "^\\*Bufler\\*$" :ignore t)
+
   :config
   (after! exwm
     (exwm-input-set-key (kbd "s-b") #'bufler-switch-buffer))
@@ -486,11 +489,25 @@ query_entries() {
 (package! emms :built-in 'prefer)
 (package! emms-player-spotify
   :recipe (:host github :repo "sarg/emms-spotify")
-  :pin "96e1eec3e5cf3595c5ca0f1f15a85ca0275be2b1")
+  :pin "53b7b87dc120b498007a20c1070f1a4b8bd9822e")
 (package! counsel-spotify :pin "2743ad52a9def53534fd505397fbe1ac49e53015")
 #+end_src
 #+begin_src elisp
+(defun dont-kill-buffer--hook ()
+  (bury-buffer)
+  (user-error "Don' kill me."))
+
+(define-minor-mode dont-kill-buffer-mode
+  "Don't kill buffer, just bury it."
+  :global nil
+
+  (if dont-kill-buffer-mode
+      (add-hook 'kill-buffer-hook #'dont-kill-buffer--hook 0 t)
+    (remove-hook 'kill-buffer-hook #'dont-kill-buffer--hook t)))
+
 (use-package! emms
+  :hook (emms-playlist-mode . dont-kill-buffer-mode)
+
   ;; (emms-source-file-directory-tree-function 'emms-source-file-directory-tree-find)
   ;; (emms-browser-covers 'emms-browser-cache-thumbnail)
   :custom
@@ -499,33 +516,35 @@ query_entries() {
   (emms-source-file-default-directory (expand-file-name "~/Music/"))
 
   :config
-  ; copied partially from (emms-all)
-  (eval-and-compile
-    (require 'emms-source-file)
-    (require 'emms-source-playlist)
-    (require 'emms-playlist-mode)
-    (require 'emms-info)
-    (require 'emms-player-mpv)
-    (require 'emms-cache)
-    (require 'emms-mark)
-    (require 'emms-last-played)
-    (require 'emms-metaplaylist-mode)
-    (require 'emms-history))
+  (set-popup-rule!
+    (lambda (buffer action)
+      (buffer-local-value 'emms-playlist-buffer-p (get-buffer buffer)))
+    :ttl nil
+    :quit 'current
+    :select t
+    :modeline '("" emms-mode-line-string emms-playing-time-string)
+    :height 15)
 
-  (setq emms-playlist-default-major-mode #'emms-playlist-mode)
-  (setq emms-track-description-function #'emms-info-track-description)
-  (emms-cache 1)
-  (add-hook 'emms-player-started-hook #'emms-last-played-update-current)
+  (emms-all)
+
+  ; don't show mode-line globally, to be shown only in the popup buffer
+  (delq 'emms-mode-line-string global-mode-string)
+  (delq 'emms-playing-time-string global-mode-string)
+
   (emms-history-load)
   (setq emms-player-list (list emms-player-mpv)))
 
 (use-package! emms-player-spotify
-  :config
+  :custom
   (emms-player-spotify-adblock t)
+
+  :config
   (add-to-list 'emms-player-list emms-player-spotify))
 
 (use-package! counsel-spotify
   :defer t
+  :custom
+  (counsel-spotify-use-notifications nil) ; conflicts with handlers of emms-player-spotify
 
   :config
   (if (string-empty-p counsel-spotify-client-secret)
@@ -791,6 +810,12 @@ emacsclient --eval "(message-mailto \"$1\")"
 
 * bindings
 #+begin_src elisp
+(defun =emms ()
+  (interactive)
+  ;; (display-buffer emms-playlist-buffer)
+  (cl-letf (((symbol-function 'switch-to-buffer) #'display-buffer))
+    (emms)))
+
 (map!
  "C-x b" #'bufler-switch-buffer
 
@@ -799,7 +824,10 @@ emacsclient --eval "(message-mailto \"$1\")"
   :n "K" #'dired-do-kill-lines)
 
  (:map image-mode-map
-   :n "q" #'kill-current-buffer))
+  :n "q" #'kill-current-buffer)
+
+ :leader
+ :desc "Music" "oM" #'=emms)
 #+end_src
 ** exwm
 #+begin_src elisp :tangle no :results value pp :wrap example elisp :exports both
@@ -848,10 +876,6 @@ emacsclient --eval "(message-mailto \"$1\")"
   (sarg/run-or-raise "qutebrowser" "qutebrowser")
   (exwm-workspace-switch
    (exwm-workspace-name-to-index "brow")))
- ("s-b" . bufler-switch-buffer)
- ("s-g" . linkmarks-select)
- ("<f13> <f12>" . desktop-environment-screenshot)
- ("<XF86AudioStop>" . desktop-environment-music-stop)
  ("<XF86AudioNext>" . desktop-environment-music-next)
  ("<XF86AudioPrev>" . desktop-environment-music-previous)
  ("<XF86AudioPlay>" . desktop-environment-toggle-music)
@@ -870,7 +894,10 @@ emacsclient --eval "(message-mailto \"$1\")"
  ("S-<XF86MonBrightnessDown>" . desktop-environment-brightness-decrement-slowly)
  ("S-<XF86MonBrightnessUp>" . desktop-environment-brightness-increment-slowly)
  ("<XF86MonBrightnessDown>" . desktop-environment-brightness-decrement)
- ("<XF86MonBrightnessUp>" . desktop-environment-brightness-increment))
+ ("<XF86MonBrightnessUp>" . desktop-environment-brightness-increment)
+ ("<f13> <f12>" . desktop-environment-screenshot)
+ ("s-b" . bufler-switch-buffer)
+ ("s-g" . linkmarks-select))
 #+end_example
 
 * archive :noexport:
