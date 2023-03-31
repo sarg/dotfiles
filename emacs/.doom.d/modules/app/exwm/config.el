@@ -38,7 +38,7 @@
             (lambda () (exwm-workspace-rename-buffer exwm-title)))
 
   (def-modeline! 'exwm
-                 `("" (:propertize (" " (:eval (buffer-name))) face bold))
+                 `("" (:eval (buffer-name)))
                  `("" mode-line-misc-info))
 
   (set-modeline-hook! 'exwm-mode-hook 'exwm)

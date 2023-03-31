@@ -54,6 +54,23 @@ To define guix dependencies add a source code block with =:noweb-ref guix-pkg= a
  :email       (mu4e +gmail)
  :config      (default +bindings +smartparens) literate)
 #+end_src
+** modeline
+#+begin_src elisp
+(setq! +modeline-encoding nil
+       +modeline-height 20)
+
+;; (setq directory-abbrev-alist
+;;       '(("^/storage/devel/" . "~/devel/")))
+
+(def-modeline! :main
+  '("" +modeline-buffer-identification) `(""))
+(set-modeline! :main 'default)
+
+(def-modeline! 'project
+  `(""
+    (:propertize ("" (:eval (abbreviate-file-name default-directory)))))
+  '(""))
+#+end_src
 * exwm
 EXWM config is too big, so it was extracted to a separate [[../.doom.d/modules/app/exwm][doom app]].
 
@@ -206,9 +223,6 @@ plocate -d /storage/500gb.plocate $@
 #+end_src
 
 #+begin_src elisp
-(setq +modeline-encoding nil
-      +modeline-height 20)
-
 ;; C-h deletes character backwards
 (define-key key-translation-map [?\C-h] [?\C-?])
 
@@ -640,10 +654,18 @@ Actions=new-window;new-instance;
 #+begin_src shell :tangle ~/.local/bin/emacs-mail :shebang #!/bin/sh
 emacsclient --eval "(message-mailto \"$1\")"
 #+end_src
+#+begin_src elisp :tangle packages.el
+(package! mu4e-alert :disable t)
+#+end_src
 #+begin_src elisp
 (defun sarg/ensure-msmtp-pass-available ()
   (interactive)
   (auth-source-pass-get (concat "Email/" user-mail-address) 'secret))
+
+(use-package! mu4e-alert
+  :disabled
+  :custom
+  (mu4e-alert-interesting-mail-query mu4e-filter-inbox))
 
 (after! mu4e
   (set-popup-rule! "^\\*mu4e-main\\*$" :ignore t)
@@ -651,8 +673,7 @@ emacsclient --eval "(message-mailto \"$1\")"
   (setq mu4e-filter-inbox "flag:unread AND NOT flag:trashed AND maildir:/gmail/Inbox"
         mu4e-bookmarks `((,mu4e-filter-inbox "Gmail messages" ?u)
                          ("date:today..now AND NOT flag:trashed AND NOT maildir:/gmail/trash" "Today's messages" 116))
-
-        mu4e-alert-interesting-mail-query mu4e-filter-inbox)
+        mu4e-modeline-support nil)
 
   (add-to-list 'mm-body-charset-encoding-alist '(utf-8 . 8bit))
   (advice-add 'sendmail-send-it
