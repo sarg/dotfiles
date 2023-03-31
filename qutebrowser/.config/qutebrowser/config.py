@@ -6,6 +6,7 @@ import urllog
 c.auto_save.session = True
 c.backend = 'webengine'
 c.qt.force_platform = 'xcb'
+c.statusbar.show = 'in-mode'
 
 c.content.cookies.accept = 'no-3rdparty'
 
@@ -76,8 +77,7 @@ config.bind('t', 'set-cmd-text -s :open -t')
 config.bind('T', 'set-cmd-text :open -t -i {url:pretty}')
 config.bind('xx', 'spawn -u orgprotocol')
 config.bind('xp', 'spawn -u password_fill')
-config.bind('xo', 'spawn -u qute-pass')
-config.bind('xg', 'spawn chromium {url}')
+config.bind('xm', 'spawn mpv {url}')
 
 config.bind('<Ctrl-w>', 'fake-key <Ctrl-Backspace>', mode='insert')
 config.bind('<Ctrl-h>', 'fake-key <Backspace>', mode='insert')
