@@ -50,7 +50,7 @@ To define guix dependencies add a source code block with =:noweb-ref guix-pkg= a
  :lang        clojure data emacs-lisp
  (org +contacts +dragndrop +pandoc +present +hugo +roam2) beancount
  rest sh plantuml (python +pyenv +lsp) (web +html) yaml json
- :app         calendar telega (rss +org) torrent exwm irc
+ :app         calendar telega (rss +org) torrent exwm irc emms
  :email       (mu4e +gmail)
  :config      (default +bindings +smartparens) literate)
 #+end_src
@@ -500,10 +500,10 @@ query_entries() {
 "emacs-emms"
 #+end_src
 #+begin_src elisp :tangle packages.el
-(package! emms :built-in 'prefer)
+(package! emms :built-in 't)
 (package! emms-player-spotify
   :recipe (:host github :repo "sarg/emms-spotify")
-  :pin "53b7b87dc120b498007a20c1070f1a4b8bd9822e")
+  :pin "70104d96a487ae7ac4aa7668dc78256e7c3c3b2d")
 (package! counsel-spotify :pin "2743ad52a9def53534fd505397fbe1ac49e53015")
 #+end_src
 #+begin_src elisp
@@ -550,7 +550,9 @@ query_entries() {
 
 (use-package! emms-player-spotify
   :custom
+  (emms-player-spotify-launch-cmd "flatpak run com.spotify.Client")
   (emms-player-spotify-adblock t)
+  (emms-player-spotify-debug t)
 
   :config
   (add-to-list 'emms-player-list emms-player-spotify))
@@ -562,8 +564,12 @@ query_entries() {
 
   :config
   (if (string-empty-p counsel-spotify-client-secret)
-      (setq counsel-spotify-client-id (+pass-get-field "Sites/spotify.com" "client-id")
-            counsel-spotify-client-secret (+pass-get-field "Sites/spotify.com" "client-secret")))
+      (setq counsel-spotify-client-id (auth-source-pass-get "client-id" "Sites/spotify.com")
+            counsel-spotify-client-secret (auth-source-pass-get "client-secret" "Sites/spotify.com")))
+
+  (defun counsel-spotify--utf8 (str)
+    (when str
+    (decode-coding-string (string-make-unibyte str) 'utf-8)))
 
   (defun emms-player-spotify-expand-album (id)
     (counsel-spotify-with-auth-token (auth-token)
@@ -574,9 +580,12 @@ query_entries() {
         (goto-char (point-max))
         (ignore (mapc (lambda (el)
             (let ((track (emms-track 'url (uri el))))
-              (emms-track-set track 'info-title (name el))
-              (emms-track-set track 'info-artist (name (artist el)))
-              (emms-track-set track 'info-album (name (album el)))
+              (emms-track-set track 'info-title
+                              (counsel-spotify--utf8 (name el)))
+              (emms-track-set track 'info-artist
+                              (counsel-spotify--utf8 (name (artist el))))
+              (emms-track-set track 'info-album
+                              (counsel-spotify--utf8 (name (album el))))
               (emms-track-set track 'info-playing-time (millis-to-seconds (duration-in-ms el)))
               (emms-playlist-insert-track track)))
           (counsel-spotify-parse-items (list (cons 'tracks results)) 'tracks)))))))

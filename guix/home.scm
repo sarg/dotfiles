@@ -27,9 +27,8 @@
   '("aria2" "curl" "rsync" "plocate"
     "atool" "p7zip" "unzip" "jq"
     "ripgrep" "moreutils" "libiconv"
-    "powertop" "graphviz"
-    "bind:utils"                        ; dig
-    "borgmatic" "flatpak" "flatpak-xdg-utils"
+    "powertop" "graphviz" "borgmatic" "bind:utils"  ; dig
+    "flatpak" "flatpak-xdg-utils" "xdg-desktop-portal"
     "lshw" "strace" "nftables" "file"))
 
 (define %pkg-desktop
@@ -147,6 +146,11 @@
                                                "gtk-icon-theme-name=\"Adwaita\"\n"
                                                "gtk-font-name=\"Fira Code 12\"\n"
                                                "gtk-cursor-theme-name=\"Adwaita\""))
+
+                            (".config/flameshot/flameshot.ini"
+                             ,(mixed-text-file "flameshot.ini"
+                                               "[General]\n"
+                                               "disabledTrayIcon=true"))
 
                             (".gnupg/gpg-agent.conf"
                              ,(mixed-text-file "gpg-agent.conf"
