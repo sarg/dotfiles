@@ -284,6 +284,10 @@ plocate -d /storage/500gb.plocate $@
 #+begin_src elisp
 (setq
  org-directory (expand-file-name "~/Sync/org/")
+ org-refile-targets `((nil :maxlevel . 3)
+                      (,(expand-file-name "bookmarks.org" org-directory) :level . 1)
+                      (org-agenda-files :maxlevel . 3))
+
  org-src-window-setup 'current-window
  org-fold-catch-invisible-edits 'show-and-error)
 
@@ -503,7 +507,7 @@ query_entries() {
 (package! emms :built-in 't)
 (package! emms-player-spotify
   :recipe (:host github :repo "sarg/emms-spotify")
-  :pin "70104d96a487ae7ac4aa7668dc78256e7c3c3b2d")
+  :pin "528f6b67bbcc53442882eddfe92a6088f0cbeabe")
 (package! counsel-spotify :pin "2743ad52a9def53534fd505397fbe1ac49e53015")
 #+end_src
 #+begin_src elisp

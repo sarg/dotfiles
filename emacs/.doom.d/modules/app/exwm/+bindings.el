@@ -30,6 +30,9 @@
 (define-key exwm-mode-map [?\C-q] 'exwm-input-send-next-key)
 (define-key exwm-mode-map [?\C-c] 'nil)
 
+(setq exwm-input-resize-event 'C-down-mouse-3
+      exwm-input-move-event 'C-down-mouse-1)
+
 ;; The following example demonstrates how to use simulation keys to mimic the
 ;; behavior of Emacs. The argument to `exwm-input-set-simulation-keys' is a
 ;; list of cons cells (SRC . DEST), where SRC is the key sequence you press and
