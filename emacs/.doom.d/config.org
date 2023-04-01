@@ -507,7 +507,7 @@ query_entries() {
 (package! emms :built-in 't)
 (package! emms-player-spotify
   :recipe (:host github :repo "sarg/emms-spotify")
-  :pin "528f6b67bbcc53442882eddfe92a6088f0cbeabe")
+  :pin "14ba5a9ae5f35a5cf1aa0a8acce5afc671ca373b")
 (package! counsel-spotify :pin "2743ad52a9def53534fd505397fbe1ac49e53015")
 #+end_src
 #+begin_src elisp
@@ -530,22 +530,33 @@ query_entries() {
   ;; (emms-browser-covers 'emms-browser-cache-thumbnail)
   :custom
   (emms-player-mpv-update-metadata t)
+  (emms-mode-line-icon-enabled-p nil)
   (emms-playlist-buffer-name "*Music*")
   (emms-source-file-default-directory (expand-file-name "~/Music/"))
 
   :config
+  (defun emms/modeline-status-icon ()
+    (cond
+     ((and emms-player-playing-p emms-player-paused-p) "⏸")
+     ((and emms-player-playing-p (emms-player-get 'emms-player-spotify 'ad-blocked)) "🔇")
+     (emms-player-playing-p "⏯")
+     (t "⏹")))
+
   (set-popup-rule!
     (lambda (buffer action)
       (buffer-local-value 'emms-playlist-buffer-p (get-buffer buffer)))
     :ttl nil
     :quit 'current
     :select t
-    :modeline '("" emms-mode-line-string emms-playing-time-string)
+    :modeline '("" (:eval (emms/modeline-status-icon)) emms-mode-line-string emms-playing-time-string)
     :height 15)
+
+  (add-hook!
+    (emms-player-paused emms-player-started emms-player-stopped) #'force-mode-line-update)
 
   (emms-all)
 
-  ; don't show mode-line globally, to be shown only in the popup buffer
+  ;; don't show mode-line globally, to be shown only in the popup buffer
   (delq 'emms-mode-line-string global-mode-string)
   (delq 'emms-playing-time-string global-mode-string)
 
@@ -573,7 +584,7 @@ query_entries() {
 
   (defun counsel-spotify--utf8 (str)
     (when str
-    (decode-coding-string (string-make-unibyte str) 'utf-8)))
+      (decode-coding-string (string-make-unibyte str) 'utf-8)))
 
   (defun emms-player-spotify-expand-album (id)
     (counsel-spotify-with-auth-token (auth-token)
