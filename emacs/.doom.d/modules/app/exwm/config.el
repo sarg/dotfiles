@@ -7,6 +7,11 @@
                      :value-mask xcb:CW:Cursor
                      :cursor (xcb:cursor:load-cursor exwm--connection "left_ptr"))))
 
+(defun exwm/init ()
+  (load! "+bar")
+  (exwm/bar-mode)
+  (exwm-set-default-cursor))
+
 (defun doom/exwm-new-window-hook ()
   ;; no modelines please
   ;; (+modeline-mode -1)
@@ -15,7 +20,7 @@
 
 (use-package! exwm
   :commands (exwm-enable exwm-init)
-  :hook (exwm-init . exwm-set-default-cursor)
+  :hook (exwm-init . exwm/init)
   :hook (exwm-mode . doom/exwm-new-window-hook)
 
   :init
@@ -24,7 +29,6 @@
 
   :config
   (load! "+workspaces")
-  (load! "+polybar")
   (load! "+bindings")
   (load! "+redshift")
   (load! "+xkb-layout-switch")
@@ -39,7 +43,7 @@
 
   (def-modeline! 'exwm
                  `("" (:eval (buffer-name)))
-                 `("" mode-line-misc-info))
+                 `())
 
   (set-modeline-hook! 'exwm-mode-hook 'exwm)
 

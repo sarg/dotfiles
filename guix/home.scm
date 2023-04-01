@@ -33,7 +33,7 @@
 
 (define %pkg-desktop
   '("pavucontrol" "dunst" "flameshot"
-    "pulseaudio" "polybar" "xss-lock"
+    "pulseaudio" "polybar" "lemonbar-xft" "xss-lock"
     "redshift" "unclutter" "playerctl"))
 
 (define %pkg-fonts

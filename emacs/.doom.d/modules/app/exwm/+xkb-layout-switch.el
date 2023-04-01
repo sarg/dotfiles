@@ -1,4 +1,5 @@
 (defvar exwm-input--numGroups 2)
+(defvar exwm/input-layout-names nil)
 
 (defun exwm-input--current-group ()
   (interactive)
@@ -8,6 +9,25 @@
         'xcb:xkb:GetState
         :deviceSpec xcb:xkb:ID:UseCoreKbd))
    'group))
+
+(defun exwm-input--layout-names ()
+  (interactive)
+  (mapcar
+   (lambda (atom)
+     (slot-value
+      (xcb:+request-unchecked+reply exwm--connection
+          (make-instance
+           'xcb:GetAtomName
+           :atom atom))
+      :name))
+
+   (slot-value
+    (xcb:+request-unchecked+reply exwm--connection
+        (make-instance
+         'xcb:xkb:GetNames
+         :deviceSpec xcb:xkb:ID:UseCoreKbd
+         :which (logior 4096 4)))
+    :groups)))
 
 (defun exwm-xkb-set-layout (num)
   (interactive)
@@ -44,7 +64,10 @@
              (make-instance
               'xcb:xkb:GetControls
               :deviceSpec xcb:xkb:ID:UseCoreKbd))
-         'numGroups))
+         'numGroups)
+
+        exwm/input-layout-names
+        (exwm-input--layout-names))
 
   (add-hook! doom-switch-window #'exwm-xkb-reset-layout)
   (add-hook! exwm-exit (remove-hook! doom-switch-window #'exwm-xkb-reset-layout)))
