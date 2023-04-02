@@ -23,8 +23,7 @@
                          (exwm-workspace-switch ,i))))
 
 ;;; EWMH integration with names support
-(defvar exwm-workspace-names
-  '("code" "brow" "extr" "lisp"))
+(defvar exwm-workspace-names '())
 
 (defsubst exwm-workspace-name-to-index (name)
   "Returns workspace index by NAME."

@@ -50,9 +50,6 @@
    (mod (+ (or inc 1) (exwm-input--current-group))
         exwm-input--numGroups)))
 
-(define-key exwm-mode-map
-  (kbd "C-\\") #'exwm-xkb-next-layout)
-
 (defun exwm-xkb-reset-layout ()
   (interactive)
   (exwm-xkb-set-layout 0))
@@ -71,6 +68,3 @@
 
   (add-hook! doom-switch-window #'exwm-xkb-reset-layout)
   (add-hook! exwm-exit (remove-hook! doom-switch-window #'exwm-xkb-reset-layout)))
-
-;; (require 'exwm-xim)
-;; (exwm-xim-enable)

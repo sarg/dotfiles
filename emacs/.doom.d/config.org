@@ -41,18 +41,25 @@ To define guix dependencies add a source code block with =:noweb-ref guix-pkg= a
 (doom!
  :completion  company vertico ;(ivy +fuzzy +prescient +childframe)
  :ui          nav-flash (modeline +light) ophints (popup +all +defaults) ligatures hydra
- vc-gutter window-select treemacs
+              vc-gutter window-select treemacs
  :editor      (evil +everywhere) fold lispy snippets (format +onsave) multiple-cursors word-wrap
  :emacs       dired electric vc ibuffer undo
  :term        eshell vterm
  :tools       editorconfig (eval +overlay) (lookup +docsets) (magit) pdf (pass +auth) direnv make tree-sitter lsp
  :checkers    syntax
  :lang        clojure data emacs-lisp
- (org +contacts +dragndrop +pandoc +present +hugo +roam2) beancount
- rest sh plantuml (python +pyenv +lsp) (web +html) yaml json
- :app         calendar telega (rss +org) torrent exwm irc emms
+              (org +contacts +dragndrop +pandoc +present +hugo +roam2) beancount
+              rest sh plantuml (python +pyenv +lsp) (web +html) yaml json
+ :app         calendar telega (rss +org) torrent irc emms
+              (exwm +bar)
  :email       (mu4e +gmail)
  :config      (default +bindings +smartparens) literate)
+#+end_src
+** font fix
+Dunno, but doom resets the fontspec. Let me fix it here.
+#+begin_src elisp
+(add-hook! after-setting-font :append
+  (set-fontset-font t 'unicode "Noto Color Emoji" nil 'append)) ; 💪🕹
 #+end_src
 ** modeline
 #+begin_src elisp
@@ -72,10 +79,92 @@ To define guix dependencies add a source code block with =:noweb-ref guix-pkg= a
   '(""))
 #+end_src
 * exwm
-EXWM config is too big, so it was extracted to a separate [[../.doom.d/modules/app/exwm][doom app]].
-
+EXWM has a separate [[../.doom.d/modules/app/exwm][doom app]]. Here are just the settings.
 #+begin_src scheme :noweb-ref guix-pkg
 "emacs-exwm"
+#+end_src
+** bar
+#+begin_src elisp
+(setq battery-mode-line-format "%b%>2p%"
+      battery-mode-line-limit 50)
+(display-battery-mode 1)
+
+(setq exwm/bar-mode-line-format '(""
+                    (-2 (:eval (exwm/bar-input-layout-segment))) " "
+                    battery-mode-line-string " "
+                    (:eval (format-time-string "%a %d %R"))))
+#+end_src
+** workspaces
+#+begin_src elisp
+(after! exwm
+  (setq exwm-workspace-names '("code" "brow" "extr" "lisp")))
+#+end_src
+** per-app settings
+#+begin_src elisp
+(after! exwm
+  (setq exwm-manage-configurations
+        `(((-any? (lambda (el) (equal exwm-class-name el))
+            '("mpv" "scrcpy" "AusweisApp2"))
+           floating t
+           floating-mode-line nil)
+          ((equal exwm-class-name "qutebrowser")
+           workspace ,(exwm-workspace-name-to-index "brow")))))
+#+end_src
+** bindings
+*** simulation
+When this key event occurs, replace it with another.
+#+begin_src elisp
+(setq exwm-input-simulation-keys
+      `((,(kbd "C-m") . return)
+        (,(kbd "DEL") . backspace)
+
+        ; key h in ru layout
+        (,(kbd "C-р") . backspace)))
+#+end_src
+*** floating
+As I've remapped =LWIN= to =F13=, I've lost the floating window resize/move bindings.
+Let's restore them with =Ctrl= instead of =Super=.
+#+begin_src elisp
+(setq exwm-input-resize-event 'C-down-mouse-3
+      exwm-input-move-event 'C-down-mouse-1)
+#+end_src
+*** prefix
+These are not full bindings, but the first keys in some sequence. Tell EXWM to
+send these events to emacs.
+#+begin_src elisp
+(setq exwm-input-prefix-keys
+      `([f13]
+        ?\C-w ?\C-x ?\M-x ?\M-m ?\C-g
+        ?\C-m ?\C-h
+
+        ;; cyrillic
+        ?\C-р))
+#+end_src
+*** x11-only
+These are bound only for X11 apps.
+#+begin_src elisp
+(define-key! exwm-mode-map
+  ;; consistent layout switch binding
+  [?\C-\\] 'exwm-xkb-next-layout
+
+  ;; this undoes exwm-input-prefix-keys for the next keypress
+  [?\C-q] 'exwm-input-send-next-key
+
+  ;; remove the default EXWM bindings
+  [?\C-c] 'nil)
+#+end_src
+*** global
+#+begin_src elisp
+(exwm/bind-command
+ "<f13> r"     #'app-launcher-run-app
+
+ "<f13> h"     #'evil-window-left
+ "<f13> j"     #'evil-window-down
+ "<f13> k"     #'evil-window-up
+ "<f13> l"     #'evil-window-right
+ "<f13> e"    `(lambda () (interactive)
+                 (exwm/run-or-raise "qutebrowser" "qutebrowser")
+                 (exwm-workspace-switch (exwm-workspace-name-to-index "brow"))))
 #+end_src
 
 * desktop
@@ -85,6 +174,7 @@ EXWM config is too big, so it was extracted to a separate [[../.doom.d/modules/a
 #+begin_src elisp :tangle packages.el
 (package! desktop-environment :built-in t)
 #+end_src
+** multimedia keys
 #+begin_src elisp
 (use-package! desktop-environment
   :after exwm
@@ -102,9 +192,6 @@ EXWM config is too big, so it was extracted to a separate [[../.doom.d/modules/a
   (desktop-environment-screenshot-directory (expand-file-name "~/Downloads"))
 
   :config
-  ; dunno, but doom resets the fontspec. Let me fix it here
-  (set-fontset-font t 'unicode "Noto Color Emoji" nil 'append) ; 💪🕹
-
   (desktop-environment-mode)
   (exwm-input-set-key (kbd "<f13> <f12>") #'desktop-environment-screenshot)
   (after! emms
@@ -115,6 +202,27 @@ EXWM config is too big, so it was extracted to a separate [[../.doom.d/modules/a
     (advice-add 'desktop-environment-music-next :override
                 (lambda () (if emms-random-playlist (emms-random) (emms-next))))
     (advice-add 'desktop-environment-music-previous :override #'emms-previous)))
+#+end_src
+** redshift
+#+begin_src elisp
+(defvar sarg-redshift-timer 'nil
+  "Stores redshift-adjust timer")
+
+(defun sarg/redshift-adjust ()
+  (interactive)
+  (start-process-shell-command "redshift" nil "redshift -m randr -Po"))
+
+(defun sarg/redshift-start ()
+  (interactive)
+  (unless sarg-redshift-timer
+    (setq sarg-redshift-timer (run-at-time nil 60 #'sarg/redshift-adjust))))
+
+(defun sarg/redshift-cancel ()
+  (interactive)
+  (when sarg-redshift-timer (cancel-timer sarg-redshift-timer))
+  (start-process-shell-command "redshift" nil "redshift -x"))
+
+(add-hook! exwm-init #'sarg/redshift-start)
 #+end_src
 ** wpa-manager
 #+begin_src elisp :tangle packages.el :exports none
@@ -147,8 +255,10 @@ EXWM config is too big, so it was extracted to a separate [[../.doom.d/modules/a
 #+end_src
 ** udisks
 #+begin_src elisp :tangle packages.el
-(package! debase :recipe (:host codeberg :repo "emacs-weirdware/debase") :pin "0b6fc2af3440d68798e3a85d4c889341aae07936")
-(package! discomfort :recipe (:host codeberg :repo "emacs-weirdware/discomfort") :pin "873eea833bbae7196b92bb1102494b8bf5dc5df6")
+(package! debase :recipe (:host codeberg :repo "emacs-weirdware/debase")
+  :pin "0b6fc2af3440d68798e3a85d4c889341aae07936")
+(package! discomfort :recipe (:host codeberg :repo "emacs-weirdware/discomfort")
+  :pin "873eea833bbae7196b92bb1102494b8bf5dc5df6")
 #+end_src
 #+begin_src elisp
 (use-package! discomfort
@@ -190,7 +300,7 @@ EXWM config is too big, so it was extracted to a separate [[../.doom.d/modules/a
 #+begin_src scheme :noweb-ref guix-pkg
 "emacs-pinentry"
 #+end_src
-#+begin_src elisp :tangle packages.el :exports none
+#+begin_src elisp :tangle packages.el
 (package! pinentry :built-in t)
 #+end_src
 #+begin_src elisp
