@@ -48,7 +48,7 @@
 
   (add-to-list 'evil-emacs-state-modes 'exwm-mode)
 
-  (def-modeline! 'exwm `("%b") `())
+  (def-modeline! 'exwm `(" %b") `())
   (set-modeline-hook! 'exwm-mode-hook 'exwm)
 
   (setq exwm-layout-show-all-buffers t

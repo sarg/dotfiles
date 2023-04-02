@@ -66,17 +66,12 @@ Dunno, but doom resets the fontspec. Let me fix it here.
 (setq! +modeline-encoding nil
        +modeline-height 20)
 
-;; (setq directory-abbrev-alist
-;;       '(("^/storage/devel/" . "~/devel/")))
-
 (def-modeline! :main
-  '("" +modeline-buffer-identification) `(""))
+  '(" " +modeline-buffer-identification) `(""))
 (set-modeline! :main 'default)
 
 (def-modeline! 'project
-  `(""
-    (:propertize ("" (:eval (abbreviate-file-name default-directory)))))
-  '(""))
+  `(" " (:eval (abbreviate-file-name default-directory))) '(""))
 #+end_src
 * exwm
 EXWM has a separate [[../.doom.d/modules/app/exwm][doom app]]. Here are just the settings.
