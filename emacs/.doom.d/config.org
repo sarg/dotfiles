@@ -296,6 +296,7 @@ These are bound only for X11 apps.
 * emacs screencast recording
 #+begin_src elisp :tangle packages.el
 (package! command-log-mode :pin "af600e6b4129c8115f464af576505ea8e789db27")
+;(package! keycast)
 ;(package! camcorder) autoloads fail because of names.el usage. todo: debug
 #+end_src
 
@@ -364,9 +365,7 @@ plocate -d /storage/500gb.plocate $@
      (auto-directory))))
 #+end_src
 * org mode
-- [ ] TODO: Replace linkmarks with bookmark+
 #+begin_src elisp :tangle packages.el
-(package! linkmarks :recipe (:host github :repo "dustinlacewell/linkmarks") :pin "914bcb9172c5a9c7cab88de31e359de595e85021")
 (package! org-modern-indent
     :recipe (:host github :repo "jdtsmith/org-modern-indent")
     :pin "c5a50f302dc1053d5b498e0ea2bc0ee233e8e1b8")
@@ -395,14 +394,6 @@ plocate -d /storage/500gb.plocate $@
 
 (use-package! org-modern-indent
   :hook org-mode)
-
-(use-package! linkmarks
-  :custom
-  (linkmarks-file (expand-file-name "links.org" org-directory))
-
-  :config
-  (after! exwm
-    (exwm-input-set-key (kbd "s-g") #'linkmarks-select)))
 
 (after! org-download
   (setq org-download-screenshot-method "flameshot gui --raw > %s"))
@@ -992,6 +983,13 @@ emacsclient --eval "(message-mailto \"$1\")"
  :leader
  :desc "Music" "oM" #'=emms)
 #+end_src
+* experimental
+** bookmark
+#+begin_src elisp :tangle packages.el
+(package! bookmark+ :recipe (:host github :repo "emacsmirror/bookmark-plus"))
+#+end_src
+#+begin_src elisp
+(use-package! bookmark+)
 #+end_src
 * archive :noexport:
 ** emacs-one-frame
