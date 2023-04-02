@@ -168,40 +168,25 @@ These are bound only for X11 apps.
 #+end_src
 
 * desktop
-#+begin_src scheme :noweb-ref guix-pkg
-"emacs-desktop-environment"
-#+end_src
-#+begin_src elisp :tangle packages.el
-(package! desktop-environment :built-in t)
-#+end_src
 ** multimedia keys
 #+begin_src elisp
-(use-package! desktop-environment
-  :after exwm
-  :custom
-  (desktop-environment-volume-get-command "pactl get-sink-volume @DEFAULT_SINK@")
-  (desktop-environment-volume-set-command "pactl set-sink-volume @DEFAULT_SINK@ %s")
-  (desktop-environment-volume-toggle-command "pactl set-sink-mute @DEFAULT_SINK@ toggle")
-  (desktop-environment-volume-toggle-microphone-command "pactl set-source-mute @DEFAULT_SOURCE@ toggle")
-  (desktop-environment-volume-small-decrement "-1%")
-  (desktop-environment-volume-small-increment "+1%")
-  (desktop-environment-volume-normal-decrement "-5%")
-  (desktop-environment-volume-normal-increment "+5%")
-  (desktop-environment-screenlock-command "lock.sh")
-  (desktop-environment-screenshot-command "flameshot gui")
-  (desktop-environment-screenshot-directory (expand-file-name "~/Downloads"))
+(exwm/bind-command
+   "<XF86MonBrightnessUp>" "brightnessctl -e set 10%+"
+   "<XF86MonBrightnessDown>" "brightnessctl -e set 10%-")
 
-  :config
-  (desktop-environment-mode)
-  (exwm-input-set-key (kbd "<f13> <f12>") #'desktop-environment-screenshot)
-  (after! emms
-    ; playerctl doesn't play nicely with emms-mpris under exwm (user input blocks because of singlethreadness)
-    ; and when controlling spotify directly, Next command just pauses, as automatic play is disabled in the app
-    ; so override the controls to point to emms functions
-    (advice-add 'desktop-environment-toggle-music :override #'emms-player-pause)
-    (advice-add 'desktop-environment-music-next :override
-                (lambda () (if emms-random-playlist (emms-random) (emms-next))))
-    (advice-add 'desktop-environment-music-previous :override #'emms-previous)))
+(after! emms
+  (exwm/bind-command
+   "<XF86AudioRaiseVolume>" #'emms-volume-raise
+   "<XF86AudioLowerVolume>" #'emms-volume-lower
+   "<XF86AudioMute>" "pactl set-sink-mute @DEFAULT_SINK@ toggle"
+   "<XF86AudioMicMute>" "pactl set-source-mute @DEFAULT_SOURCE@ toggle"
+   "<XF86AudioPlay>" #'emms-pause
+   "<XF86AudioPrev>" #'emms-previous
+   "<XF86AudioNext>" (lambda () (interactive) (if emms-random-playlist (emms-random) (emms-next)))))
+
+(exwm/bind-command
+   "<XF86ScreenSaver>" "lock.sh"
+   "<f13> <f12>" "flameshout gui")
 #+end_src
 ** redshift
 #+begin_src elisp

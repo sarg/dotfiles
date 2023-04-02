@@ -10,8 +10,10 @@
 (defun exwm/bind-command (key command &rest bindings)
   (while key
     (exwm-input-set-key (if (vectorp key) key (kbd key))
-                        command)
-    (setq key     (pop bindings)
+                        (if (functionp command) command
+                          `(lambda () (interactive)
+                            (start-process-shell-command "exwm-bind" nil ,command))))
+    (setq key (pop bindings)
           command (pop bindings))))
 
 (defun exwm/run-or-raise (NAME PROGRAM &rest ARGS)
