@@ -617,7 +617,7 @@ query_entries() {
 (package! emms :built-in 't)
 (package! emms-player-spotify
   :recipe (:host github :repo "sarg/emms-spotify")
-  :pin "14ba5a9ae5f35a5cf1aa0a8acce5afc671ca373b")
+  :pin "f61824453a89ac61b1b106a1350dd2f8d44ca149")
 (package! counsel-spotify :pin "2743ad52a9def53534fd505397fbe1ac49e53015")
 #+end_src
 #+begin_src elisp
@@ -640,17 +640,23 @@ query_entries() {
   ;; (emms-browser-covers 'emms-browser-cache-thumbnail)
   :custom
   (emms-player-mpv-update-metadata t)
-  (emms-mode-line-icon-enabled-p nil)
   (emms-playlist-buffer-name "*Music*")
   (emms-source-file-default-directory (expand-file-name "~/Music/"))
 
   :config
   (defun emms/modeline-status-icon ()
-    (cond
-     ((and emms-player-playing-p emms-player-paused-p) "⏸")
-     ((and emms-player-playing-p (emms-player-get 'emms-player-spotify 'ad-blocked)) "🔇")
-     (emms-player-playing-p "⏯")
-     (t "⏹")))
+    (cl-destructuring-bind (text . icon)
+        (cond
+         ((and emms-player-playing-p emms-player-paused-p)
+          '("Paused" . "pause-circle"))
+         ((and emms-player-playing-p (emms-player-get 'emms-player-spotify 'ad-blocked))
+          '("Advert" . "usd"))
+         (emms-player-playing-p
+          '("Playing" . "play-circle"))
+         (t '("Stopped" . "stop-circle")))
+      (propertize (cdr (assoc icon (all-the-icons-faicon-data)))
+                  'face '(:family "FontAwesome")
+                  'rear-nonsticky t)))
 
   (set-popup-rule!
     (lambda (buffer action)
@@ -658,7 +664,7 @@ query_entries() {
     :ttl nil
     :quit 'current
     :select t
-    :modeline '("" (:eval (emms/modeline-status-icon)) emms-mode-line-string emms-playing-time-string)
+    :modeline '(" " (:eval (emms/modeline-status-icon)) emms-mode-line-string emms-playing-time-string)
     :height 15)
 
   (add-hook!
@@ -671,7 +677,8 @@ query_entries() {
   (delq 'emms-playing-time-string global-mode-string)
 
   (emms-history-load)
-  (setq emms-player-list (list emms-player-mpv)))
+  (setq emms-player-list (list emms-player-mpv)
+        emms-mode-line-icon-enabled-p nil))
 
 (use-package! emms-player-spotify
   :custom
