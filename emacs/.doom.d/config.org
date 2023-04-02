@@ -610,15 +610,12 @@ query_entries() {
 #+end_src
 
 * music
+** emms
 #+begin_src scheme :noweb-ref guix-pkg
 "emacs-emms"
 #+end_src
 #+begin_src elisp :tangle packages.el
 (package! emms :built-in 't)
-(package! emms-player-spotify
-  :recipe (:host github :repo "sarg/emms-spotify")
-  :pin "f61824453a89ac61b1b106a1350dd2f8d44ca149")
-(package! counsel-spotify :pin "2743ad52a9def53534fd505397fbe1ac49e53015")
 #+end_src
 #+begin_src elisp
 (defun dont-kill-buffer--hook ()
@@ -634,16 +631,27 @@ query_entries() {
     (remove-hook 'kill-buffer-hook #'dont-kill-buffer--hook t)))
 
 (use-package! emms
+  ;; protect the Playlists, so they could be saved in kill-emacs-hook
   :hook (emms-playlist-mode . dont-kill-buffer-mode)
 
-  ;; (emms-source-file-directory-tree-function 'emms-source-file-directory-tree-find)
-  ;; (emms-browser-covers 'emms-browser-cache-thumbnail)
   :custom
   (emms-player-mpv-update-metadata t)
   (emms-playlist-buffer-name "*Music*")
   (emms-source-file-default-directory (expand-file-name "~/Music/"))
 
   :config
+  (defun =emms ()
+    (interactive)
+    (cl-letf (((symbol-function 'switch-to-buffer) #'display-buffer))
+      (emms)))
+
+  (emms-all)
+  (emms-history-load)
+  (setq emms-player-list (list emms-player-mpv)))
+#+end_src
+*** playlist buffer
+#+begin_src elisp
+(after! emms
   (defun emms/modeline-status-icon ()
     (cl-destructuring-bind (text . icon)
         (cond
@@ -670,25 +678,34 @@ query_entries() {
   (add-hook!
     (emms-player-paused emms-player-started emms-player-stopped) #'force-mode-line-update)
 
-  (emms-all)
-
   ;; don't show mode-line globally, to be shown only in the popup buffer
+  (emms-mode-line-mode 1)
+  (setq emms-mode-line-mode-line-function #'emms-mode-line-playlist-current)
   (delq 'emms-mode-line-string global-mode-string)
-  (delq 'emms-playing-time-string global-mode-string)
-
-  (emms-history-load)
-  (setq emms-player-list (list emms-player-mpv)
-        emms-mode-line-icon-enabled-p nil))
-
+  (delq 'emms-playing-time-string global-mode-string))
+#+end_src
+** spotify
+*** player
+#+begin_src elisp :tangle packages.el
+(package! emms-player-spotify
+  :recipe (:host github :repo "sarg/emms-spotify")
+  :pin "b647f5495b493737eb1c1e9cf5522a7a2b231b69")
+#+end_src
+#+begin_src elisp
 (use-package! emms-player-spotify
   :custom
   (emms-player-spotify-launch-cmd "flatpak run com.spotify.Client")
   (emms-player-spotify-adblock t)
-  (emms-player-spotify-debug t)
 
   :config
+  (setq emms-player-spotify-debug t)
   (add-to-list 'emms-player-list emms-player-spotify))
-
+#+end_src
+*** search
+#+begin_src elisp :tangle packages.el
+(package! counsel-spotify :pin "2743ad52a9def53534fd505397fbe1ac49e53015")
+#+end_src
+#+begin_src elisp
 (use-package! counsel-spotify
   :defer t
   :custom
@@ -783,7 +800,7 @@ qutebrowser --nowindow --target tab-bg-silent $@
 #+end_src
 * email
 - [ ] TODO: fix mu4e popping up for mailto urls
-#+begin_src desktop :tangle ~/.local/share/applications/emacsclient-mail.desktop
+#+begin_src desktop :tangle ~/.local/share/applications/emacsclient-mail.desktop :exports none
 [Desktop Entry]
 Categories=Network;Email;
 Comment=GNU Emacs is an extensible, customizable text editor - and more
@@ -977,12 +994,6 @@ emacsclient --eval "(message-mailto \"$1\")"
 
 * bindings
 #+begin_src elisp
-(defun =emms ()
-  (interactive)
-  ;; (display-buffer emms-playlist-buffer)
-  (cl-letf (((symbol-function 'switch-to-buffer) #'display-buffer))
-    (emms)))
-
 (map!
  "C-x b" #'bufler-switch-buffer
 
@@ -996,77 +1007,7 @@ emacsclient --eval "(message-mailto \"$1\")"
  :leader
  :desc "Music" "oM" #'=emms)
 #+end_src
-** exwm
-#+begin_src elisp :tangle no :results value pp :wrap example elisp :exports both
-(-map (lambda (el) (cons (key-description (car el)) (cdr el)))
-      exwm-input-global-keys)
 #+end_src
-
-#+CAPTION: Just for reference
-#+RESULTS:
-#+begin_example elisp
-(("s-<tab>" . exwm-jump-to-last-exwm)
- ("<f13> 1" lambda nil
-  (interactive)
-  (exwm-workspace-switch 0))
- ("<f13> 2" lambda nil
-  (interactive)
-  (exwm-workspace-switch 1))
- ("<f13> 3" lambda nil
-  (interactive)
-  (exwm-workspace-switch 2))
- ("<f13> 4" lambda nil
-  (interactive)
-  (exwm-workspace-switch 3))
- ("<f13> 5" lambda nil
-  (interactive)
-  (exwm-workspace-switch 4))
- ("<f13> 6" lambda nil
-  (interactive)
-  (exwm-workspace-switch 5))
- ("<f13> 7" lambda nil
-  (interactive)
-  (exwm-workspace-switch 6))
- ("<f13> 8" lambda nil
-  (interactive)
-  (exwm-workspace-switch 7))
- ("<f13> 9" lambda nil
-  (interactive)
-  (exwm-workspace-switch 8))
- ("<f13> r" . app-launcher-run-app)
- ("<f13> h" . evil-window-left)
- ("<f13> j" . evil-window-down)
- ("<f13> k" . evil-window-up)
- ("<f13> l" . evil-window-right)
- ("<f13> e" lambda nil
-  (interactive)
-  (sarg/run-or-raise "qutebrowser" "qutebrowser")
-  (exwm-workspace-switch
-   (exwm-workspace-name-to-index "brow")))
- ("<XF86AudioNext>" . desktop-environment-music-next)
- ("<XF86AudioPrev>" . desktop-environment-music-previous)
- ("<XF86AudioPlay>" . desktop-environment-toggle-music)
- ("<XF86Bluetooth>" . desktop-environment-toggle-bluetooth)
- ("<XF86WLAN>" . desktop-environment-toggle-wifi)
- ("<XF86ScreenSaver>" . desktop-environment-lock-screen)
- ("s-l" . desktop-environment-lock-screen)
- ("<print>" . desktop-environment-screenshot)
- ("S-<print>" . desktop-environment-screenshot-part)
- ("<XF86AudioMicMute>" . desktop-environment-toggle-microphone-mute)
- ("<XF86AudioMute>" . desktop-environment-toggle-mute)
- ("S-<XF86AudioLowerVolume>" . desktop-environment-volume-decrement-slowly)
- ("S-<XF86AudioRaiseVolume>" . desktop-environment-volume-increment-slowly)
- ("<XF86AudioLowerVolume>" . desktop-environment-volume-decrement)
- ("<XF86AudioRaiseVolume>" . desktop-environment-volume-increment)
- ("S-<XF86MonBrightnessDown>" . desktop-environment-brightness-decrement-slowly)
- ("S-<XF86MonBrightnessUp>" . desktop-environment-brightness-increment-slowly)
- ("<XF86MonBrightnessDown>" . desktop-environment-brightness-decrement)
- ("<XF86MonBrightnessUp>" . desktop-environment-brightness-increment)
- ("<f13> <f12>" . desktop-environment-screenshot)
- ("s-b" . bufler-switch-buffer)
- ("s-g" . linkmarks-select))
-#+end_example
-
 * archive :noexport:
 ** emacs-one-frame
 #+begin_src sh :tangle no :shebang #!/bin/bash
