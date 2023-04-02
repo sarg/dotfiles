@@ -159,7 +159,7 @@ These are bound only for X11 apps.
  "<f13> l"     #'evil-window-right
  "<f13> e"    `(lambda () (interactive)
                  (unless (get-process "qutebrowser")
-                   (start-process "qutebrowser" nil "qutebrowser"))
+                   (start-process "qutebrowser" nil "setsid" "-w" "qutebrowser"))
                  (exwm-workspace-switch (exwm-workspace-name-to-index "brow"))))
 #+end_src
 
@@ -168,19 +168,7 @@ These are bound only for X11 apps.
 #+begin_src elisp
 (exwm/bind-command
    "<XF86MonBrightnessUp>" "brightnessctl -e set 10%+"
-   "<XF86MonBrightnessDown>" "brightnessctl -e set 10%-")
-
-(after! emms
-  (exwm/bind-command
-   "<XF86AudioRaiseVolume>" #'emms-volume-raise
-   "<XF86AudioLowerVolume>" #'emms-volume-lower
-   "<XF86AudioMute>" "pactl set-sink-mute @DEFAULT_SINK@ toggle"
-   "<XF86AudioMicMute>" "pactl set-source-mute @DEFAULT_SOURCE@ toggle"
-   "<XF86AudioPlay>" #'emms-pause
-   "<XF86AudioPrev>" #'emms-previous
-   "<XF86AudioNext>" (lambda () (interactive) (if emms-random-playlist (emms-random) (emms-next)))))
-
-(exwm/bind-command
+   "<XF86MonBrightnessDown>" "brightnessctl -e set 10%-"
    "<XF86ScreenSaver>" "lock.sh"
    "<f13> <f12>" "flameshout gui")
 #+end_src
@@ -656,12 +644,24 @@ query_entries() {
   (delq 'emms-mode-line-string global-mode-string)
   (delq 'emms-playing-time-string global-mode-string))
 #+end_src
+*** bindings
+#+begin_src elisp
+(after! exwm
+  (exwm/bind-command
+   "<XF86AudioRaiseVolume>" #'emms-volume-raise
+   "<XF86AudioLowerVolume>" #'emms-volume-lower
+   "<XF86AudioMute>" "pactl set-sink-mute @DEFAULT_SINK@ toggle"
+   "<XF86AudioMicMute>" "pactl set-source-mute @DEFAULT_SOURCE@ toggle"
+   "<XF86AudioPlay>" #'emms-pause
+   "<XF86AudioPrev>" #'emms-previous
+   "<XF86AudioNext>" (lambda () (interactive) (if emms-random-playlist (emms-random) (emms-next)))))
+#+end_src
 ** spotify
 *** player
 #+begin_src elisp :tangle packages.el
 (package! emms-player-spotify
   :recipe (:host github :repo "sarg/emms-spotify")
-  :pin "b647f5495b493737eb1c1e9cf5522a7a2b231b69")
+  :pin "1c9493b2d6fe1c858300ae5f6d1be08c12ad0d71")
 #+end_src
 #+begin_src elisp
 (use-package! emms-player-spotify
