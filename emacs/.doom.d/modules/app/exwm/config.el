@@ -16,15 +16,6 @@
     (setq key (pop bindings)
           command (pop bindings))))
 
-(defun exwm/run-or-raise (NAME PROGRAM &rest ARGS)
-  (let ((buf (cl-find-if
-              (lambda (buf) (string= NAME (buffer-name buf)))
-              (buffer-list))))
-
-    (if buf (switch-to-buffer buf)
-      (apply #'start-process
-             (append (list NAME nil "setsid" "-w" PROGRAM) ARGS)))))
-
 (defun exwm/init ()
   (when (modulep! +bar)
     (exwm/bar-mode))

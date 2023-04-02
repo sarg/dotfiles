@@ -163,7 +163,8 @@ These are bound only for X11 apps.
  "<f13> k"     #'evil-window-up
  "<f13> l"     #'evil-window-right
  "<f13> e"    `(lambda () (interactive)
-                 (exwm/run-or-raise "qutebrowser" "qutebrowser")
+                 (unless (get-process "qutebrowser")
+                   (start-process "qutebrowser" nil "qutebrowser"))
                  (exwm-workspace-switch (exwm-workspace-name-to-index "brow"))))
 #+end_src
 
