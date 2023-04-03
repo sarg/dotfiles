@@ -18,12 +18,9 @@ To define guix dependencies add a source code block with =:noweb-ref guix-pkg= a
  (packages
   (map (compose list specification->package+output)
        '("emacs-next"
-         "emacs-emacsql"
          "emacs-pdf-tools"
-         "emacs-telega"
-         "emacs-telega-contrib"
+         "emacs-telega" "emacs-telega-contrib"
          "emacs-vterm"
-         "avfs"
          "emacs-guix"
          <<guix-pkg>>
          ))))
@@ -149,6 +146,18 @@ These are bound only for X11 apps.
 #+end_src
 *** global
 #+begin_src elisp
+(defun exwm/switch-to-next-window (class)
+  (cl-loop
+   with first with this
+   for b being the buffers
+   for is-class = (string= class (buffer-local-value 'exwm-class-name b))
+   when is-class do
+   (setf first (or first b))
+   (setf next (and this b))
+   (setf this (or this (when (eq (current-buffer) b) b)))
+   until next
+   finally (switch-to-buffer (or next first) t t)))
+
 (exwm/bind-command
  "<f13> r"     #'app-launcher-run-app
 
@@ -157,9 +166,13 @@ These are bound only for X11 apps.
  "<f13> k"     #'evil-window-up
  "<f13> l"     #'evil-window-right
  "<f13> e"    `(lambda () (interactive)
-                 (unless (get-process "qutebrowser")
+                 (exwm-workspace-switch (exwm-workspace-name-to-index "brow"))
+                 (cond
+                  ((not (get-process "qutebrowser"))
                    (start-process "qutebrowser" nil "setsid" "-w" "qutebrowser"))
-                 (exwm-workspace-switch (exwm-workspace-name-to-index "brow"))))
+
+                  ((string= "qutebrowser" exwm-class-name)
+                   (exwm/switch-to-next-window "qutebrowser")))))
 #+end_src
 
 * desktop
@@ -922,7 +935,7 @@ emacsclient --eval "(message-mailto \"$1\")"
 #+end_src
 
 #+begin_src scheme :noweb-ref guix-pkg
-"emacs-dired-hacks" "emacs-dired-du"
+"emacs-dired-hacks" "emacs-dired-du" "avfs"
 "emacs-dired-git-info" "emacs-openwith"
 #+end_src
 

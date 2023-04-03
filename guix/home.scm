@@ -155,8 +155,9 @@
                              ,(mixed-text-file "gpg-agent.conf"
                                                "enable-ssh-support\n"
                                                "allow-emacs-pinentry\n"
-                                               "pinentry-program "
-                                               (specification->package "pinentry-emacs")
+                                               "allow-loopback-pinentry\n"
+                                               ;; https://lists.gnu.org/archive/html/emacs-devel/2018-01/msg00233.html
+                                               "pinentry-program " (specification->package "pinentry-emacs")
                                                "/bin/pinentry-emacs\n"
                                                "default-cache-ttl 86400\n"
                                                "max-cache-ttl 86400\n"))
