@@ -50,8 +50,7 @@ To define guix dependencies add a source code block with =:noweb-ref guix-pkg= a
  :lang        clojure data emacs-lisp
               (org +contacts +dragndrop +pandoc +present +hugo +roam2) beancount
               rest sh plantuml (python +pyenv +lsp) (web +html) yaml json
- :app         calendar telega (rss +org) torrent irc emms
-              (exwm +bar)
+ :app         calendar telega (rss +org) torrent irc (exwm +bar)
  :email       (mu4e +gmail)
  :config      (default +bindings +smartparens) literate)
 #+end_src
@@ -594,7 +593,12 @@ query_entries() {
   ;; protect the Playlists, so they could be saved in kill-emacs-hook
   :hook (emms-playlist-mode . dont-kill-buffer-mode)
 
+  :init
+  (setq emms-directory (concat doom-data-dir "emms")
+        emms-cache-file (concat doom-cache-dir "emms"))
+
   :custom
+  (emms-history-file "/storage/data/emacs/emms_history")
   (emms-player-mpv-update-metadata t)
   (emms-playlist-buffer-name "*Music*")
   (emms-source-file-default-directory (expand-file-name "~/Music/"))
@@ -985,6 +989,7 @@ emacsclient --eval "(message-mailto \"$1\")"
 (package! bookmark+ :recipe (:host github :repo "emacsmirror/bookmark-plus"))
 #+end_src
 #+begin_src elisp
+(setq bookmark-default-file "/storage/data/emacs/bookmarks")
 (use-package! bookmark+)
 #+end_src
 * archive :noexport:
