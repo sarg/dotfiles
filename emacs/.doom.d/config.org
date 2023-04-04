@@ -865,6 +865,11 @@ emacsclient --eval "(message-mailto \"$1\")"
     (start-process "qutebrowser-private" nil
            "qutebrowser" "--target" "private-window" url)))
 
+(use-package! mpv
+  :commands mpv-play-url
+  :custom
+  (mpv-default-options '("--force-window=immediate")))
+
 (defun browse-url-mpv (url &rest _)
   (mpv-play-url url))
 
