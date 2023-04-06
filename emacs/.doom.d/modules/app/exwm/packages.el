@@ -1,7 +1,6 @@
 ;; -*- no-byte-compile: t; -*-
 ;;; app/exwm/packages.el
 
-(package! frame-purpose :pin "57557dd87f2c43a1e43439f851e8d315da0052e2")
 (package! app-launcher :recipe (:host github :repo "sarg/app-launcher") :pin "713294ae5b6c86ea9bcb5fa248bc860615fbf78b")
 ;; (package! exwm-mff :recipe (:host github :repo "ieure/exwm-mff"))
 
