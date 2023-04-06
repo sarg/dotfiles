@@ -254,7 +254,7 @@ These are bound only for X11 apps.
 (package! circadian :pin "52e336d9bb66cfd6d6dc5b9213ea21796ac873d4")
 (package! white-sand-theme :pin "729dd52cc1936250183d6761eed406c4be514a71")
 ;(package! kaolin-themes)
-(package! doom-themes :pin "4c239dbe42232e81c28901000f435746de2a55ab")
+(package! doom-themes :pin "e4f0b006a516a35f53df2dce2ec116876c5cd7f9")
 #+end_src
 
 #+begin_src elisp
@@ -678,7 +678,7 @@ query_entries() {
 #+begin_src elisp :tangle packages.el
 (package! emms-player-spotify
   :recipe (:host github :repo "sarg/emms-spotify")
-  :pin "1c9493b2d6fe1c858300ae5f6d1be08c12ad0d71")
+  :pin "99f9ea63f17932fe4fd679cec02476cfdafc8713")
 #+end_src
 #+begin_src elisp
 (use-package! emms-player-spotify
@@ -785,7 +785,7 @@ qutebrowser --nowindow --target tab-bg-silent $@
 (package! dictcc :pin "30b505759e5a97c2aaa8b0e8ea5e187fdf625c65")
 (package! multitran :pin "6244e227bcf57eed391eecb34bae445f9c17e809")
 (package! google-translate :pin "e60dd6eeb9cdb931d9d8bfbefc29a48ef9a21bd9")
-(package! powerthesaurus :pin "8bcc2a7f7d1751e34291a1983885da3ebb8c3023")
+(package! powerthesaurus :pin "782df1d92f95acc100bc33d4b5f17fe6bad88682")
 #+end_src
 * email
 - [ ] TODO: fix mu4e popping up for mailto urls
