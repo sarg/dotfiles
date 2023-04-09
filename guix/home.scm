@@ -9,9 +9,11 @@
  (gnu home)
  (gnu services)
  (gnu packages)
+ (gnu packages gnupg)
  (gnu home services)
  (gnu home services syncthing)
  (gnu home services shepherd)
+ (gnu home services gnupg)
  (gnu home services desktop)
  (gnu home services shells)
  (gnu home services guix)
@@ -59,7 +61,7 @@
     "calibre" "anki" "qutebrowser"
     "openvpn" "openssh"
     "mu" "msmtp" "isync"
-    "gnupg" "pass-otp" "password-store" "pinentry-emacs" "pwgen"
+    "gnupg" "pass-otp" "password-store" "pwgen"
     "piper"
 
     ;; "zeal" "qalculate-gtk" "simplescreenrecorder"
@@ -127,6 +129,14 @@
          (service home-syncthing-service-type)
          (service home-dbus-service-type)
 
+         (service home-gpg-agent-service-type
+                  (home-gpg-agent-configuration
+                   (pinentry-program
+                    (file-append pinentry-emacs "/bin/pinentry-emacs"))
+                   (ssh-support? #t)
+                   (default-cache-ttl 86400)
+                   (max-cache-ttl 86400)))
+
          (simple-service 'configs
                          home-files-service-type
                          (append!
@@ -151,16 +161,6 @@
                                                "[General]\n"
                                                "disabledTrayIcon=true"))
 
-                            (".gnupg/gpg-agent.conf"
-                             ,(mixed-text-file "gpg-agent.conf"
-                                               "enable-ssh-support\n"
-                                               "allow-emacs-pinentry\n"
-                                               "allow-loopback-pinentry\n"
-                                               ;; https://lists.gnu.org/archive/html/emacs-devel/2018-01/msg00233.html
-                                               "pinentry-program " (specification->package "pinentry-emacs")
-                                               "/bin/pinentry-emacs\n"
-                                               "default-cache-ttl 86400\n"
-                                               "max-cache-ttl 86400\n"))
                             (".gnupg/gpg.conf"
                              ,(mixed-text-file "gpg.conf" "keyid-format 0xlong\n")))))
 
@@ -186,6 +186,5 @@
                          `(("PATH" . "$HOME/.local/bin:$HOME/.config/emacs/bin:$PATH")
                            ("XDG_DATA_DIRS" . "$XDG_DATA_DIRS:$HOME/.local/share/flatpak/exports/share")
                            ("DOOMLOCALDIR" . "$HOME/.local/doom/")
-                           ("SSH_AUTH_SOCK" . "$XDG_RUNTIME_DIR/gnupg/S.gpg-agent.ssh")
                            ("VISUAL" . "emacsclient")
                            ("EDITOR" . "emacsclient")))))))
