@@ -5,7 +5,6 @@
              (guix channels)
              (guix utils)
              (srfi srfi-1)
-             (personal packages xdisorg)
              (nongnu system linux-initrd)
              (nongnu packages linux)
              (ice-9 textual-ports))
@@ -16,7 +15,7 @@
 
 (use-service-modules
  desktop ssh networking sysctl xorg
- xorg dbus shepherd sound pm dns)
+ xorg dbus shepherd sound pm dns virtualization)
 
 (define extrakeys-service-type
   (shepherd-service-type
@@ -82,7 +81,7 @@
                  (group "users")
                  (home-directory "/home/sarg")
                  (supplementary-groups
-                  '("wheel" "netdev" "audio" "video" "tty" "input" "adbusers" "kvm" "dialout" "cdrom")))
+                  '("wheel" "netdev" "audio" "video" "tty" "input" "adbusers" "kvm" "dialout" "cdrom" "libvirt")))
                 %base-user-accounts))
 
   (packages
@@ -118,6 +117,9 @@
 
      (service console-font-service-type
               `(("tty2" . "LatGrkCyr-8x16")))
+
+     (service libvirt-service-type)
+     (service virtlog-service-type)
 
      (service wpa-supplicant-service-type
               (wpa-supplicant-configuration
