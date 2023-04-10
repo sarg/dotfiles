@@ -10,8 +10,8 @@
              (ice-9 textual-ports))
 
 (use-package-modules
- linux ssh android suckless xorg fonts
- pulseaudio connman xorg gnome admin)
+ linux ssh android suckless fonts
+ pulseaudio xorg gnome admin)
 
 (use-service-modules
  desktop ssh networking sysctl xorg
@@ -81,7 +81,7 @@
                  (group "users")
                  (home-directory "/home/sarg")
                  (supplementary-groups
-                  '("wheel" "netdev" "audio" "video" "tty" "input" "adbusers" "kvm" "dialout" "cdrom" "libvirt")))
+                  '("wheel" "netdev" "audio" "video" "tty" "input" "adbusers" "kvm" "dialout" "cdrom")))
                 %base-user-accounts))
 
   (packages
@@ -118,8 +118,9 @@
      (service console-font-service-type
               `(("tty2" . "LatGrkCyr-8x16")))
 
-     (service libvirt-service-type)
-     (service virtlog-service-type)
+     ;; (service libvirt-service-type)
+     ;; (service virtlog-service-type)
+     (service ntp-service-type)
 
      (service wpa-supplicant-service-type
               (wpa-supplicant-configuration
@@ -154,6 +155,7 @@
      polkit-wheel-service
      polkit-udisks-wheel-service
 
+     (service upower-service-type)
      (service bluetooth-service-type)
      (service udisks-service-type)
      (service polkit-service-type)
