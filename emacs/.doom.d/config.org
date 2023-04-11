@@ -30,6 +30,36 @@ To define guix dependencies add a source code block with =:noweb-ref guix-pkg= a
 (after! guix
   (setq guix-repl-use-server nil))
 #+end_src
+
+#+begin_src shell :tangle ~/.local/bin/gu :shebang #!/bin/sh
+cd ~/devel/ext/guix
+
+case $1 in
+compile)
+    guix shell -D guix -- ./pre-inst-env make make-go
+    ;;
+
+home)
+    ./pre-inst-env guix home reconfigure \
+        -L ~/.dotfiles/guix/personal/ \
+        ~/.dotfiles/guix/home.scm
+    ;;
+
+system)
+    ./pre-inst-env guix system reconfigure --save-provenance \
+        -L ~/.dotfiles/guix/personal/ \
+        -L ~/devel/ext/nonguix/ \
+        ~/.dotfiles/guix/system.scm
+    ;;
+
+deploy)
+    ./pre-inst-env sudo -E guix system reconfigure --save-provenance \
+        -L ~/.dotfiles/guix/personal/ \
+        -L ~/devel/ext/nonguix/ \
+        ~/.dotfiles/guix/system.scm
+    ;;
+esac
+#+end_src
 * doom
 ** init.el
 #+begin_src elisp :tangle init.el
