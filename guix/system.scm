@@ -138,7 +138,11 @@
               (xorg-configuration
                (modules (list xf86-video-intel xf86-input-libinput))
                (drivers (list "intel"))))
-     (service dhcp-client-service-type)
+
+     (service dhcp-client-service-type
+              (dhcp-client-configuration
+               (interfaces '("wifi"))
+               (shepherd-requirement '(wpa-supplicant))))
 
      (simple-service 'dhclient-wan etc-service-type
                      (list `("dhclient-enter-hooks"
