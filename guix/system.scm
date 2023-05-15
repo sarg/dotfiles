@@ -11,10 +11,10 @@
 
 (use-package-modules
  linux ssh android suckless fonts
- pulseaudio xorg gnome admin)
+ pulseaudio xorg gnome admin cups)
 
 (use-service-modules
- desktop ssh networking sysctl xorg
+ desktop ssh networking sysctl xorg cups avahi
  xorg dbus shepherd sound pm dns virtualization)
 
 (define extrakeys-service-type
@@ -59,6 +59,7 @@
   (timezone "Europe/Berlin")
   (host-name "thinkpad")
   (keyboard-layout (keyboard-layout "us"))
+  (name-service-switch %mdns-host-lookup-nss)
   (bootloader
    (bootloader-configuration
     (bootloader grub-efi-bootloader)
@@ -121,6 +122,10 @@
      ;; (service libvirt-service-type)
      ;; (service virtlog-service-type)
      (service ntp-service-type)
+     (service cups-service-type
+              (cups-configuration
+               (web-interface? #t)
+               (extensions (list cups-filters))))
 
      (service wpa-supplicant-service-type
               (wpa-supplicant-configuration
@@ -180,6 +185,7 @@
                               (avoid-resampling . yes)
                               (exit-idle-time . -1)))))
 
+     (service avahi-service-type)
      (service alsa-service-type)
      (service openssh-service-type
               (openssh-configuration
@@ -190,8 +196,8 @@
                (no-hosts? #t)
                (no-resolv? #t)
                (servers-file "/etc/dnsmasq.servers")
-               (addresses '("/dev.local/127.0.0.1"
-                            "/local/127.0.0.1"))
+               ;; (addresses '("/dev.local/127.0.0.1"
+               ;;              "/local/127.0.0.1"))
                (servers '("1.1.1.1"))))
      ;; remap lctrl->lalt, lalt->lctrl, capslock->lshift
      (service extrakeys-service-type (list "1d" "56" "38" "29" "3a" "42"))
