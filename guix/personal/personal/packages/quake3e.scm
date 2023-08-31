@@ -22,16 +22,16 @@
 (define-public quake3e
   (package
     (name "quake3e")
-    (version "2023-02-28")
+    (version "2023-08-10")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/ec-/Quake3e")
-             (commit "5e417bbbc6919c44e5960a5cca9c26d14afac0ea")))
+             (commit "76585ce8f000f35be113276ee66e365e505056d8")))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "13x08jmj0q776nn7i4c1ncfvc8wgax8g13r1v30id6v092snq042"))))
+        (base32 "0flzvlj4msjqg8q3awjxb3nm4s5i7q16cd6srqzxmzvpz3716wqs"))))
     (build-system gnu-build-system)
     (inputs (list sdl2 libjpeg-turbo openal curl opusfile opus libvorbis freetype libogg))
     (native-inputs (list which pkg-config)) ; which used to find SDL_version.h

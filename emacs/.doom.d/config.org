@@ -80,12 +80,12 @@ esac
       doom-leader-alt-key "<f13>")
 (doom!
  :completion  company vertico ;(ivy +fuzzy +prescient +childframe)
- :ui          nav-flash (modeline +light) ophints (popup +all +defaults) ligatures hydra
-              vc-gutter window-select treemacs
+ :ui          nav-flash (modeline +light) ophints (popup +all +defaults) ligatures
+              vc-gutter treemacs
  :editor      (evil +everywhere) fold lispy snippets (format +onsave) multiple-cursors word-wrap
  :emacs       dired electric vc ibuffer undo
  :term        eshell vterm
- :tools       editorconfig (eval +overlay) (lookup +docsets) (magit) pdf (pass +auth) direnv make tree-sitter lsp
+ :tools       editorconfig (eval +overlay) (lookup +docsets) magit pdf (pass +auth) direnv make tree-sitter lsp
  :checkers    syntax
  :lang        clojure data emacs-lisp
               (org +contacts +dragndrop +pandoc +present +hugo +roam2) beancount
@@ -407,7 +407,7 @@ plocate -d /storage/500gb.plocate $@
 #+begin_src elisp :tangle packages.el
 (package! org-modern-indent
     :recipe (:host github :repo "jdtsmith/org-modern-indent")
-    :pin "c5a50f302dc1053d5b498e0ea2bc0ee233e8e1b8")
+    :pin "85f95d093d9b2d8fb9e4a705529eac4e2a888e87")
 (package! org-modern :built-in t)
 #+end_src
 #+begin_src scheme :noweb-ref guix-pkg
@@ -429,10 +429,10 @@ plocate -d /storage/500gb.plocate $@
   (org-contacts-files (list (expand-file-name "contacts.org" org-directory))))
 
 (use-package! org-modern
-  :hook (org-mode org-agenda-finalize))
+  :hook ((org-mode org-agenda-finalize) . org-modern-mode))
 
 (use-package! org-modern-indent
-  :hook org-mode)
+  :hook (org-mode . org-modern-indent-mode))
 
 (after! org-download
   (setq org-download-screenshot-method "flameshot gui --raw > %s"))
@@ -553,9 +553,12 @@ subprocess.call(['emacs-capture',
 * password-store
 #+begin_src elisp :tangle packages.el :exports none
 (package! password-generator :built-in t)
+(package! password-store :built-in t)
+(package! password-store-otp :built-in t)
 #+end_src
 #+begin_src scheme :noweb-ref guix-pkg
 "emacs-password-generator"
+"emacs-password-store"
 #+end_src
 
 #+begin_src elisp
@@ -828,7 +831,7 @@ qutebrowser --nowindow --target tab-bg-silent $@
 (package! dictcc :pin "30b505759e5a97c2aaa8b0e8ea5e187fdf625c65")
 (package! multitran :pin "6244e227bcf57eed391eecb34bae445f9c17e809")
 (package! google-translate :pin "e60dd6eeb9cdb931d9d8bfbefc29a48ef9a21bd9")
-(package! powerthesaurus :pin "782df1d92f95acc100bc33d4b5f17fe6bad88682")
+(package! powerthesaurus :pin "4b97797cf789aaba411c61a85fe23474ebc5bedc")
 #+end_src
 * email
 - [ ] TODO: fix mu4e popping up for mailto urls
@@ -975,7 +978,7 @@ emacsclient --eval "(message-mailto \"$1\")"
 (package! dired-filter :built-in t)
 (package! dired-avfs :built-in t)
 (package! dired-du :built-in t)
-(package! dired-collapse :pin "1596e516835099b96cb65d1dc372cfbdff6aea96")
+(package! dired-collapse :pin "874449d6fc98aee565e1715ec18acec3c1c2cafb")
 (package! dired-git-info
   :recipe (:host github :repo "clemera/dired-git-info")
   :built-in t)
@@ -989,12 +992,12 @@ emacsclient --eval "(message-mailto \"$1\")"
 
 #+begin_src elisp
 (use-package! dired-filter
-  :hook dired-mode
+  :hook (dired-mode . dired-filter-mode)
   :custom
   (dired-filter-stack '((omit) (dot-files))))
 
 (use-package! dired-collapse
-  :hook dired-mode)
+  :hook (dired-mode . dired-filter-mode))
 
 (use-package! dired-git-info
   :custom
@@ -1046,8 +1049,11 @@ emacsclient --eval "(message-mailto \"$1\")"
 #+end_src
 * experimental
 ** bookmark
+#+begin_src scheme :noweb-ref guix-pkg
+"emacs-bookmark-plus"
+#+end_src
 #+begin_src elisp :tangle packages.el
-(package! bookmark+ :recipe (:host github :repo "emacsmirror/bookmark-plus"))
+(package! bookmark+ :built-in t)
 #+end_src
 #+begin_src elisp
 (setq bookmark-default-file "/storage/data/emacs/bookmarks")

@@ -158,7 +158,8 @@
 
      (service screen-locker-service-type
               (screen-locker-configuration
-               "slock" (file-append slock "/bin/slock") #f))
+               (name "slock")
+               (program (file-append slock "/bin/slock"))))
      ;; Add polkit rules, so that non-root users in the wheel group can
      ;; perform administrative tasks (similar to "sudo").
      polkit-wheel-service

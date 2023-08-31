@@ -22,6 +22,9 @@
   (cond
    (exwm/bar-mode
     (let ((bw 200) (bh 18))
+      (when exwm/bar-process
+        (error "Another lemonbar is runing"))
+
       (setq exwm/bar-process
             (start-process-shell-command
              "lemonbar" nil
