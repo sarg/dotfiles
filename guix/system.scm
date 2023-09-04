@@ -178,13 +178,6 @@
      (service tlp-service-type
               (tlp-configuration
                (restore-device-state-on-startup? #t)))
-     (service pulseaudio-service-type
-              (pulseaudio-configuration
-               (daemon-conf '((flat-volumes . no)
-                              (default-sample-rate . 192000)
-                              (default-sample-format . s32le)
-                              (avoid-resampling . yes)
-                              (exit-idle-time . -1)))))
 
      (service avahi-service-type)
      (service alsa-service-type)

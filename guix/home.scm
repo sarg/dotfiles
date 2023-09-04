@@ -18,6 +18,7 @@
  (gnu home services shells)
  (gnu home services guix)
  (personal services symlinks)
+ (personal services sound)
  (personal utils)
  (srfi srfi-1)
  (srfi srfi-11))
@@ -34,8 +35,8 @@
     "lshw" "strace" "nftables" "file"))
 
 (define %pkg-desktop
-  '("pavucontrol" "dunst" "flameshot"
-    "pulseaudio" "polybar" "lemonbar-xft" "xss-lock"
+  '("pavucontrol" "dunst" "flameshot" "wireplumber"
+    "alsa-utils" "polybar" "lemonbar-xft" "xss-lock"
     "redshift" "unclutter" "playerctl"))
 
 (define %pkg-fonts
@@ -126,6 +127,7 @@
 
          (sx-autostart-on "tty1")
 
+         (service home-pipewire-service-type)
          (service home-symlinks-service-type symlinks)
          (service home-syncthing-service-type)
          (service home-dbus-service-type)

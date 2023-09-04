@@ -713,8 +713,8 @@ query_entries() {
   (exwm/bind-command
    "<XF86AudioRaiseVolume>" #'emms-volume-raise
    "<XF86AudioLowerVolume>" #'emms-volume-lower
-   "<XF86AudioMute>" "pactl set-sink-mute @DEFAULT_SINK@ toggle"
-   "<XF86AudioMicMute>" "pactl set-source-mute @DEFAULT_SOURCE@ toggle"
+   "<XF86AudioMute>" "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
+   "<XF86AudioMicMute>" "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"
    "<XF86AudioPlay>" #'emms-pause
    "<XF86AudioPrev>" #'emms-previous
    "<XF86AudioNext>" (lambda () (interactive) (if emms-random-playlist (emms-random) (emms-next)))))
