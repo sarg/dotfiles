@@ -32,7 +32,7 @@
     "ripgrep" "moreutils" "libiconv"
     "powertop" "graphviz" "borgmatic" "bind:utils"  ; dig
     "flatpak" "flatpak-xdg-utils" "xdg-desktop-portal"
-    "lshw" "strace" "nftables" "file"))
+    "lshw" "strace" "nftables" "file" "lsof"))
 
 (define %pkg-desktop
   '("pavucontrol" "dunst" "flameshot" "wireplumber"
@@ -70,7 +70,7 @@
     "libreoffice" "qview" "stapler" "gimp"
     "graphicsmagick" "libwebp" "jpegoptim"
 
-    ;; "nomacs"
+    "nomacs"
     "zathura" "zathura-pdf-mupdf" "zathura-djvu"
     "yt-dlp" "mpv"))
 

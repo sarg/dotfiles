@@ -37,7 +37,7 @@ argument - MSG to insert additional information after header."
            (private-chat-p
             (telega-ins (if (telega-msg-by-me-p msg) "-> " "<- ")))
            ((not channel-post-p)
-            (telega-ins "<" (telega-user--name sender 'name) "> "))))
+            (telega-ins "<" (telega-user-title sender 'full-name) "> "))))
 
         ;; via <bot>
         (let* ((via-bot-user-id (plist-get msg :via_bot_user_id))
@@ -46,7 +46,7 @@ argument - MSG to insert additional information after header."
           (when via-bot
             (telega-ins " via ")
             ;; Use custom :action for clickable @bot link
-            (telega-ins--button (telega-user--name via-bot 'short)
+            (telega-ins--button (telega-user-title via-bot 'username)
               'face 'telega-link        ;no button outline please
               :action (lambda (_msg_ignored)
                         (telega-describe-user via-bot)))))
