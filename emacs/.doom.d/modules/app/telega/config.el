@@ -126,7 +126,8 @@ unless message is edited."
           (telega-ins--reply-markup msg)))
 
       (when channel-post-p (insert ?\n ?\n ?\^L ?\n))
-      (telega-ins "\n"))
+      ;; (telega-ins "\n")
+      )
     t))
 
 (defun sarg/telega-ins--message (msg &optional no-header addon-header-inserter)
