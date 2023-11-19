@@ -70,8 +70,8 @@
     "libreoffice" "qview" "stapler" "gimp"
     "graphicsmagick" "libwebp" "jpegoptim"
 
-    "nomacs"
-    "zathura" "zathura-pdf-mupdf" "zathura-djvu"
+    ;; "nomacs"
+    "zathura" "zathura-pdf-mupdf" "zathura-djvu" "zathura-cb"
     "yt-dlp" "mpv"))
 
 (define %pkg-dev

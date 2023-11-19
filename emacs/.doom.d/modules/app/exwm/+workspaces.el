@@ -25,9 +25,10 @@
 ;;; EWMH integration with names support
 (defvar exwm-workspace-names '())
 
+(require 'cl-seq)
 (defsubst exwm-workspace-name-to-index (name)
   "Returns workspace index by NAME."
-  (-elem-index name exwm-workspace-names))
+  (cl-position name exwm-workspace-names :test #'equal))
 
 (setq exwm-workspace-index-map
       (lambda (index)

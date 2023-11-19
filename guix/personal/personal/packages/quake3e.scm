@@ -22,16 +22,25 @@
 (define-public quake3e
   (package
     (name "quake3e")
-    (version "2023-08-10")
+    (version "2023-10-17")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/ec-/Quake3e")
-             (commit "76585ce8f000f35be113276ee66e365e505056d8")))
+             (commit "b0f544204412ea9b6f565459b27fec3aea936421")))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0flzvlj4msjqg8q3awjxb3nm4s5i7q16cd6srqzxmzvpz3716wqs"))))
+        (base32 "084k9fgsv04md64gzwfbqliklcvhcwn5kslmy79j8l53kihkafhf"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Delete the bundled copy of these libraries.
+           (delete-file-recursively "code/libcurl")
+           (delete-file-recursively "code/libogg")
+           (delete-file-recursively "code/libsdl")
+           (delete-file-recursively "code/libvorbis")
+           (delete-file-recursively "code/libjpeg")))))
     (build-system gnu-build-system)
     (inputs (list sdl2 libjpeg-turbo openal curl opusfile opus libvorbis freetype libogg))
     (native-inputs (list which pkg-config)) ; which used to find SDL_version.h
@@ -40,12 +49,11 @@
            #:make-flags
            #~(list (string-append "CC=" #$(cc-for-target))
                    (string-append "DESTDIR=" #$output "/bin")
-                   "BUILD_SERVER=0"
-                   "USE_INTERNAL_LIBS=0"
+                   ;; "BUILD_SERVER=0"
                    "USE_RENDERER_DLOPEN=0"
                    "USE_SYSTEM_JPEG=1"
-                   "USE_VULKAN=0"
-                   "USE_VULKAN_API=0"
+                   "USE_SYSTEM_OGG=1"
+                   "USE_SYSTEM_VORBIS=1"
                    "USE_CURL_DLOPEN=0")
            #:phases
            #~(modify-phases %standard-phases

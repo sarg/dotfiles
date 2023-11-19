@@ -17,7 +17,7 @@ To define guix dependencies add a source code block with =:noweb-ref guix-pkg= a
             ))
  (packages
   (map (compose list specification->package+output)
-       '("emacs-next"
+       '("emacs"
          "emacs-pdf-tools"
          "emacs-telega" "emacs-telega-contrib"
          "emacs-vterm"
@@ -32,42 +32,44 @@ To define guix dependencies add a source code block with =:noweb-ref guix-pkg= a
 #+end_src
 
 #+begin_src shell :tangle ~/.local/bin/gu :shebang #!/bin/sh
-cd ~/devel/ext/guix
+DIR=~/devel/ext/guix
 
 case $1 in
 compile)
-    guix shell -D guix -- ./pre-inst-env make make-go
+    pushd $DIR
+    guix shell -D guix -- ./pre-inst-env make scripts/guix make-go
+    popd
     ;;
 
 home)
-    ./pre-inst-env guix home reconfigure \
+    $DIR/pre-inst-env guix home reconfigure \
         -L ~/.dotfiles/guix/personal/ \
         ~/.dotfiles/guix/home.scm
     ;;
 
 system)
-    ./pre-inst-env guix system reconfigure --save-provenance \
+    $DIR/pre-inst-env guix system reconfigure --save-provenance \
         -L ~/.dotfiles/guix/personal/ \
         -L ~/devel/ext/nonguix/ \
         ~/.dotfiles/guix/system.scm
     ;;
 
 deploy)
-    ./pre-inst-env sudo -E guix system reconfigure --save-provenance \
+    $DIR/pre-inst-env sudo -E guix system reconfigure --save-provenance \
         -L ~/.dotfiles/guix/personal/ \
         -L ~/devel/ext/nonguix/ \
         ~/.dotfiles/guix/system.scm
     ;;
 
 gc)
-    ./pre-inst-env guix gc -d
+    $DIR/pre-inst-env guix gc -d
     ;;
 
 ,*)
   if [ "$1" == "" ]; then
       echo "compile|home|system|deploy|gc"
   else
-      ./pre-inst-env guix $@
+      $DIR/pre-inst-env guix $@
   fi
   ;;
 esac
@@ -225,7 +227,7 @@ These are bound only for X11 apps.
    "<XF86MonBrightnessUp>" "brightnessctl -e set 10%+"
    "<XF86MonBrightnessDown>" "brightnessctl -e set 10%-"
    "<XF86ScreenSaver>" "lock.sh"
-   "<f13> <f12>" "flameshout gui")
+   "<f13> <f12>" "flameshot gui")
 #+end_src
 ** redshift
 #+begin_src elisp
@@ -293,16 +295,20 @@ These are bound only for X11 apps.
               "k" #'previous-line))
 #+end_src
 * theme
+#+begin_src scheme :noweb-ref guix-pkg
+"emacs-dracula-theme"
+#+end_src
 #+begin_src elisp :tangle packages.el :exports none
-(package! circadian :pin "52e336d9bb66cfd6d6dc5b9213ea21796ac873d4")
+(package! circadian :pin "b3bb94040080ac18aab04b010752d4984feee37b")
 (package! white-sand-theme :pin "729dd52cc1936250183d6761eed406c4be514a71")
 ;(package! kaolin-themes)
-(package! doom-themes :pin "e4f0b006a516a35f53df2dce2ec116876c5cd7f9")
+(package! doom-themes :pin "4aee1f5a0e54552669f747aa7c25e6027e73d76d")
 #+end_src
 
 #+begin_src elisp
 (use-package! white-sand-theme)
-(defvar doom-theme-dark 'doom-one)
+(use-package! dracula-theme)
+(defvar doom-theme-dark 'doom-dracula)
 (setq doom-theme 'white-sand
       doom-font (font-spec :family "Hack" :size 20)
       doom-serif-font (font-spec :family "Hack")
@@ -374,7 +380,7 @@ plocate -d /storage/500gb.plocate $@
 #+end_src
 * buffers
 #+begin_src elisp :tangle packages.el :exports none
-(package! bufler :pin "9eba735988c13d5e5e898f44655d9225e444ce02")
+(package! bufler :pin "5b76a6c7bd53d0f2fe5993b7c316da15bb2cd3f5")
 #+end_src
 
 #+begin_src elisp
@@ -950,6 +956,11 @@ emacsclient --eval "(message-mailto \"$1\")"
 #+end_src
 
 #+begin_src elisp
+; presumably speeds up I/O
+; https://debbugs.gnu.org/cgi/bugreport.cgi?bug=44007
+(setq process-adaptive-read-buffering nil)
+(setq read-process-output-max (* 4 1024 1024))
+
 (after! eshell
   (add-hook 'eshell-first-time-mode-hook
             (lambda ()
@@ -957,7 +968,8 @@ emacsclient --eval "(message-mailto \"$1\")"
                     :ni "C-r" #'+eshell/search-history))))
 
 (use-package! eat
-  :hook (eshell-load . (eat-eshell-mode eat-eshell-visual-command-mode)))
+  :hook ((eshell-load . eat-eshell-mode)
+         (eshell-load . eat-eshell-visual-command-mode)))
 
 (use-package! detached
   :init
@@ -983,11 +995,12 @@ emacsclient --eval "(message-mailto \"$1\")"
   :recipe (:host github :repo "clemera/dired-git-info")
   :built-in t)
 (package! openwith :built-in t)
+(package! sxiv :built-in t)
 #+end_src
 
 #+begin_src scheme :noweb-ref guix-pkg
 "emacs-dired-hacks" "emacs-dired-du" "avfs"
-"emacs-dired-git-info" "emacs-openwith"
+"emacs-dired-git-info" "emacs-openwith" "emacs-sxiv"
 #+end_src
 
 #+begin_src elisp
@@ -1003,6 +1016,7 @@ emacsclient --eval "(message-mailto \"$1\")"
   :custom
   (dgi-commit-message-format "%cr\t%s"))
 
+(use-package! sxiv)
 (use-package! dired-avfs)
 (use-package! dired-du
   :custom
