@@ -26,10 +26,11 @@
   (list (shepherd-service
          (documentation "Add interface to bridge")
          (provision (list (string->symbol (string-append "net-" (car config)))))
-         (requirement '(loopback))
+         (requirement '(udev))
          (modules '((ip link)))
          (start (with-extensions (list guile-netlink)
                   #~(lambda _
+                      (wait-for-link #$(cdr config) #:blocking? #f)
                       ;; (link-set #$(car config) #:up #t #:master #(cdr config))
                       (let ((ip (string-append #$iproute "/sbin/ip")))
                         (system* ip "link" "add" "name" #$(car config) "type" "bridge")
@@ -105,12 +106,11 @@
 
      (service dhcp-client-service-type
               (dhcp-client-configuration
+               (shepherd-requirement '(net-br0))
                (interfaces '("br0"))))
 
      (simple-service 'dhclient-wan etc-service-type
-                     (list `("dhclient-enter-hooks"
-                             ,(local-file "./files/dhclient-enter-hooks"))
-                           `("dhclient.conf"
+                     (list `("dhclient.conf"
                              ,(plain-file "dhclient.conf" "send host-name = gethostname();"))))
 
      ;; Add polkit rules, so that non-root users in the wheel group can
@@ -128,11 +128,4 @@
 
      (service openssh-service-type
               (openssh-configuration
-               (x11-forwarding? #t)))
-
-     (service dnsmasq-service-type
-              (dnsmasq-configuration
-               (no-hosts? #t)
-               (no-resolv? #t)
-               (servers-file "/etc/dnsmasq.servers")
-               (servers '("1.1.1.1"))))))))
+               (x11-forwarding? #t)))))))
