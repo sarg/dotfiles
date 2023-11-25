@@ -118,6 +118,7 @@ Dunno, but doom resets the fontspec. Let me fix it here.
 EXWM has a separate [[../.doom.d/modules/app/exwm][doom app]]. Here are just the settings.
 #+begin_src scheme :noweb-ref guix-pkg
 "emacs-exwm"
+"emacs-exwm-ss"
 #+end_src
 ** bar
 #+begin_src elisp
@@ -225,8 +226,11 @@ These are bound only for X11 apps.
 #+begin_src elisp
 (exwm/bind-command
    "<XF86MonBrightnessUp>" "brightnessctl -e set 10%+"
+   "<MonBrightnessUp>" "brightnessctl -e set 10%+"
    "<XF86MonBrightnessDown>" "brightnessctl -e set 10%-"
+   "<MonBrightnessDown>" "brightnessctl -e set 10%-"
    "<XF86ScreenSaver>" "lock.sh"
+   "<ScreenSaver>" "lock.sh"
    "<f13> <f12>" "flameshot gui")
 #+end_src
 ** redshift
@@ -272,6 +276,7 @@ These are bound only for X11 apps.
 ** bluetooth
 #+begin_src scheme :noweb-ref guix-pkg
 "emacs-bluetooth"
+"emacs-discomfort"
 #+end_src
 #+begin_src elisp :tangle packages.el
 (package! bluetooth :built-in t)
@@ -281,10 +286,7 @@ These are bound only for X11 apps.
 #+end_src
 ** udisks
 #+begin_src elisp :tangle packages.el
-(package! debase :recipe (:host codeberg :repo "emacs-weirdware/debase")
-  :pin "0b6fc2af3440d68798e3a85d4c889341aae07936")
-(package! discomfort :recipe (:host codeberg :repo "emacs-weirdware/discomfort")
-  :pin "873eea833bbae7196b92bb1102494b8bf5dc5df6")
+(package! discomfort :built-in t)
 #+end_src
 #+begin_src elisp
 (use-package! discomfort
@@ -835,7 +837,7 @@ qutebrowser --nowindow --target tab-bg-silent $@
 * dict
 #+begin_src elisp :tangle packages.el
 (package! dictcc :pin "30b505759e5a97c2aaa8b0e8ea5e187fdf625c65")
-(package! multitran :pin "6244e227bcf57eed391eecb34bae445f9c17e809")
+(package! multitran :pin "285b625b5e94f5dd960cb4a3292407aa7568073e")
 (package! google-translate :pin "e60dd6eeb9cdb931d9d8bfbefc29a48ef9a21bd9")
 (package! powerthesaurus :pin "4b97797cf789aaba411c61a85fe23474ebc5bedc")
 #+end_src
