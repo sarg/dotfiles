@@ -42,13 +42,13 @@ compile)
     ;;
 
 home)
-    $DIR/pre-inst-env guix home reconfigure \
+    $DIR/pre-inst-env guix $@ reconfigure \
         -L ~/.dotfiles/guix/personal/ \
         ~/.dotfiles/guix/home.scm
     ;;
 
 system)
-    $DIR/pre-inst-env guix system reconfigure --save-provenance \
+    $DIR/pre-inst-env guix $@ reconfigure --save-provenance \
         -L ~/.dotfiles/guix/personal/ \
         -L ~/devel/ext/nonguix/ \
         ~/.dotfiles/guix/system.scm

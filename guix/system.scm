@@ -21,13 +21,13 @@
   (shepherd-service-type
    'extrakeys
    (lambda (codes)
-     (shepherd-service
-      (documentation (string-append "Load extra keys (setkeycodes)."))
-      (provision '(extrakeys))
-      (start #~(lambda _
-                 (zero? (system* #$(file-append kbd "/bin/setkeycodes")
-                                 #$@codes))))
-      (respawn? #f)))
+     (let ((setkeycodes (file-append kbd "/bin/setkeycodes"))
+           (args (append-map (lambda (a) (list (car a) (cdr a))) codes)))
+       (shepherd-service
+        (documentation (string-append "Load extra keys (setkeycodes) at boot."))
+        (provision '(extrakeys))
+        (start #~(lambda _ (invoke #$setkeycodes #$@args)))
+        (one-shot? #t))))
    (description "Map special keys")))
 
 (define wifi-udev-rule
@@ -51,7 +51,7 @@
 
 (operating-system
   (kernel linux)
-  (kernel-arguments '("quiet" "loglevel=1" "ipv6.disable=1"))
+  (kernel-arguments '("quiet" "loglevel=1"))
   (initrd microcode-initrd)
   (initrd-modules (cons "i915" %base-initrd-modules))
   (firmware (cons* iwlwifi-firmware broadcom-bt-firmware %base-firmware))
@@ -98,29 +98,12 @@
 
   (services
    (append
-    (modify-services %base-services
-      (delete mingetty-service-type)
-      (delete console-font-service-type)
-      (sysctl-service-type config =>
-                           (sysctl-configuration
-                            (inherit config)
-                            (settings (append
-                                       (sysctl-configuration-settings config)
-                                       '(("fs.inotify.max_user_watches" . "524288")
-                                         ("net.ipv6.conf.all.disable_ipv6" . "1")))))))
+    %base-services
 
     (list
-     (service mingetty-service-type
-              (mingetty-configuration (tty "tty1") (auto-login "sarg")))
+     (simple-service 'sysctl-custom sysctl-service-type
+                     '(("fs.inotify.max_user_watches" . "524288")))
 
-     (service mingetty-service-type
-              (mingetty-configuration (tty "tty2")))
-
-     (service console-font-service-type
-              `(("tty2" . "LatGrkCyr-8x16")))
-
-     ;; (service libvirt-service-type)
-     ;; (service virtlog-service-type)
      (service ntp-service-type)
      (service cups-service-type
               (cups-configuration
@@ -193,11 +176,14 @@
                ;; (addresses '("/dev.local/127.0.0.1"
                ;;              "/local/127.0.0.1"))
                (servers '("1.1.1.1"))))
-     ;; remap lctrl->lalt, lalt->lctrl, capslock->lshift
-     (service extrakeys-service-type (list "1d" "56" "38" "29" "3a" "42"))
+
+     (service extrakeys-service-type
+              '(("1d" . "56")   ; lctrl->lalt
+                ("38" . "29")   ; lalt->lctrl
+                ("3a" . "42"))) ; capslock->lshift
+
      (udev-rules-service 'android android-udev-rules #:groups '("adbusers"))
      (udev-rules-service 'wifi wifi-udev-rule)
-
      (udev-rules-service 'brightness brightnessctl)
 
      (simple-service
