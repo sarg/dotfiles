@@ -2,10 +2,8 @@ import urllog
 
 #c.colors.webpage.darkmode.enabled = True
 
-
 c.auto_save.session = True
 c.backend = 'webengine'
-c.qt.force_platform = 'xcb'
 c.statusbar.show = 'in-mode'
 
 c.content.cookies.accept = 'no-3rdparty'
@@ -25,8 +23,6 @@ c.tabs.show = 'switching'
 c.tabs.position = 'left'
 c.tabs.favicons.show = 'never'
 c.tabs.width = '30%'
-
-c.content.webgl = False
 
 # c.hints.next_regexes = [ '\bnext\b','\bmore\b','\bnewer\b','\b[>→≫]\b','\b(>>|»)\b','\bcontinue\b','\bследующая\b' ]
 # c.hints.prev_regexes = ['\bprev(ious)?\b','\bback\b','\bolder\b','\b[<←≪]\b','\b(<<|«)\b','\bпредыдущая\b' ]
