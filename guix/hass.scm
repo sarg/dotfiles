@@ -24,9 +24,9 @@
 (define polkit-udisks-wheel-service
   (simple-service 'polkit-udisks-wheel polkit-service-type (list polkit-udisks-wheel)))
 
-(define (bridge-shepherd-service config)
+(define bridge-shepherd-service-type
   (shepherd-service-type
-   (string->symbol (string-append "net-" (car config)))
+   'bridge-interface
    (lambda (config)
      (shepherd-service
       (documentation "Add interface to bridge")
@@ -38,8 +38,7 @@
                    (wait-for-link #$(cdr config) #:blocking? #f)
                    (link-add #$(car config) "bridge")
                    (link-set #$(car config) #:up #t)
-                   (link-set #$(cdr config) #:up #t)
-                   (link-set #$(cdr config) #:master #$(car config)))))
+                   (link-set #$(cdr config) #:up #t #:master #$(car config)))))
       (stop (with-extensions (list guile-netlink)
               #~(lambda _
                   (let ((ip (string-append #$iproute "/sbin/ip")))
@@ -47,7 +46,6 @@
                     ;; (link-set #$(cdr config) #:nomaster #t)
                     (link-set #$(cdr config) #:down #t)
                     (link-del #$(car config))))))))
-   config
    (description "Add interfaces to a bridge.")))
 
 (define-record-type* <docker-container>
@@ -76,8 +74,7 @@
                      (invoke #$docker "run" "--rm" "-d"
                              "--name" #$name-string
                              #$@args-list #$image)))
-          (stop #~(lambda _
-                    (invoke #$docker "stop" #$name-string)))))))
+          (stop #~(lambda _ (invoke #$docker "stop" #$name-string)))))))
    (description "Run docker container.")))
 
 (define fs-2tb-disk
@@ -90,6 +87,18 @@
 
 (define %user "sarg")
 (define %user-uid 1000)
+
+(define %shepherd-repl
+  (shepherd-service-type
+   'shepherd-repl
+   (const (shepherd-service
+           (documentation "Enable shepherd's repl.")
+           (provision '(repl))
+           (modules `((shepherd service repl) ,@%default-modules))
+           (start #~((@@ (shepherd service) service-start) (repl-service)))
+           (stop #~((@@ (shepherd service) service-stop) (repl-service)))))
+   #f
+   (description "Shepherd's REPL service.")))
 
 (operating-system
   (timezone "Europe/Berlin")
@@ -144,6 +153,7 @@
                           (authorize-key? #f))))
 
     (list
+     (service %shepherd-repl)
      (service libvirt-service-type)
      (service virtlog-service-type)
      (service docker-service-type)
@@ -174,7 +184,7 @@
                     (volume . ,(string-append 2tb "/jellyfin/cache:/cache"))
                     (mount . ,(string-append "type=bind,source=" 2tb ",target=/media")))))))
 
-     (service (bridge-shepherd-service '("br0" . "enp0s25")))
+     (service bridge-shepherd-service-type '("br0" . "enp0s25"))
 
      (service dhcp-client-service-type
               (dhcp-client-configuration
