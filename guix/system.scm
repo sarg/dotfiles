@@ -14,7 +14,7 @@
  pulseaudio xorg gnome admin cups)
 
 (use-service-modules
- desktop ssh networking sysctl xorg cups avahi
+ desktop ssh networking sysctl cups avahi
  xorg dbus shepherd sound pm dns virtualization)
 
 (define extrakeys-service-type
@@ -24,7 +24,7 @@
      (let ((setkeycodes (file-append kbd "/bin/setkeycodes"))
            (args (append-map (lambda (a) (list (car a) (cdr a))) codes)))
        (shepherd-service
-        (documentation (string-append "Load extra keys (setkeycodes) at boot."))
+        (documentation "Load extra keys (setkeycodes) at boot.")
         (provision '(extrakeys))
         (start #~(lambda _ (invoke #$setkeycodes #$@args)))
         (one-shot? #t))))

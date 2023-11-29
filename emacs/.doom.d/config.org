@@ -276,7 +276,6 @@ These are bound only for X11 apps.
 ** bluetooth
 #+begin_src scheme :noweb-ref guix-pkg
 "emacs-bluetooth"
-"emacs-discomfort"
 #+end_src
 #+begin_src elisp :tangle packages.el
 (package! bluetooth :built-in t)
@@ -285,6 +284,9 @@ These are bound only for X11 apps.
 (use-package! bluetooth)
 #+end_src
 ** udisks
+#+begin_src scheme :noweb-ref guix-pkg
+"emacs-discomfort"
+#+end_src
 #+begin_src elisp :tangle packages.el
 (package! discomfort :built-in t)
 #+end_src

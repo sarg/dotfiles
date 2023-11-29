@@ -72,12 +72,13 @@
 
     ;; "nomacs"
     "zathura" "zathura-pdf-mupdf" "zathura-djvu" "zathura-cb"
-    "yt-dlp" "mpv"))
+    "yt-dlp" "mpv"
+    ))
 
 (define %pkg-dev
   '("python" "emacs-debbugs" "gnu-standards"
     "git" "git:send-email" "git-crypt" "perl" ;for some git commands
-    "libvirt" "virt-manager"
+    "libvirt" "virt-manager" "sicp"
     ;; "openjdk:jdk"
     ))
 
@@ -158,6 +159,9 @@
                                                "gtk-icon-theme-name=\"Adwaita\"\n"
                                                "gtk-font-name=\"Fira Code 12\"\n"
                                                "gtk-cursor-theme-name=\"Adwaita\""))
+
+                            (".config/mpv/scripts/mpris.so"
+                             ,(file-append (specification->package "mpv-mpris") "/lib/mpris.so"))
 
                             (".config/flameshot/flameshot.ini"
                              ,(mixed-text-file "flameshot.ini"

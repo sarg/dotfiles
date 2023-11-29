@@ -1,5 +1,4 @@
 ;; NOTES: this image is WIP and requires patching guix
-;; - https://issues.guix.gnu.org/62223
 ;; - https://git.sr.ht/~abcdw/rde/tree/044de83e980b7038b87d27a090aef24229df85eb/src/gnu/services/home.scm
 (use-modules (gnu system) (gnu system image)
              (gnu image) (gnu home)

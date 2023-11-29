@@ -130,10 +130,10 @@
 ;;; PipeWire support.
 ;;;
 
-(define-public pipewire-79
+(define-public pipewire-next
   (package
-    (name "pipewire-79")
-    (version "0.3.79")
+    (name "pipewire-next")
+    (version "1.0.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -142,7 +142,7 @@
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1jsrklhhbmh00mm8czkh9kh54dip2m6m53ag8343vascbbvkvax6"))))
+                "0a8wvsnbgqanp2vjdpkaxpny0k17hz720rd20zdi00s9xjbcrycr"))))
     (build-system meson-build-system)
     (arguments
      (list
@@ -156,6 +156,8 @@
     (native-inputs
      (list `(,glib "bin")
            pkg-config
+           doxygen
+           python
            python-docutils))
     (inputs (list alsa-lib
                   avahi
@@ -196,7 +198,7 @@ of Linux application development.")
 
 (define-configuration/no-serialization home-pipewire-configuration
   (pipewire
-   (file-like pipewire-79)
+   (file-like pipewire-next)
    "The PipeWire package to use.")
   (wireplumber
    (file-like wireplumber)
