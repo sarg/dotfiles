@@ -301,20 +301,22 @@ These are bound only for X11 apps.
 * theme
 #+begin_src scheme :noweb-ref guix-pkg
 "emacs-dracula-theme"
+"emacs-doom-themes"
+"emacs-circadian"
 #+end_src
 #+begin_src elisp :tangle packages.el :exports none
-(package! circadian :pin "b3bb94040080ac18aab04b010752d4984feee37b")
+(package! circadian :built-in t)
 (package! white-sand-theme :pin "729dd52cc1936250183d6761eed406c4be514a71")
 ;(package! kaolin-themes)
-(package! doom-themes :pin "4aee1f5a0e54552669f747aa7c25e6027e73d76d")
+(package! doom-themes :built-in t)
 #+end_src
 
 #+begin_src elisp
 (use-package! white-sand-theme)
 (use-package! dracula-theme)
-(defvar doom-theme-dark 'doom-dracula)
-(setq doom-theme 'white-sand
-      doom-font (font-spec :family "Hack" :size 20)
+(defvar doom-theme-dark 'doom-ayu-mirage)
+(setq doom-theme 'tango
+      doom-font (font-spec :family "Hack" :size 18)
       doom-serif-font (font-spec :family "Hack")
       doom-unicode-font (font-spec :family "Hack"))
 
@@ -419,6 +421,7 @@ plocate -d /storage/500gb.plocate $@
     :recipe (:host github :repo "jdtsmith/org-modern-indent")
     :pin "85f95d093d9b2d8fb9e4a705529eac4e2a888e87")
 (package! org-modern :built-in t)
+(package! org-tidy)
 #+end_src
 #+begin_src scheme :noweb-ref guix-pkg
 "emacs-org-modern"
@@ -433,6 +436,9 @@ plocate -d /storage/500gb.plocate $@
 
  org-src-window-setup 'current-window
  org-fold-catch-invisible-edits 'show-and-error)
+
+(use-package org-tidy
+  :hook (org-mode . org-tidy-mode))
 
 (use-package! org-contacts
   :custom
@@ -909,9 +915,10 @@ emacsclient --eval "(message-mailto \"$1\")"
 (package! webpaste :built-in t)
 (package! web-search :pin "a22cbdc663a1895d5a5b69de91e1e3b9eb64b92f")
 (package! mpv :built-in t)
+(package! yeetube :built-in t)
 #+end_src
 #+begin_src scheme :noweb-ref guix-pkg
-"emacs-mpv" "emacs-webpaste"
+"emacs-mpv" "emacs-webpaste" "emacs-yeetube"
 #+END_src
 #+begin_src elisp
 (defun browse-url-qute-private (url &rest _)

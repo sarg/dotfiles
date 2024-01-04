@@ -1,7 +1,8 @@
 ;; -*- lexical-binding:t -*-
 ;; (defalias 'sarg/telega-ins--message (symbol-function 'telega-ins--message))
 
-(defun sarg/telega-ins--message-header (msg &optional addon-inserter)
+(defun sarg/telega-ins--message-header (msg &optional msg-chat msg-sender
+                                            addon-inserter)
   "Insert message's MSG header, everything except for message content.
 If ADDON-INSERTER function is specified, it is called with one
 argument - MSG to insert additional information after header."
@@ -69,7 +70,7 @@ argument - MSG to insert additional information after header."
           (cl-assert (functionp addon-inserter))
           (funcall addon-inserter msg))))))
 
-(defun sarg/telega-ins--message0 (msg &optional no-header addon-header-inserter)
+(cl-defun sarg/telega-ins--message0 (msg &key no-header addon-header-inserter)
   "Insert message MSG.
 If NO-HEADER is non-nil, then do not display message header
 unless message is edited."
@@ -79,15 +80,7 @@ unless message is edited."
            (sender (telega-msg-sender msg))
            (content (plist-get msg :content))
            (content-type (telega--tl-type content))
-           (channel-post-p (plist-get msg :is_channel_post))
-           ;; (avatar (if channel-post-p
-           ;;             (telega-chat-avatar-image chat)
-           ;;           (telega-user-avatar-image sender)))
-
-           ccol)
-      ;; #17161c
-      ;;
-
+           (channel-post-p (plist-get msg :is_channel_post)))
       ;; (telega-ins--with-attrs (list :face tfaces)
       ;;   (cond
       ;;    (private-chat-p
@@ -111,33 +104,22 @@ unless message is edited."
         )
 
       (telega-ins " ")
-      (setq ccol (telega-current-column))
       (telega-ins--fwd-info-inline (plist-get msg :forward_info))
       (telega-ins--msg-reply-inline msg)
+      (if (memq content-type '(messageSticker))
+          (telega-ins "\n"))
+      (telega-ins--content msg)
 
-      (if (memq content-type '(messagePhoto messageSticker))
-          (progn
-            (telega-ins "\n  ")
-            (telega-ins--content msg))
-
-        (telega-ins--content msg)
-
-        (telega-ins-prefix "\n"
-          (telega-ins--reply-markup msg)))
-
-      (when channel-post-p (insert ?\n ?\n ?\^L ?\n))
-      ;; (telega-ins "\n")
-      )
+      (when channel-post-p (insert ?\n ?\n ?\^L ?\n)))
     t))
 
-(defun sarg/telega-ins--message (msg &optional no-header addon-header-inserter)
+(defun sarg/telega-ins--message (msg &rest args)
   "Inserter for the message MSG."
   (if (telega-msg-marked-p msg)
       (progn
-        (telega-ins telega-symbol-mark)
-        (telega-ins--with-attrs (list :fill-prefix telega-symbol-mark)
-          (sarg/telega-ins--message0 msg no-header addon-header-inserter)))
-    (sarg/telega-ins--message0 msg no-header addon-header-inserter)))
+        (telega-ins--line-wrap-prefix (telega-symbol 'mark)
+          (apply #'sarg/telega-ins--message0 msg args)))
+    (apply #'sarg/telega-ins--message0 msg args)))
 
 (defun sarg/telega-get-code ()
   "Extract confirmation code from latest message of telegram user BenderBot."
@@ -182,8 +164,12 @@ unless message is edited."
 
   (setq
    telega-root-show-avatars nil
+   telega-chat-show-avatars nil
    telega-chat-input-markups '("markdown2" nil)
    telega-animation-play-inline nil
+   telega-sticker-size '(8 . 48)
+
+   telega-chat-folder-format nil
 
    telega-emoji-custom-alist '((":s:" . "¯\\_(ツ)_/¯")))
 

@@ -15,10 +15,10 @@
  (gnu home services shepherd)
  (gnu home services gnupg)
  (gnu home services desktop)
+ (gnu home services sound)
  (gnu home services shells)
  (gnu home services guix)
  (personal services symlinks)
- (personal services sound)
  (personal utils)
  (srfi srfi-1)
  (srfi srfi-11))
@@ -36,7 +36,7 @@
 
 (define %pkg-desktop
   '("pavucontrol" "dunst" "flameshot" "wireplumber"
-    "alsa-utils" "polybar" "lemonbar-xft" "xss-lock"
+    "alsa-utils" "lemonbar-xft" "xss-lock"
     "redshift" "unclutter" "playerctl"))
 
 (define %pkg-fonts

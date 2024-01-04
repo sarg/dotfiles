@@ -10,7 +10,7 @@
              (ice-9 textual-ports))
 
 (use-package-modules
- linux ssh android suckless fonts
+ linux ssh android suckless fonts firmware
  pulseaudio xorg gnome admin cups)
 
 (use-service-modules
@@ -184,6 +184,7 @@
 
      (udev-rules-service 'android android-udev-rules #:groups '("adbusers"))
      (udev-rules-service 'wifi wifi-udev-rule)
+     (udev-rules-service 'qmk qmk-udev-rules)
      (udev-rules-service 'brightness brightnessctl)
 
      (simple-service
