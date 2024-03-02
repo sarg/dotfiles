@@ -69,7 +69,7 @@ gc)
   if [ "$1" == "" ]; then
       echo "compile|home|system|deploy|gc"
   else
-      $DIR/pre-inst-env guix $@
+      $DIR/pre-inst-env guix "$@"
   fi
   ;;
 esac
@@ -92,7 +92,7 @@ esac
  :lang        clojure data emacs-lisp
               (org +contacts +dragndrop +pandoc +present +hugo +roam2) beancount
               rest sh plantuml (python +pyenv +lsp) (web +html) yaml json
- :app         calendar telega (rss +org) torrent irc (exwm +bar)
+ :app         calendar telega (rss +org) torrent irc (exwm +bar) emms
  :email       (mu4e +gmail)
  :config      (default +bindings +smartparens) literate)
 #+end_src
@@ -120,6 +120,9 @@ EXWM has a separate [[../.doom.d/modules/app/exwm][doom app]]. Here are just the
 "emacs-exwm"
 "emacs-exwm-ss"
 #+end_src
+#+begin_src elisp :noweb yes
+(after! exwm (load! "exwm"))
+#+end_src
 ** bar
 #+begin_src elisp
 (setq battery-mode-line-format "%b%>2p%"
@@ -132,25 +135,23 @@ EXWM has a separate [[../.doom.d/modules/app/exwm][doom app]]. Here are just the
                     (:eval (format-time-string "%a %d %R"))))
 #+end_src
 ** workspaces
-#+begin_src elisp
-(after! exwm
-  (setq exwm-workspace-names '("code" "brow" "extr" "lisp")))
+#+begin_src elisp :tangle exwm.el
+(setq exwm-workspace-names '("code" "brow" "extr" "lisp"))
 #+end_src
 ** per-app settings
-#+begin_src elisp
-(after! exwm
-  (setq exwm-manage-configurations
-        `(((-any? (lambda (el) (equal exwm-class-name el))
-            '("mpv" "scrcpy" "AusweisApp2"))
-           floating t
-           floating-mode-line nil)
-          ((equal exwm-class-name "qutebrowser")
-           workspace ,(exwm-workspace-name-to-index "brow")))))
+#+begin_src elisp :tangle exwm.el
+(setq exwm-manage-configurations
+      `(((-any? (lambda (el) (equal exwm-class-name el))
+          '("mpv" "scrcpy" "AusweisApp2"))
+         floating t
+         floating-mode-line nil)
+        ((equal exwm-class-name "qutebrowser")
+         workspace ,(exwm-workspace-name-to-index "brow"))))
 #+end_src
 ** bindings
 *** simulation
 When this key event occurs, replace it with another.
-#+begin_src elisp
+#+begin_src elisp :tangle exwm.el
 (setq exwm-input-simulation-keys
       `((,(kbd "C-m") . return)
         (,(kbd "DEL") . backspace)
@@ -161,14 +162,14 @@ When this key event occurs, replace it with another.
 *** floating
 As I've remapped =LWIN= to =F13=, I've lost the floating window resize/move bindings.
 Let's restore them with =Ctrl= instead of =Super=.
-#+begin_src elisp
+#+begin_src elisp :tangle exwm.el
 (setq exwm-input-resize-event 'C-down-mouse-3
       exwm-input-move-event 'C-down-mouse-1)
 #+end_src
 *** prefix
 These are not full bindings, but the first keys in some sequence. Tell EXWM to
 send these events to emacs.
-#+begin_src elisp
+#+begin_src elisp :tangle exwm.el
 (setq exwm-input-prefix-keys
       `([f13]
         ?\C-w ?\C-x ?\M-x ?\M-m ?\C-g
@@ -179,7 +180,7 @@ send these events to emacs.
 #+end_src
 *** x11-only
 These are bound only for X11 apps.
-#+begin_src elisp
+#+begin_src elisp :tangle exwm.el
 (define-key! exwm-mode-map
   ;; consistent layout switch binding
   [?\C-\\] 'exwm-xkb-next-layout
@@ -191,13 +192,12 @@ These are bound only for X11 apps.
   [?\C-c] 'nil)
 #+end_src
 *** global
-#+begin_src elisp
-(defun exwm/switch-to-next-window (class)
+#+begin_src elisp :tangle exwm.el
+(defun exwm/switch-to-next-window (class &optional reverse?)
   (cl-loop
    with first with this
-   for b being the buffers
-   for is-class = (string= class (buffer-local-value 'exwm-class-name b))
-   when is-class do
+   for b in (if reverse? (reverse (buffer-list)) (buffer-list))
+   when (string= class (buffer-local-value 'exwm-class-name b)) do
    (setf first (or first b))
    (setf next (and this b))
    (setf this (or this (when (eq (current-buffer) b) b)))
@@ -211,26 +211,44 @@ These are bound only for X11 apps.
  "<f13> j"     #'evil-window-down
  "<f13> k"     #'evil-window-up
  "<f13> l"     #'evil-window-right
+
+ "<f13> E"    `(lambda () (interactive)
+                 (exwm-workspace-switch (exwm-workspace-name-to-index "brow"))
+                 (cond
+                  ((string= "qutebrowser" exwm-class-name)
+                   (exwm/switch-to-next-window "qutebrowser" 'reverse))
+
+                  ((not (get-process "qutebrowser"))
+                   (start-process "qutebrowser" nil "setsid" "-w" "qutebrowser"))))
+
  "<f13> e"    `(lambda () (interactive)
                  (exwm-workspace-switch (exwm-workspace-name-to-index "brow"))
                  (cond
-                  ((not (get-process "qutebrowser"))
-                   (start-process "qutebrowser" nil "setsid" "-w" "qutebrowser"))
-
                   ((string= "qutebrowser" exwm-class-name)
-                   (exwm/switch-to-next-window "qutebrowser")))))
-#+end_src
+                   (exwm/switch-to-next-window "qutebrowser"))
 
+                  ((not (get-process "qutebrowser"))
+                   (start-process "qutebrowser" nil "setsid" "-w" "qutebrowser")))))
+#+end_src
+** app launcher
+#+begin_src scheme :noweb-ref guix-pkg
+"dex"
+#+end_src
+#+begin_src elisp
+;; the default one messes up exec path of wine programs due to wrong parsing
+(after! app-launcher
+  (defun app-launcher--action-dex (selected)
+    (call-process "dex" nil nil nil (cdr (assq 'file (gethash selected app-launcher--cache)))))
+
+  (setq app-launcher--action-function #'app-launcher--action-dex))
+#+end_src
 * desktop
 ** multimedia keys
-#+begin_src elisp
+#+begin_src elisp :tangle exwm.el
 (exwm/bind-command
    "<XF86MonBrightnessUp>" "brightnessctl -e set 10%+"
-   "<MonBrightnessUp>" "brightnessctl -e set 10%+"
    "<XF86MonBrightnessDown>" "brightnessctl -e set 10%-"
-   "<MonBrightnessDown>" "brightnessctl -e set 10%-"
    "<XF86ScreenSaver>" "lock.sh"
-   "<ScreenSaver>" "lock.sh"
    "<f13> <f12>" "flameshot gui")
 #+end_src
 ** redshift
@@ -386,7 +404,8 @@ plocate -d /storage/500gb.plocate $@
 #+end_src
 * buffers
 #+begin_src elisp :tangle packages.el :exports none
-(package! bufler :pin "5b76a6c7bd53d0f2fe5993b7c316da15bb2cd3f5")
+(package! map :built-in 't) ; macro-expansion fails on the latest map.el, use the older built-in
+(package! bufler :pin "d686f6a303ed250da2ee01d82afea26058a0a533")
 #+end_src
 
 #+begin_src elisp
@@ -419,7 +438,7 @@ plocate -d /storage/500gb.plocate $@
 #+begin_src elisp :tangle packages.el
 (package! org-modern-indent
     :recipe (:host github :repo "jdtsmith/org-modern-indent")
-    :pin "85f95d093d9b2d8fb9e4a705529eac4e2a888e87")
+    :pin "400e1d0fcec9044203189923ee385736a257b186")
 (package! org-modern :built-in t)
 (package! org-tidy)
 #+end_src
@@ -664,28 +683,26 @@ query_entries() {
       (add-hook 'kill-buffer-hook #'dont-kill-buffer--hook 0 t)
     (remove-hook 'kill-buffer-hook #'dont-kill-buffer--hook t)))
 
-(use-package! emms
-  ;; protect the Playlists, so they could be saved in kill-emacs-hook
-  :hook (emms-playlist-mode . dont-kill-buffer-mode)
+(defun =emms ()
+  (interactive)
+  (cl-letf (((symbol-function 'switch-to-buffer) #'display-buffer))
+    (emms)))
 
-  :init
-  (setq emms-directory (concat doom-data-dir "emms")
-        emms-cache-file (concat doom-cache-dir "emms"))
+(after! emms
+  (setq
+   emms-player-mpv-update-metadata t
+   emms-playlist-buffer-name "*Music*"
+   emms-source-file-default-directory (expand-file-name "~/Music/"))
 
-  :custom
-  (emms-history-file "/storage/data/emacs/emms_history")
-  (emms-player-mpv-update-metadata t)
-  (emms-playlist-buffer-name "*Music*")
-  (emms-source-file-default-directory (expand-file-name "~/Music/"))
+  (map! :map emms-playlist-mode-map
+        :localleader
+        "r" #'emms-toggle-random-playlist)
 
-  :config
-  (defun =emms ()
-    (interactive)
-    (cl-letf (((symbol-function 'switch-to-buffer) #'display-buffer))
-      (emms)))
+  (when (modulep! :app emms +history)
+    (add-hook! emms-playlist-mode #'dont-kill-buffer-mode)
+    (setq emms-history-file "/storage/data/emacs/emms_history")
+    (emms-history-load))
 
-  (emms-all)
-  (emms-history-load)
   (setq emms-player-list (list emms-player-mpv)))
 #+end_src
 *** playlist buffer
@@ -724,13 +741,15 @@ query_entries() {
   (delq 'emms-playing-time-string global-mode-string))
 #+end_src
 *** bindings
-#+begin_src elisp
-(after! exwm
+#+begin_src elisp :tangle exwm.el
+(exwm/bind-command
+ "<XF86AudioRaiseVolume>" #'emms-volume-raise
+ "<XF86AudioLowerVolume>" #'emms-volume-lower
+ "<XF86AudioMute>" "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
+ "<XF86AudioMicMute>" "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle")
+
+(after! emms
   (exwm/bind-command
-   "<XF86AudioRaiseVolume>" #'emms-volume-raise
-   "<XF86AudioLowerVolume>" #'emms-volume-lower
-   "<XF86AudioMute>" "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
-   "<XF86AudioMicMute>" "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"
    "<XF86AudioPlay>" #'emms-pause
    "<XF86AudioPrev>" #'emms-previous
    "<XF86AudioNext>" (lambda () (interactive) (if emms-random-playlist (emms-random) (emms-next)))))
@@ -845,7 +864,7 @@ qutebrowser --nowindow --target tab-bg-silent $@
 * dict
 #+begin_src elisp :tangle packages.el
 (package! dictcc :pin "30b505759e5a97c2aaa8b0e8ea5e187fdf625c65")
-(package! multitran :pin "285b625b5e94f5dd960cb4a3292407aa7568073e")
+(package! multitran :pin "680f31d15b78876daf484bd926e5c172ab061595")
 (package! google-translate :pin "e60dd6eeb9cdb931d9d8bfbefc29a48ef9a21bd9")
 (package! powerthesaurus :pin "4b97797cf789aaba411c61a85fe23474ebc5bedc")
 #+end_src
@@ -909,7 +928,12 @@ emacsclient --eval "(message-mailto \"$1\")"
     (user-mail-address  . "sarg@sarg.org.ru"))
   t)
 #+end_src
-
+* debugs
+#+begin_src elisp
+(set-popup-rule! "^\\*Guix-Patches Bugs\\*$" :ignore t)
+(set-popup-rule! "^\\*Summary nndoc" :ignore t)
+(set-popup-rule! "^\\*Article" :ignore t)
+#+end_src
 * browsing
 #+begin_src elisp :tangle packages.el
 (package! webpaste :built-in t)
@@ -1073,6 +1097,14 @@ emacsclient --eval "(message-mailto \"$1\")"
  :desc "Music" "oM" #'=emms)
 #+end_src
 * experimental
+** theme-cycle
+#+begin_src elisp :tangle packages.el
+(package! theme-cycle :recipe (:host github :repo "tsengf/theme-cycle"))
+#+end_src
+#+begin_src elisp
+(use-package! theme-cycle
+  :commands cycle-themes)
+#+end_src
 ** bookmark
 #+begin_src scheme :noweb-ref guix-pkg
 "emacs-bookmark-plus"
@@ -1084,6 +1116,57 @@ emacsclient --eval "(message-mailto \"$1\")"
 (setq bookmark-default-file "/storage/data/emacs/bookmarks")
 (use-package! bookmark+)
 #+end_src
+** cyclekey
+#+begin_src elisp :tangle packages.el
+(package! cyclekey :recipe (:host github :repo "shankar2k/cyclekey"))
+#+end_src
+#+begin_src elisp
+(use-package! cyclekey
+  :bind ("M-o" . cyclekey-cycle)
+
+  :config
+  (cyclekey-add-language "German"))
+#+end_src
+** magic sqlite
+#+begin_src elisp
+; https://christiantietze.de/posts/2024/01/emacs-sqlite-mode-open-sqlite-files-automatically/
+(use-package sqlite-mode
+  :config
+  (defun ct/sqlite-view-file-magically ()
+    "Runs `sqlite-mode-open-file' on the file name visited by the
+current buffer, killing it."
+    (require 'sqlite-mode)
+    (let ((file-name buffer-file-name))
+      (kill-current-buffer)
+      (sqlite-mode-open-file file-name)))
+
+  (add-to-list 'magic-mode-alist '("SQLite format 3\x00" . ct/sqlite-view-file-magically)))
+#+end_src
+* TODO todo [5/13]
+** DONE console font
+** DONE mingetty with xorg autostart (under sarg), put `lock.sh` first in the .xsession
+** DONE user syncthing
+** DONE check if greetd is necessary
+** TODO mu4e filtering for guix-patches
+** TODO periodical jobs
+*** TODO fstrim service
+*** TODO run them just before hibernating, if the battery is full
+*** TODO mcron for updatedb
+*** TODO mcron for backup
+** TODO guix gc, but not that aggressive
+** TODO Fix hardcoded =Guix_image= root partition name
+** TODO Fix =gnupg= symlink\\
+=guix home= =update-symlinks= creates =~/.gnupg= before my symlink activation service runs
+therefore gnupg private keys are not symlinked\\
+Target state:
+*** =~/.gnupg= is a symlink to =/storage/data/gnupg=
+*** =gpg-agent.conf= and =gpg.conf= are managed by =guix home=
+** DONE +duplicate env entries because of ~doom env~+ (just delete the file)
+** TODO counsel-spotify pollutes namespace because of :reader in EIEIO objects (name, artist ...)
+** TODO emacs keybindings revamp
+- winner to be replaced with custom window management
+- evil bindings in EMMS buffers (q to close, SPC to enter)
+- repeat Super+<digit> to switch (saved) window configurations
 * archive :noexport:
 ** emacs-one-frame
 #+begin_src sh :tangle no :shebang #!/bin/bash

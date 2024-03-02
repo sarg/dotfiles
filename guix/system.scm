@@ -11,7 +11,7 @@
 
 (use-package-modules
  linux ssh android suckless fonts firmware
- pulseaudio xorg gnome admin cups)
+ xorg gnome admin cups)
 
 (use-service-modules
  desktop ssh networking sysctl cups avahi
@@ -89,7 +89,7 @@
    (append
     (filter (lambda (p)
               (not (member (package-name p)
-                           '("wireless-tools" "info-reader" "nano" "mg"))))
+                           '("wireless-tools" "info-reader" "nano" "mg" "isc-dhcp"))))
             %base-packages)
 
     (map specification->package
@@ -163,7 +163,6 @@
                (restore-device-state-on-startup? #t)))
 
      (service avahi-service-type)
-     (service alsa-service-type)
      (service openssh-service-type
               (openssh-configuration
                (x11-forwarding? #t)))

@@ -36,8 +36,7 @@
 
 (define %pkg-desktop
   '("pavucontrol" "dunst" "flameshot" "wireplumber"
-    "alsa-utils" "lemonbar-xft" "xss-lock"
-    "redshift" "unclutter" "playerctl"))
+    "lemonbar-xft" "xss-lock" "redshift" "unclutter" "playerctl"))
 
 (define %pkg-fonts
   '("font-fira-code"

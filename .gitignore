@@ -11,3 +11,4 @@ xmonad/.xmonad/xmonad*
 /emacs/.doom.d/config.el
 /guix/emacs-home.scm
 /emacs/.doom.d/init.el
+/emacs/.doom.d/exwm.el

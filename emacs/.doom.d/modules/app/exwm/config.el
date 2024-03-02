@@ -32,6 +32,7 @@
 
 (use-package! exwm
   :commands (exwm-enable)
+  :demand
   :hook (exwm-init . exwm/init)
   :hook (exwm-mode . exwm/new-window-hook)
   :hook (exwm-update-title . exwm/update-title-hook)
@@ -56,4 +57,5 @@
 
 ;; Minor mode to disable the screensaver when one or more X clients are fullscreen. ;;
 (use-package! exwm-ss
+  :after exwm
   :init (exwm-ss-mode 1))
