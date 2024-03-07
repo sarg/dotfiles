@@ -12,6 +12,7 @@
  (gnu packages gnupg)
  (gnu home services)
  (gnu home services syncthing)
+ (gnu home services dotfiles)
  (gnu home services shepherd)
  (gnu home services gnupg)
  (gnu home services desktop)
@@ -19,7 +20,6 @@
  (gnu home services shells)
  (gnu home services guix)
  (personal services symlinks)
- (personal utils)
  (srfi srfi-1)
  (srfi srfi-11))
 
@@ -140,35 +140,16 @@
                    (default-cache-ttl 86400)
                    (max-cache-ttl 86400)))
 
+         (service home-dotfiles-service-type
+                  (home-dotfiles-configuration
+                   (layout 'stow)
+                   (directories '(".."))
+                   (packages '("backup" "android" "email" "xsession" "git" "qutebrowser" "desktop"))))
+
          (simple-service 'configs
                          home-files-service-type
-                         (append!
-                          (with-directory-excursion (current-source-directory)
-                            `(,@(as-local-files "../backup")
-                              ,@(as-local-files "../android")
-                              ,@(as-local-files "../email")
-                              ,@(as-local-files "../xsession")
-                              ,@(as-local-files "../git")
-                              ,@(as-local-files "../qutebrowser")
-                              ,@(as-local-files "../desktop")))
-                          `((".config/gtk-3.0/settings.ini"
-                             ,(mixed-text-file "gtk3.conf"
-                                               "[Settings]\n"
-                                               "gtk-theme-name=Greybird\n"
-                                               "gtk-icon-theme-name=\"Adwaita\"\n"
-                                               "gtk-font-name=\"Fira Code 12\"\n"
-                                               "gtk-cursor-theme-name=\"Adwaita\""))
-
-                            (".config/mpv/scripts/mpris.so"
-                             ,(file-append (specification->package "mpv-mpris") "/lib/mpris.so"))
-
-                            (".config/flameshot/flameshot.ini"
-                             ,(mixed-text-file "flameshot.ini"
-                                               "[General]\n"
-                                               "disabledTrayIcon=true"))
-
-                            (".gnupg/gpg.conf"
-                             ,(mixed-text-file "gpg.conf" "keyid-format 0xlong\n")))))
+                         `((".config/mpv/scripts/mpris.so"
+                            ,(file-append (specification->package "mpv-mpris") "/lib/mpris.so"))))
 
          (simple-service 'extra-channels
                          home-channels-service-type
