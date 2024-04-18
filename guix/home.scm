@@ -75,7 +75,7 @@
     ))
 
 (define %pkg-dev
-  '("python" "emacs-debbugs" "gnu-standards"
+  '("python"
     "git" "git:send-email" "git-crypt" "perl" ;for some git commands
     "libvirt" "virt-manager" "sicp"
     ;; "openjdk:jdk"

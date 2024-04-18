@@ -74,7 +74,16 @@ gc)
   ;;
 esac
 #+end_src
-
+* guix development
+#+begin_src scheme :noweb-ref guix-pkg
+"emacs-debbugs" "gnu-standards" "mumi"
+#+end_src
+#+begin_src elisp
+(after! debbugs
+  (set-popup-rule! "^\\*Guix-Patches Bugs\\*$" :ignore t)
+  (set-popup-rule! "^\\*Summary nndoc" :ignore t)
+  (set-popup-rule! "^\\*Article" :ignore t))
+#+end_src
 * doom
 ** init.el
 #+begin_src elisp :tangle init.el
@@ -594,6 +603,7 @@ subprocess.call(['emacs-capture',
 #+begin_src scheme :noweb-ref guix-pkg
 "emacs-password-generator"
 "emacs-password-store"
+"emacs-password-store-otp"
 #+end_src
 
 #+begin_src elisp
@@ -757,9 +767,7 @@ query_entries() {
 ** spotify
 *** player
 #+begin_src elisp :tangle packages.el
-(package! emms-player-spotify
-  :recipe (:host github :repo "sarg/emms-spotify")
-  :pin "99f9ea63f17932fe4fd679cec02476cfdafc8713")
+(package! emms-player-spotify :pin "6cf2848da30ddec38d7931124e2a62448cde17c4")
 #+end_src
 #+begin_src elisp
 (use-package! emms-player-spotify
@@ -805,7 +813,7 @@ query_entries() {
                               (counsel-spotify--utf8 (name (artist el))))
               (emms-track-set track 'info-album
                               (counsel-spotify--utf8 (name (album el))))
-              (emms-track-set track 'info-playing-time (millis-to-seconds (duration-in-ms el)))
+              (emms-track-set track 'info-playing-time (round (* 1e-6 (duration-in-ms el))))
               (emms-playlist-insert-track track)))
           (counsel-spotify-parse-items (list (cons 'tracks results)) 'tracks)))))))
 
@@ -927,12 +935,6 @@ emacsclient --eval "(message-mailto \"$1\")"
     (smtpmail-smtp-user . "sarg@sarg.org.ru")
     (user-mail-address  . "sarg@sarg.org.ru"))
   t)
-#+end_src
-* debugs
-#+begin_src elisp
-(set-popup-rule! "^\\*Guix-Patches Bugs\\*$" :ignore t)
-(set-popup-rule! "^\\*Summary nndoc" :ignore t)
-(set-popup-rule! "^\\*Article" :ignore t)
 #+end_src
 * browsing
 #+begin_src elisp :tangle packages.el

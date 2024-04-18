@@ -1,5 +1,6 @@
 (use-modules (gnu)
              (gnu services)
+             (gnu services)
              (gnu packages)
              (guix packages)
              (guix channels)
@@ -14,7 +15,7 @@
  xorg gnome admin cups)
 
 (use-service-modules
- desktop ssh networking sysctl cups avahi
+ desktop ssh networking sysctl cups avahi guix
  xorg dbus shepherd sound pm dns virtualization)
 
 (define extrakeys-service-type
@@ -101,6 +102,9 @@
     %base-services
 
     (list
+     (service guix-home-service-type
+              `(("sarg" ,(load "./home.scm"))))
+
      (simple-service 'sysctl-custom sysctl-service-type
                      '(("fs.inotify.max_user_watches" . "524288")))
 
