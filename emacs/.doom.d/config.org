@@ -1144,6 +1144,13 @@ current buffer, killing it."
 
   (add-to-list 'magic-mode-alist '("SQLite format 3\x00" . ct/sqlite-view-file-magically)))
 #+end_src
+** gpx-mode
+#+begin_src scheme :noweb-ref guix-pkg
+"emacs-gpx"
+#+end_src
+#+begin_src elisp
+(use-package! gpx)
+#+end_src
 * TODO todo [5/13]
 ** DONE console font
 ** DONE mingetty with xorg autostart (under sarg), put `lock.sh` first in the .xsession
