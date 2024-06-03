@@ -99,7 +99,13 @@
 
   (services
    (append
-    %base-services
+    (modify-services %base-services
+      (guix-service-type config =>
+                         (guix-configuration
+                          (inherit config)
+                          ;; prevent guix gc deleting build inputs
+                          (extra-options '("--gc-keep-derivations"
+                                           "--gc-keep-outputs")))))
 
     (list
      (service guix-home-service-type
