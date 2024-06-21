@@ -22,16 +22,16 @@
 (define-public quake3e
   (package
     (name "quake3e")
-    (version "2023-10-17")
+    (version "2024-06-21")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/ec-/Quake3e")
-             (commit "b0f544204412ea9b6f565459b27fec3aea936421")))
+             (commit "ee60b5d736cff2e5e21d347292e9e9f0f640e3b1")))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "084k9fgsv04md64gzwfbqliklcvhcwn5kslmy79j8l53kihkafhf"))
+        (base32 "0sh175f8c26vgdajyczqyh8x2ddl9ff7q9n3hnfcwww3sgmmrdvp"))
        (modules '((guix build utils)))
        (snippet
         '(begin
