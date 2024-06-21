@@ -182,9 +182,12 @@
                (no-hosts? #t)
                (no-resolv? #t)
                (servers-file "/etc/dnsmasq.servers")
+               (listen-addresses '("::1" "127.0.1.1"))
                ;; (addresses '("/dev.local/127.0.0.1"
                ;;              "/local/127.0.0.1"))
-               (servers '("1.1.1.1"))))
+               (servers '("1.1.1.1"))
+               (extra-options '("--bind-interfaces"
+                                "--interface=lo"))))
 
      (service extrakeys-service-type
               '(("1d" . "56")   ; lctrl->lalt

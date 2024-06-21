@@ -414,7 +414,7 @@ plocate -d /storage/500gb.plocate $@
 * buffers
 #+begin_src elisp :tangle packages.el :exports none
 (package! map :built-in 't) ; macro-expansion fails on the latest map.el, use the older built-in
-(package! bufler :pin "d686f6a303ed250da2ee01d82afea26058a0a533")
+(package! bufler :pin "ef3b28bbdcb1e813a1d5b06a91d09774998967c5")
 #+end_src
 
 #+begin_src elisp
@@ -447,7 +447,7 @@ plocate -d /storage/500gb.plocate $@
 #+begin_src elisp :tangle packages.el
 (package! org-modern-indent
     :recipe (:host github :repo "jdtsmith/org-modern-indent")
-    :pin "400e1d0fcec9044203189923ee385736a257b186")
+    :pin "f2b859bc53107b2a1027b76dbf4aaebf14c03433")
 (package! org-modern :built-in t)
 (package! org-tidy)
 #+end_src
@@ -768,7 +768,7 @@ query_entries() {
 ** spotify
 *** player
 #+begin_src elisp :tangle packages.el
-(package! emms-player-spotify :pin "6cf2848da30ddec38d7931124e2a62448cde17c4")
+(package! emms-player-spotify :pin "b2f2be8222f0852276cccef05ca820982b6ec33a")
 #+end_src
 #+begin_src elisp
 (use-package! emms-player-spotify
@@ -963,8 +963,12 @@ emacsclient --eval "(message-mailto \"$1\")"
 (defun browse-url-mpv (url &rest _)
   (mpv-play-url url))
 
+(defun browse-url-emms (url &rest _)
+  (emms-add-url url))
+
 (setq browse-url-handlers
-      '(("youtu\\.?be" . browse-url-mpv)))
+      `((,(rx string-start "https://" (opt "www.") "youtu" (opt ".") "be") . browse-url-mpv)
+        ("open.spotify.com" . emms-add-url)))
 
 (setq-default
  browse-url-browser-function 'browse-url-generic
@@ -1028,7 +1032,7 @@ emacsclient --eval "(message-mailto \"$1\")"
 (package! dired-filter :built-in t)
 (package! dired-avfs :built-in t)
 (package! dired-du :built-in t)
-(package! dired-collapse :pin "874449d6fc98aee565e1715ec18acec3c1c2cafb")
+(package! dired-collapse :pin "a01c126c3b1068655509487c76971895f5459d09")
 (package! dired-git-info
   :recipe (:host github :repo "clemera/dired-git-info")
   :built-in t)
@@ -1152,7 +1156,7 @@ current buffer, killing it."
 #+begin_src elisp
 (use-package! gpx)
 #+end_src
-* TODO todo [5/13]
+* TODO todo [6/12]
 ** DONE console font
 ** DONE mingetty with xorg autostart (under sarg), put `lock.sh` first in the .xsession
 ** DONE user syncthing
@@ -1163,7 +1167,8 @@ current buffer, killing it."
 *** TODO run them just before hibernating, if the battery is full
 *** TODO mcron for updatedb
 *** TODO mcron for backup
-** TODO guix gc, but not that aggressive
+** DONE guix gc, but not that aggressive
+=--gc-keep-derivations= and =--gc-keep-outputs= to =guix-daemon= params
 ** TODO Fix hardcoded =Guix_image= root partition name
 ** TODO Fix =gnupg= symlink\\
 =guix home= =update-symlinks= creates =~/.gnupg= before my symlink activation service runs

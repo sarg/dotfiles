@@ -11,6 +11,7 @@ c.content.cookies.accept = 'no-3rdparty'
 c.editor.command = ['emacsclient', '-c', '{}']
 c.content.default_encoding = 'utf-8'
 c.scrolling.smooth = True
+c.downloads.location.prompt = False
 c.downloads.remove_finished = 15000
 c.window.title_format = '[{host}] {current_title}{private}'
 c.input.partial_timeout = 0

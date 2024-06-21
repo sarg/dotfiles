@@ -9,6 +9,7 @@
   #:use-module (guix build-system python)
   #:use-module (guix build-system pyproject)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages xml)
   #:use-module (guix download))
 
 (define-public python-gpxpy
@@ -72,4 +73,24 @@
 other @code{helm-type-file} sources such as @code{helm-locate}.")
       (license license:gpl3+))))
 
-emacs-gpx
+(define-public python-gpxcsv
+  (package
+    (name "python-gpxcsv")
+    (home-page "https://github.com/astrowonk/gpxcsv")
+    (version "0.2.15")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0gfgdz1j1iqfg3lqk7dildirpwn4b90n99khrv3krmypahygnsdv"))))
+    (build-system pyproject-build-system)
+    (propagated-inputs (list python-lxml))
+    (synopsis "GPX file parser and GPS track manipulation library")
+    (description "GPX file parser and GPS track manipulation library")
+    (license license:asl2.0)))
+
+python-gpxcsv
