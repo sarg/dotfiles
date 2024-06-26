@@ -1,6 +1,7 @@
 (use-modules (gnu)
              (gnu services)
              (gnu services)
+             (gnu system setuid)
              (gnu packages)
              (guix packages)
              (guix channels)
@@ -12,7 +13,7 @@
 
 (use-package-modules
  linux ssh android suckless fonts firmware
- xorg gnome admin cups)
+ xorg gnome admin cups spice)
 
 (use-service-modules
  desktop ssh networking sysctl cups avahi guix
@@ -44,6 +45,9 @@
 
 (define polkit-udisks-wheel-service
   (simple-service 'polkit-udisks-wheel polkit-service-type (list polkit-udisks-wheel)))
+
+(define polkit-spice-gtk-service
+  (simple-service 'polkit-spice-gtk polkit-service-type (list spice-gtk)))
 
 (define %non-guix.pub
   (plain-file
@@ -83,7 +87,7 @@
                  (group "users")
                  (home-directory "/home/sarg")
                  (supplementary-groups
-                  '("wheel" "netdev" "audio" "video" "tty" "input" "adbusers" "kvm" "dialout" "cdrom")))
+                  '("wheel" "netdev" "audio" "video" "tty" "input" "adbusers" "kvm" "dialout" "cdrom" "libvirt")))
                 %base-user-accounts))
 
   (packages
@@ -96,6 +100,12 @@
     (map specification->package
          '("nss-certs" "bluez" "intel-vaapi-driver"
            "tlp" "brightnessctl" "libratbag"))))
+
+  (setuid-programs
+   (cons* (setuid-program
+           (program
+            (file-append spice-gtk "/libexec/spice-client-glib-usb-acl-helper")))
+          %setuid-programs))
 
   (services
    (append
@@ -114,6 +124,8 @@
      (simple-service 'sysctl-custom sysctl-service-type
                      '(("fs.inotify.max_user_watches" . "524288")))
 
+     (service libvirt-service-type)
+     (service virtlog-service-type)
      (service ntp-service-type)
      (service cups-service-type
               (cups-configuration
@@ -157,11 +169,12 @@
      ;; perform administrative tasks (similar to "sudo").
      polkit-wheel-service
      polkit-udisks-wheel-service
+     polkit-spice-gtk-service
+     (service polkit-service-type)
 
      (service upower-service-type)
      (service bluetooth-service-type)
      (service udisks-service-type)
-     (service polkit-service-type)
 
      (service elogind-service-type
               (elogind-configuration
