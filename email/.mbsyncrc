@@ -6,7 +6,7 @@ SyncState *
 IMAPAccount gmail
 Host imap.gmail.com
 User sarg@sarg.org.ru
-PassCmd "pass show Email/sarg@sarg.org.ru | grep mbsync | cut -d' ' -f2"
+PassCmd "pass show Email/smtp.gmail.com/sarg@sarg.org.ru"
 # Use SSL
 SSLType IMAPS
 SSLVersions TLSv1.2
