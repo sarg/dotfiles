@@ -10,6 +10,7 @@
  (gnu services)
  (gnu packages)
  (gnu packages gnupg)
+ (gnu packages qt)
  (gnu home services)
  (gnu home services syncthing)
  (gnu home services dotfiles)
@@ -173,6 +174,8 @@
          (simple-service 'additional-env-vars-service
                          home-environment-variables-service-type
                          `(("PATH" . "$HOME/.local/bin:$HOME/.config/emacs/bin:$PATH")
+                           ("QT_PLUGIN_PATH" . ,(file-append qtwayland "/lib/qt6/plugins"))
+                           ("QT_QPA_PLATFORM_PLUGIN_PATH" . ,(file-append qtwayland  "/lib/qt6/plugins/platforms"))
                            ("XDG_DATA_DIRS" . "$XDG_DATA_DIRS:$HOME/.local/share/flatpak/exports/share")
                            ("DOOMLOCALDIR" . "$HOME/.local/doom/")
                            ("VISUAL" . "emacsclient")
