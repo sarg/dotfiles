@@ -98,7 +98,7 @@
             %base-packages)
 
     (map specification->package
-         '("nss-certs" "bluez" "intel-vaapi-driver"
+         '("bluez" "intel-vaapi-driver"
            "tlp" "brightnessctl" "libratbag"))))
 
   (setuid-programs
@@ -152,14 +152,12 @@
      (service dhcp-client-service-type
               (dhcp-client-configuration
                (interfaces '("wifi"))
+               (config-file (plain-file "dhclient.conf" "send host-name = gethostname();"))
                (shepherd-requirement '(wpa-supplicant))))
 
      (simple-service 'dhclient-wan etc-service-type
                      (list `("dhclient-enter-hooks"
-                             ,(local-file "./files/dhclient-enter-hooks"))
-                           `("dhclient.conf"
-                             ,(plain-file "dhclient.conf" "send host-name = gethostname();"))))
-
+                             ,(local-file "./files/dhclient-enter-hooks"))))
 
      (service screen-locker-service-type
               (screen-locker-configuration
