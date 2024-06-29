@@ -6,9 +6,13 @@ c.auto_save.session = True
 c.backend = 'webengine'
 c.statusbar.show = 'in-mode'
 
+c.fileselect.handler = 'external'
+c.fileselect.single_file.command = ['emacsclient', '{}']
+c.fileselect.folder.command = ['emacsclient', '{}']
+c.fileselect.multiple_files.command = ['emacsclient', '{}']
 c.content.cookies.accept = 'no-3rdparty'
 
-c.editor.command = ['emacsclient', '-c', '{}']
+c.editor.command = ['emacsclient', '{}']
 c.content.default_encoding = 'utf-8'
 c.scrolling.smooth = True
 c.downloads.location.prompt = False
@@ -36,7 +40,8 @@ c.url.searchengines = {
     'DEFAULT': 'https://duckduckgo.com/lite?q={}',
     '!g': 'https://www.google.ru/search?hl=en&q={}',
     '!gh': 'https://github.com/search?utf8=✓&type=Code&q={}',
-    '!gm': 'https://www.google.com/maps?hl=en&q={}'
+    '!gm': 'https://www.google.com/maps?hl=en&q={}',
+    '!gi': 'https://www.google.com/search?q={}&tbs=imgo:1&udm=2'
 }
 
 c.colors.completion.fg = '#333333'

@@ -1156,6 +1156,26 @@ current buffer, killing it."
 #+begin_src elisp
 (use-package! gpx)
 #+end_src
+** qute-dired
+#+begin_src elisp
+(defun qute/choose-file ()
+  (interactive)
+  (let ((files (dired-get-marked-files)))
+    (with-temp-file qute-filename
+      (insert (s-join "\n" files)))
+    (+dired/quit-all)))
+
+(map! :map dired-mode-map
+      "C-c C-c" #'qute/choose-file)
+
+(defun qute/dired-hook (&optional _)
+  (when (s-starts-with? "/tmp/qutebrowser-fileselect" buffer-file-name)
+    (setq qute-filename buffer-file-name)
+    (dired "~/")
+    (kill-buffer (find-file-noselect qute-filename))))
+
+(add-hook! 'server-visit-hook #'qute/dired-hook)
+#+end_src
 * TODO todo [6/12]
 ** DONE console font
 ** DONE mingetty with xorg autostart (under sarg), put `lock.sh` first in the .xsession
