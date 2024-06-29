@@ -6,6 +6,10 @@ c.auto_save.session = True
 c.backend = 'webengine'
 c.statusbar.show = 'in-mode'
 
+c.fileselect.handler = 'external'
+c.fileselect.single_file.command = ['emacsclient', '{}']
+c.fileselect.folder.command = ['emacsclient', '{}']
+c.fileselect.multiple_files.command = ['emacsclient', '{}']
 c.content.cookies.accept = 'no-3rdparty'
 
 c.editor.command = ['emacsclient', '-c', '{}']
