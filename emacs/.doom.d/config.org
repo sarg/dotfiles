@@ -584,40 +584,16 @@ os.execlp('xdg-open', 'xdg-open',
 
 ** qutebrowser integration
 #+begin_src elisp
-(defun +pass/qute (url)
-  (auth-source-pass--read-entry
-   (completing-read "Pass: "
-                    (password-store-list)
-                    nil t url)))
+(defun qute/choose-pass (url)
+   (completing-read "Pass: " (password-store-list) nil t url))
 #+end_src
 
-#+begin_src bash :tangle ~/.config/qutebrowser/password_fill_rc :exports none
-init() { file="not used"; }
-choose_entry() { true ; }
-no_entries_found() { if [ 0 -eq "${#lines[@]}" ]; then exit 0; fi }
-
-open_entry() {
-    local firstline=1
-    for line in "${lines[@]}"; do
-        if ((firstline)) ; then
-            password="$line"
-            firstline=0
-        else
-            if [[ $line =~ $user_pattern ]] ; then
-                # remove the matching prefix "user: " from the beginning of the line
-                username=${line#${BASH_REMATCH[0]}}
-                break
-            fi
-        fi
-    done
-}
-
-query_entries() {
-    url=$(awk -F'[./]' '{print $(NF-1) "." $(NF)}' <<< "$1")
-
-    set +o errexit
-    mapfile -t lines < <(emacsclient -e "(+pass/qute \"$url\")" | jq -r .)
-    set -o errexit
+#+NAME: password_fill_rc
+#+begin_src bash :tangle ~/.config/qutebrowser/password_fill_rc
+choose_entry() {
+    MENU_COMMAND=( emacs-dmenu -p pass )
+    choose_entry_menu || true
+    #file=$( emacsclient -e '(qute/choose-pass "'$simple_url'" )' | jq -r . ) || true
 }
 #+end_src
 
