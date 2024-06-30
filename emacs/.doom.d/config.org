@@ -819,11 +819,31 @@ qutebrowser --nowindow --target tab-bg-silent $@
 #+end_src
 
 * dict
+#+begin_src scheme :noweb-ref guix-pkg
+"emacs-lexic" "sdcv"
+#+end_src
 #+begin_src elisp :tangle packages.el
+(package! lexic :built-in t)
 (package! dictcc :pin "30b505759e5a97c2aaa8b0e8ea5e187fdf625c65")
 (package! multitran :pin "680f31d15b78876daf484bd926e5c172ab061595")
 (package! google-translate :pin "e60dd6eeb9cdb931d9d8bfbefc29a48ef9a21bd9")
 (package! powerthesaurus :pin "4b97797cf789aaba411c61a85fe23474ebc5bedc")
+#+end_src
+#+begin_src elisp
+(defun lexic-format-shr (entry &optional _expected-word)
+  (with-temp-buffer
+    (insert (plist-get entry :info))
+    (let ((tree (libxml-parse-html-region)))
+      (erase-buffer)
+      (shr-insert-document tree))
+    (buffer-string)))
+
+(use-package! lexic
+  :config
+  (add-to-list 'evil-emacs-state-modes 'lexic-mode)
+  (setq lexic-dictionary-specs
+        '(("Duden - Das große Wörterbuch der deutschen Sprache"
+           :short "Duden" :formatter lexic-format-shr :priority 0))))
 #+end_src
 * email
 #+begin_src elisp :tangle packages.el
@@ -1081,10 +1101,20 @@ current buffer, killing it."
 #+end_src
 ** gpx-mode
 #+begin_src scheme :noweb-ref guix-pkg
-"emacs-gpx"
+"emacs-gpx" "emacs-osm"
 #+end_src
 #+begin_src elisp
-(use-package! gpx)
+(use-package! osm
+  :init
+  (set-popup-rule! "^\\*osm" :ignore t)
+
+  :config
+  (defun gpx-show-map-osm (file track segment)
+    (osm-gpx-show file)))
+
+(use-package! gpx
+  :config
+  (setq gpx-show-map-function  #'gpx-show-map-osm))
 #+end_src
 ** qute-dired
 #+begin_src elisp
