@@ -1,0 +1,2 @@
+#!/bin/sh
+emacsclient --eval "(message-mailto \"$1\")"

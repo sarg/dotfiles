@@ -441,22 +441,14 @@ plocate -d /storage/500gb.plocate $@
 (load! "org-defuns")
 #+end_src
 ** capture :noexport:
-#+begin_src shell :tangle ~/.local/bin/emacs-capture :shebang #!/bin/sh
-emacsclient -F '((name . "doom-capture") (height . 10) (width . 80))' "$@"
-#+end_src
-
 #+begin_src python :tangle ~/.local/share/qutebrowser/userscripts/orgprotocol :shebang #!/usr/bin/env python3
 import os
-import subprocess
 from urllib.parse import quote
-
-subprocess.call(['emacs-capture',
-  'org-protocol://capture?template=t&url={url}&title={title}&body={body}'.format(
-    url   = quote(os.environ.get('QUTE_URL', '')),
-    title = quote(os.environ.get('QUTE_TITLE', '')),
-    body  = quote(os.environ.get('QUTE_SELECTED_TEXT', ''))
-  )
-])
+os.execlp('xdg-open', 'xdg-open',
+          'org-protocol://capture?template=t&url={url}&title={title}&body={body}'.format(
+              url   = quote(os.environ.get('QUTE_URL', '')),
+              title = quote(os.environ.get('QUTE_TITLE', '')),
+              body  = quote(os.environ.get('QUTE_SELECTED_TEXT', ''))))
 #+end_src
 ** agenda
 #+begin_src elisp :tangle packages.el :exports none
@@ -834,24 +826,6 @@ qutebrowser --nowindow --target tab-bg-silent $@
 (package! powerthesaurus :pin "4b97797cf789aaba411c61a85fe23474ebc5bedc")
 #+end_src
 * email
-- [ ] TODO: fix mu4e popping up for mailto urls
-#+begin_src desktop :tangle ~/.local/share/applications/emacsclient-mail.desktop :exports none
-[Desktop Entry]
-Categories=Network;Email;
-Comment=GNU Emacs is an extensible, customizable text editor - and more
-Exec=emacs-mail %u
-Icon=emacs
-Name=Emacs (Mail, Client)
-MimeType=x-scheme-handler/mailto;
-NoDisplay=true
-Terminal=false
-Type=Application
-Keywords=emacsclient;
-Actions=new-window;new-instance;
-#+end_src
-#+begin_src shell :tangle ~/.local/bin/emacs-mail :shebang #!/bin/sh
-emacsclient --eval "(message-mailto \"$1\")"
-#+end_src
 #+begin_src elisp :tangle packages.el
 (package! mu4e-alert :disable t)
 #+end_src

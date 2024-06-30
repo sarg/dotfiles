@@ -16,6 +16,7 @@
  (gnu home services dotfiles)
  (gnu home services shepherd)
  (gnu home services gnupg)
+ (gnu home services xdg)
  (gnu home services desktop)
  (gnu home services sound)
  (gnu home services shells)
@@ -32,7 +33,7 @@
     "atool" "p7zip" "unzip" "jq"
     "ripgrep" "moreutils" "libiconv"
     "powertop" "graphviz" "borgmatic" "bind:utils"  ; dig
-    "flatpak" "flatpak-xdg-utils" "xdg-desktop-portal"
+    "flatpak" "xdg-utils" "xdg-desktop-portal"
     "lshw" "strace" "nftables" "file" "lsof"))
 
 (define %pkg-desktop
@@ -149,6 +150,26 @@
                    (directories '(".."))
                    (packages '("backup" "android" "email" "xsession" "git" "qutebrowser" "desktop"))))
 
+         (service home-xdg-mime-applications-service-type
+                  (home-xdg-mime-applications-configuration
+                   (default '((x-scheme-handler/org-protocol . org-protocol.desktop)
+                              (x-scheme-handler/mailto . emacsmail.desktop)))
+                   (desktop-entries
+                    (list
+                     (xdg-desktop-entry
+                      (file "emacsmail")
+                      (name "emacsmail")
+                      (type 'application)
+                      (config
+                       '((exec . "emacs-mail %u"))))
+
+                     (xdg-desktop-entry
+                      (file "org-protocol")
+                      (name "org-protocol")
+                      (type 'application)
+                      (config
+                       '((exec . "emacsclient %u"))))))))
+
          (simple-service 'configs
                          home-files-service-type
                          `((".config/mpv/scripts/mpris.so"
@@ -178,5 +199,6 @@
                            ("QT_QPA_PLATFORM_PLUGIN_PATH" . ,(file-append qtwayland  "/lib/qt6/plugins/platforms"))
                            ("XDG_DATA_DIRS" . "$XDG_DATA_DIRS:$HOME/.local/share/flatpak/exports/share")
                            ("DOOMLOCALDIR" . "$HOME/.local/doom/")
+                           ("BROWSER". "qutebrowser")
                            ("VISUAL" . "emacsclient")
                            ("EDITOR" . "emacsclient")))))))
