@@ -341,11 +341,11 @@ These are bound only for X11 apps.
 #+begin_src elisp
 (use-package! white-sand-theme)
 (use-package! dracula-theme)
-(defvar doom-theme-dark 'doom-ayu-mirage)
+(defvar doom-theme-dark 'doom-dracula)
 (setq doom-theme 'tango
       doom-font (font-spec :family "Hack" :size 18)
       doom-serif-font (font-spec :family "Hack")
-      doom-unicode-font (font-spec :family "Hack"))
+      doom-symbol-font (font-spec :family "Hack"))
 
 ;; Change color theme based on day time
 (use-package! circadian
@@ -1032,7 +1032,7 @@ emacsclient --eval "(message-mailto \"$1\")"
 (package! dired-filter :built-in t)
 (package! dired-avfs :built-in t)
 (package! dired-du :built-in t)
-(package! dired-collapse :pin "a01c126c3b1068655509487c76971895f5459d09")
+(package! dired-collapse :pin "e9e408e8571aee5574ca0a431ef15cac5a3585d4")
 (package! dired-git-info
   :recipe (:host github :repo "clemera/dired-git-info")
   :built-in t)
