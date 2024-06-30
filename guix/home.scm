@@ -78,7 +78,7 @@
     ))
 
 (define %pkg-dev
-  '("python"
+  '("python" "make"
     "git" "git:send-email" "git-crypt" "perl" ;for some git commands
     "libvirt" "virt-manager" "sicp"
     ;; "openjdk:jdk"

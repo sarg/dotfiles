@@ -30,50 +30,6 @@ To define guix dependencies add a source code block with =:noweb-ref guix-pkg= a
 (after! guix
   (setq guix-repl-use-server nil))
 #+end_src
-
-#+begin_src shell :tangle ~/.local/bin/gu :shebang #!/bin/sh
-DIR=~/devel/ext/guix
-
-case $1 in
-compile)
-    pushd $DIR
-    guix shell -D guix -- ./pre-inst-env make scripts/guix make-go
-    popd
-    ;;
-
-home)
-    $DIR/pre-inst-env guix home reconfigure \
-        -L ~/.dotfiles/guix/personal/ \
-        ~/.dotfiles/guix/home.scm
-    ;;
-
-system)
-    $DIR/pre-inst-env guix system reconfigure --save-provenance \
-        -L ~/.dotfiles/guix/personal/ \
-        -L ~/devel/ext/nonguix/ \
-        ~/.dotfiles/guix/system.scm
-    ;;
-
-deploy)
-    $DIR/pre-inst-env sudo -E guix system reconfigure --save-provenance \
-        -L ~/.dotfiles/guix/personal/ \
-        -L ~/devel/ext/nonguix/ \
-        ~/.dotfiles/guix/system.scm
-    ;;
-
-gc)
-    $DIR/pre-inst-env guix gc -d
-    ;;
-
-,*)
-  if [ "$1" == "" ]; then
-      echo "compile|home|system|deploy|gc"
-  else
-      $DIR/pre-inst-env guix "$@"
-  fi
-  ;;
-esac
-#+end_src
 * guix development
 #+begin_src scheme :noweb-ref guix-pkg
 "emacs-debbugs" "gnu-standards" "mumi"
