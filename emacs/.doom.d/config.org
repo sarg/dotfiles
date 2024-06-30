@@ -1136,6 +1136,44 @@ current buffer, killing it."
 
 (add-hook! 'server-visit-hook #'qute/dired-hook)
 #+end_src
+
+** emacs-dmenu
+#+begin_src elisp
+(cl-defun dmenu/select-line-from-file (file &key prompt lines)
+  "completing-read a line from FILE."
+  (completing-read (concat (or prompt "Select") ": ")
+                   (with-temp-buffer
+                     (insert-file-contents file)
+                     (string-lines (buffer-string)))
+                   nil t))
+#+end_src
+
+#+begin_src sh :tangle ~/.local/bin/emacs-dmenu :shebang #!/usr/bin/env bash
+usage() {
+  echo "Usage: $0 -p prompt -l lines"
+  exit 1
+}
+
+prompt=nil
+lines=nil
+while getopts ":p:l:" opt; do
+  case $opt in
+    p) prompt="\"$OPTARG\""
+    ;;
+    l) lines="$OPTARG"
+    ;;
+    ,*) usage
+    ;;
+  esac
+done
+
+if [ "$prompt" == "nil" ] && [ "$lines" == "nil" ]; then
+  usage
+fi
+
+tmp=$(mktemp); cat > $tmp
+emacsclient -e '(dmenu/select-line-from-file "'$tmp'" :prompt '"$prompt"' :lines '$lines')' | jq -r .
+#+end_src
 * TODO todo [6/12]
 ** DONE console font
 ** DONE mingetty with xorg autostart (under sarg), put `lock.sh` first in the .xsession
