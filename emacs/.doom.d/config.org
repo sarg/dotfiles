@@ -445,10 +445,16 @@ plocate -d /storage/500gb.plocate $@
 import os
 from urllib.parse import quote
 os.execlp('xdg-open', 'xdg-open',
-          'org-protocol://capture?template=t&url={url}&title={title}&body={body}'.format(
+          'org-protocol://capture?template=b&url={url}&title={title}&body={body}'.format(
               url   = quote(os.environ.get('QUTE_URL', '')),
               title = quote(os.environ.get('QUTE_TITLE', '')),
               body  = quote(os.environ.get('QUTE_SELECTED_TEXT', ''))))
+#+end_src
+#+begin_src elisp
+(pushnew! org-capture-templates
+          '("b" "Bookmark URL" entry
+            (file+headline +org-capture-todo-file "Inbox")
+            "* %?%a\n%i" :prepend t))
 #+end_src
 ** agenda
 #+begin_src elisp :tangle packages.el :exports none
