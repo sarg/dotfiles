@@ -1,13 +1,13 @@
 #+OPTIONS: num:nil
 #+SETUPFILE: ~/devel/ext/org-html-themes/org/theme-readtheorg-local.setup
-#+PROPERTY: header-args:scheme :tangle no :exports none
+#+PROPERTY: header-args:scheme :tangle no :exports none :noweb-ref guix-pkg
 #+begin_src elisp :exports none
 ;; -*- lexical-binding: t; -*-
 #+end_src
 * guix
-To define guix dependencies add a source code block with =:noweb-ref guix-pkg= as header arguments. It'll be then tangled to =~/.dotfiles/guix/emacs-packages.scm= and merged with the main =home-environment=.
+To define guix dependencies add a =scheme= source code block. It'll be then tangled to =~/.dotfiles/guix/emacs-packages.scm= and merged with the main =home-environment=.
 
-#+begin_src scheme :noweb yes :tangle ~/.dotfiles/guix/emacs-home.scm
+#+begin_src scheme :noweb yes :noweb-ref nil :tangle ~/.dotfiles/guix/emacs-home.scm
 (use-modules
  (gnu packages)
  (gnu home))
@@ -31,7 +31,7 @@ To define guix dependencies add a source code block with =:noweb-ref guix-pkg= a
   (setq guix-repl-use-server nil))
 #+end_src
 * guix development
-#+begin_src scheme :noweb-ref guix-pkg
+#+begin_src scheme
 "emacs-debbugs" "gnu-standards" "mumi"
 #+end_src
 #+begin_src elisp
@@ -81,7 +81,7 @@ Dunno, but doom resets the fontspec. Let me fix it here.
 #+end_src
 * exwm
 EXWM has a separate [[../.doom.d/modules/app/exwm][doom app]]. Here are just the settings.
-#+begin_src scheme :noweb-ref guix-pkg
+#+begin_src scheme
 "emacs-exwm"
 "emacs-exwm-ss"
 #+end_src
@@ -196,7 +196,7 @@ These are bound only for X11 apps.
                    (start-process "qutebrowser" nil "setsid" "-w" "qutebrowser")))))
 #+end_src
 ** app launcher
-#+begin_src scheme :noweb-ref guix-pkg
+#+begin_src scheme
 "dex"
 #+end_src
 #+begin_src elisp
@@ -257,7 +257,7 @@ These are bound only for X11 apps.
       (kbd "RET") 'wpa-manager-connect)))
 #+end_src
 ** bluetooth
-#+begin_src scheme :noweb-ref guix-pkg
+#+begin_src scheme
 "emacs-bluetooth"
 #+end_src
 #+begin_src elisp :tangle packages.el
@@ -267,7 +267,7 @@ These are bound only for X11 apps.
 (use-package! bluetooth)
 #+end_src
 ** udisks
-#+begin_src scheme :noweb-ref guix-pkg
+#+begin_src scheme
 "emacs-discomfort"
 #+end_src
 #+begin_src elisp :tangle packages.el
@@ -282,7 +282,7 @@ These are bound only for X11 apps.
     "k" #'previous-line))
 #+end_src
 * theme
-#+begin_src scheme :noweb-ref guix-pkg
+#+begin_src scheme
 "emacs-dracula-theme"
 "emacs-doom-themes"
 "emacs-circadian"
@@ -316,7 +316,7 @@ These are bound only for X11 apps.
 #+end_src
 
 * gpg
-#+begin_src scheme :noweb-ref guix-pkg
+#+begin_src scheme
 "emacs-pinentry"
 #+end_src
 #+begin_src elisp :tangle packages.el
@@ -342,7 +342,7 @@ These are bound only for X11 apps.
 ;;   :hook (camcorder-mode-hook . clm/command-log-clear))
 #+end_src
 
-#+begin_src scheme :noweb-ref guix-pkg
+#+begin_src scheme
 "recordmydesktop" "ffmpeg"
 #+end_src
 * miscellaneous
@@ -407,7 +407,7 @@ plocate -d /storage/500gb.plocate $@
 (package! org-modern :built-in t)
 (package! org-tidy)
 #+end_src
-#+begin_src scheme :noweb-ref guix-pkg
+#+begin_src scheme
 "emacs-org-modern"
 #+end_src
 
@@ -518,7 +518,7 @@ os.execlp('xdg-open', 'xdg-open',
 (package! nov :built-in t)
 #+end_src
 
-#+begin_src scheme :noweb-ref guix-pkg
+#+begin_src scheme
 "emacs-calibredb" "sqlite" "emacs-nov-el"
 #+end_src
 
@@ -555,7 +555,7 @@ os.execlp('xdg-open', 'xdg-open',
 (package! password-store :built-in t)
 (package! password-store-otp :built-in t)
 #+end_src
-#+begin_src scheme :noweb-ref guix-pkg
+#+begin_src scheme
 "emacs-password-generator"
 "emacs-password-store"
 "emacs-password-store-otp"
@@ -605,7 +605,7 @@ choose_entry() {
 
 * music
 ** emms
-#+begin_src scheme :noweb-ref guix-pkg
+#+begin_src scheme
 "emacs-emms"
 #+end_src
 #+begin_src elisp :tangle packages.el
@@ -801,7 +801,7 @@ qutebrowser --nowindow --target tab-bg-silent $@
 #+end_src
 
 * dict
-#+begin_src scheme :noweb-ref guix-pkg
+#+begin_src scheme
 "emacs-lexic" "sdcv"
 #+end_src
 #+begin_src elisp :tangle packages.el
@@ -876,7 +876,7 @@ qutebrowser --nowindow --target tab-bg-silent $@
 (package! mpv :built-in t)
 (package! yeetube :built-in t)
 #+end_src
-#+begin_src scheme :noweb-ref guix-pkg
+#+begin_src scheme
 "emacs-mpv" "emacs-webpaste" "emacs-yeetube"
 #+END_src
 #+begin_src elisp
@@ -917,11 +917,11 @@ qutebrowser --nowindow --target tab-bg-silent $@
 (package! detached :built-in t)
 #+end_src
 
-#+begin_src scheme :noweb-ref guix-pkg
+#+begin_src scheme
 "emacs-eat" "emacs-detached"
 #+end_src
 
-#+begin_src scheme :noweb-ref guix-srv :tangle no :exports none
+#+begin_src scheme :noweb-ref guix-srv
 (simple-service 'eat-bash-integration home-bash-service-type
  (home-bash-extension
   (bashrc (list
@@ -972,7 +972,7 @@ qutebrowser --nowindow --target tab-bg-silent $@
 (package! sxiv :built-in t)
 #+end_src
 
-#+begin_src scheme :noweb-ref guix-pkg
+#+begin_src scheme
 "emacs-dired-hacks" "emacs-dired-du" "avfs"
 "emacs-dired-git-info" "emacs-openwith" "emacs-sxiv"
 #+end_src
@@ -1045,7 +1045,7 @@ qutebrowser --nowindow --target tab-bg-silent $@
   :commands cycle-themes)
 #+end_src
 ** bookmark
-#+begin_src scheme :noweb-ref guix-pkg
+#+begin_src scheme
 "emacs-bookmark-plus"
 #+end_src
 #+begin_src elisp :tangle packages.el
@@ -1082,7 +1082,7 @@ current buffer, killing it."
   (add-to-list 'magic-mode-alist '("SQLite format 3\x00" . ct/sqlite-view-file-magically)))
 #+end_src
 ** gpx-mode
-#+begin_src scheme :noweb-ref guix-pkg
+#+begin_src scheme
 "emacs-gpx" "emacs-osm"
 #+end_src
 #+begin_src elisp
