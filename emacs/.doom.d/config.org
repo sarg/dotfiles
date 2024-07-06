@@ -1029,6 +1029,11 @@ qutebrowser --nowindow --target tab-bg-silent $@
  :leader
  :desc "Music" "oM" #'=emms)
 #+end_src
+* hardware
+** scanner
+#+begin_src sh :tangle ~/.local/bin/simple-scan :shebang #!/bin/sh
+guix shell sane-airscan simple-scan -- sh -c 'LD_LIBRARY_PATH=$GUIX_ENVIRONMENT/lib/sane SANE_CONFIG_DIR=$GUIX_ENVIRONMENT/etc/sane.d simple-scan'
+#+end_src
 * experimental
 ** theme-cycle
 #+begin_src elisp :tangle packages.el
