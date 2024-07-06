@@ -832,10 +832,6 @@ qutebrowser --nowindow --target tab-bg-silent $@
 (package! mu4e-alert :disable t)
 #+end_src
 #+begin_src elisp
-(defun sarg/ensure-msmtp-pass-available ()
-  (interactive)
-  (auth-source-pass-get (concat "Email/" user-mail-address) 'secret))
-
 (use-package! mu4e-alert
   :disabled
   :custom
@@ -849,16 +845,7 @@ qutebrowser --nowindow --target tab-bg-silent $@
                          ("date:today..now AND NOT flag:trashed AND NOT maildir:/gmail/trash" "Today's messages" 116))
         mu4e-modeline-support nil)
 
-  (add-to-list 'mm-body-charset-encoding-alist '(utf-8 . 8bit))
-  (advice-add 'sendmail-send-it
-              :before #'sarg/ensure-msmtp-pass-available)
-
-  (setq sendmail-program (executable-find "msmtp")
-        send-mail-function #'sendmail-send-it
-        mu4e-compose-format-flowed t ; visual-line-mode + auto-fill upon sending
-        message-sendmail-f-is-evil t
-        message-sendmail-extra-arguments '("--read-envelope-from")
-        message-send-mail-function #'message-send-mail-with-sendmail))
+  (add-to-list 'mm-body-charset-encoding-alist '(utf-8 . 8bit)))
 
 (set-email-account! "sarg"
   '((mu4e-sent-folder   . "/gmail/sent")
@@ -866,6 +853,12 @@ qutebrowser --nowindow --target tab-bg-silent $@
     (mu4e-trash-folder  . "/gmail/trash")
     (mu4e-refile-folder . "/gmail/all")
     (smtpmail-smtp-user . "sarg@sarg.org.ru")
+    (smtpmail-smtp-server . "smtp.gmail.com")
+    (smtpmail-servers-requiring-authorization . "smtp\\.gmail\\.com")
+    (smtpmail-smtp-service . 587)
+    (smtpmail-stream-type . starttls)
+    (send-mail-function . smtpmail-send-it)
+    (message-send-mail-function . smtpmail-send-it)
     (user-mail-address  . "sarg@sarg.org.ru"))
   t)
 #+end_src
