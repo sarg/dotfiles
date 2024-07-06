@@ -122,6 +122,10 @@
      (service guix-home-service-type
               `(("sarg" ,(load "./home.scm"))))
 
+     (service pam-limits-service-type
+              ;; For Lutris / Wine esync
+              (list (pam-limits-entry "*" 'hard 'nofile 524288)))
+
      (no-autostart
       (service wireguard-service-type
                (wireguard-configuration
@@ -169,6 +173,12 @@
                (interfaces '("wifi"))
                (config-file (plain-file "dhclient.conf" "send host-name = gethostname();"))
                (shepherd-requirement '(wpa-supplicant))))
+
+
+     (simple-service 'dhclient-wan etc-service-type
+                     (list `("resolvconf.conf"
+                             ,(plain-file "resolvconf.conf"
+                                          "name_servers=127.0.1.1\ndnsmasq_conf=/etc/dnsmasq.servers"))))
 
      (simple-service 'dhclient-wan etc-service-type
                      (list `("dhclient-enter-hooks"
