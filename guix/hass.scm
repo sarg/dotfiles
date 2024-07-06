@@ -48,35 +48,6 @@
                     (link-del #$(car config))))))))
    (description "Add interfaces to a bridge.")))
 
-(define-record-type* <docker-container>
-  docker-container make-docker-container
-  docker-container?
-  (image docker-container-image)
-  (shepherd-requirement docker-container-shepherd-requirement (default '(dockerd)))
-  (args docker-container-args (default '())))
-
-(define (docker-container-service name)
-  (shepherd-service-type
-   name
-   (lambda (config)
-     (match-record config <docker-container>
-                   (image args shepherd-requirement)
-       (let ((docker (file-append docker-cli "/bin/docker"))
-             (name-string (symbol->string name))
-             (args-list (map (lambda (e) (string-append "--" (symbol->string (car e))
-                                                   "=" (cdr e))) args)))
-
-         (shepherd-service
-          (documentation "Run docker container")
-          (provision (list name))
-          (requirement shepherd-requirement)
-          (start #~(lambda _
-                     (invoke #$docker "run" "--rm" "-d"
-                             "--name" #$name-string
-                             #$@args-list #$image)))
-          (stop #~(lambda _ (invoke #$docker "stop" #$name-string)))))))
-   (description "Run docker container.")))
-
 (define fs-2tb-disk
   (file-system
     (mount-point "/media/2tb")
@@ -139,7 +110,7 @@
     %base-packages
 
     (map specification->package
-         '("nss-certs" "tlp" "rsync" "borgmatic" "intel-vaapi-driver"
+         '("tlp" "rsync" "borgmatic" "intel-vaapi-driver"
            "netcat"                     ; for spice viewer
            ))))
 
@@ -156,7 +127,6 @@
      (service %shepherd-repl)
      (service libvirt-service-type)
      (service virtlog-service-type)
-     (service docker-service-type)
      (service ntp-service-type)
      (service elogind-service-type)
 
@@ -170,19 +140,23 @@
                fs-2tb-disk
                (description "Mount disk.")))
 
-     (service (docker-container-service 'jellyfin)
-              (docker-container
-               (image "jellyfin/jellyfin:10.8.12")
-               (shepherd-requirement '(dockerd file-system-/media/2tb networking))
-               ;; todo: make sure users has 998 gid
-               (args
-                (let ((2tb (file-system-mount-point fs-2tb-disk)))
-                  `((user . ,(format #f "~d:998" %user-uid)) ; sarg:users on host, so jellyfin doesn't mess up permissions
-                    (net . "host")
-                    (device . "/dev/dri")
-                    (volume . ,(string-append 2tb "/jellyfin/config:/config"))
-                    (volume . ,(string-append 2tb "/jellyfin/cache:/cache"))
-                    (mount . ,(string-append "type=bind,source=" 2tb ",target=/media")))))))
+     (service oci-container-service-type
+              (list
+               (let ((2tb (file-system-mount-point fs-2tb-disk)))
+                 (oci-container-configuration
+                  (image "jellyfin/jellyfin:10.8.12")
+                  (requirement '(file-system-/media/2tb networking))
+                  (container-user (format #f "~d:998" %user-uid))
+                  (network "host")
+                  (extra-arguments
+                   (list
+                    (string-append "--mount type=bind,source=" 2tb ",target=/media")
+                    (string-append "--device /dev/dri")))
+
+                  (volumes
+                   (list
+                    (format #f "~a/jellyfin/config:/config" 2tb)
+                    (format #f "~a/jellyfin/cache:/cache" 2tb)))))))
 
      (service bridge-shepherd-service-type '("br0" . "enp0s25"))
 
