@@ -190,7 +190,7 @@
 
                           (channel
                            (name 'personal)
-                           (url (string-append "file://" (dirname (current-filename)) "/personal")))))
+                           (url "https://github.com/sarg/dotfiles"))))
 
          (simple-service 'additional-env-vars-service
                          home-environment-variables-service-type
