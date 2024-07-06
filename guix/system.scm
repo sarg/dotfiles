@@ -7,6 +7,7 @@
              (guix channels)
              (guix utils)
              (srfi srfi-1)
+             (personal services utils)
              (nongnu system linux-initrd)
              (nongnu packages linux)
              (ice-9 textual-ports))
@@ -16,7 +17,7 @@
  xorg gnome admin cups spice)
 
 (use-service-modules
- desktop ssh networking sysctl cups avahi guix
+ desktop ssh networking sysctl cups avahi guix vpn
  xorg dbus shepherd sound pm dns virtualization)
 
 (define extrakeys-service-type
@@ -120,6 +121,20 @@
     (list
      (service guix-home-service-type
               `(("sarg" ,(load "./home.scm"))))
+
+     (no-autostart
+      (service wireguard-service-type
+               (wireguard-configuration
+                (addresses '("10.66.66.2/32" "fd42:42:42::2/128"))
+                (private-key "/home/sarg/.dotfiles/secure/wireguard.key")
+                (peers
+                 (list
+                  (wireguard-peer
+                   (name "hetzner")
+                   (endpoint "[2a01:4f9:c012:f933::1]:52817")
+                   (public-key "6gNRvmvi5oRGSPr8J0dBcyDyKS94zO4Y4Jbwo2u+iV0=")
+                   (preshared-key "/home/sarg/.dotfiles/secure/wireguard.psk")
+                   (allowed-ips '("0.0.0.0/0" "::/0"))))))))
 
      (simple-service 'sysctl-custom sysctl-service-type
                      '(("fs.inotify.max_user_watches" . "524288")))

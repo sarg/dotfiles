@@ -25,4 +25,4 @@
         (url "file:///storage/devel/dotfiles/guix/personal")
         (branch "master")
         (commit
-          "5464f3a1651af58e05e51dd4228d8d504db517b6")))
+          "178468af1ae6b252a6f94be9c846e6d0ebc37a52")))
