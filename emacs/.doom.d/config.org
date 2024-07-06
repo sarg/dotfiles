@@ -13,17 +13,11 @@ To define guix dependencies add a =scheme= source code block. It'll be then tang
  (gnu home))
 (home-environment
  (services (list
-            <<guix-srv>>
-            ))
+            <<guix-srv>>))
  (packages
   (map (compose list specification->package+output)
-       '("emacs-next"
-         "emacs-pdf-tools"
-         "emacs-telega" "emacs-telega-contrib"
-         "emacs-vterm"
-         "emacs-guix"
-         <<guix-pkg>>
-         ))))
+       '(
+         <<guix-pkg>>))))
 #+end_src
 
 #+begin_src elisp
@@ -32,7 +26,7 @@ To define guix dependencies add a =scheme= source code block. It'll be then tang
 #+end_src
 * guix development
 #+begin_src scheme
-"emacs-debbugs" "gnu-standards" "mumi"
+"emacs-debbugs" "gnu-standards" "mumi" "emacs-guix"
 #+end_src
 #+begin_src elisp
 (after! debbugs
@@ -41,6 +35,12 @@ To define guix dependencies add a =scheme= source code block. It'll be then tang
   (set-popup-rule! "^\\*Article" :ignore t))
 #+end_src
 * doom
+** base packages
+#+begin_src scheme
+"emacs-next"
+"emacs-telega" "emacs-telega-contrib"
+"emacs-vterm"
+#+end_src
 ** init.el
 #+begin_src elisp :tangle init.el
 (setq doom-leader-key "<f13>"
@@ -86,7 +86,8 @@ EXWM has a separate [[../.doom.d/modules/app/exwm][doom app]]. Here are just the
 "emacs-exwm-ss"
 #+end_src
 #+begin_src elisp :noweb yes
-(after! exwm (load! "exwm"))
+(after! exwm
+  <<exwm>>)
 #+end_src
 ** bar
 #+begin_src elisp
@@ -100,11 +101,11 @@ EXWM has a separate [[../.doom.d/modules/app/exwm][doom app]]. Here are just the
                     (:eval (format-time-string "%a %d %R"))))
 #+end_src
 ** workspaces
-#+begin_src elisp :tangle exwm.el
+#+begin_src elisp :noweb-ref exwm
 (setq exwm-workspace-names '("code" "brow" "extr" "lisp"))
 #+end_src
 ** per-app settings
-#+begin_src elisp :tangle exwm.el
+#+begin_src elisp :noweb-ref exwm
 (setq exwm-manage-configurations
       `(((-any? (lambda (el) (equal exwm-class-name el))
           '("mpv" "scrcpy" "AusweisApp2"))
@@ -116,7 +117,7 @@ EXWM has a separate [[../.doom.d/modules/app/exwm][doom app]]. Here are just the
 ** bindings
 *** simulation
 When this key event occurs, replace it with another.
-#+begin_src elisp :tangle exwm.el
+#+begin_src elisp :noweb-ref exwm
 (setq exwm-input-simulation-keys
       `((,(kbd "C-m") . return)
         (,(kbd "DEL") . backspace)
@@ -127,14 +128,14 @@ When this key event occurs, replace it with another.
 *** floating
 As I've remapped =LWIN= to =F13=, I've lost the floating window resize/move bindings.
 Let's restore them with =Ctrl= instead of =Super=.
-#+begin_src elisp :tangle exwm.el
+#+begin_src elisp :noweb-ref exwm
 (setq exwm-input-resize-event 'C-down-mouse-3
       exwm-input-move-event 'C-down-mouse-1)
 #+end_src
 *** prefix
 These are not full bindings, but the first keys in some sequence. Tell EXWM to
 send these events to emacs.
-#+begin_src elisp :tangle exwm.el
+#+begin_src elisp :noweb-ref exwm
 (setq exwm-input-prefix-keys
       `([f13]
         ?\C-w ?\C-x ?\M-x ?\M-m ?\C-g
@@ -145,7 +146,7 @@ send these events to emacs.
 #+end_src
 *** x11-only
 These are bound only for X11 apps.
-#+begin_src elisp :tangle exwm.el
+#+begin_src elisp :noweb-ref exwm
 (define-key! exwm-mode-map
   ;; consistent layout switch binding
   [?\C-\\] 'exwm-xkb-next-layout
@@ -157,7 +158,7 @@ These are bound only for X11 apps.
   [?\C-c] 'nil)
 #+end_src
 *** global
-#+begin_src elisp :tangle exwm.el
+#+begin_src elisp :noweb-ref exwm
 (defun exwm/switch-to-next-window (class &optional reverse?)
   (cl-loop
    with first with this
@@ -209,7 +210,7 @@ These are bound only for X11 apps.
 #+end_src
 * desktop
 ** multimedia keys
-#+begin_src elisp :tangle exwm.el
+#+begin_src elisp :noweb-ref exwm
 (exwm/bind-command
    "<XF86MonBrightnessUp>" "brightnessctl -e set 10%+"
    "<XF86MonBrightnessDown>" "brightnessctl -e set 10%-"
@@ -519,7 +520,7 @@ os.execlp('xdg-open', 'xdg-open',
 #+end_src
 
 #+begin_src scheme
-"emacs-calibredb" "sqlite" "emacs-nov-el"
+"emacs-calibredb" "sqlite" "emacs-nov-el" "emacs-pdf-tools"
 #+end_src
 
 #+begin_src elisp :tangle no
@@ -682,7 +683,7 @@ choose_entry() {
   (delq 'emms-playing-time-string global-mode-string))
 #+end_src
 *** bindings
-#+begin_src elisp :tangle exwm.el
+#+begin_src elisp :noweb-ref exwm
 (exwm/bind-command
  "<XF86AudioRaiseVolume>" #'emms-volume-raise
  "<XF86AudioLowerVolume>" #'emms-volume-lower
