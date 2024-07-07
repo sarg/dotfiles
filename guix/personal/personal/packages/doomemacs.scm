@@ -7,7 +7,7 @@
   #:use-module (guix packages))
 
 (define-public doomemacs
-  (let ((commit "21a427c33b57ab66eb7caa2830c0dfe930509318")
+  (let ((commit "5e78ed09114fb1a22e2a050522b96c6f0d6df9e3")
         (revision "0"))
     (package
       (name "doomemacs")
@@ -21,10 +21,12 @@
          (file-name (git-file-name "doomemacs" version))
          (sha256
           (base32
-           "14hlk30zwa5d49ny43sf1495ilhfnfz0fdzbpcy6alxvlbpy5rb1"))))
+           "0r8m3ka0xgmpgsbck40skmb8vq3gdqwiphd8vg562ym3m2qdwb0b"))))
 
       (build-system copy-build-system)
       (home-page "https://github.com/doomemacs/doomemacs")
       (description "Doom emacs sources")
       (synopsis "Doom emacs")
       (license license:expat))))
+
+doomemacs
