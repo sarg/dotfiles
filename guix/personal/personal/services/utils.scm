@@ -52,7 +52,5 @@
 (define (chmod-computed-file f p)
   (computed-file
    (computed-file-name f)
-   #~(begin
-       #$(computed-file-gexp f)
-       (chmod #$output #$p))
+   #~(begin #$(computed-file-gexp f) (chmod #$output #$p))
    #:options (computed-file-options f)))

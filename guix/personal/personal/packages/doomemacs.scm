@@ -4,11 +4,6 @@
   #:use-module (guix build-system copy)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
-  #:use-module (gnu packages video)
-  #:use-module (gnu packages sdl)
-  #:use-module (gnu packages libusb)
-  #:use-module (gnu packages android)
-  #:use-module (gnu packages pkg-config)
   #:use-module (guix packages))
 
 (define-public doomemacs
@@ -16,7 +11,7 @@
         (revision "0"))
     (package
       (name "doomemacs")
-      (version (git-version "0" revision commit))
+      (version (git-version "3.0.0" revision commit))
       (source
        (origin
          (method git-fetch)

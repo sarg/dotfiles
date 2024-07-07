@@ -43,10 +43,13 @@ To define guix dependencies add a =scheme= source code block. It'll be then tang
 #+end_src
 #+begin_src scheme :noweb-ref guix-srv
 (simple-service 'doom-vars home-environment-variables-service-type
-  `(("PATH" . "$HOME/.config/emacs/bin:$PATH")
-    ("DOOMLOCALDIR" . "$HOME/.local/doom/")))
+  `(("DOOMLOCALDIR" . "$HOME/.local/doom/")
+    ("DOOMDIR" . "$HOME/.dotfiles/emacs/.doom.d/")))
 (simple-service 'doom home-files-service-type
-  `((".config/emacs" ,(specification->package "doomemacs"))))
+  `((".local/bin/doomemacs"
+     ,((@ (personal services utils) chmod-computed-file)
+       (mixed-text-file "doomemacs" "emacs --init-directory=" (specification->package "doomemacs") " $@")
+       #o555))))
 #+end_src
 ** init.el
 #+begin_src elisp :tangle init.el

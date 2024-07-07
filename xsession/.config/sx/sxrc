@@ -19,4 +19,4 @@ xhost +
 LANG=C flameshot &
 dunst &
 
-emacs --eval '(exwm-enable)'
+doomemacs --eval '(exwm-enable)'

@@ -98,7 +98,6 @@
      ("data/events" . ".events")
      ("data/syncthing" . ".config/syncthing")
      ("data/qutebrowser" . ".local/share/qutebrowser")
-     ("devel/dotfiles/emacs/.doom.d" . ".doom.d")
      ("apps/quake3" . ".q3a"))))
 
 (define (sx-autostart-on tty)

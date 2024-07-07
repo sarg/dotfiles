@@ -4,10 +4,13 @@
 (home-environment
  (services (list
             (simple-service 'doom-vars home-environment-variables-service-type
-              `(("PATH" . "$HOME/.config/emacs/bin:$PATH")
-                ("DOOMLOCALDIR" . "$HOME/.local/doom/")))
+              `(("DOOMLOCALDIR" . "$HOME/.local/doom/")
+                ("DOOMDIR" . "$HOME/.dotfiles/emacs/.doom.d/")))
             (simple-service 'doom home-files-service-type
-              `((".config/emacs" ,(specification->package "doomemacs"))))
+              `((".local/bin/doomemacs"
+                 ,((@ (personal services utils) chmod-computed-file)
+                   (mixed-text-file "doomemacs" "emacs --init-directory=" (specification->package "doomemacs") " $@")
+                   #o555))))
             (simple-service 'eat-bash-integration home-bash-service-type
              (home-bash-extension
               (bashrc (list
