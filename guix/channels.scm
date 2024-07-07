@@ -3,7 +3,7 @@
         (url "https://git.savannah.gnu.org/git/guix.git")
         (branch "master")
         (commit
-          "5905b4728776d6a6e6e5587f46fc0d633df6907c")
+          "cf234330bdd703cf3da7fc5bc26d38d207201401")
         (introduction
           (make-channel-introduction
             "9edb3f66fd807b096b48283debdcddccfea34bad"
@@ -22,7 +22,7 @@
               "2A39 3FFF 68F4 EF7A 3D29  12AF 6F51 20A0 22FB B2D5"))))
       (channel
         (name 'personal)
-        (url "file:///storage/devel/dotfiles/guix/personal")
+        (url "https://github.com/sarg/dotfiles")
         (branch "master")
         (commit
-          "0b07ef1ff91613d32dd9a01b1870fd70a3ee53b1")))
+          "58e186e77b1325d831b3b92494dc5b4b23afa09c")))
