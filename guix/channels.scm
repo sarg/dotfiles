@@ -25,4 +25,4 @@
         (url "https://github.com/sarg/dotfiles")
         (branch "master")
         (commit
-          "58e186e77b1325d831b3b92494dc5b4b23afa09c")))
+          "ecee3f65ac7517b4735c8bb7b9663279acfd6069")))

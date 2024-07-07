@@ -42,7 +42,7 @@
 
 (define %pkg-fonts
   '("font-fira-code"
-    "font-google-noto-emoji" ; 💪
+    "font-google-noto-emoji" ; 💪🕹
     "font-hack"
     "font-terminus"))
 
@@ -98,7 +98,6 @@
      ("data/events" . ".events")
      ("data/syncthing" . ".config/syncthing")
      ("data/qutebrowser" . ".local/share/qutebrowser")
-     ("devel/dotfiles/emacs/.config/emacs" . ".config/emacs")
      ("devel/dotfiles/emacs/.doom.d" . ".doom.d")
      ("apps/quake3" . ".q3a"))))
 
@@ -194,11 +193,10 @@
 
          (simple-service 'additional-env-vars-service
                          home-environment-variables-service-type
-                         `(("PATH" . "$HOME/.local/bin:$HOME/.config/emacs/bin:$PATH")
+                         `(("PATH" . "$HOME/.local/bin:$PATH")
                            ("QT_PLUGIN_PATH" . ,(file-append qtwayland "/lib/qt6/plugins"))
                            ("QT_QPA_PLATFORM_PLUGIN_PATH" . ,(file-append qtwayland  "/lib/qt6/plugins/platforms"))
                            ("XDG_DATA_DIRS" . "$XDG_DATA_DIRS:$HOME/.local/share/flatpak/exports/share")
-                           ("DOOMLOCALDIR" . "$HOME/.local/doom/")
                            ("BROWSER". "qutebrowser")
                            ("VISUAL" . "emacsclient")
                            ("EDITOR" . "emacsclient")))))))

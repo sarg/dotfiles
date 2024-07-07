@@ -41,6 +41,13 @@ To define guix dependencies add a =scheme= source code block. It'll be then tang
 "emacs-telega" "emacs-telega-contrib"
 "emacs-vterm"
 #+end_src
+#+begin_src scheme :noweb-ref guix-srv
+(simple-service 'doom-vars home-environment-variables-service-type
+  `(("PATH" . "$HOME/.config/emacs/bin:$PATH")
+    ("DOOMLOCALDIR" . "$HOME/.local/doom/")))
+(simple-service 'doom home-files-service-type
+  `((".config/emacs" ,(specification->package "doomemacs"))))
+#+end_src
 ** init.el
 #+begin_src elisp :tangle init.el
 (setq doom-leader-key "<f13>"
