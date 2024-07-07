@@ -20,15 +20,22 @@
               (desktop-entries
                (list
                 (xdg-desktop-entry
-                 (file "emacsmail")
-                 (name "emacsmail")
+                 (file "calibre")
+                 (name "Calibre E-Book Viewer")
                  (type 'application)
-                 (config '((exec . "emacs-mail %u"))))
+                 (config `((exec . ,(file-append (specification->package "calibre") "/bin/calibre")))))
+                (xdg-desktop-entry
+                 (file "emacsmail")
+                 (name "Emacs Mail client")
+                 (type 'application)
+                 (config '((exec . "emacs-mail %u")
+                           (hidden . "true"))))
                 (xdg-desktop-entry
                  (file "org-protocol")
                  (name "org-protocol")
                  (type 'application)
-                 (config '((exec . "emacsclient %u"))))))))
+                 (config '((exec . "emacsclient %u")
+                           (hidden . "true"))))))))
             (service home-gpg-agent-service-type
              (home-gpg-agent-configuration
               (pinentry-program
@@ -56,15 +63,18 @@
          "emacs-dracula-theme"
          "emacs-doom-themes"
          "emacs-circadian"
-         "emacs-pinentry"
+         "emacs-pinentry" "gnupg"
          "recordmydesktop" "ffmpeg"
          "emacs-org-modern"
          "emacs-calibredb" "sqlite" "emacs-nov-el" "emacs-pdf-tools"
+         "password-store"
+         "pass-otp"
          "emacs-password-generator"
          "emacs-password-store"
          "emacs-password-store-otp"
          "emacs-emms"
          "emacs-lexic" "sdcv"
+         "mu" "isync" "msmtp"
          "emacs-mpv" "emacs-webpaste" "emacs-yeetube"
          "emacs-eat" "emacs-detached"
          "emacs-dired-hacks" "emacs-dired-du" "avfs"

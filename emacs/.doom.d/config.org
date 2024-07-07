@@ -233,15 +233,22 @@ emacsclient --eval "(message-mailto \"$1\")"
   (desktop-entries
    (list
     (xdg-desktop-entry
-     (file "emacsmail")
-     (name "emacsmail")
+     (file "calibre")
+     (name "Calibre E-Book Viewer")
      (type 'application)
-     (config '((exec . "emacs-mail %u"))))
+     (config `((exec . ,(file-append (specification->package "calibre") "/bin/calibre")))))
+    (xdg-desktop-entry
+     (file "emacsmail")
+     (name "Emacs Mail client")
+     (type 'application)
+     (config '((exec . "emacs-mail %u")
+               (hidden . "true"))))
     (xdg-desktop-entry
      (file "org-protocol")
      (name "org-protocol")
      (type 'application)
-     (config '((exec . "emacsclient %u"))))))))
+     (config '((exec . "emacsclient %u")
+               (hidden . "true"))))))))
 #+end_src
 ** multimedia keys
 #+begin_src elisp :noweb-ref exwm
@@ -352,7 +359,7 @@ emacsclient --eval "(message-mailto \"$1\")"
 
 * gpg
 #+begin_src scheme
-"emacs-pinentry"
+"emacs-pinentry" "gnupg"
 #+end_src
 #+begin_src scheme :noweb-ref guix-srv
 (service home-gpg-agent-service-type
@@ -600,6 +607,8 @@ os.execlp('xdg-open', 'xdg-open',
 (package! password-store-otp :built-in t)
 #+end_src
 #+begin_src scheme
+"password-store"
+"pass-otp"
 "emacs-password-generator"
 "emacs-password-store"
 "emacs-password-store-otp"
@@ -872,6 +881,9 @@ qutebrowser --nowindow --target tab-bg-silent $@
            :short "Duden" :formatter lexic-format-shr :priority 0))))
 #+end_src
 * email
+#+begin_src scheme
+"mu" "isync" "msmtp"
+#+end_src
 #+begin_src elisp :tangle packages.el
 (package! mu4e-alert :disable t)
 #+end_src

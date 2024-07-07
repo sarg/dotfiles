@@ -30,9 +30,10 @@
 
 (define %pkg-utils
   '("aria2" "curl" "rsync" "plocate"
-    "atool" "p7zip" "unzip" "jq"
+    "atool" "p7zip" "unzip" "jq" "openssh"
     "ripgrep" "moreutils" "libiconv"
     "powertop" "graphviz" "borgmatic" "bind:utils"  ; dig
+    "graphicsmagick" "libwebp" "jpegoptim"
     "flatpak" "xdg-utils" "xdg-desktop-portal"
     "lshw" "strace" "nftables" "file" "lsof"))
 
@@ -59,17 +60,12 @@
     "quake3e"))
 
 (define %pkg-apps
-  '(;; apps
-    "calibre" "anki" "qutebrowser"
-    "openvpn" "openssh"
-    "mu" "msmtp" "isync"
-    "gnupg" "pass-otp" "password-store" "pwgen"
-    "piper"
+  '( ;; apps
+    "qutebrowser"
 
     ;; "zeal" "qalculate-gtk" "simplescreenrecorder"
     ;; media
     "libreoffice" "qview" "stapler" "gimp"
-    "graphicsmagick" "libwebp" "jpegoptim"
 
     ;; "nomacs"
     "zathura" "zathura-pdf-mupdf" "zathura-djvu" "zathura-cb"
