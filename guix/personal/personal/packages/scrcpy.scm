@@ -12,7 +12,7 @@
   #:use-module (guix packages))
 
 (define scrcpy-server
-  (let* ((version "2.3.1"))
+  (let ((version "2.5"))
     (origin
      (method url-fetch)
      (uri (string-append "https://github.com/Genymobile/scrcpy"
@@ -20,12 +20,12 @@
                          "scrcpy-server-v" version))
      (sha256
       (base32
-       "0nv0wzwb90z3m5qg8pbcd8lwd0w10g4qad155x9pm2ihzhi4i0gn")))))
+       "05gbjq9hjb5vqvcs9mvxhvp0dsiarl8gcsx2fd457zvabl8b320l")))))
 
 (define-public scrcpy
   (package
    (name "scrcpy")
-   (version "2.3.1")
+   (version "2.5")
    (source (origin
             (method git-fetch)
             (uri (git-reference
@@ -33,7 +33,7 @@
                   (commit (string-append "v" version))))
             (file-name (git-file-name name version))
             (sha256
-             (base32 "1m8jb4cc6027j0n5y9pyzgppqjm799jazmqzxgv7jqpc7idbvka4"))))
+             (base32 "1c815ddac7x50xrl016601vy8bv3wkp73ps4h31qnnb5ggdmkmjm"))))
    (build-system meson-build-system)
    (native-inputs (list pkg-config))
    (inputs (list ffmpeg sdl2 libusb scrcpy-server adb))
@@ -50,7 +50,8 @@
                                                `("SCRCPY_SERVER_PATH" = (,jar)))))))))
    (home-page "https://github.com/Genymobile/scrcpy")
    (synopsis "Display and control your Android device")
-   (description "Scrcpy (screen copy) provides display and control of Android devices connected on USB (or over TCP/IP). It does not require any root access.")
+   (description "Scrcpy (screen copy) provides display and control of Android devices connected
+on USB (or over TCP/IP). It does not require any root access.")
    (license license:asl2.0)))
 
 scrcpy
