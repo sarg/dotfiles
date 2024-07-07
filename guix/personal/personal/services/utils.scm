@@ -4,7 +4,7 @@
   #:use-module (gnu services shepherd)
   #:use-module (ice-9 match)
 
-  #:export (no-autostart augment-computed-file))
+  #:export (no-autostart augment-computed-file chmod-computed-file))
 
 (define (no-autostart input-service)
   "Augment shepherd extension of INPUT-SERVICE to disable auto-start."
@@ -48,3 +48,11 @@
              (close port)))
 
        #:options (computed-file-options f)))))
+
+(define (chmod-computed-file f p)
+  (computed-file
+   (computed-file-name f)
+   #~(begin
+       #$(computed-file-gexp f)
+       (chmod #$output #$p))
+   #:options (computed-file-options f)))
