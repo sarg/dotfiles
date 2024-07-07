@@ -5,12 +5,37 @@
  (services (list
             (simple-service 'doom-vars home-environment-variables-service-type
               `(("DOOMLOCALDIR" . "$HOME/.local/doom/")
-                ("DOOMDIR" . "$HOME/.dotfiles/emacs/.doom.d/")))
+                ("DOOMDIR" . "$HOME/.dotfiles/emacs/.doom.d/")
+                ("VISUAL" . "emacsclient")
+                ("EDITOR" . "emacsclient")))
             (simple-service 'doom home-files-service-type
               `((".local/bin/doomemacs"
                  ,((@ (personal services utils) chmod-computed-file)
                    (mixed-text-file "doomemacs" "emacs --init-directory=" (specification->package "doomemacs") " $@")
                    #o555))))
+            (service home-xdg-mime-applications-service-type
+             (home-xdg-mime-applications-configuration
+              (default '((x-scheme-handler/org-protocol . org-protocol.desktop)
+                         (x-scheme-handler/mailto . emacsmail.desktop)))
+              (desktop-entries
+               (list
+                (xdg-desktop-entry
+                 (file "emacsmail")
+                 (name "emacsmail")
+                 (type 'application)
+                 (config '((exec . "emacs-mail %u"))))
+                (xdg-desktop-entry
+                 (file "org-protocol")
+                 (name "org-protocol")
+                 (type 'application)
+                 (config '((exec . "emacsclient %u"))))))))
+            (service home-gpg-agent-service-type
+             (home-gpg-agent-configuration
+              (pinentry-program
+               (file-append pinentry-emacs "/bin/pinentry-emacs"))
+              (ssh-support? #t)
+              (default-cache-ttl 86400)
+              (max-cache-ttl 86400)))
             (simple-service 'eat-bash-integration home-bash-service-type
              (home-bash-extension
               (bashrc (list

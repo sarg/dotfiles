@@ -44,7 +44,9 @@ To define guix dependencies add a =scheme= source code block. It'll be then tang
 #+begin_src scheme :noweb-ref guix-srv
 (simple-service 'doom-vars home-environment-variables-service-type
   `(("DOOMLOCALDIR" . "$HOME/.local/doom/")
-    ("DOOMDIR" . "$HOME/.dotfiles/emacs/.doom.d/")))
+    ("DOOMDIR" . "$HOME/.dotfiles/emacs/.doom.d/")
+    ("VISUAL" . "emacsclient")
+    ("EDITOR" . "emacsclient")))
 (simple-service 'doom home-files-service-type
   `((".local/bin/doomemacs"
      ,((@ (personal services utils) chmod-computed-file)
@@ -219,6 +221,28 @@ These are bound only for X11 apps.
   (setq app-launcher--action-function #'app-launcher--action-dex))
 #+end_src
 * desktop
+** desktop entries
+#+begin_src sh :tangle ~/.local/bin/emacs-mail :shebang #!/bin/sh
+emacsclient --eval "(message-mailto \"$1\")"
+#+end_src
+#+begin_src scheme :noweb-ref guix-srv
+(service home-xdg-mime-applications-service-type
+ (home-xdg-mime-applications-configuration
+  (default '((x-scheme-handler/org-protocol . org-protocol.desktop)
+             (x-scheme-handler/mailto . emacsmail.desktop)))
+  (desktop-entries
+   (list
+    (xdg-desktop-entry
+     (file "emacsmail")
+     (name "emacsmail")
+     (type 'application)
+     (config '((exec . "emacs-mail %u"))))
+    (xdg-desktop-entry
+     (file "org-protocol")
+     (name "org-protocol")
+     (type 'application)
+     (config '((exec . "emacsclient %u"))))))))
+#+end_src
 ** multimedia keys
 #+begin_src elisp :noweb-ref exwm
 (exwm/bind-command
@@ -329,6 +353,15 @@ These are bound only for X11 apps.
 * gpg
 #+begin_src scheme
 "emacs-pinentry"
+#+end_src
+#+begin_src scheme :noweb-ref guix-srv
+(service home-gpg-agent-service-type
+ (home-gpg-agent-configuration
+  (pinentry-program
+   (file-append pinentry-emacs "/bin/pinentry-emacs"))
+  (ssh-support? #t)
+  (default-cache-ttl 86400)
+  (max-cache-ttl 86400)))
 #+end_src
 #+begin_src elisp :tangle packages.el
 (package! pinentry :built-in t)

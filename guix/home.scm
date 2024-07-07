@@ -134,39 +134,11 @@
          (service home-syncthing-service-type)
          (service home-dbus-service-type)
 
-         (service home-gpg-agent-service-type
-                  (home-gpg-agent-configuration
-                   (pinentry-program
-                    (file-append pinentry-emacs "/bin/pinentry-emacs"))
-                   (ssh-support? #t)
-                   (default-cache-ttl 86400)
-                   (max-cache-ttl 86400)))
-
          (service home-dotfiles-service-type
                   (home-dotfiles-configuration
                    (layout 'stow)
                    (directories '(".."))
                    (packages '("backup" "android" "email" "xsession" "git" "qutebrowser" "desktop"))))
-
-         (service home-xdg-mime-applications-service-type
-                  (home-xdg-mime-applications-configuration
-                   (default '((x-scheme-handler/org-protocol . org-protocol.desktop)
-                              (x-scheme-handler/mailto . emacsmail.desktop)))
-                   (desktop-entries
-                    (list
-                     (xdg-desktop-entry
-                      (file "emacsmail")
-                      (name "emacsmail")
-                      (type 'application)
-                      (config
-                       '((exec . "emacs-mail %u"))))
-
-                     (xdg-desktop-entry
-                      (file "org-protocol")
-                      (name "org-protocol")
-                      (type 'application)
-                      (config
-                       '((exec . "emacsclient %u"))))))))
 
          (simple-service 'configs
                          home-files-service-type
@@ -196,6 +168,4 @@
                            ("QT_PLUGIN_PATH" . ,(file-append qtwayland "/lib/qt6/plugins"))
                            ("QT_QPA_PLATFORM_PLUGIN_PATH" . ,(file-append qtwayland  "/lib/qt6/plugins/platforms"))
                            ("XDG_DATA_DIRS" . "$XDG_DATA_DIRS:$HOME/.local/share/flatpak/exports/share")
-                           ("BROWSER". "qutebrowser")
-                           ("VISUAL" . "emacsclient")
-                           ("EDITOR" . "emacsclient")))))))
+                           ("BROWSER". "qutebrowser")))))))
