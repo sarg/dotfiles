@@ -1,3 +1,4 @@
+;; generated from config.org
 (use-modules
  (gnu packages)
  (gnu home))

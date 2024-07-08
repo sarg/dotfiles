@@ -13,4 +13,3 @@ My base apps are:
 - [[https://calibre-ebook.com/][calibre]]
 
 I use the literate style for my emacs configuration, which you could see [[./emacs/.doom.d/config.org][here]].
-I've documented how to apply this config to a new machine [[http://sarg.org.ru/blog/guix-restore-drill/][here.]]

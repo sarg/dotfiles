@@ -3,11 +3,16 @@
 #+PROPERTY: header-args:scheme :tangle no :exports none :noweb-ref guix-pkg
 #+begin_src elisp :exports none
 ;; -*- lexical-binding: t; -*-
+;; generated from config.org
+#+end_src
+#+begin_src elisp :tangle packages.el :exports none
+;; generated from config.org
 #+end_src
 * guix
 To define guix dependencies add a =scheme= source code block. It'll be then tangled to =~/.dotfiles/guix/emacs-packages.scm= and merged with the main =home-environment=.
 
 #+begin_src scheme :noweb yes :noweb-ref nil :tangle ~/.dotfiles/guix/emacs-home.scm
+;; generated from config.org
 (use-modules
  (gnu packages)
  (gnu home))
@@ -19,11 +24,6 @@ To define guix dependencies add a =scheme= source code block. It'll be then tang
        '(
          <<guix-pkg>>))))
 #+end_src
-
-#+begin_src elisp
-(after! guix
-  (setq guix-repl-use-server nil))
-#+end_src
 * guix development
 #+begin_src scheme
 "emacs-debbugs" "gnu-standards" "mumi" "emacs-guix"
@@ -33,6 +33,9 @@ To define guix dependencies add a =scheme= source code block. It'll be then tang
   (set-popup-rule! "^\\*Guix-Patches Bugs\\*$" :ignore t)
   (set-popup-rule! "^\\*Summary nndoc" :ignore t)
   (set-popup-rule! "^\\*Article" :ignore t))
+
+(after! guix
+  (setq guix-repl-use-server nil))
 #+end_src
 * doom
 ** base packages
@@ -55,6 +58,7 @@ To define guix dependencies add a =scheme= source code block. It'll be then tang
 #+end_src
 ** init.el
 #+begin_src elisp :tangle init.el
+;; generated from config.org
 (setq doom-leader-key "<f13>"
       doom-leader-alt-key "<f13>")
 (doom!
@@ -567,6 +571,9 @@ os.execlp('xdg-open', 'xdg-open',
 #+begin_src elisp :tangle packages.el
 (package! calibredb :built-in t)
 (package! nov :built-in t)
+(package! zathura-sync-theme
+  :recipe (:host github :repo "sarg/zathura-sync-theme")
+  :pin "91243ee90e3702ddbc558fef0ba2a83c349612ba")
 #+end_src
 
 #+begin_src scheme
