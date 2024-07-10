@@ -226,33 +226,30 @@ These are bound only for X11 apps.
 #+end_src
 * desktop
 ** desktop entries
-#+begin_src sh :tangle ~/.local/bin/emacs-mail :shebang #!/bin/sh
-emacsclient --eval "(message-mailto \"$1\")"
+Put [[https://github.com/isamert/jaro][jaro]] to =~/.local/bin/xdg-open=
+#+begin_src scheme
+"perl-encode-locale" "perl-file-mimeinfo"
 #+end_src
-#+begin_src scheme :noweb-ref guix-srv
-(service home-xdg-mime-applications-service-type
- (home-xdg-mime-applications-configuration
-  (default '((x-scheme-handler/org-protocol . org-protocol.desktop)
-             (x-scheme-handler/mailto . emacsmail.desktop)))
-  (desktop-entries
-   (list
-    (xdg-desktop-entry
-     (file "calibre")
-     (name "Calibre E-Book Viewer")
-     (type 'application)
-     (config `((exec . ,(file-append (specification->package "calibre") "/bin/calibre")))))
-    (xdg-desktop-entry
-     (file "emacsmail")
-     (name "Emacs Mail client")
-     (type 'application)
-     (config '((exec . "emacs-mail %u")
-               (hidden . "true"))))
-    (xdg-desktop-entry
-     (file "org-protocol")
-     (name "org-protocol")
-     (type 'application)
-     (config '((exec . "emacsclient %u")
-               (hidden . "true"))))))))
+#+begin_src scheme :tangle ~/.config/associations :noweb-ref nil
+(assoc
+ #:pattern "^mailto:.*"
+ #:program "emacsclient --eval '(message-mailto \"%f\")'")
+
+(assoc
+ #:pattern "^org-protocol:.*"
+ #:program "emacsclient %f")
+
+(assoc
+ #:pattern '("(application|text)/(x-)?(pdf|postscript|ps|epub.*)" "image/(x-)?eps")
+ #:program "zathura %f")
+
+(assoc
+ #:pattern "^video/.*"
+ #:program "mpv %f")
+
+(assoc
+ #:pattern "^image/.*"
+ #:program "qview %f")
 #+end_src
 ** multimedia keys
 #+begin_src elisp :noweb-ref exwm
@@ -1075,8 +1072,7 @@ qutebrowser --nowindow --target tab-bg-silent $@
   :hook (after-init . openwith-mode)
   :custom
   (openwith-associations
-   '(("\\.\\(?:pdf\\|epub\\)\\'" "zathura" (file))
-     ("\\.\\(?:mkv\\|webm\\|avi\\|mp4\\)\\'" "mpv" (file))))
+   '(("\\.\\(?:pdf\\|epub\\|mkv\\|webm\\|avi\\|mp4\\)\\'" "xdg-open" (file))))
 
   :config
   ;; Don't ask if file is too large when it'll be handled by openwith-mode.

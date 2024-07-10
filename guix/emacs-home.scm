@@ -14,29 +14,6 @@
                  ,((@ (personal services utils) chmod-computed-file)
                    (mixed-text-file "doomemacs" "emacs --init-directory=" (specification->package "doomemacs") " $@")
                    #o555))))
-            (service home-xdg-mime-applications-service-type
-             (home-xdg-mime-applications-configuration
-              (default '((x-scheme-handler/org-protocol . org-protocol.desktop)
-                         (x-scheme-handler/mailto . emacsmail.desktop)))
-              (desktop-entries
-               (list
-                (xdg-desktop-entry
-                 (file "calibre")
-                 (name "Calibre E-Book Viewer")
-                 (type 'application)
-                 (config `((exec . ,(file-append (specification->package "calibre") "/bin/calibre")))))
-                (xdg-desktop-entry
-                 (file "emacsmail")
-                 (name "Emacs Mail client")
-                 (type 'application)
-                 (config '((exec . "emacs-mail %u")
-                           (hidden . "true"))))
-                (xdg-desktop-entry
-                 (file "org-protocol")
-                 (name "org-protocol")
-                 (type 'application)
-                 (config '((exec . "emacsclient %u")
-                           (hidden . "true"))))))))
             (service home-gpg-agent-service-type
              (home-gpg-agent-configuration
               (pinentry-program
@@ -59,6 +36,7 @@
          "emacs-exwm"
          "emacs-exwm-ss"
          "dex"
+         "perl-encode-locale" "perl-file-mimeinfo"
          "emacs-bluetooth"
          "emacs-discomfort"
          "emacs-dracula-theme"
