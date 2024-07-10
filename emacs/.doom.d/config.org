@@ -568,12 +568,22 @@ os.execlp('xdg-open', 'xdg-open',
   (pushnew! tramp-remote-path 'tramp-own-remote-path))
 #+end_src
 * book reading
+#+begin_src elisp
+(use-package! zathura-sync-theme
+  :config
+  (zathura-sync-theme-mode))
+#+end_src
+#+begin_src text :tangle ~/.config/zathura/zathurarc
+set guioptions ""
+set statusbar-basename true
+include theme
+#+end_src
 #+begin_src elisp :tangle packages.el
 (package! calibredb :built-in t)
 (package! nov :built-in t)
 (package! zathura-sync-theme
   :recipe (:host github :repo "sarg/zathura-sync-theme")
-  :pin "91243ee90e3702ddbc558fef0ba2a83c349612ba")
+  :pin "727fd14fd755a4468ee07789f4b6d41fc6f8d93b")
 #+end_src
 
 #+begin_src scheme
