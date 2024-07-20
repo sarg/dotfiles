@@ -7,7 +7,7 @@
   #:use-module (guix packages))
 
 (define-public doomemacs
-  (let ((commit "5e78ed09114fb1a22e2a050522b96c6f0d6df9e3")
+  (let ((commit "36e7aaa619342eff61b1daf3ac664f94d5272db7")
         (revision "0"))
     (package
       (name "doomemacs")
@@ -21,7 +21,7 @@
          (file-name (git-file-name "doomemacs" version))
          (sha256
           (base32
-           "0r8m3ka0xgmpgsbck40skmb8vq3gdqwiphd8vg562ym3m2qdwb0b"))))
+           "1axydj4m9rj13w1ic3ghsf3wkgl0cvqwkvxb6zhcdwkbafgz8v81"))))
 
       (build-system copy-build-system)
       (home-page "https://github.com/doomemacs/doomemacs")
