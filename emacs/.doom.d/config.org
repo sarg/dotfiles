@@ -461,6 +461,7 @@ plocate -d /storage/500gb.plocate $@
 #+end_src
 #+begin_src scheme
 "emacs-org-modern"
+"font-iosevka-curly" ; for org-modern bullets
 #+end_src
 
 #+begin_src elisp

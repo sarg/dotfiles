@@ -45,6 +45,7 @@
          "emacs-pinentry" "gnupg"
          "recordmydesktop" "ffmpeg"
          "emacs-org-modern"
+         "font-iosevka-curly" ; for org-modern bullets
          "emacs-calibredb" "sqlite" "emacs-nov-el" "emacs-pdf-tools"
          "password-store"
          "pass-otp"
