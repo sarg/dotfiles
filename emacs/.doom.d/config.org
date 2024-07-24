@@ -845,14 +845,8 @@ choose_entry() {
         (elfeed-search-browse-url)
       (elfeed-search-show-entry entry))))
 
-(defun sarg/elfeed-strip-content (entry)
-  (when (seq-contains-p (elfeed-entry-tags entry) 'rmbody)
-    (setf (elfeed-entry-content entry) (elfeed-ref ""))
-    (elfeed-untag entry 'rmbody)))
-
 (after! elfeed
   (setq elfeed-db-directory "/storage/data/elfeed")
-  (add-hook 'elfeed-new-entry-hook #'sarg/elfeed-strip-content)
   (add-hook 'elfeed-show-mode-hook (lambda () (setq-local browse-url-generic-program "qutebrowser-background")))
 
   (setq elfeed-search-filter "@2-week-ago +unread -youtube"
@@ -1224,7 +1218,7 @@ fi
 tmp=$(mktemp); cat > $tmp
 emacsclient -e '(dmenu/select-line-from-file "'$tmp'" :prompt '"$prompt"' :lines '$lines')' | jq -r .
 #+end_src
-* TODO todo [6/12]
+* TODO todo [7/12]
 ** DONE console font
 ** DONE mingetty with xorg autostart (under sarg), put `lock.sh` first in the .xsession
 ** DONE user syncthing
@@ -1237,7 +1231,7 @@ emacsclient -e '(dmenu/select-line-from-file "'$tmp'" :prompt '"$prompt"' :lines
 *** TODO mcron for backup
 ** DONE guix gc, but not that aggressive
 =--gc-keep-derivations= and =--gc-keep-outputs= to =guix-daemon= params
-** TODO Fix hardcoded =Guix_image= root partition name
+** NO Fix hardcoded =Guix_image= root partition name
 ** TODO Fix =gnupg= symlink\\
 =guix home= =update-symlinks= creates =~/.gnupg= before my symlink activation service runs
 therefore gnupg private keys are not symlinked\\
