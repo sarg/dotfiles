@@ -62,9 +62,9 @@ To define guix dependencies add a =scheme= source code block. It'll be then tang
 (setq doom-leader-key "<f13>"
       doom-leader-alt-key "<f13>")
 (doom!
- :completion  company vertico ;(ivy +fuzzy +prescient +childframe)
+ :completion  corfu vertico ;(ivy +fuzzy +prescient +childframe)
  :ui          nav-flash (modeline +light) ophints (popup +all +defaults) ligatures
-              vc-gutter treemacs
+              (vc-gutter +pretty) treemacs
  :editor      (evil +everywhere) fold lispy snippets (format +onsave) multiple-cursors word-wrap
  :emacs       dired electric vc ibuffer undo
  :term        eshell vterm
@@ -284,7 +284,7 @@ Put [[https://github.com/isamert/jaro][jaro]] to =~/.local/bin/xdg-open=
 #+begin_src elisp :tangle packages.el :exports none
 (package! wpa-manager
   :recipe (:host github :repo "sarg/wpa-manager.el")
-  :pin "ec21a9300b5259a8242e6810d2e497b3e4b8d4e0")
+  :pin "5bb92e5b6acb2128604e65961d27863d1947bc4e")
 #+end_src
 
 #+begin_src elisp
@@ -297,6 +297,7 @@ Put [[https://github.com/isamert/jaro][jaro]] to =~/.local/bin/xdg-open=
       "s" 'wpa-manager-scan
       "r" 'revert-buffer
       "c" 'wpa-manager-connect
+      "d" 'wpa-manager-delete-network
       (kbd "RET") 'wpa-manager-connect)))
 #+end_src
 ** bluetooth
@@ -581,7 +582,7 @@ include theme
 (package! nov :built-in t)
 (package! zathura-sync-theme
   :recipe (:host github :repo "sarg/zathura-sync-theme")
-  :pin "727fd14fd755a4468ee07789f4b6d41fc6f8d93b")
+  :pin "c0e6169e76fe6b7a92fd7acda2c27d0209e7d5a6")
 #+end_src
 
 #+begin_src scheme

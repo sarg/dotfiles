@@ -20,6 +20,9 @@
  desktop ssh networking sysctl cups avahi guix vpn
  xorg dbus shepherd sound pm dns virtualization)
 
+(define (relative-file file)
+  (string-append (current-source-directory) "/" file))
+
 (define extrakeys-service-type
   (shepherd-service-type
    'extrakeys
@@ -158,8 +161,7 @@
                              "wpa_supplicant.conf"
                              "ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev\n"
                              "update_config=0\n"
-                             (call-with-input-file
-                                 (string-append (current-source-directory) "/../secure/wifi_connections")
+                             (call-with-input-file (relative-file "../secure/wifi_connections")
                                get-string-all)))
                (extra-options '("-Dnl80211"))))
 
