@@ -457,8 +457,11 @@ plocate -d /storage/500gb.plocate $@
 (package! org-modern-indent
     :recipe (:host github :repo "jdtsmith/org-modern-indent")
     :pin "f2b859bc53107b2a1027b76dbf4aaebf14c03433")
+(package! corg
+  :recipe (:host github :repo "isamert/corg.el")
+  :pin "981361b3d076d843d15e5243c8d5ffd131ee0333")
 (package! org-modern :built-in t)
-(package! org-tidy)
+(package! org-tidy :pin "26d9636f0c43f1ee3f0528880111a4c1dd2bed32")
 #+end_src
 #+begin_src scheme
 "emacs-org-modern"
@@ -474,6 +477,9 @@ plocate -d /storage/500gb.plocate $@
 
  org-src-window-setup 'current-window
  org-fold-catch-invisible-edits 'show-and-error)
+
+(use-package corg
+  :hook (org-mode . corg-setup))
 
 (use-package org-tidy
   :disabled
@@ -1224,6 +1230,16 @@ emacsclient -e '(dmenu/select-line-from-file "'$tmp'" :prompt '"$prompt"' :lines
 ** DONE mingetty with xorg autostart (under sarg), put `lock.sh` first in the .xsession
 ** DONE user syncthing
 ** DONE check if greetd is necessary
+** TODO move away from org-contacts
+Reqs:
+- use [[https://datatracker.ietf.org/doc/html/rfc6350#section-5.4][ALTID]] for names in russian/english
+- export contacts with UID to avoid duplication
+- group KIND
+- embed photo
+- nickname
+- impp for telega/whatsapp
+https://isamert.net/2021/04/21/managing-your-contacts-in-org-mode-and-syncing-them-to-your-phone-android-ios-whatever-.html
+
 ** TODO mu4e filtering for guix-patches
 ** TODO periodical jobs
 *** TODO fstrim service
