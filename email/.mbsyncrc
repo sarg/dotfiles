@@ -3,42 +3,38 @@ Remove Near
 Expunge Both
 SyncState *
 
-IMAPAccount gmail
-Host imap.gmail.com
-User sarg@sarg.org.ru
-PassCmd "pass show Email/smtp.gmail.com/sarg@sarg.org.ru"
-# Use SSL
-SSLType IMAPS
-SSLVersions TLSv1.2
-CertificateFile /etc/ssl/certs/ca-certificates.crt
-
 IMAPStore gmail-remote
-Account gmail
+    Host imap.gmail.com
+    User sarg@sarg.org.ru
+    PassCmd "pass show Email/smtp.gmail.com/sarg@sarg.org.ru"
+    SSLType IMAPS
+    SSLVersions TLSv1.3
+    CertificateFile /etc/ssl/certs/ca-certificates.crt
 
 MaildirStore gmail-local
-# The trailing "/" is important
-Path ~/.mail/gmail/
-Inbox ~/.mail/gmail/Inbox
+    # The trailing "/" is important
+    Path ~/.mail/gmail/
+    Inbox ~/.mail/gmail/Inbox
 
-Channel gmail-default
-Far :gmail-remote:
-Near :gmail-local:
-Patterns INBOX
+# https://unix.stackexchange.com/questions/748054/is-it-possible-to-ignore-inbox-folder-when-using-imap-mbsync
+# Channel gmail-default
+#     Far :gmail-remote:
+#     Near :gmail-local:
+#     Patterns INBOX
 
 Channel gmail-sent
-Far :gmail-remote:"[Gmail]/Sent Mail"
-Near  :gmail-local:sent
+    Far :gmail-remote:"[Gmail]/Sent Mail"
+    Near :gmail-local:sent
 
 Channel gmail-trash
-Far :gmail-remote:"[Gmail]/Bin"
-Near  :gmail-local:trash
+    Far :gmail-remote:"[Gmail]/Bin"
+    Near :gmail-local:trash
 
 Channel gmail-archive
-Far :gmail-remote:"[Gmail]/All Mail"
-Near  :gmail-local:all
+    Far :gmail-remote:"[Gmail]/All Mail"
+    Near :gmail-local:all
 
 Group gmail
-Channel gmail-default
 Channel gmail-trash
 Channel gmail-archive
 Channel gmail-sent

@@ -906,7 +906,7 @@ qutebrowser --nowindow --target tab-bg-silent $@
 (after! mu4e
   (set-popup-rule! "^\\*mu4e-main\\*$" :ignore t)
   (set-popup-rule! "^\\*mu4e-headers\\*$" :ignore t)
-  (setq mu4e-filter-inbox "flag:unread AND NOT flag:trashed AND maildir:/gmail/Inbox"
+  (setq mu4e-filter-inbox "flag:unread AND NOT flag:trashed AND maildir:/gmail/all"
         mu4e-bookmarks `((,mu4e-filter-inbox "Gmail messages" ?u)
                          ("date:today..now AND NOT flag:trashed AND NOT maildir:/gmail/trash" "Today's messages" 116))
         mu4e-modeline-support nil)
