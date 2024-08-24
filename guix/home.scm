@@ -90,7 +90,7 @@
      ("Sync/pass" . ".password-store")
      ("data/telega" . ".telega")
      ("data/mail" . ".mail")
-     ("data/gnupg" . ".gnupg")
+     ;; ("data/gnupg" . ".gnupg") ; TODO: clashes with home service
      ("data/events" . ".events")
      ("data/syncthing" . ".config/syncthing")
      ("data/qutebrowser" . ".local/share/qutebrowser")
