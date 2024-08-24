@@ -77,9 +77,7 @@
 (define %pkg-dev
   '("python" "make"
     "git" "git:send-email" "git-crypt" "perl" ;for some git commands
-    "libvirt" "virt-manager" "sicp"
-    ;; "openjdk:jdk"
-    ))
+    "libvirt" "virt-manager" "sicp" "openjdk:jdk" "clojure-tools"))
 
 (define symlinks
   (resolve-relative-to "/storage/"
