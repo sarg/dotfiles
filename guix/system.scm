@@ -1,7 +1,7 @@
 (use-modules (gnu)
              (gnu services)
              (gnu services)
-             (gnu system setuid)
+             (gnu system privilege)
              (gnu packages)
              (guix packages)
              (guix channels)
@@ -105,11 +105,12 @@
          '("bluez" "intel-vaapi-driver"
            "tlp" "brightnessctl" "libratbag"))))
 
-  (setuid-programs
-   (cons* (setuid-program
-           (program
-            (file-append spice-gtk "/libexec/spice-client-glib-usb-acl-helper")))
-          %setuid-programs))
+  (privileged-programs
+   (append (list
+            (privileged-program
+             (program (file-append spice-gtk "/libexec/spice-client-glib-usb-acl-helper"))
+             (setuid? #t)))
+           %default-privileged-programs))
 
   (services
    (append
