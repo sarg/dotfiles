@@ -8,6 +8,7 @@
              (guix utils)
              (srfi srfi-1)
              (personal services utils)
+             (personal services iwd)
              (nongnu system linux-initrd)
              (nongnu packages linux)
              (ice-9 textual-ports))
@@ -35,11 +36,6 @@
         (start #~(lambda _ (invoke #$setkeycodes #$@args)))
         (one-shot? #t))))
    (description "Map special keys")))
-
-(define wifi-udev-rule
-  (udev-rule
-   "80-wifi.rules"
-   "SUBSYSTEM==\"net\", ACTION==\"add\", DRIVERS==\"iwlwifi\", KERNEL==\"wl*\", NAME=\"wifi\""))
 
 (define polkit-udisks-wheel
   (file-union
@@ -147,6 +143,7 @@
      (simple-service 'sysctl-custom sysctl-service-type
                      '(("fs.inotify.max_user_watches" . "524288")))
 
+     (service iwd-service-type)
      (service libvirt-service-type)
      (service virtlog-service-type)
      (service ntp-service-type)
@@ -155,37 +152,15 @@
                (web-interface? #t)
                (extensions (list cups-filters))))
 
-     (service wpa-supplicant-service-type
-              (wpa-supplicant-configuration
-               (interface "wifi")
-               (config-file (mixed-text-file
-                             "wpa_supplicant.conf"
-                             "ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev\n"
-                             "update_config=0\n"
-                             (call-with-input-file (relative-file "../secure/wifi_connections")
-                               get-string-all)))
-               (extra-options '("-Dnl80211"))))
-
      (service xorg-server-service-type
               (xorg-configuration
                (modules (list xf86-video-intel xf86-input-libinput))
                (drivers (list "intel"))))
 
-     (service dhcp-client-service-type
-              (dhcp-client-configuration
-               (interfaces '("wifi"))
-               (config-file (plain-file "dhclient.conf" "send host-name = gethostname();"))
-               (shepherd-requirement '(wpa-supplicant))))
-
-
-     (simple-service 'dhclient-wan etc-service-type
+     (simple-service 'resolvconf etc-service-type
                      (list `("resolvconf.conf"
                              ,(plain-file "resolvconf.conf"
                                           "name_servers=127.0.1.1\ndnsmasq_conf=/etc/dnsmasq.servers"))))
-
-     (simple-service 'dhclient-wan etc-service-type
-                     (list `("dhclient-enter-hooks"
-                             ,(local-file "./files/dhclient-enter-hooks"))))
 
      (service screen-locker-service-type
               (screen-locker-configuration
@@ -234,7 +209,6 @@
                 ("3a" . "42"))) ; capslock->lshift
 
      (udev-rules-service 'android android-udev-rules #:groups '("adbusers"))
-     (udev-rules-service 'wifi wifi-udev-rule)
      (udev-rules-service 'qmk qmk-udev-rules)
      (udev-rules-service 'brightness brightnessctl)
 
