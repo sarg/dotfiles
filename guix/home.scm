@@ -60,11 +60,9 @@
     "quake3e"))
 
 (define %pkg-apps
-  '( ;; apps
-    "qutebrowser"
+  '("qutebrowser"
 
     ;; "zeal" "qalculate-gtk" "simplescreenrecorder"
-    ;; media
     "libreoffice" "qview" "stapler" "gimp"
 
     ;; "nomacs"
@@ -76,7 +74,7 @@
 
 (define %pkg-dev
   '("python" "make"
-    "git" "git:send-email" "git-crypt" "perl" ;for some git commands
+    "git" "git:send-email" "git-crypt"
     "libvirt" "virt-manager" "sicp" "openjdk:jdk" "clojure-tools"))
 
 (define symlinks

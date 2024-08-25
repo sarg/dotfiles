@@ -3,7 +3,7 @@
         (url "https://git.savannah.gnu.org/git/guix.git")
         (branch "master")
         (commit
-          "f25ea6847fa4eb1bc0a6bfb965e145b94f20a6f8")
+          "4299b4cc881deaadf908937cda1e9cbc48a40a38")
         (introduction
           (make-channel-introduction
             "9edb3f66fd807b096b48283debdcddccfea34bad"
@@ -25,4 +25,4 @@
         (url "https://github.com/sarg/dotfiles")
         (branch "master")
         (commit
-          "e2948904c6c0ee3ee4001d795b0731568010f138")))
+          "51716e31a844985a60c49bb0504f3a7d7869abb9")))
