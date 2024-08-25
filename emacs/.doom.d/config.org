@@ -226,30 +226,29 @@ These are bound only for X11 apps.
 #+end_src
 * desktop
 ** desktop entries
-Put [[https://github.com/isamert/jaro][jaro]] to =~/.local/bin/xdg-open=
 #+begin_src scheme
-"perl-encode-locale" "perl-file-mimeinfo"
+"jaro"
 #+end_src
 #+begin_src scheme :tangle ~/.config/associations :noweb-ref nil
 (assoc
- #:pattern "^mailto:.*"
- #:program "emacsclient --eval '(message-mailto \"%f\")'")
+ #:pattern '("^mailto:.*")
+ #:program '("emacsclient" "--eval" "(message-mailto \"%f\")"))
 
 (assoc
- #:pattern "^org-protocol:.*"
- #:program "emacsclient %f")
+ #:pattern '("^org-protocol:.*")
+ #:program '("emacsclient" "%f"))
 
 (assoc
  #:pattern '("(application|text)/(x-)?(pdf|postscript|ps|epub.*)" "image/(x-)?eps")
- #:program "zathura %f")
+ #:program '("zathura" "%f"))
 
 (assoc
- #:pattern "^video/.*"
- #:program "mpv %f")
+ #:pattern '("^video/.*")
+ #:program '("mpv" "%f"))
 
 (assoc
- #:pattern "^image/.*"
- #:program "qview %f")
+ #:pattern '("^image/.*")
+ #:program '("qview" "%f"))
 #+end_src
 ** multimedia keys
 #+begin_src elisp :noweb-ref exwm

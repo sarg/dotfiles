@@ -36,7 +36,7 @@
          "emacs-exwm"
          "emacs-exwm-ss"
          "dex"
-         "perl-encode-locale" "perl-file-mimeinfo"
+         "jaro"
          "emacs-bluetooth"
          "emacs-discomfort"
          "emacs-dracula-theme"
