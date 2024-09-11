@@ -395,7 +395,7 @@ These are bound only for X11 apps.
 #+end_src
 
 #+begin_src scheme
-"recordmydesktop" "ffmpeg"
+"recordmydesktop"
 #+end_src
 * miscellaneous
 #+begin_src sh :tangle ~/.local/bin/locate :shebang #!/bin/sh :exports none

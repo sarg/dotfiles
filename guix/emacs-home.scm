@@ -43,7 +43,7 @@
          "emacs-doom-themes"
          "emacs-circadian"
          "emacs-pinentry" "gnupg"
-         "recordmydesktop" "ffmpeg"
+         "recordmydesktop"
          "emacs-org-modern"
          "font-iosevka-curly" ; for org-modern bullets
          "emacs-calibredb" "sqlite" "emacs-nov-el" "emacs-pdf-tools"

@@ -73,7 +73,7 @@
     ))
 
 (define %pkg-dev
-  '("python" "make"
+  '("python" "make" "fossil"
     "git" "git:send-email" "git-crypt"
     "libvirt" "virt-manager" "sicp" "openjdk:jdk" "clojure-tools"))
 
