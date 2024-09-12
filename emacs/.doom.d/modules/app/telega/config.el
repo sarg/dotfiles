@@ -32,9 +32,8 @@
   (interactive "sFirst name: \nsLast name: ")
   (telega-server--call (list :@type "setName" :first_name first :last_name last)))
 
-(use-package! page-break-lines)
 (use-package! telega
-  :commands (telega ivy-telega-chat-with)
+  :commands (telega)
 
   ;; This fixes the issue with closing buffer when it is visible in other window.
   ;; The logic is as follows:
@@ -43,7 +42,6 @@
   ;;   then doom|protect-visible-functions in kill-buffer-query-functions prevents the close.
   ;; So, to fix this make telega.el chat buffers real.
   :hook (telega-chat-mode . doom-mark-buffer-as-real-h)
-  ;; :hook (telega-chat-mode . +telega|init-chatbuf)
 
   ;; :init
   ;; (setq telega-inserter-for-msg-button #'sarg/telega-ins--message)
@@ -61,7 +59,7 @@
    telega-sticker-size '(8 . 48)
    telega-emoji-custom-alist '((":s:" . "¯\\_(ツ)_/¯")))
 
-  (advice-add #'telega-ins--chat-sponsored-message :override #'ignore)
+  (advice-add #'telega-ins--sponsored-message :override #'ignore)
 
   (setq telega-hide-previews 't)
   ;; show previews for photo/video webpages
@@ -81,14 +79,6 @@
               :override
               (apply-partially #'telega-button--insert 'telega-msg))
 
-  (defun +telega|init-chatbuf ()
-    (cd telega-directory)
-    (setq-local visual-fill-column-width (+ 11 telega-chat-fill-column))
-    (setq-local visual-fill-column-center-text nil)
-    (visual-line-mode)
-    (visual-fill-column-mode)
-    (page-break-lines-mode))
-
   (advice-add
    'telega-logout
    :before-while (lambda (&rest r) (y-or-n-p "Really log out from current account?")))
@@ -102,9 +92,6 @@
     :ttl nil
     :quit t
     :select t)
-
-  (when (modulep! :completion ivy)
-    (load! "+ivy"))
 
   (after! dired
     (load "telega-dired-dwim.el"))
