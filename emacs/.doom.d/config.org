@@ -870,13 +870,11 @@ qutebrowser --nowindow --target tab-bg-silent $@
 
 * dict
 #+begin_src scheme
-"emacs-lexic" "sdcv"
+"emacs-lexic" "sdcv" "emacs-google-translate"
 #+end_src
 #+begin_src elisp :tangle packages.el
 (package! lexic :built-in t)
 (package! dictcc :pin "30b505759e5a97c2aaa8b0e8ea5e187fdf625c65")
-(package! multitran :pin "680f31d15b78876daf484bd926e5c172ab061595")
-(package! google-translate :pin "e60dd6eeb9cdb931d9d8bfbefc29a48ef9a21bd9")
 (package! powerthesaurus :pin "4b97797cf789aaba411c61a85fe23474ebc5bedc")
 #+end_src
 #+begin_src elisp

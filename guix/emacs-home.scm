@@ -53,7 +53,7 @@
          "emacs-password-store"
          "emacs-password-store-otp"
          "emacs-emms"
-         "emacs-lexic" "sdcv"
+         "emacs-lexic" "sdcv" "emacs-google-translate"
          "mu" "isync" "msmtp"
          "emacs-mpv" "emacs-webpaste" "emacs-yeetube"
          "emacs-eat" "emacs-detached"

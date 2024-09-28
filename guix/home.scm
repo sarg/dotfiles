@@ -74,7 +74,7 @@
 
 (define %pkg-dev
   '("python" "make" "fossil"
-    "git" "git:send-email" "git-crypt"
+    "git" "git:send-email" "git-crypt" "perl"
     "libvirt" "virt-manager" "sicp" "openjdk:jdk" "clojure-tools"))
 
 (define symlinks
