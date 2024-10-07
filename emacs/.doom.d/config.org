@@ -636,6 +636,23 @@ include theme
 #+end_src
 
 #+begin_src elisp
+(after! embark
+  (defvar-keymap embark-pass-actions
+    :doc "Keymap for actions for pass entries."
+    :parent embark-general-map
+    "f" #'password-store-copy-field
+    "b" #'password-store-url
+    "o" #'password-store-otp-token-copy
+    "e" #'password-store-edit
+    "g" #'password-store-generate
+    "r" #'password-store-rename
+    "d" #'password-store-remove)
+
+
+  (add-to-list 'embark-keymap-alist '(pass . embark-pass-actions)))
+#+end_src
+
+#+begin_src elisp
 (setq password-cache-expiry (* 60 15))
 
 ;; for magithub auth to work create pass entry user^magithub@api.github.com
