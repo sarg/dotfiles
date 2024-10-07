@@ -235,6 +235,10 @@ These are bound only for X11 apps.
  #:program '("emacsclient" "--eval" "(message-mailto \"%f\")"))
 
 (assoc
+ #:pattern '("^https://t.me/.*")
+ #:program '("emacsclient" "--eval" "(telega-browse-url \"%f\")"))
+
+(assoc
  #:pattern '("^org-protocol:.*")
  #:program '("emacsclient" "%f"))
 
@@ -979,7 +983,8 @@ qutebrowser --nowindow --target tab-bg-silent $@
 
 (setq browse-url-handlers
       `((,(rx string-start "https://" (opt "www.") "youtu" (opt ".") "be") . browse-url-mpv)
-        ("open.spotify.com" . emms-add-url)))
+        ("https://t.me/" . telega-browse-url)
+        ("open.spotify.com" . browse-url-emms)))
 
 (setq-default
  browse-url-browser-function 'browse-url-generic
