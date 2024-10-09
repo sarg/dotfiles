@@ -175,16 +175,20 @@ These are bound only for X11 apps.
 #+end_src
 *** global
 #+begin_src elisp :noweb-ref exwm
-(defun exwm/switch-to-next-window (class &optional reverse?)
+(defun exwm/switch-to-next-buffer (class &optional reverse?)
+  "Form a cycle of CLASS buffers and return the one next to current buffer.
+REVERSE? it when true. Returns the selected buffer."
   (cl-loop
-   with first with this
-   for b in (if reverse? (reverse (buffer-list)) (buffer-list))
-   when (string= class (buffer-local-value 'exwm-class-name b)) do
-   (setf first (or first b))
-   (setf next (and this b))
-   (setf this (or this (when (eq (current-buffer) b) b)))
-   until next
-   finally (switch-to-buffer (or next first) t t)))
+    with first with this with next
+    for b in (if reverse? (reverse (buffer-list)) (buffer-list))
+    when (string= class (buffer-local-value 'exwm-class-name b)) do
+      (setf first (or first b))
+      (setf next (and this b))
+      (setf this (or this (when (eq (current-buffer) b) b)))
+    until next
+    finally return
+    (and (or next first)
+         (switch-to-buffer (or next first) t t))))
 
 (exwm/bind-command
  "<f13> r"     #'app-launcher-run-app
@@ -198,19 +202,15 @@ These are bound only for X11 apps.
                  (exwm-workspace-switch (exwm-workspace-name-to-index "brow"))
                  (cond
                   ((string= "qutebrowser" exwm-class-name)
-                   (exwm/switch-to-next-window "qutebrowser" 'reverse))
+                   (exwm/switch-to-next-buffer "qutebrowser" 'reverse))
 
                   ((not (get-process "qutebrowser"))
                    (start-process "qutebrowser" nil "setsid" "-w" "qutebrowser"))))
 
  "<f13> e"    `(lambda () (interactive)
                  (exwm-workspace-switch (exwm-workspace-name-to-index "brow"))
-                 (cond
-                  ((string= "qutebrowser" exwm-class-name)
-                   (exwm/switch-to-next-window "qutebrowser"))
-
-                  ((not (get-process "qutebrowser"))
-                   (start-process "qutebrowser" nil "setsid" "-w" "qutebrowser")))))
+                 (or (exwm/switch-to-next-buffer "qutebrowser")
+                     (start-process "qutebrowser" nil "setsid" "-w" "qutebrowser"))))
 #+end_src
 ** app launcher
 #+begin_src scheme
