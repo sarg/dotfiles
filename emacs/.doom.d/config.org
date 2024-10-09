@@ -243,7 +243,7 @@ REVERSE? it when true. Returns the selected buffer."
  #:program '("emacsclient" "%f"))
 
 (assoc
- #:pattern '("(application|text)/(x-)?(pdf|postscript|ps|epub.*)" "image/(x-)?eps")
+ #:pattern '("(application|text)/(x-)?(pdf|postscript|ps|epub.*)" "image/(x-)?eps" "image/vnd.djvu")
  #:program '("zathura" "%f"))
 
 (assoc
@@ -1093,7 +1093,7 @@ qutebrowser --nowindow --target tab-bg-silent $@
   :hook (after-init . openwith-mode)
   :custom
   (openwith-associations
-   '(("\\.\\(?:pdf\\|epub\\|mkv\\|webm\\|avi\\|mp4\\)\\'" "xdg-open" (file))))
+   '(("\\.\\(?:pdf\\|epub\\|djvu\\|mkv\\|webm\\|avi\\|mp4\\)\\'" "xdg-open" (file))))
 
   :config
   ;; Don't ask if file is too large when it'll be handled by openwith-mode.
