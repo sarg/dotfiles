@@ -879,8 +879,6 @@ choose_entry() {
   (setq elfeed-search-filter "@2-week-ago +unread -youtube"
         elfeed-show-entry-switch #'display-buffer)
 
-  (def-modeline! 'elfeed '("Elfeed") '())
-  (set-modeline-hook! '(elfeed-search-mode-hook) 'elfeed)
   (evil-define-key 'normal elfeed-search-mode-map
     (kbd "RET") 'elfeed-open-special))
 #+end_src
