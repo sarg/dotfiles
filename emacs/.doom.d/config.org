@@ -190,6 +190,9 @@ REVERSE? it when true. Returns the selected buffer."
     (and (or next first)
          (switch-to-buffer (or next first) t t))))
 
+; disable <f13> h (help-map) conflicting with window movements
+(map! :leader "h" nil)
+
 (exwm/bind-command
  "<f13> r"     #'app-launcher-run-app
 
@@ -1242,6 +1245,17 @@ fi
 tmp=$(mktemp); cat > $tmp
 emacsclient -e '(dmenu/select-line-from-file "'$tmp'" :prompt '"$prompt"' :lines '$lines')' | jq -r .
 #+end_src
+** org-node
+#+begin_src scheme
+"emacs-org-node"
+#+end_src
+#+begin_src elisp :tangle packages.el
+(package! org-node :built-in t)
+#+end_src
+#+begin_src elisp
+(use-package! org-node)
+#+end_src
+
 * TODO todo [7/12]
 ** DONE console font
 ** DONE mingetty with xorg autostart (under sarg), put `lock.sh` first in the .xsession
