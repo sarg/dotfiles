@@ -12,7 +12,6 @@ xss-lock -l lock.sh &
 # https://github.com/chjj/compton/wiki/perf-guide
 picom --backend glx --vsync -b --unredir-if-possible
 
-mountavfs
 . ~/.local/bin/keymap.sh
 xhost +
 

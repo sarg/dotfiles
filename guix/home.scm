@@ -92,13 +92,14 @@
      ("data/qutebrowser" . ".local/share/qutebrowser")
      ("apps/quake3" . ".q3a"))))
 
-(define (sx-autostart-on tty)
+(define (x-autostart-on tty)
   (simple-service
-   'sx-autostart home-shell-profile-service-type
+   'x-autostart home-shell-profile-service-type
    (list (mixed-text-file
-          "sx-autostart"
+          "x-autostart"
           "[[ ! $DISPLAY && $(tty) == /dev/" tty " ]] && "
-          "exec " (@ (gnu packages xdisorg) sx) "/bin/sx"))))
+          "exec startx"
+          ))))
 
 (define %emacs-home (load "./emacs-home.scm"))
 (home-environment
@@ -119,7 +120,7 @@
    (home-environment-user-services %emacs-home)
    (list (service home-bash-service-type)
 
-         (sx-autostart-on "tty1")
+         (x-autostart-on "tty1")
 
          (service home-pipewire-service-type)
          (service home-symlinks-service-type symlinks)

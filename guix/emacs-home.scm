@@ -57,7 +57,8 @@
          "mu" "isync" "msmtp"
          "emacs-mpv" "emacs-webpaste" "emacs-yeetube"
          "emacs-eat" "emacs-detached"
-         "emacs-dired-hacks" "emacs-dired-du" "avfs"
+         "emacs-dired-hacks" "emacs-dired-du"
          "emacs-dired-git-info" "emacs-openwith" "emacs-sxiv"
          "emacs-bookmark-plus"
-         "emacs-gpx" "emacs-osm"))))
+         "emacs-gpx" "emacs-osm"
+         "emacs-org-node"))))

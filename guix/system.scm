@@ -152,10 +152,8 @@
                (web-interface? #t)
                (extensions (list cups-filters))))
 
-     (service xorg-server-service-type
-              (xorg-configuration
-               (modules (list xf86-video-intel xf86-input-libinput))
-               (drivers (list "intel"))))
+     (service startx-command-service-type
+              (xorg-configuration (modules (list xf86-input-libinput))))
 
      (simple-service 'resolvconf etc-service-type
                      (list `("resolvconf.conf"

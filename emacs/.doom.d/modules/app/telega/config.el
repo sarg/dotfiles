@@ -50,6 +50,13 @@
   (add-hook! telega-root-mode (cd telega-directory))
   (add-hook! telega-chat-mode (cd telega-directory))
 
+  ;; disable not used minor modes
+  (telega-patrons-mode -1)
+  (telega-active-locations-mode -1)
+  (telega-active-video-chats-mode -1)
+  (telega-contact-birthdays-mode -1)
+  (telega-active-stories-mode -1)
+
   (setq
    telega-root-show-avatars nil
    telega-chat-show-avatars nil

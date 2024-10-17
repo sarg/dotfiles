@@ -127,6 +127,8 @@ EXWM has a separate [[../.doom.d/modules/app/exwm][doom app]]. Here are just the
           '("mpv" "scrcpy" "AusweisApp2"))
          floating t
          floating-mode-line nil)
+        ((equal exwm-class-name "Spotify")
+         dont-steal-focus t)
         ((equal exwm-class-name "qutebrowser")
          workspace ,(exwm-workspace-name-to-index "brow"))))
 #+end_src
@@ -465,7 +467,7 @@ plocate -d /storage/500gb.plocate $@
     :pin "f2b859bc53107b2a1027b76dbf4aaebf14c03433")
 (package! corg
   :recipe (:host github :repo "isamert/corg.el")
-  :pin "981361b3d076d843d15e5243c8d5ffd131ee0333")
+  :pin "16d2b80fb2ff4daf0ab9bf89e5c9f649431337fc")
 (package! org-modern :built-in t)
 (package! org-tidy :pin "26d9636f0c43f1ee3f0528880111a4c1dd2bed32")
 #+end_src
@@ -622,7 +624,8 @@ include theme
         ;; hide extra columns
         calibredb-date-width 0
         calibredb-format-width 0
-        calibredb-tag-width 0
+        calibredb-title-width 80
+        calibredb-tag-width -1
         calibredb-comment-width 0)
 
   (defalias 'calibredb-open-with-default-tool #'find-file))
@@ -1047,7 +1050,6 @@ qutebrowser --nowindow --target tab-bg-silent $@
 * dired
 #+begin_src elisp :tangle packages.el
 (package! dired-filter :built-in t)
-(package! dired-avfs :built-in t)
 (package! dired-du :built-in t)
 (package! dired-collapse :pin "e9e408e8571aee5574ca0a431ef15cac5a3585d4")
 (package! dired-git-info
@@ -1058,7 +1060,7 @@ qutebrowser --nowindow --target tab-bg-silent $@
 #+end_src
 
 #+begin_src scheme
-"emacs-dired-hacks" "emacs-dired-du" "avfs"
+"emacs-dired-hacks" "emacs-dired-du"
 "emacs-dired-git-info" "emacs-openwith" "emacs-sxiv"
 #+end_src
 
@@ -1066,17 +1068,17 @@ qutebrowser --nowindow --target tab-bg-silent $@
 (use-package! dired-filter
   :hook (dired-mode . dired-filter-mode)
   :custom
-  (dired-filter-stack '((omit) (dot-files))))
+  (dired-filter-stack '((omit) (dot-files)))
+  (dired-filter-revert 'always))
 
 (use-package! dired-collapse
-  :hook (dired-mode . dired-filter-mode))
+  :hook (dired-mode . dired-collapse-mode))
 
 (use-package! dired-git-info
   :custom
   (dgi-commit-message-format "%cr\t%s"))
 
 (use-package! sxiv)
-(use-package! dired-avfs)
 (use-package! dired-du
   :custom
   ;; human readable
@@ -1194,15 +1196,14 @@ current buffer, killing it."
   (let ((files (dired-get-marked-files)))
     (with-temp-file qute-filename
       (insert (s-join "\n" files)))
+    (map! :map dired-mode-map "C-c C-c" nil)
     (+dired/quit-all)))
-
-(map! :map dired-mode-map
-      "C-c C-c" #'qute/choose-file)
 
 (defun qute/dired-hook (&optional _)
   (when (s-starts-with? "/tmp/qutebrowser-fileselect" buffer-file-name)
     (setq qute-filename buffer-file-name)
     (dired "~/")
+    (map! :map dired-mode-map "C-c C-c" #'qute/choose-file)
     (kill-buffer (find-file-noselect qute-filename))))
 
 (add-hook! 'server-visit-hook #'qute/dired-hook)
