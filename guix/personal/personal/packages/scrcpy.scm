@@ -15,7 +15,7 @@
 (define-public scrcpy
   (package
    (name "scrcpy")
-   (version "2.6.1")
+   (version "2.7")
    (source (origin
             (method git-fetch)
             (uri (git-reference
@@ -23,7 +23,7 @@
                   (commit (string-append "v" version))))
             (file-name (git-file-name name version))
             (sha256
-             (base32 "1hfslc1pc1h8cl41n4v9pcijbi2s7m32jk3bdszaj4c95qm914x7"))))
+             (base32 "0gksv13dpxni8qm1qk47m1a8bkp0v1mynmyz4mddc892d7y2c4rq"))))
    (build-system meson-build-system)
    (native-inputs (list pkg-config
                         (origin
@@ -34,7 +34,7 @@
                           (file-name (string-append "scrcpy-server-" version ".jar"))
                           (sha256
                            (base32
-                            "0fywx2zsbfy1w7i5rrh8p2jkz635wf1h7hwrfnpyb8155q5vayna")))))
+                            "1fmdl5vi7l36vagalyqf0wkgmzzanfy2fb82bh80y9kcydcmcg52")))))
    (inputs (list ffmpeg sdl2 libusb adb))
    (arguments
     (list
@@ -52,5 +52,3 @@
    (description "Scrcpy (screen copy) provides display and control of Android devices connected
 on USB (or over TCP/IP). It does not require any root access.")
    (license license:asl2.0)))
-
-scrcpy

@@ -92,5 +92,3 @@ other @code{helm-type-file} sources such as @code{helm-locate}.")
     (synopsis "GPX file parser and GPS track manipulation library")
     (description "GPX file parser and GPS track manipulation library")
     (license license:asl2.0)))
-
-python-gpxcsv

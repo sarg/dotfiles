@@ -11,5 +11,3 @@
     (inputs
      (modify-inputs (package-inputs mumi)
        (replace "xdg-utils" jaro)))))
-
-mumi-with-jaro

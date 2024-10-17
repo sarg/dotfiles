@@ -28,5 +28,3 @@
       (description "Doom emacs sources")
       (synopsis "Doom emacs")
       (license license:expat))))
-
-doomemacs

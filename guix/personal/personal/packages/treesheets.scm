@@ -39,5 +39,3 @@ Suitable for any kind of data organization, such as todo lists, calendars,
 project management, brainstorming, organizing ideas, planning, requirements
 gathering, presentation of information, etc.")
     (license license:zlib)))
-
-treesheets

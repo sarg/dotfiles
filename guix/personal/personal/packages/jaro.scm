@@ -50,5 +50,3 @@
       (synopsis "Resource opener implemented in scheme")
       (description "Jaro is a xdg-open replacement implemented in Scheme.")
       (license license:gpl3+))))
-
-jaro
