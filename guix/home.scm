@@ -133,9 +133,16 @@
                    (packages '("backup" "android" "email" "xsession" "git" "qutebrowser" "desktop"))))
 
          (simple-service 'configs
-                         home-files-service-type
-                         `((".config/mpv/scripts/mpris.so"
-                            ,(file-append (specification->package "mpv-mpris") "/lib/mpris.so"))))
+                         home-xdg-configuration-files-service-type
+                         `(("mpv/scripts/mpris.so"
+                            ,(file-append (specification->package "mpv-mpris") "/lib/mpris.so"))
+                           ("mpv/fonts" ,(file-append (specification->package "mpv-uosc") "/share/mpv/fonts"))
+                           ("mpv/scripts/thumbfast.lua"
+                            ,(file-append (specification->package "mpv-thumbfast") "/share/mpv/scripts/thumbfast.lua"))
+                           ("mpv/script-opts/thumbfast.conf"
+                            ,(mixed-text-file "thumbfast.conf" "network=yes"))
+                           ("mpv/scripts/uosc"
+                            ,(file-append (specification->package "mpv-uosc") "/share/mpv/scripts/uosc"))))
 
          (simple-service 'extra-channels
                          home-channels-service-type
