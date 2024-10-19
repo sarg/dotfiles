@@ -117,11 +117,11 @@ EXWM has a separate [[../.doom.d/modules/app/exwm][doom app]]. Here are just the
                     (:eval (format-time-string "%a %d %R"))))
 #+end_src
 ** workspaces
-#+begin_src elisp :noweb-ref exwm
+#+begin_src elisp :noweb-ref exwm :tangle no
 (setq exwm-workspace-names '("code" "brow" "extr" "lisp"))
 #+end_src
 ** per-app settings
-#+begin_src elisp :noweb-ref exwm
+#+begin_src elisp :noweb-ref exwm :tangle no
 (setq exwm-manage-configurations
       `(((-any? (lambda (el) (equal exwm-class-name el))
           '("mpv" "scrcpy" "AusweisApp2"))
@@ -135,7 +135,7 @@ EXWM has a separate [[../.doom.d/modules/app/exwm][doom app]]. Here are just the
 ** bindings
 *** simulation
 When this key event occurs, replace it with another.
-#+begin_src elisp :noweb-ref exwm
+#+begin_src elisp :noweb-ref exwm :tangle no
 (setq exwm-input-simulation-keys
       `((,(kbd "C-m") . return)
         (,(kbd "DEL") . backspace)
@@ -146,14 +146,14 @@ When this key event occurs, replace it with another.
 *** floating
 As I've remapped =LWIN= to =F13=, I've lost the floating window resize/move bindings.
 Let's restore them with =Ctrl= instead of =Super=.
-#+begin_src elisp :noweb-ref exwm
+#+begin_src elisp :noweb-ref exwm :tangle no
 (setq exwm-input-resize-event 'C-down-mouse-3
       exwm-input-move-event 'C-down-mouse-1)
 #+end_src
 *** prefix
 These are not full bindings, but the first keys in some sequence. Tell EXWM to
 send these events to emacs.
-#+begin_src elisp :noweb-ref exwm
+#+begin_src elisp :noweb-ref exwm :tangle no
 (setq exwm-input-prefix-keys
       `([f13]
         ?\C-w ?\C-x ?\M-x ?\M-m ?\C-g
@@ -164,7 +164,7 @@ send these events to emacs.
 #+end_src
 *** x11-only
 These are bound only for X11 apps.
-#+begin_src elisp :noweb-ref exwm
+#+begin_src elisp :noweb-ref exwm :tangle no
 (define-key! exwm-mode-map
   ;; consistent layout switch binding
   [?\C-\\] 'exwm-xkb-next-layout
@@ -176,7 +176,7 @@ These are bound only for X11 apps.
   [?\C-c] 'nil)
 #+end_src
 *** global
-#+begin_src elisp :noweb-ref exwm
+#+begin_src elisp :noweb-ref exwm :tangle no
 (defun exwm/switch-to-next-buffer (class &optional reverse?)
   "Form a cycle of CLASS buffers and return the one next to current buffer.
 REVERSE? it when true. Returns the selected buffer."
@@ -283,7 +283,7 @@ REVERSE? it when true. Returns the selected buffer."
  #:program '("qview" "%f"))
 #+end_src
 ** multimedia keys
-#+begin_src elisp :noweb-ref exwm
+#+begin_src elisp :noweb-ref exwm :tangle no
 (exwm/bind-command
    "<XF86MonBrightnessUp>" "brightnessctl -e set 10%+"
    "<XF86MonBrightnessDown>" "brightnessctl -e set 10%-"
@@ -795,7 +795,7 @@ choose_entry() {
   (delq 'emms-playing-time-string global-mode-string))
 #+end_src
 *** bindings
-#+begin_src elisp :noweb-ref exwm
+#+begin_src elisp :noweb-ref exwm :tangle no
 (exwm/bind-command
  "<XF86AudioRaiseVolume>" #'emms-volume-raise
  "<XF86AudioLowerVolume>" #'emms-volume-lower
