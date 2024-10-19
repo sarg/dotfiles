@@ -22,5 +22,5 @@
 
 (advice-add 'ivy--switch-buffer-action :around 'my-exwm-workspace-switch-to-buffer)
 (exwm-input-set-key (kbd "M-y") #'my/exwm-counsel-yank-pop)
-(when (featurep! :app telega)
+(when (modulep! :app telega)
   (exwm-input-set-key (kbd "s-i") #'sarg/sauron-show))

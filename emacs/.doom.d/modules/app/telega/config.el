@@ -45,6 +45,15 @@
 
   ;; :init
   ;; (setq telega-inserter-for-msg-button #'sarg/telega-ins--message)
+  :custom
+  (telega-chat-show-deleted-messages-for '(not saved-messages))
+  (telega-root-show-avatars nil)
+  (telega-chat-show-avatars nil)
+  (telega-chat-use-date-breaks nil)
+  (telega-chat-input-markups '("markdown2" nil))
+  (telega-animation-play-inline nil)
+  (telega-sticker-size '(8 . 48))
+  (telega-emoji-custom-alist '((":s:" . "¯\\_(ツ)_/¯")))
 
   :config
   (add-hook! telega-root-mode (cd telega-directory))
@@ -57,14 +66,7 @@
   (telega-contact-birthdays-mode -1)
   (telega-active-stories-mode -1)
 
-  (setq
-   telega-root-show-avatars nil
-   telega-chat-show-avatars nil
-   telega-chat-use-date-breaks nil
-   telega-chat-input-markups '("markdown2" nil)
-   telega-animation-play-inline nil
-   telega-sticker-size '(8 . 48)
-   telega-emoji-custom-alist '((":s:" . "¯\\_(ツ)_/¯")))
+
 
   (advice-add #'telega-ins--sponsored-message :override #'ignore)
 
