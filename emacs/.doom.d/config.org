@@ -229,6 +229,29 @@ REVERSE? it when true. Returns the selected buffer."
 
   (setq app-launcher--action-function #'app-launcher--action-dex))
 #+end_src
+* theme
+#+begin_src scheme
+"emacs-dracula-theme"
+"emacs-doom-themes"
+#+end_src
+#+begin_src elisp :tangle packages.el :exports none
+(package! white-sand-theme :pin "729dd52cc1936250183d6761eed406c4be514a71")
+;(package! kaolin-themes)
+(package! doom-themes :built-in t)
+#+end_src
+
+#+begin_src elisp
+(use-package! white-sand-theme)
+(use-package! dracula-theme)
+(defvar doom-theme-dark 'doom-dracula)
+(setq doom-theme 'tango
+      doom-font (font-spec :family "Hack" :size 18)
+      doom-serif-font (font-spec :family "Hack")
+      doom-symbol-font (font-spec :family "Hack"))
+#+end_src
+
+[[*dark mode][see: dark mode]]
+
 * desktop
 ** desktop entries
 #+begin_src scheme
@@ -267,14 +290,37 @@ REVERSE? it when true. Returns the selected buffer."
    "<XF86ScreenSaver>" "lock.sh"
    "<f13> <f12>" "flameshot gui")
 #+end_src
-** redshift
+** dark mode
+#+begin_src scheme
+"emacs-circadian"
+#+end_src
+#+begin_src elisp :tangle packages.el :exports none
+(package! circadian :built-in t)
+(package! solar :built-in t)
+#+end_src
 #+begin_src elisp
+;; Change color theme based on day time
+(use-package! solar
+  :custom
+  (calendar-latitude 52.516667)
+  (calendar-longitude 13.388889))
+
+(use-package! circadian
+  :custom
+  (circadian-themes
+   `((:sunrise . ,doom-theme)
+     (:sunset . ,doom-theme-dark)))
+  :config
+  (circadian-setup))
+
 (defvar sarg-redshift-timer 'nil
   "Stores redshift-adjust timer")
 
 (defun sarg/redshift-adjust ()
   (interactive)
-  (start-process-shell-command "redshift" nil "redshift -m randr -Po"))
+  (start-process-shell-command
+   "redshift" nil
+   (format "redshift -m randr -Po -l %f:%f" calendar-latitude calendar-longitude)))
 
 (defun sarg/redshift-start ()
   (interactive)
@@ -333,40 +379,6 @@ REVERSE? it when true. Returns the selected buffer."
     "j" #'next-line
     "k" #'previous-line))
 #+end_src
-* theme
-#+begin_src scheme
-"emacs-dracula-theme"
-"emacs-doom-themes"
-"emacs-circadian"
-#+end_src
-#+begin_src elisp :tangle packages.el :exports none
-(package! circadian :built-in t)
-(package! white-sand-theme :pin "729dd52cc1936250183d6761eed406c4be514a71")
-;(package! kaolin-themes)
-(package! doom-themes :built-in t)
-#+end_src
-
-#+begin_src elisp
-(use-package! white-sand-theme)
-(use-package! dracula-theme)
-(defvar doom-theme-dark 'doom-dracula)
-(setq doom-theme 'tango
-      doom-font (font-spec :family "Hack" :size 18)
-      doom-serif-font (font-spec :family "Hack")
-      doom-symbol-font (font-spec :family "Hack"))
-
-;; Change color theme based on day time
-(use-package! circadian
-  :custom
-  (calendar-latitude 52.516667)
-  (calendar-longitude 13.388889)
-  (circadian-themes
-   `((:sunrise . ,doom-theme)
-     (:sunset . ,doom-theme-dark)))
-  :config
-  (circadian-setup))
-#+end_src
-
 * gpg
 #+begin_src scheme
 "emacs-pinentry" "gnupg"
