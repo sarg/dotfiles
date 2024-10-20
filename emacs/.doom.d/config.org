@@ -627,19 +627,19 @@ include theme
 #+begin_src elisp
 (use-package! calibredb
   :commands calibredb
+
+  :custom
+  (calibredb-root-dir (alist-get 'library_path (json-read-file "~/.config/calibre/global.py.json")))
+  (calibredb-preferred-format 'epub) ;; just open it, don't ask
+
+  ;; hide extra columns
+  (calibredb-date-width 0)
+  (calibredb-format-width 0)
+  (calibredb-title-width 80)
+  (calibredb-tag-width -1)
+  (calibredb-comment-width 0)
+
   :config
-  (setq calibredb-root-dir (expand-file-name "~/Calibre Library")
-        calibredb-db-dir (concat calibredb-root-dir "/metadata.db")
-        calibredb-library-alist '(("~/Calibre Library"))
-        calibredb-preferred-format 'epub ;; just open it, don't ask
-
-        ;; hide extra columns
-        calibredb-date-width 0
-        calibredb-format-width 0
-        calibredb-title-width 80
-        calibredb-tag-width -1
-        calibredb-comment-width 0)
-
   (defalias 'calibredb-open-with-default-tool #'find-file))
 #+end_src
 
