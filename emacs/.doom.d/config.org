@@ -231,20 +231,18 @@ REVERSE? it when true. Returns the selected buffer."
 #+end_src
 * theme
 #+begin_src scheme
-"emacs-dracula-theme"
-"emacs-doom-themes"
+"emacs-catppuccin-theme"
 #+end_src
 #+begin_src elisp :tangle packages.el :exports none
-(package! white-sand-theme :pin "729dd52cc1936250183d6761eed406c4be514a71")
-;(package! kaolin-themes)
-(package! doom-themes :built-in t)
+(package! greymatters-theme :pin "a7220a8c6cf18ccae2b76946b6f01188a7c9d5d1")
+(package! catppuccin-theme :built-in t)
 #+end_src
 
 #+begin_src elisp
-(use-package! white-sand-theme)
-(use-package! dracula-theme)
-(defvar doom-theme-dark 'doom-dracula)
-(setq doom-theme 'tango
+(use-package! greymatters-theme)
+(use-package! catppuccin-theme)
+(defvar doom-theme-dark 'catppuccin)
+(setq doom-theme 'greymatters
       doom-font (font-spec :family "Hack" :size 18)
       doom-serif-font (font-spec :family "Hack")
       doom-symbol-font (font-spec :family "Hack"))
