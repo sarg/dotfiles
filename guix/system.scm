@@ -158,7 +158,7 @@
      (simple-service 'resolvconf etc-service-type
                      (list `("resolvconf.conf"
                              ,(plain-file "resolvconf.conf"
-                                          "name_servers=127.0.1.1\ndnsmasq_conf=/etc/dnsmasq.servers"))))
+                                          "name_servers=127.0.1.1\ndnsmasq=true\ndnsmasq_conf=/etc/dnsmasq.servers"))))
 
      (service screen-locker-service-type
               (screen-locker-configuration
