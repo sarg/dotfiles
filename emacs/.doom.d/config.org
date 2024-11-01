@@ -24,6 +24,43 @@ To define guix dependencies add a =scheme= source code block. It'll be then tang
        '(
          <<guix-pkg>>))))
 #+end_src
+* guix-emacs helper
+#+begin_src elisp
+(defun use-guix-package (pkg-name)
+  (interactive "Package:")
+
+  (let* ((pkg-path
+          (thread-last
+            pkg-name
+            (format "(guix-command-output %S %S)" "build")
+            (guix-eval-read)
+            (s-trim)))
+
+         (lisp-dir (car (directory-files
+                         (concat pkg-path "/share/emacs/site-lisp")
+                         'full (rx (not ?.))))))
+
+    (pushnew! load-path lisp-dir)
+    (require (intern (substring pkg-name 6)))))
+
+(defun guix-package-info-insert-emacs-install (entry)
+  "Insert install button for ENTRY if it is an emacs package."
+  (when-let* ((full-name (bui-entry-value entry 'name))
+              (is-emacs (string-prefix-p "emacs-" full-name)))
+    (bui-format-insert "Use in current session ")
+    (bui-insert-action-button
+     "Use"
+     (lambda (btn)
+       (use-guix-package (button-get btn 'package-name)))
+     "Use it without installing"
+     'package-name full-name)
+    (bui-newline)))
+
+(after! guix-ui-package
+  (add-to-list 'guix-package-info-format
+               'guix-package-info-insert-emacs-install
+               'append))
+#+end_src
 * guix development
 #+begin_src scheme
 "emacs-debbugs" "gnu-standards" "mumi-with-jaro" "emacs-guix"
