@@ -8,10 +8,11 @@
   (interactive)
   (exwm-workspace-switch exwm-toggle-workspace))
 
-(defadvice exwm-workspace-switch (before save-toggle-workspace activate)
-  (setq exwm-toggle-workspace exwm-workspace-current-index))
+(advice-add 'exwm-workspace-switch :before
+            (lambda (&rest r)
+              (setq exwm-toggle-workspace exwm-workspace-current-index)))
 
-(exwm-input-set-key (kbd "<s-tab>") #'exwm-jump-to-last-exwm)
+(exwm-input-set-key (kbd "<f13> TAB") #'exwm-jump-to-last-exwm)
 
 ;;; shortcuts
 ;; + Set shortcuts to switch to a certain workspace.
