@@ -38,7 +38,7 @@
          "dex"
          "emacs-catppuccin-theme"
          "jaro"
-         "emacs-circadian"
+         "darkman"
          "emacs-bluetooth"
          "emacs-discomfort"
          "emacs-pinentry" "gnupg"

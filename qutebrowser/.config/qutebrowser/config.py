@@ -1,7 +1,5 @@
 import urllog
 
-#c.colors.webpage.darkmode.enabled = True
-
 c.auto_save.session = True
 c.backend = 'webengine'
 c.statusbar.show = 'in-mode'
@@ -44,29 +42,8 @@ c.url.searchengines = {
     '!gi': 'https://www.google.com/search?q={}&tbs=imgo:1&udm=2'
 }
 
-c.colors.completion.fg = '#333333'
-c.colors.completion.item.selected.bg = 'white'
-c.colors.completion.odd.bg = 'white'
-c.colors.completion.even.bg = 'white'
-c.colors.completion.category.fg = '#444444'
-c.colors.completion.category.bg = 'yellow'
-c.colors.statusbar.normal.fg = 'black'
-c.colors.statusbar.normal.bg = '#f0f0f0'
-c.colors.statusbar.progress.bg = 'magenta'
-c.colors.statusbar.url.success.http.fg = 'black'
-c.colors.statusbar.url.success.https.fg = 'darkgreen'
-c.colors.statusbar.url.hover.fg = 'blue'
-c.colors.tabs.odd.fg = 'black'
-c.colors.tabs.odd.bg = '#b0b0b0'
-c.colors.tabs.even.fg = 'black'
-c.colors.tabs.even.bg = '#a0a0a0'
-c.colors.tabs.selected.odd.fg = 'blue'
-c.colors.tabs.selected.odd.bg = 'white'
-c.colors.tabs.bar.bg = '#f0f0f0'
-c.fonts.default_family = ["Fira Code", "Terminus", "Fixed"]
-c.fonts.completion.entry = '12pt default_family'
-c.fonts.statusbar = '13pt monospace'
-c.fonts.prompts = '12pt sans-serif---'
+c.fonts.default_family = ["Hack"]
+c.fonts.default_size = '14pt'
 
 # bindings
 config.unbind('q', mode='normal')
@@ -95,3 +72,6 @@ config.bind('<Ctrl-p>', 'completion-item-focus prev', mode='command')
 config.bind('<Ctrl-w>', 'rl-backward-kill-word', mode='command')
 
 config.load_autoconfig(False)
+
+## theme loader
+config.source("theme_loader.py")

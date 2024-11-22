@@ -18,4 +18,8 @@ xhost +
 LANG=C flameshot &
 dunst &
 
+# tell dbus-daemon --session to put a minimal subset of the Xsession's environment in activated services' environments
+dbus-update-activation-environment --verbose \
+    DBUS_SESSION_BUS_ADDRESS DISPLAY XAUTHORITY
+
 doomemacs --eval '(exwm-enable)'

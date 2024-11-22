@@ -341,26 +341,35 @@ REVERSE? it when true. Returns the selected buffer."
 #+end_src
 ** dark mode
 #+begin_src scheme
-"emacs-circadian"
+"darkman"
 #+end_src
 #+begin_src elisp :tangle packages.el :exports none
-(package! circadian :built-in t)
+(package! darkman)
 (package! solar :built-in t)
+#+end_src
+#+begin_src yaml :tangle ~/.config/darkman/config.yaml
+lat: 52.52
+lng: 13.39
+dbusserver: true
 #+end_src
 #+begin_src elisp
 ;; Change color theme based on day time
 (use-package! solar
   :custom
-  (calendar-latitude 52.516667)
-  (calendar-longitude 13.388889))
+  (calendar-latitude 52.52)
+  (calendar-longitude 13.39))
 
-(use-package! circadian
+(use-package! darkman
   :custom
-  (circadian-themes
-   `((:sunrise . ,doom-theme)
-     (:sunset . ,doom-theme-dark)))
+  (darkman-themes `(:light ,doom-theme
+                    :dark ,doom-theme-dark))
   :config
-  (circadian-setup))
+  (defadvice load-theme (before no-theme-stacking activate)
+    "Disable the previous theme before loading a new one."
+    (mapc #'disable-theme custom-enabled-themes))
+
+  (if (display-graphic-p)
+      (add-hook! 'after-init-hook (darkman-mode))))
 
 (defvar sarg-redshift-timer 'nil
   "Stores redshift-adjust timer")

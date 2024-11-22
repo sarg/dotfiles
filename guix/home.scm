@@ -36,7 +36,7 @@
     "ripgrep" "moreutils" "libiconv"
     "powertop" "graphviz" "restic" "bind:utils"  ; dig
     "graphicsmagick" "libwebp" "jpegoptim"
-    "flatpak" "xdg-desktop-portal"
+    "flatpak" "xdg-desktop-portal-gtk"
     "lshw" "strace" "nftables" "file" "lsof"))
 
 (define %pkg-desktop
@@ -192,5 +192,5 @@
                          `(("PATH" . "$HOME/.local/bin:$PATH")
                            ("QT_PLUGIN_PATH" . ,(file-append qtwayland "/lib/qt6/plugins"))
                            ("QT_QPA_PLATFORM_PLUGIN_PATH" . ,(file-append qtwayland  "/lib/qt6/plugins/platforms"))
-                           ("XDG_DATA_DIRS" . "$XDG_DATA_DIRS:$HOME/.local/share/flatpak/exports/share")
+                           ("XDG_DATA_DIRS" . "$XDG_DATA_DIRS:$HOME/.local/share/flatpak/exports/share:$HOME/.config/darkman")
                            ("BROWSER". "qutebrowser")))))))
