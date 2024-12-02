@@ -10,12 +10,13 @@ c.fileselect.folder.command = ['emacsclient', '{}']
 c.fileselect.multiple_files.command = ['emacsclient', '{}']
 c.content.cookies.accept = 'no-3rdparty'
 
+c.new_instance_open_target = 'tab-silent'
 c.editor.command = ['emacsclient', '{}']
 c.content.default_encoding = 'utf-8'
 c.scrolling.smooth = True
 c.downloads.location.prompt = False
 c.downloads.remove_finished = 15000
-c.window.title_format = '[{host}] {current_title}{private}'
+c.window.title_format = '{audio}{private}{current_title}{title_sep}{current_url}'
 c.input.partial_timeout = 0
 c.input.links_included_in_focus_chain = False
 
@@ -51,9 +52,10 @@ config.unbind('<Ctrl-p>', mode='command')
 config.unbind('<Ctrl-n>', mode='command')
 #config.unbind('xx', mode='normal')
 
-config.bind('O', 'cmd-set-text :open {url:pretty}')
-config.bind('t', 'cmd-set-text -s :open -t')
-config.bind('T', 'cmd-set-text :open -t -i {url:pretty}')
+
+config.bind("t", "spawn -u emacsclient-wrapper '(qutebrowser-launcher-window)'")
+config.bind("o", "spawn -u emacsclient-wrapper '(qutebrowser-launcher)'")
+config.bind("O", "spawn -u emacsclient-wrapper '(qutebrowser-launcher \"{url:pretty}\")'")
 config.bind('xx', 'spawn -u orgprotocol')
 config.bind('xp', 'spawn -u password_fill')
 config.bind('xm', 'spawn --detach mpv --force-window=immediate {url}')
@@ -74,4 +76,4 @@ config.bind('<Ctrl-w>', 'rl-backward-kill-word', mode='command')
 config.load_autoconfig(False)
 
 ## theme loader
-config.source("theme_loader.py")
+config.source("emacs_theme.py")

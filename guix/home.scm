@@ -192,5 +192,5 @@
                          `(("PATH" . "$HOME/.local/bin:$PATH")
                            ("QT_PLUGIN_PATH" . ,(file-append qtwayland "/lib/qt6/plugins"))
                            ("QT_QPA_PLATFORM_PLUGIN_PATH" . ,(file-append qtwayland  "/lib/qt6/plugins/platforms"))
-                           ("XDG_DATA_DIRS" . "$XDG_DATA_DIRS:$HOME/.local/share/flatpak/exports/share:$HOME/.config/darkman")
-                           ("BROWSER". "qutebrowser")))))))
+                           ("XDG_DATA_DIRS" . "$XDG_DATA_DIRS:$HOME/.local/share/flatpak/exports/share")
+                           ("BROWSER" . "qutebrowser")))))))

@@ -328,6 +328,10 @@ REVERSE? it when true. Returns the selected buffer."
  #:program '("mpv" "%f"))
 
 (assoc
+ #:pattern '("^https?://")
+ #:program '("qutebrowser" "%f"))
+
+(assoc
  #:pattern '("^image/.*")
  #:program '("qview" "%f"))
 #+end_src
@@ -1043,10 +1047,20 @@ qutebrowser --nowindow --target tab-bg-silent $@
 (package! web-search :pin "a22cbdc663a1895d5a5b69de91e1e3b9eb64b92f")
 (package! mpv :built-in t)
 (package! yeetube :built-in t)
+(package! qutebrowser :recipe
+  (:host github :repo "lrustand/qutebrowser.el" :files (:defaults "*.py")))
 #+end_src
 #+begin_src scheme
 "emacs-mpv" "emacs-webpaste" "emacs-yeetube"
 #+END_src
+#+begin_src sh :tangle ~/.local/share/qutebrowser/userscripts/emacsclient-wrapper :shebang #!/bin/sh
+emacsclient -e \
+  "(let ((qutebrowser-fifo \"$QUTE_FIFO\")
+         (qutebrowser-command-backend 'qutebrowser-fifo-send))
+     (condition-case nil
+         $@
+       (t \"\")))" ; true
+#+end_src
 #+begin_src elisp
 (defun browse-url-qute-private (url &rest _)
   "Make qutebrowser open URL in private-browsing window."
@@ -1079,6 +1093,8 @@ qutebrowser --nowindow --target tab-bg-silent $@
   :commands web-search
   :custom
   (web-search-default-provider "DuckDuckGo"))
+
+(use-package! qutebrowser)
 #+end_src
 * shell
 #+begin_src elisp :tangle packages.el
@@ -1278,15 +1294,15 @@ current buffer, killing it."
   (let ((files (dired-get-marked-files)))
     (with-temp-file qute-filename
       (insert (s-join "\n" files)))
-    (map! :map dired-mode-map "C-c C-c" nil)
+    (unbind-key "C-C C-c" 'dired-mode-map)
     (+dired/quit-all)))
 
 (defun qute/dired-hook (&optional _)
   (when (s-starts-with? "/tmp/qutebrowser-fileselect" buffer-file-name)
     (setq qute-filename buffer-file-name)
+    (kill-buffer)
     (dired "~/")
-    (map! :map dired-mode-map "C-c C-c" #'qute/choose-file)
-    (kill-buffer (find-file-noselect qute-filename))))
+    (bind-key "C-c C-c" #'qute/choose-file 'dired-mode-map)))
 
 (add-hook! 'server-visit-hook #'qute/dired-hook)
 #+end_src
