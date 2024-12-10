@@ -40,7 +40,7 @@
     "lshw" "strace" "nftables" "file" "lsof"))
 
 (define %pkg-desktop
-  '("pavucontrol" "dunst" "flameshot" "wireplumber"
+  '("pavucontrol" "flameshot" "wireplumber"
     "lemonbar-xft" "xss-lock" "redshift" "unclutter" "playerctl"))
 
 (define %pkg-fonts

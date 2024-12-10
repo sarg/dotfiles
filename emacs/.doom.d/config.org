@@ -134,10 +134,36 @@ EXWM has a separate [[../.doom.d/modules/app/exwm][doom app]]. Here are just the
 #+begin_src scheme
 "emacs-exwm"
 "emacs-exwm-ss"
+"emacs-ednc"
 #+end_src
 #+begin_src elisp :noweb yes
 (after! exwm
   <<exwm>>)
+#+end_src
+** notifications
+#+begin_src elisp
+(use-package! ednc
+  :hook ((exwm-init . ednc-mode)
+         (ednc-view-mode . dont-kill-buffer-mode)
+         (ednc-view-mode . doom-mark-buffer-as-real-h))
+
+  :config
+  (set-popup-rule!
+      '(major-mode . ednc-view-mode)
+      :ttl nil
+      :quit t
+      :select t
+      :height 5)
+
+  (map! :mode ednc-view-mode
+        :n
+        "TAB" #'ednc-toggle-expanded-view
+        "RET" #'ednc-invoke-action)
+
+  (defun pop-to-ednc (old new)
+    (when new (pop-to-buffer ednc-log-name)))
+
+  (add-hook 'ednc-notification-presentation-functions #'pop-to-ednc))
 #+end_src
 ** bar
 #+begin_src elisp

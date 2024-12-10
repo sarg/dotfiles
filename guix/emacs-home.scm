@@ -35,6 +35,7 @@
          "emacs-vterm"
          "emacs-exwm"
          "emacs-exwm-ss"
+         "emacs-ednc"
          "dex"
          "emacs-catppuccin-theme"
          "jaro"

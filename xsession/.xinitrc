@@ -16,7 +16,6 @@ picom --backend glx --vsync -b --unredir-if-possible
 xhost +
 
 LANG=C flameshot &
-dunst &
 
 # tell dbus-daemon --session to put a minimal subset of the Xsession's environment in activated services' environments
 dbus-update-activation-environment --verbose \
