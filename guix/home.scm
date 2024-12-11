@@ -123,6 +123,7 @@
 
  (services
   (append
+   %base-home-services
    (home-environment-user-services %emacs-home)
    (list (service home-bash-service-type)
 

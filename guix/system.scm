@@ -128,8 +128,12 @@
                                            "--gc-keep-outputs")))))
 
     (list
-     (service guix-home-service-type
-              `(("sarg" ,(load "./home.scm"))))
+     ;; this is necessary only for guix image
+     ;; otherwise home is updated more frequent than system
+     ;; and it doesn't work because system loads
+     ;; the built-in generation after reboot
+     ;; (service guix-home-service-type
+     ;;          `(("sarg" ,(load "./home.scm"))))
 
      (service pam-limits-service-type
               ;; For Lutris / Wine esync

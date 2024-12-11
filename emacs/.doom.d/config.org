@@ -64,6 +64,7 @@ To define guix dependencies add a =scheme= source code block. It'll be then tang
 #+end_src
 #+begin_src elisp
 (after! debbugs
+  (setq debbugs-gnu-default-packages '("guix" "guix-patches"))
   (set-popup-rule! "^\\*Guix-Patches Bugs\\*$" :ignore t)
   (set-popup-rule! "^\\*Summary nndoc" :ignore t)
   (set-popup-rule! "^\\*Article" :ignore t))
@@ -164,6 +165,12 @@ EXWM has a separate [[../.doom.d/modules/app/exwm][doom app]]. Here are just the
     (when new (pop-to-buffer ednc-log-name)))
 
   (add-hook 'ednc-notification-presentation-functions #'pop-to-ednc))
+#+end_src
+* completion
+#+begin_src elisp
+; have no use for vertico-next-group
+(after! consult
+  (define-key consult-async-map [remap vertico-insert] nil))
 #+end_src
 ** bar
 #+begin_src elisp
@@ -1121,6 +1128,9 @@ emacsclient -e \
   (web-search-default-provider "DuckDuckGo"))
 
 (use-package! qutebrowser)
+(use-package! yeetube
+  :config
+  (map! :map yeetube-mode-map :ni "RET" #'yeetube-play))
 #+end_src
 * shell
 #+begin_src elisp :tangle packages.el
@@ -1147,6 +1157,7 @@ emacsclient -e \
 (setq read-process-output-max (* 4 1024 1024))
 
 (after! eshell
+  (add-to-list 'eshell-modules-list 'eshell-smart)
   (add-hook 'eshell-first-time-mode-hook
             (lambda ()
               (map! :map eshell-mode-map
