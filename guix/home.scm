@@ -65,7 +65,7 @@
   '("qutebrowser"
 
     ;; "zeal" "qalculate-gtk" "simplescreenrecorder"
-    "libreoffice" "qview" "stapler" "gimp"
+    "libreoffice" "qview" "stapler" "gimp-next"
 
     ;; "nomacs"
     "zathura" "zathura-pdf-mupdf" "zathura-djvu" "zathura-cb"
@@ -74,8 +74,7 @@
 
 (define %pkg-dev
   '("python" "make" "fossil"
-    "git" "git:send-email" "git-crypt" "perl"
-    "libvirt" "virt-manager" "sicp" "openjdk:jdk" "clojure-tools"))
+    "git" "git:send-email" "git-crypt" "perl"))
 
 (define symlinks
   (resolve-relative-to "/storage/"

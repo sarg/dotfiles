@@ -98,7 +98,7 @@ To define guix dependencies add a =scheme= source code block. It'll be then tang
       doom-leader-alt-key "<f13>")
 (doom!
  :completion  corfu vertico ;(ivy +fuzzy +prescient +childframe)
- :ui          nav-flash (modeline +light) ophints (popup +all +defaults) ligatures
+ :ui          nav-flash (modeline +light) ophints (popup +defaults) ligatures
               (vc-gutter +pretty) treemacs
  :editor      (evil +everywhere) fold lispy snippets (format +onsave) multiple-cursors word-wrap
  :emacs       dired electric vc ibuffer undo
@@ -333,7 +333,24 @@ REVERSE? it when true. Returns the selected buffer."
 #+end_src
 
 [[*dark mode][see: dark mode]]
-
+* flatpaks
+#+begin_src sh :tangle no
+flatpak install --or-update --noninteractive \
+br.com.gualandi.Xjump \
+com.endlessnetwork.aqueducts \
+com.github.tchx84.Flatseal \
+com.holypangolin.Animatch \
+com.spotify.Client \
+de.blobbyvolley.BlobbyVolley2 \
+io.sourceforge.zaz \
+net.huitsi.ParallelOverhead \
+net.lutris.Lutris \
+net.sourceforge.lgames.LBreakoutHD \
+org.gnome.Nibbles \
+org.mattdm.icebreaker \
+org.regular_dev.biplanes_revival \
+tw.ddnet.ddnet
+#+end_src
 * desktop
 ** desktop entries
 #+begin_src scheme
@@ -565,12 +582,12 @@ dbusserver: true
 #+begin_src elisp :tangle packages.el
 (package! org-modern-indent
     :recipe (:host github :repo "jdtsmith/org-modern-indent")
-    :pin "f2b859bc53107b2a1027b76dbf4aaebf14c03433")
+    :pin "52b46c6ecd63e627ab5bfb83c580b51f68a23774")
 (package! corg
   :recipe (:host github :repo "isamert/corg.el")
   :pin "16d2b80fb2ff4daf0ab9bf89e5c9f649431337fc")
 (package! org-modern :built-in t)
-(package! org-tidy :pin "26d9636f0c43f1ee3f0528880111a4c1dd2bed32")
+(package! org-tidy :pin "0bea3a2ceaa999e0ad195ba525c5c1dcf5fba43b")
 #+end_src
 #+begin_src scheme
 "emacs-org-modern"
