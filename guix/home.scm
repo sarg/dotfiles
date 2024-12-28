@@ -68,8 +68,6 @@
     ;; "nomacs"
     "zathura" "zathura-pdf-mupdf" "zathura-djvu" "zathura-cb"
     "yt-dlp" "mpv"
-
-    "fava" "beancount"
     ))
 
 (define %pkg-dev

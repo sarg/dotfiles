@@ -1221,7 +1221,8 @@ current buffer, killing it."
 #+end_src
 ** gpx-mode
 #+begin_src scheme
-"emacs-gpx" "emacs-osm"
+;; "emacs-gpx"
+"emacs-osm"
 #+end_src
 #+begin_src elisp
 (use-package! osm
@@ -1232,9 +1233,9 @@ current buffer, killing it."
   (defun gpx-show-map-osm (file track segment)
     (osm-gpx-show file)))
 
-(use-package! gpx
-  :config
-  (setq gpx-show-map-function  #'gpx-show-map-osm))
+;; (use-package! gpx
+;;   :config
+;;   (setq gpx-show-map-function  #'gpx-show-map-osm))
 #+end_src
 ** qute-dired
 #+begin_src elisp

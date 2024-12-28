@@ -59,5 +59,6 @@
          "emacs-dired-hacks" "emacs-dired-du"
          "emacs-dired-git-info" "emacs-openwith" "emacs-sxiv"
          "emacs-bookmark-plus"
-         "emacs-gpx" "emacs-osm"
+         ;; "emacs-gpx"
+         "emacs-osm"
          "emacs-org-node"))))

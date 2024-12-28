@@ -42,7 +42,7 @@
      #:phases #~(modify-phases %standard-phases
                   (add-after 'install 'wrap-executable-with-adb-path
                     (lambda* (#:key inputs outputs #:allow-other-keys)
-                      (let* ((jar (assoc-ref inputs "_"))
+                      (let* ((jar (format #f "scrcpy-sever-~a.jar" #$version))
                              (adb (search-input-file inputs "/bin/adb")))
                         (wrap-program (string-append #$output "/bin/scrcpy")
                           `("ADB" = (,adb))
