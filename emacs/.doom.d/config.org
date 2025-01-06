@@ -465,12 +465,6 @@ REVERSE? it when true. Returns the selected buffer."
 "recordmydesktop"
 #+end_src
 * miscellaneous
-#+begin_src sh :tangle ~/.local/bin/locate :shebang #!/bin/sh :exports none
-plocate -d /storage/storage.plocate $@
-plocate -d /storage/2tb.plocate $@
-plocate -d /storage/500gb.plocate $@
-#+end_src
-
 #+begin_src elisp
 ;; C-h deletes character backwards
 (define-key key-translation-map [?\C-h] [?\C-?])
@@ -1335,7 +1329,6 @@ https://isamert.net/2021/04/21/managing-your-contacts-in-org-mode-and-syncing-th
 ** TODO periodical jobs
 *** TODO fstrim service
 *** TODO run them just before hibernating, if the battery is full
-*** TODO mcron for updatedb
 *** TODO mcron for backup
 ** DONE guix gc, but not that aggressive
 =--gc-keep-derivations= and =--gc-keep-outputs= to =guix-daemon= params

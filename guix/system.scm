@@ -14,11 +14,11 @@
              (ice-9 textual-ports))
 
 (use-package-modules
- linux ssh android suckless fonts firmware
+ linux ssh android search suckless fonts firmware
  xorg gnome admin cups spice)
 
 (use-service-modules
- desktop ssh networking sysctl cups avahi guix vpn
+ admin desktop ssh networking sysctl cups avahi guix vpn
  xorg dbus shepherd sound pm dns virtualization)
 
 (define (relative-file file)
@@ -151,6 +151,12 @@
 
      (simple-service 'sysctl-custom sysctl-service-type
                      '(("fs.inotify.max_user_watches" . "524288")))
+
+     (service file-database-service-type
+              (file-database-configuration
+               (schedule #~'(next-hour '(6)))
+               (excluded-directories
+                (append '("/home") %default-file-database-excluded-directories))))
 
      (service iwd-service-type)
      (service libvirt-service-type)

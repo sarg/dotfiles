@@ -30,7 +30,7 @@
   '("adb" "fdroidcl" "socat" "scrcpy"))
 
 (define %pkg-utils
-  '("aria2" "curl" "rsync" "plocate"
+  '("aria2" "curl" "rsync"
     "atool" "p7zip" "unzip" "jq" "openssh"
     "ripgrep" "moreutils" "libiconv"
     "powertop" "graphviz" "borgmatic" "bind:utils"  ; dig
