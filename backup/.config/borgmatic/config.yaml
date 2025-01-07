@@ -1,29 +1,23 @@
-location:
-  # List of source directories to backup. Globs are expanded.
-  source_directories:
-    - /storage
+source_directories:
+  - /storage
 
-  # Paths to local or remote repositories.
-  repositories:
-    - /media/sarg/500GB/backup
+# Paths to local or remote repositories.
+repositories:
+  - path: /media/sarg/500GB/backup
+    label: local
 
-  exclude_if_present: .borgbackupexclude
+exclude_if_present:
+  - .borgbackupexclude
 
 storage:
-  archive_name_format: "thinkpad-{now:%Y-%m-%d_%H-%M}"
+  archive_name_format: "{hostname}-{now:%Y-%m-%d_%H-%M}"
 
-retention:
-  prefix: "thinkpad-"
-  # Retention policy for how many backups to keep in each category.
-  keep_hourly: 5
-  keep_daily: 7
-  keep_weekly: 4
-  keep_monthly: 6
-  keep_yearly: 3
+keep_hourly: 5
+keep_daily: 7
+keep_weekly: 4
+keep_monthly: 6
+keep_yearly: 3
 
-consistency:
-  prefix: "thinkpad-"
-  # List of consistency checks to run: "repository", "archives", or both.
-  checks:
-    - repository
-    - archives
+checks:
+  - name: repository
+  - name: archives

@@ -1326,9 +1326,6 @@ Reqs:
 https://isamert.net/2021/04/21/managing-your-contacts-in-org-mode-and-syncing-them-to-your-phone-android-ios-whatever-.html
 
 ** TODO mu4e filtering for guix-patches
-** TODO periodical jobs
-*** TODO run them just before hibernating, if the battery is full
-*** TODO mcron for backup
 ** DONE guix gc, but not that aggressive
 =--gc-keep-derivations= and =--gc-keep-outputs= to =guix-daemon= params
 ** NO Fix hardcoded =Guix_image= root partition name

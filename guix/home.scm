@@ -8,6 +8,7 @@
  (guix channels)
  (gnu home)
  (gnu services)
+ (gnu services backup)
  (gnu packages)
  (gnu packages gnupg)
  (gnu packages qt)
@@ -33,7 +34,7 @@
   '("aria2" "curl" "rsync"
     "atool" "p7zip" "unzip" "jq" "openssh"
     "ripgrep" "moreutils" "libiconv"
-    "powertop" "graphviz" "borgmatic" "bind:utils"  ; dig
+    "powertop" "graphviz" "restic" "bind:utils"  ; dig
     "graphicsmagick" "libwebp" "jpegoptim"
     "flatpak" "xdg-desktop-portal"
     "lshw" "strace" "nftables" "file" "lsof"))
@@ -100,6 +101,11 @@
           "exec startx"
           ))))
 
+(define home-restic-backup-service-type
+  (service-type
+   (inherit (system->home-service-type restic-backup-service-type))
+   (default-value (for-home (restic-backup-configuration)))))
+
 (define %emacs-home (load "./emacs-home.scm"))
 (home-environment
  (packages
@@ -132,6 +138,18 @@
                    (layout 'stow)
                    (directories '(".."))
                    (packages '("backup" "android" "email" "xsession" "git" "qutebrowser" "desktop"))))
+
+         (service home-restic-backup-service-type
+                  (restic-backup-configuration
+                   (jobs (list
+                          (restic-backup-job
+                           (name "storage")
+                           (repository "/media/sarg/500GB/restic")
+                           (password-file "/media/sarg/500GB/restic/pass")
+                           (schedule #~'(next-hour '(10)))
+                           (user "sarg")
+                           (files (list "/storage"))
+                           (extra-flags (list "--exclude-if-present" ".borgbackupexclude")))))))
 
          (simple-service 'xcursor
                          home-files-service-type
