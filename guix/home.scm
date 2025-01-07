@@ -24,6 +24,7 @@
  (gnu home services shells)
  (gnu home services guix)
  (personal services symlinks)
+ (personal services supercron)
  (srfi srfi-1)
  (srfi srfi-11))
 
@@ -101,6 +102,16 @@
           "exec startx"
           ))))
 
+(define (changelog-task fn)
+  #~(make <task>
+      #:name #$(string-append "changelog-" (basename fn))
+      #:environment '(#$(string-append "PATH=" (getenv "HOME") "/.config/guix/current/bin")
+                      "PWD=/storage/Resources/dashboard")
+      #:schedule (list (make <interval>
+                         #:start (time "2025-01-01T00:00:00+0000")
+                         #:period (period "1h")))
+      #:arguments '("/storage/Resources/dashboard/git2rss.clj" #$fn)))
+
 (define home-restic-backup-service-type
   (service-type
    (inherit (system->home-service-type restic-backup-service-type))
@@ -151,6 +162,12 @@
                            (user "sarg")
                            (files (list "/storage"))
                            (extra-flags (list "--exclude-if-present" ".borgbackupexclude")))))))
+
+         (simple-service 'changelog-jobs
+          supercron-root-service-type
+          (list
+           (changelog-task "/storage/Resources/dashboard/guix.atom")
+           (changelog-task "/storage/Resources/dashboard/doomemacs.atom")))
 
          (simple-service 'xcursor
                          home-files-service-type
