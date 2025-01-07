@@ -19,7 +19,7 @@
 
 (use-service-modules
  admin desktop ssh networking sysctl cups avahi guix vpn
- xorg dbus shepherd sound pm dns virtualization)
+ linux xorg dbus shepherd sound pm dns virtualization)
 
 (define (relative-file file)
   (string-append (current-source-directory) "/" file))
@@ -152,6 +152,7 @@
      (simple-service 'sysctl-custom sysctl-service-type
                      '(("fs.inotify.max_user_watches" . "524288")))
 
+     (service fstrim-service-type)
      (service file-database-service-type
               (file-database-configuration
                (schedule #~'(next-hour '(6)))

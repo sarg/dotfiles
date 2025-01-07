@@ -1327,7 +1327,6 @@ https://isamert.net/2021/04/21/managing-your-contacts-in-org-mode-and-syncing-th
 
 ** TODO mu4e filtering for guix-patches
 ** TODO periodical jobs
-*** TODO fstrim service
 *** TODO run them just before hibernating, if the battery is full
 *** TODO mcron for backup
 ** DONE guix gc, but not that aggressive
