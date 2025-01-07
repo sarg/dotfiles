@@ -18,6 +18,7 @@
  (gnu home services gnupg)
  (gnu home services xdg)
  (gnu home services desktop)
+ (gnu home services pm)
  (gnu home services sound)
  (gnu home services shells)
  (gnu home services guix)
@@ -124,6 +125,7 @@
          (service home-symlinks-service-type symlinks)
          (service home-syncthing-service-type)
          (service home-dbus-service-type)
+         (service home-batsignal-service-type)
 
          (service home-dotfiles-service-type
                   (home-dotfiles-configuration
