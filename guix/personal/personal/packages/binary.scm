@@ -4,6 +4,7 @@
   #:use-module (guix download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
+  #:use-module (gnu packages java)
   #:use-module (gnu packages compression)
   #:use-module (nonguix build-system binary)
   #:use-module (guix packages))
@@ -49,20 +50,28 @@
 (define-public babashka
   (package
    (name "babashka")
-   (version "1.12.195")
+   (version "1.12.196")
    (source (origin
             (method url-fetch)
             (uri (string-append
                   "https://github.com/babashka/babashka/releases/download/v"
                   version "/babashka-" version "-linux-amd64.tar.gz"))
             (sha256
-             (base32 "1g5fbr6zniy6kkawzs0ga2llhmi3hzv5b9m0wqh0hm8i21d1q9xi"))))
+             (base32 "13wdkd3816s8bf2rfhcqh8igaxdbr6qafhinj3lny4ycg5yg9nqq"))))
    (build-system binary-build-system)
-   (inputs (list zlib))
+   (inputs (list zlib openjdk))
    (supported-systems '("x86_64-linux"))
    (arguments
-    `(#:install-plan '(("bb" "bin/bb"))
-      #:patchelf-plan '(("bb" ("zlib")))))
+    (list
+     #:install-plan #~'(("bb" "bin/bb"))
+     #:patchelf-plan #~'(("bb" ("zlib")))
+
+     #:phases
+     #~(modify-phases %standard-phases
+         (add-after 'install 'wrap-program
+           (lambda _
+             (wrap-program (string-append #$output "/bin/bb")
+               `("JAVA_HOME" = (#$openjdk))))))))
    (home-page "https://babashka.org")
    (synopsis "babashka clojure scripting runtime")
    (description "babashka clojure scripting runtime")
