@@ -264,6 +264,17 @@ REVERSE? it when true. Returns the selected buffer."
   (defun app-launcher--action-dex (selected)
     (call-process "dex" nil nil nil (cdr (assq 'file (gethash selected app-launcher--cache)))))
 
+  (advice-add 'app-launcher-list-desktop-files :filter-return
+              (lambda (apps)
+                (let ((keep '("lutris" "libreoffice-startcenter" "flatseal" "spotify"))
+                      (del '("flatpak" "emacs" "qview" "scrcpy" "qutebrowser"
+                             "libreoffice" "mpv" "quake3" "picom" "flameshot")))
+                  (seq-filter (lambda (el)
+                                (or
+                                 (-any? (lambda (i) (s-contains? i (cdr el) t)) keep)
+                                 (-none? (lambda (i) (s-contains? i (cdr el) t)) del)))
+                              apps))))
+
   (setq app-launcher--action-function #'app-launcher--action-dex))
 #+end_src
 * theme
