@@ -54,6 +54,14 @@
    "non-guix.pub"
    "(public-key (ecc (curve Ed25519) (q #C1FD53E5D4CE971933EC50C9F307AE2171A2D3B52C804642A7A35F84F3A4EA98#)))"))
 
+(define (auto-login-to-tty config tty user)
+  (if (string=? tty (mingetty-configuration-tty config))
+      (mingetty-configuration
+       (inherit config)
+       (login-pause? #t)
+       (auto-login user))
+      config))
+
 (operating-system
   (kernel linux)
   (kernel-arguments '("quiet" "loglevel=1"))
@@ -111,6 +119,7 @@
   (services
    (append
     (modify-services %base-services
+      (mingetty-service-type config => (auto-login-to-tty config "tty1" "sarg"))
       (guix-service-type config =>
                          (guix-configuration
                           (inherit config)
