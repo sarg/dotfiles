@@ -212,6 +212,12 @@ These are bound only for X11 apps.
   ;; remove the default EXWM bindings
   [?\C-c] 'nil)
 #+end_src
+#+begin_src elisp :noweb-ref exwm :tangle no
+(add-hook! 'exwm-input-input-mode-change-hook
+  (defun exwm/enable-xkb-layout-switch ()
+    (start-process "keymap.sh" nil "keymap.sh"
+                   (if (eq exwm--input-mode 'char-mode) "enable" "disable"))))
+#+end_src
 *** global
 #+begin_src elisp :noweb-ref exwm :tangle no
 (defun exwm/switch-to-next-buffer (class &optional reverse?)

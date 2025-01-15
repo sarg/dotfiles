@@ -10,14 +10,39 @@
 # KEYBOARD_KEY_38=leftctrl
 # KEYBOARD_KEY_58=leftshift
 
+read -d'' -r backslash_as_layout_switch <<EOF
+    replace key <BKSL> {
+        type= "LAYOUT_SWITCH",
+        symbols[Group1]= [ backslash, bar,   ISO_Next_Group ],
+        symbols[Group2]= [ backslash, slash, ISO_Next_Group ]
+    };
+EOF
+
+if [ "$1" == "enable" ]; then
+  patch=$backslash_as_layout_switch
+else
+  patch=""
+fi
+
 # https://www.emacswiki.org/emacs/StickyModifiers
-cat <<EOF | xkbcomp -w 0 - $DISPLAY
+xkbcomp -w 0 - $DISPLAY <<EOF
 xkb_keymap {
   xkb_keycodes  { include "evdev+aliases(qwerty)"   };
-  xkb_types     { include "complete"  };
+  xkb_types     {
+    include "complete"
+    type "LAYOUT_SWITCH" {
+        modifiers= Shift+Control;
+        map[Shift]= Level2;
+        map[Control]= Level3;
+        level_name[Level1]= "Base";
+        level_name[Level2]= "Shift";
+        level_name[Level3]= "Control";
+    };
+  };
   xkb_compat    { include "complete"  };
   xkb_symbols   {
     include "pc+us+ru:2+inet(evdev)"
+    $patch
     replace key <LWIN> { [ F13 ] };
     replace key <PRSC> { [ F13 ] };
   };
