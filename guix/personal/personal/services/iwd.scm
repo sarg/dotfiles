@@ -52,9 +52,6 @@
                        #:environment-variables #$environment))
              (stop #~(make-kill-destructor)))))))
 
-(define %iwd-log-rotation
-  (list (log-rotation (files '("/var/log/iwd.log")))))
-
 (define (iwd-etc-service config)
   (match-record config <iwd-configuration> (config-file)
     `(("iwd/main.conf" ,config-file))))
@@ -71,8 +68,8 @@
                                             add-iwd-package)
                          (service-extension etc-service-type
                                             iwd-etc-service)
-                         (service-extension rottlog-service-type
-                                            (const %iwd-log-rotation))))
+                         (service-extension log-rotation-service-type
+                                            (const (list "/var/log/iwd.log")))))
                   (default-value (iwd-configuration))
                   (description
                    "Run @url{https://iwd.wiki.kernel.org/,Iwd},
