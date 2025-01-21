@@ -219,10 +219,34 @@ subcommands, positional values, and any-position flags without unnecessary
 complexeties.")
     (license license:unlicense)))
 
+(define-public go-github-com-rxwycdh-rxhash
+  (package
+    (name "go-github-com-rxwycdh-rxhash")
+    (version "0.0.0-20230131062142-10b7a38b400d")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/rxwycdh/rxhash")
+             (commit (go-version->git-ref version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0qw4kn5r0xjfy9mycv57f7lmlpksybzr2qcdr4713svrxakwmgyz"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "github.com/rxwycdh/rxhash"))
+    (home-page "https://github.com/rxwycdh/rxhash")
+    (synopsis "rxhash")
+    (description
+     "rxhash is a Go library for creating a unique hash value for struct in Go, but
+@@strong{data consistency}.")
+    (license license:expat)))
+
 (define-public darkman
   (package
     (name "darkman")
-    (version "1.5.4")
+    (version "2.0.1")
     (source
      (origin
        (method git-fetch)
@@ -232,7 +256,7 @@ complexeties.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "09yrvijdii3m9dajp12ax3zgisy39lffhkkzbhf5qzc4xramf8z9"))))
+         "0ylk2zgn1bf65214ph0qrk0zv5hm689x4d3c0qwscgpl5xbjk88m"))))
     (build-system go-build-system)
     (arguments
      (list #:import-path "gitlab.com/WhyNotHugo/darkman"
@@ -257,6 +281,8 @@ complexeties.")
     (inputs (list go-github-com-adrg-xdg
                   go-github-com-godbus-dbus-v5
                   go-github-com-integrii-flaggy
+                  go-github-com-spf13-cobra
+                  go-github-com-rxwycdh-rxhash
                   go-github-com-sj14-astral
                   go-github-com-kr-pretty
                   go-gopkg-in-check-v1
