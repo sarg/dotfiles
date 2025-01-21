@@ -970,10 +970,25 @@ qutebrowser --nowindow --target tab-bg-silent $@
 
 (use-package! lexic
   :config
-  (add-to-list 'evil-emacs-state-modes 'lexic-mode)
+  (set-popup-rule!
+    '(major-mode . lexic-mode)
+    :ttl nil
+    :side 'left
+    :quit 'current
+    :select t
+    :width 60)
+
+  (map! :map lexic-mode-map
+        :n
+        "RET" #'lexic-search-word-at-point
+        "a" #'outline-show-all
+        "n" #'lexic-next-entry
+        "p" #'lexic-previous-entry)
+
   (setq lexic-dictionary-specs
-        '(("Duden - Das große Wörterbuch der deutschen Sprache"
-           :short "Duden" :formatter lexic-format-shr :priority 0))))
+        '(("Wiktionary DE-DE" :short "Wiktionary" :formatter lexic-format-shr :priority 0)
+          ("Duden - Das große Wörterbuch der deutschen Sprache"
+           :short "Duden" :formatter lexic-format-shr :priority 1))))
 #+end_src
 * email
 #+begin_src scheme

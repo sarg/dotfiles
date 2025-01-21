@@ -89,6 +89,7 @@
      ;; ("data/gnupg" . ".gnupg") ; TODO: clashes with home service
      ("data/events" . ".events")
      ("data/syncthing" . ".config/syncthing")
+     ("data/stardict" . ".local/share/stardict")
      ("data/qutebrowser" . ".local/share/qutebrowser")
      ("apps/quake3" . ".q3a"))))
 
