@@ -51,7 +51,7 @@
   '("picom" "xhost" "xkbcomp" "xkbset" "xkb-switch"
     "xprop" "xrandr" "xset" "xwininfo"
     "xev" "xclip" "xinput"
-    "hicolor-icon-theme" "tango-icon-theme" "adwaita-icon-theme"
+    "hicolor-icon-theme" "adwaita-icon-theme"
     "greybird-gtk-theme"))
 
 (define %pkg-games
@@ -130,6 +130,12 @@
                    (layout 'stow)
                    (directories '(".."))
                    (packages '("backup" "android" "email" "xsession" "git" "qutebrowser" "desktop"))))
+
+         (simple-service 'xcursor
+                         home-files-service-type
+                         `((".icons/default"
+                            ,(file-append (specification->package "bibata-cursor-theme")
+                                          "/share/icons/Bibata-Modern-Ice"))))
 
          (simple-service 'configs
                          home-xdg-configuration-files-service-type
