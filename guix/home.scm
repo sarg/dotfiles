@@ -42,7 +42,7 @@
 
 (define %pkg-desktop
   '("pavucontrol" "flameshot" "wireplumber"
-    "lemonbar-xft" "xss-lock" "redshift" "unclutter" "playerctl"))
+    "xss-lock" "playerctl"))
 
 (define %pkg-fonts
   '("font-fira-code"

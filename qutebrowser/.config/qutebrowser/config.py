@@ -2,7 +2,7 @@ import urllog
 
 c.auto_save.session = True
 c.backend = 'webengine'
-c.statusbar.show = 'in-mode'
+c.statusbar.show = 'never'
 
 c.fileselect.handler = 'external'
 c.fileselect.single_file.command = ['emacsclient', '{}']

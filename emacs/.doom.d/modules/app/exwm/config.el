@@ -12,13 +12,13 @@
     (exwm-input-set-key (if (vectorp key) key (kbd key))
                         (if (functionp command) command
                           `(lambda () (interactive)
-                            (start-process-shell-command "exwm-bind" nil ,command))))
+                             (start-process-shell-command "exwm-bind" nil ,command))))
     (setq key (pop bindings)
           command (pop bindings))))
 
 (defun exwm/init ()
-  (when (modulep! +bar)
-    (exwm/bar-mode))
+  (when (modulep! +lemonbar)
+    (exwm/lemonbar-mode))
 
   (when (modulep! +polybar)
     (exwm/polybar-mode))

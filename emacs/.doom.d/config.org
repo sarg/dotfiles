@@ -108,7 +108,7 @@ To define guix dependencies add a =scheme= source code block. It'll be then tang
  :lang        clojure data emacs-lisp
               (org +contacts +dragndrop +pandoc +present +hugo +roam2) beancount
               rest sh plantuml (python +pyenv +lsp) (web +html) yaml json
- :app         calendar telega (rss +org) torrent irc (exwm +bar) emms
+ :app         calendar telega (rss +org) torrent irc exwm emms
  :email       (mu4e +gmail)
  :config      (default +bindings +smartparens) literate)
 #+end_src
@@ -173,15 +173,46 @@ EXWM has a separate [[../.doom.d/modules/app/exwm][doom app]]. Here are just the
   (define-key consult-async-map [remap vertico-insert] nil))
 #+end_src
 ** bar
+#+begin_src scheme
+"emacs-mini-echo"
+#+end_src
+#+begin_src elisp :tangle packages.el
+(package! mini-echo :built-in t)
+#+end_src
 #+begin_src elisp
-(setq battery-mode-line-format "%b%>2p%"
-      battery-mode-line-limit 50)
-(display-battery-mode 1)
+(defun xkb-layout-segment ()
+  (pcase major-mode
+    ('exwm-mode
+     (when-let ((group (exwm-input--current-group))
+                ((> group 0)))
+       (nth group exwm/input-layout-names)))
+    (_ evil-input-method)))
 
-(setq exwm/bar-mode-line-format '(""
-                    (-2 (:eval (exwm/bar-input-layout-segment))) " "
-                    battery-mode-line-string " "
-                    (:eval (format-time-string "%a %d %R"))))
+(use-package! mini-echo
+  :custom
+  (battery-mode-line-format "%b%>2p%")
+  (battery-mode-line-limit 50)
+  (display-time-string-forms '((substring (format-time-string "%a") 0 1)
+                               (format-time-string "%d %R")))
+
+  (mini-echo-persistent-function (-const nil))
+  (mini-echo-temporary-rule '(:both ("xkb-layout")))
+  (mini-echo-persistent-rule '(:both ("time" "battery" "exwm-workspace")))
+
+  :config
+  (mini-echo-define-segment "exwm-workspace"
+    "Indicator that shows current EXWM workspace name."
+    :fetch
+    (mini-echo-segment--print (nth exwm-workspace-current-index exwm-workspace-names)))
+
+  (mini-echo-define-segment "xkb-layout"
+    "Indicator that shows current xkb layout if it is active."
+    :fetch
+    (when-let ((layout (xkb-layout-segment)))
+      (mini-echo-segment--print (upcase (substring layout 0 2)) 'bold)))
+
+  (mini-echo-mode 1)
+  (mini-echo-hide-mode-line 'show))
 #+end_src
 ** workspaces
 #+begin_src elisp :noweb-ref exwm :tangle no
@@ -396,6 +427,7 @@ tw.ddnet.ddnet
 ** dark mode
 #+begin_src scheme
 "darkman"
+"redshift"
 #+end_src
 #+begin_src elisp :tangle packages.el :exports none
 (package! darkman)
@@ -1144,7 +1176,16 @@ emacsclient -e \
   :custom
   (web-search-default-provider "DuckDuckGo"))
 
-(use-package! qutebrowser)
+(def-modeline! :qutebrowser
+               '("" evil-mode-line-tag "%b") `(""))
+
+(set-modeline-hook! 'qutebrowser-exwm-mode-hook :qutebrowser)
+
+(use-package! qutebrowser
+  :config
+  (global-qutebrowser-exwm-mode 1)
+  (qutebrowser-evil-state-mode 1)
+  (qutebrowser-theme-export-mode 1))
 (use-package! yeetube
   :config
   (map! :map yeetube-mode-map :ni "RET" #'yeetube-play))
