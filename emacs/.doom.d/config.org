@@ -895,22 +895,22 @@ choose_entry() {
 
   (setq emms-player-list (list emms-player-mpv)))
 #+end_src
-*** playlist buffer
+*** buffer and modeline
 #+begin_src elisp
 (after! emms
   (defun emms/modeline-status-icon ()
-    (cl-destructuring-bind (text . icon)
-        (cond
-         ((and emms-player-playing-p emms-player-paused-p)
-          '("Paused" . "pause-circle"))
-         ((and emms-player-playing-p (emms-player-get 'emms-player-spotify 'ad-blocked))
-          '("Advert" . "usd"))
-         (emms-player-playing-p
-          '("Playing" . "play-circle"))
-         (t '("Stopped" . "stop-circle")))
-      (propertize (cdr (assoc icon (all-the-icons-faicon-data)))
-                  'face '(:family "FontAwesome")
-                  'rear-nonsticky t)))
+    (let ((clickable
+           (lambda (text action)
+             (propertize text 'keymap (make-mode-line-mouse-map 'mouse-1 action)))))
+      (apply clickable
+             (cond
+              ((and emms-player-playing-p emms-player-paused-p)
+               (list "" #'emms-pause))
+              ((and emms-player-playing-p (emms-player-get 'emms-player-spotify 'ad-blocked))
+               (list "" #'ignore))
+              (emms-player-playing-p
+               (list "" #'emms-pause))
+              (t (list "" #'ignore))))))
 
   (set-popup-rule!
     (lambda (buffer action)
@@ -918,7 +918,11 @@ choose_entry() {
     :ttl nil
     :quit 'current
     :select t
-    :modeline '(" " (:eval (emms/modeline-status-icon)) emms-mode-line-string emms-playing-time-string)
+    :modeline '(" "
+                (:eval (when emms-random-playlist " "))
+                (:eval (emms/modeline-status-icon))
+                emms-mode-line-string
+                emms-playing-time-string)
     :height 15)
 
   (add-hook!
