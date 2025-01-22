@@ -41,8 +41,7 @@
     "lshw" "strace" "nftables" "file" "lsof"))
 
 (define %pkg-desktop
-  '("pavucontrol" "flameshot" "wireplumber"
-    "xss-lock" "playerctl"))
+  '("pavucontrol" "flameshot" "wireplumber" "playerctl"))
 
 (define %pkg-fonts
   '("font-fira-code"
@@ -51,7 +50,7 @@
     "font-terminus"))
 
 (define %pkg-x11
-  '("picom" "xhost" "xkbcomp" "xkbset" "xkb-switch"
+  '("xkbcomp" "xkbset" "xkb-switch"
     "xprop" "xrandr" "xset" "xwininfo"
     "xev" "xclip" "xinput"
     "hicolor-icon-theme" "adwaita-icon-theme"
@@ -169,11 +168,29 @@
            (changelog-task "/storage/Resources/dashboard/guix.atom")
            (changelog-task "/storage/Resources/dashboard/doomemacs.atom")))
 
-         (simple-service 'xcursor
+         (simple-service 'x11-configs
                          home-files-service-type
                          `((".icons/default"
                             ,(file-append (specification->package "bibata-cursor-theme")
-                                          "/share/icons/Bibata-Modern-Ice"))))
+                                          "/share/icons/Bibata-Modern-Ice"))
+                           (".xinitrc"
+                            ,(mixed-text-file "xinitrc"
+                              "slock &\n"
+                              (specification->package "xss-lock") "/bin/xss-lock -l lock.sh &\n"
+
+                              ;; unredir fixes performance in fullscreen apps, e.g. q3
+                              ;; https://github.com/chjj/compton/wiki/perf-guide
+                              (specification->package "picom")
+                              "/bin/picom --backend glx --vsync -b --unredir-if-possible\n"
+
+                              "keymap.sh\n"
+
+                              (specification->package "xhost")
+                              "/bin/xhost +si:localuser:$USER\n"
+
+                              "dbus-update-activation-environment --verbose DBUS_SESSION_BUS_ADDRESS DISPLAY XAUTHORITY\n"
+
+                              "emacs --init-directory=" (specification->package "doomemacs") " --eval '(exwm-enable)'\n"))))
 
          (simple-service 'configs
                          home-xdg-configuration-files-service-type
@@ -209,5 +226,7 @@
                          `(("PATH" . "$HOME/.local/bin:$PATH")
                            ("QT_PLUGIN_PATH" . ,(file-append qtwayland "/lib/qt6/plugins"))
                            ("QT_QPA_PLATFORM_PLUGIN_PATH" . ,(file-append qtwayland  "/lib/qt6/plugins/platforms"))
+                           ("_JAVA_AWT_WM_NONREPARENTING" . "1")
+                           ("QT_QPA_PLATFORMTHEME" . "gtk3")
                            ("XDG_DATA_DIRS" . "$XDG_DATA_DIRS:$HOME/.local/share/flatpak/exports/share")
                            ("BROWSER" . "qutebrowser")))))))

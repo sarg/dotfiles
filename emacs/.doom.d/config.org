@@ -85,11 +85,6 @@ To define guix dependencies add a =scheme= source code block. It'll be then tang
     ("DOOMDIR" . "$HOME/.dotfiles/emacs/.doom.d/")
     ("VISUAL" . "emacsclient")
     ("EDITOR" . "emacsclient")))
-(simple-service 'doom home-files-service-type
-  `((".local/bin/doomemacs"
-     ,((@ (personal services utils) chmod-computed-file)
-       (mixed-text-file "doomemacs" "emacs --init-directory=" (specification->package "doomemacs") " $@")
-       #o555))))
 #+end_src
 ** init.el
 #+begin_src elisp :tangle init.el
@@ -335,7 +330,7 @@ REVERSE? it when true. Returns the selected buffer."
               (lambda (apps)
                 (let ((keep '("lutris" "libreoffice-startcenter" "flatseal" "spotify"))
                       (del '("flatpak" "emacs" "qview" "scrcpy" "qutebrowser"
-                             "libreoffice" "mpv" "quake3" "picom" "flameshot")))
+                             "libreoffice" "mpv" "quake3" "flameshot")))
                   (seq-filter (lambda (el)
                                 (or
                                  (-any? (lambda (i) (s-contains? i (cdr el) t)) keep)

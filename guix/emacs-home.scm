@@ -9,11 +9,6 @@
                 ("DOOMDIR" . "$HOME/.dotfiles/emacs/.doom.d/")
                 ("VISUAL" . "emacsclient")
                 ("EDITOR" . "emacsclient")))
-            (simple-service 'doom home-files-service-type
-              `((".local/bin/doomemacs"
-                 ,((@ (personal services utils) chmod-computed-file)
-                   (mixed-text-file "doomemacs" "emacs --init-directory=" (specification->package "doomemacs") " $@")
-                   #o555))))
             (service home-gpg-agent-service-type
              (home-gpg-agent-configuration
               (pinentry-program
