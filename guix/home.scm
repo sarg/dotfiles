@@ -8,7 +8,6 @@
  (guix channels)
  (gnu home)
  (gnu services)
- (gnu services backup)
  (gnu packages)
  (gnu packages gnupg)
  (gnu packages qt)
@@ -65,7 +64,7 @@
   '("qutebrowser"
 
     ;; "zeal" "qalculate-gtk" "simplescreenrecorder"
-    "libreoffice" "qview" "stapler" "gimp-next"
+    "libreoffice" "qview" "stapler" "gimp-next" "calibre"
 
     ;; "nomacs"
     "zathura" "zathura-pdf-mupdf" "zathura-djvu" "zathura-cb"
@@ -111,11 +110,6 @@
                          #:period (period "1h")))
       #:arguments '("/storage/Resources/dashboard/git2rss.clj" #$fn)))
 
-(define home-restic-backup-service-type
-  (service-type
-   (inherit (system->home-service-type restic-backup-service-type))
-   (default-value (for-home (restic-backup-configuration)))))
-
 (define %emacs-home (load "./emacs-home.scm"))
 (home-environment
  (packages
@@ -148,19 +142,7 @@
                   (home-dotfiles-configuration
                    (layout 'stow)
                    (directories '(".."))
-                   (packages '("backup" "android" "email" "xsession" "git" "qutebrowser" "desktop"))))
-
-         (service home-restic-backup-service-type
-                  (restic-backup-configuration
-                   (jobs (list
-                          (restic-backup-job
-                           (name "storage")
-                           (repository "/media/sarg/500GB/restic")
-                           (password-file "/media/sarg/500GB/restic/pass")
-                           (schedule #~'(next-hour '(10)))
-                           (user "sarg")
-                           (files (list "/storage"))
-                           (extra-flags (list "--exclude-if-present" ".borgbackupexclude")))))))
+                   (packages '("android" "email" "xsession" "git" "qutebrowser" "desktop"))))
 
          (simple-service 'changelog-jobs
           supercron-root-service-type
