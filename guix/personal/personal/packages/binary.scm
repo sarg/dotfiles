@@ -28,25 +28,6 @@
    (description "hcloud CLI utility")
    (license license:expat)))
 
-(define-public hugo
-  (package
-   (name "hugo")
-   (version "0.140.0")
-   (source (origin
-            (method url-fetch)
-            (uri (string-append
-                  "https://github.com/gohugoio/hugo/releases/download/v"
-                  version "/hugo_" version "_linux-amd64.tar.gz"))
-            (sha256
-             (base32 "0ydzhj1qxl4wyfa64f063xrrl11247p6wcky8jvhblmska21p7sm"))))
-   (build-system binary-build-system)
-   (supported-systems '("x86_64-linux"))
-   (arguments `(#:install-plan '(("hugo" "bin/hugo"))))
-   (home-page "https://gohugo.io")
-   (synopsis "hugo blogging platform")
-   (description "hugo blogging platform")
-   (license license:expat)))
-
 (define-public babashka
   (package
    (name "babashka")
