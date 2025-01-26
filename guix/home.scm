@@ -106,8 +106,8 @@
       #:environment '(#$(string-append "PATH=" (getenv "HOME") "/.config/guix/current/bin")
                       "PWD=/storage/Resources/dashboard")
       #:schedule (list (make <interval>
-                         #:start (time "2025-01-01T00:00:00+0000")
-                         #:period (period "1h")))
+                         #:start (time "2025-01-01T06:00:00+0000")
+                         #:period (period "1d")))
       #:arguments '("/storage/Resources/dashboard/git2rss.clj" #$fn)))
 
 (define %emacs-home (load "./emacs-home.scm"))
@@ -145,7 +145,7 @@
                    (packages '("android" "email" "xsession" "git" "qutebrowser" "desktop"))))
 
          (simple-service 'changelog-jobs
-          supercron-root-service-type
+          supercron-service-type
           (list
            (changelog-task "/storage/Resources/dashboard/guix.atom")
            (changelog-task "/storage/Resources/dashboard/doomemacs.atom")))
