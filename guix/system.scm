@@ -215,7 +215,8 @@
 
      (service elogind-service-type
               (elogind-configuration
-               (handle-lid-switch-external-power 'suspend)))
+               (handle-lid-switch-external-power 'suspend)
+               (kill-user-processes? #t)))
      (service dbus-root-service-type)
      (simple-service 'ratbagd dbus-root-service-type (list libratbag))
      (service tlp-service-type
