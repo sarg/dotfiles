@@ -24,6 +24,7 @@
  (gnu home services guix)
  (personal services symlinks)
  (personal services supercron)
+ (personal packages binary)
  (srfi srfi-1)
  (srfi srfi-11))
 
@@ -34,7 +35,7 @@
   '("aria2" "curl" "rsync"
     "atool" "p7zip" "unzip" "jq" "openssh"
     "ripgrep" "moreutils" "libiconv"
-    "powertop" "graphviz" "restic" "bind:utils"  ; dig
+    "powertop" "graphviz" "bind:utils"  ; dig
     "graphicsmagick" "libwebp" "jpegoptim"
     "flatpak" "xdg-desktop-portal-gtk"
     "lshw" "strace" "nftables" "file" "lsof"))
@@ -110,6 +111,19 @@
                          #:period (period "1d")))
       #:arguments '("/storage/Resources/dashboard/git2rss.clj" #$fn)))
 
+(define %storage-backup-task
+  #~(make <task>
+      #:name "backup-storage"
+      #:environment '(#$(string-append "HOME=" (getenv "HOME")))
+      #:schedule (list (make <interval>
+                         #:start (time "2025-01-01T06:00:00+0000")
+                         #:period (period "1d")))
+      #:arguments '(#$(file-append restic "/bin/restic")
+                    "-p" "/media/500GB/restic/pass"
+                    "-r" "/media/500GB/restic"
+                    "--exclude-if-present" ".borgbackupexclude"
+                    "backup" "/storage")))
+
 (define %emacs-home (load "./emacs-home.scm"))
 (home-environment
  (packages
@@ -148,7 +162,8 @@
           supercron-service-type
           (list
            (changelog-task "/storage/Resources/dashboard/guix.atom")
-           (changelog-task "/storage/Resources/dashboard/doomemacs.atom")))
+           (changelog-task "/storage/Resources/dashboard/doomemacs.atom")
+           %storage-backup-task))
 
          (simple-service 'x11-configs
                          home-files-service-type

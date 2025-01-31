@@ -19,7 +19,7 @@
 
 (use-service-modules
  admin desktop ssh networking sysctl cups avahi guix vpn
- linux xorg dbus shepherd sound pm dns virtualization backup)
+ linux xorg dbus shepherd sound pm dns virtualization)
 
 (define (relative-file file)
   (string-append (current-source-directory) "/" file))
@@ -144,18 +144,6 @@
      (service pam-limits-service-type
               ;; For Lutris / Wine esync
               (list (pam-limits-entry "*" 'hard 'nofile 524288)))
-
-     (service restic-backup-service-type
-              (restic-backup-configuration
-               (jobs (list
-                      (restic-backup-job
-                       (name "backup-storage")
-                       (repository "/media/500GB/restic")
-                       (requirement '(file-system-/media/500GB))
-                       (password-file "/media/500GB/restic/pass")
-                       (schedule #~(calendar-event #:hours '(0) #:minutes '(0)))
-                       (files (list "/storage"))
-                       (extra-flags (list "--exclude-if-present" ".borgbackupexclude")))))))
 
      (no-autostart
       (service wireguard-service-type
