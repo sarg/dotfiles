@@ -613,11 +613,10 @@ dbusserver: true
 (package! corg
   :recipe (:host github :repo "isamert/corg.el")
   :pin "16d2b80fb2ff4daf0ab9bf89e5c9f649431337fc")
-(package! org-modern :built-in t)
+(package! org-modern :pin "ae0d91fa16f0e72df50633d0941242eecd78721b")
 (package! org-tidy :pin "0bea3a2ceaa999e0ad195ba525c5c1dcf5fba43b")
 #+end_src
 #+begin_src scheme
-"emacs-org-modern"
 "font-iosevka-curly" ; for org-modern bullets
 #+end_src
 
