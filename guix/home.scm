@@ -148,7 +148,19 @@
 
          (service home-pipewire-service-type)
          (service home-symlinks-service-type symlinks)
-         (service home-syncthing-service-type)
+
+         (service home-syncthing-service-type
+                  (let ((pixel (syncthing-device (id "Q4ZQAU5-ZBFVS3E-OULHHHM-3HOCUXT-TVV5UYL-XPZRRWH-EXYYJWG-WVAUAAS")))
+                        (thinkpad (syncthing-device (id "NYWEUMS-WOSRVEG-TD6CQZA-IHZ66GX-HZT2PJ2-IZ244FL-N3JC7DD-3DV57AG"))))
+
+                    (for-home (syncthing-configuration
+                               (config-file
+                                (syncthing-config-file
+                                 (ur-accepted -1)
+                                 (folders (list (syncthing-folder
+                                                 (label "Sync")
+                                                 (path "~/Sync")
+                                                 (devices (list pixel thinkpad)))))))))))
          (service home-dbus-service-type)
          (service home-batsignal-service-type)
 
