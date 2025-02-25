@@ -8,7 +8,7 @@ IMAPStore gmail-remote
     User sarg@sarg.org.ru
     PassCmd "pass show Email/smtp.gmail.com/sarg@sarg.org.ru"
     SSLType IMAPS
-    SSLVersions TLSv1.3
+    TLSVersions +1.3
     CertificateFile /etc/ssl/certs/ca-certificates.crt
 
 MaildirStore gmail-local

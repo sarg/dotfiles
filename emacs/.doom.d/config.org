@@ -1102,24 +1102,34 @@ qutebrowser --nowindow --target tab-bg-silent $@
   (setq mu4e-filter-inbox "flag:unread AND NOT flag:trashed AND maildir:/gmail/all"
         mu4e-bookmarks `((,mu4e-filter-inbox "Gmail messages" ?u)
                          ("date:today..now AND NOT flag:trashed AND NOT maildir:/gmail/trash" "Today's messages" 116))
-        mu4e-modeline-support nil)
+        mu4e-modeline-support nil
+        mu4e-sent-folder "/gmail/sent"
+        mu4e-drafts-folder "/gmail/drafts"
+        mu4e-trash-folder "/gmail/trash"
+        mu4e-refile-folde "/gmail/all"
+        smtpmail-smtp-server "smtp.gmail.com"
+        smtpmail-servers-requiring-authorization "smtp\\.gmail\\.com"
+        smtpmail-smtp-service 587
+        smtpmail-stream-type 'starttls
+        send-mail-function #'smtpmail-send-it
+        message-send-mail-function #'smtpmail-send-it)
 
-  (add-to-list 'mm-body-charset-encoding-alist '(utf-8 . 8bit)))
+  (add-to-list 'mm-body-charset-encoding-alist '(utf-8 . 8bit))
 
-(set-email-account! "sarg"
-  '((mu4e-sent-folder   . "/gmail/sent")
-    (mu4e-drafts-folder . "/gmail/drafts")
-    (mu4e-trash-folder  . "/gmail/trash")
-    (mu4e-refile-folder . "/gmail/all")
-    (smtpmail-smtp-user . "sarg@sarg.org.ru")
-    (smtpmail-smtp-server . "smtp.gmail.com")
-    (smtpmail-servers-requiring-authorization . "smtp\\.gmail\\.com")
-    (smtpmail-smtp-service . 587)
-    (smtpmail-stream-type . starttls)
-    (send-mail-function . smtpmail-send-it)
-    (message-send-mail-function . smtpmail-send-it)
-    (user-mail-address  . "sarg@sarg.org.ru"))
-  t)
+  (setq mu4e-contexts
+        (cl-loop
+         for email in '("sarg@sarg.org.ru" "de.strofimov@gmail.com")
+         collect (make-mu4e-context
+                  :name email
+                  :vars `((user-mail-address . ,email)
+                          (smtpmail-smtp-user . ,email))
+                  :match-func
+                  `(lambda (msg)
+                     (when msg
+                       (string-prefix-p ,email
+                                        (mu4e-contact-email
+                                         (nth 0
+                                          (mu4e-message-field msg :to))) t)))))))
 #+end_src
 * browsing
 #+begin_src elisp :tangle packages.el
