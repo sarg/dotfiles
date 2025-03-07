@@ -42,12 +42,6 @@
    `(("share/polkit-1/rules.d/udisks-wheel.rules"
       ,(local-file "./files/udisks-wheel.rules")))))
 
-(define polkit-udisks-wheel-service
-  (simple-service 'polkit-udisks-wheel polkit-service-type (list polkit-udisks-wheel)))
-
-(define polkit-spice-gtk-service
-  (simple-service 'polkit-spice-gtk polkit-service-type (list spice-gtk)))
-
 (define %non-guix.pub
   (plain-file
    "non-guix.pub"
@@ -133,30 +127,23 @@
                                            "--gc-keep-outputs")))))
 
     (list
-     ;; this is necessary only for guix image
-     ;; otherwise home is updated more frequent than system
-     ;; and it doesn't work because system loads
-     ;; the built-in generation after reboot
-     ;; (service guix-home-service-type
-     ;;          `(("sarg" ,(load "./home.scm"))))
-
      (service pam-limits-service-type
               ;; For Lutris / Wine esync
               (list (pam-limits-entry "*" 'hard 'nofile 524288)))
 
-     (no-autostart
-      (service wireguard-service-type
-               (wireguard-configuration
-                (addresses '("10.66.66.2/32" "fd42:42:42::2/128"))
-                (private-key "/home/sarg/.dotfiles/secure/wireguard.key")
-                (peers
-                 (list
-                  (wireguard-peer
-                   (name "hetzner")
-                   (endpoint "[2a01:4f9:c012:f933::1]:52817")
-                   (public-key "6gNRvmvi5oRGSPr8J0dBcyDyKS94zO4Y4Jbwo2u+iV0=")
-                   (preshared-key "/home/sarg/.dotfiles/secure/wireguard.psk")
-                   (allowed-ips '("0.0.0.0/0" "::/0"))))))))
+     (service wireguard-service-type
+              (wireguard-configuration
+               (auto-start? #f)
+               (addresses '("10.66.66.2/32" "fd42:42:42::2/128"))
+               (private-key "/home/sarg/.dotfiles/secure/wireguard.key")
+               (peers
+                (list
+                 (wireguard-peer
+                  (name "hetzner")
+                  (endpoint "[2a01:4f9:c012:f933::1]:52817")
+                  (public-key "6gNRvmvi5oRGSPr8J0dBcyDyKS94zO4Y4Jbwo2u+iV0=")
+                  (preshared-key "/home/sarg/.dotfiles/secure/wireguard.psk")
+                  (allowed-ips '("0.0.0.0/0" "::/0")))))))
 
      (simple-service 'sysctl-custom sysctl-service-type
                      '(("fs.inotify.max_user_watches" . "524288")))
@@ -192,8 +179,8 @@
      ;; Add polkit rules, so that non-root users in the wheel group can
      ;; perform administrative tasks (similar to "sudo").
      polkit-wheel-service
-     polkit-udisks-wheel-service
-     polkit-spice-gtk-service
+     (simple-service 'polkit-wheel-policies polkit-service-type
+                     (list polkit-udisks-wheel spice-gtk))
      (service polkit-service-type)
 
      (service upower-service-type)

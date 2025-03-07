@@ -1,5 +1,4 @@
 (define-module (personal packages binary)
-  #:use-module (guix download)
   #:use-module (guix gexp)
   #:use-module (guix download)
   #:use-module ((guix licenses) #:prefix license:)
@@ -8,25 +7,6 @@
   #:use-module (gnu packages compression)
   #:use-module (nonguix build-system binary)
   #:use-module (guix packages))
-
-(define-public hcloud
-  (package
-   (name "hcloud")
-   (version "1.49.0")
-   (source (origin
-            (method url-fetch)
-            (uri (string-append
-                  "https://github.com/hetznercloud/cli/releases/download/v"
-                  version "/hcloud-linux-amd64.tar.gz"))
-            (sha256
-             (base32 "1k3r1r0pby8agggiz87jrmr0xs0ikas3wfj7lnxg57mgdq75nvnw"))))
-   (build-system binary-build-system)
-   (supported-systems '("x86_64-linux"))
-   (arguments `(#:install-plan '(("hcloud" "bin/hcloud"))))
-   (home-page "https://github.com/hetznercloud/cli")
-   (synopsis "hcloud CLI utility")
-   (description "hcloud CLI utility")
-   (license license:expat)))
 
 (define-public babashka
   (package

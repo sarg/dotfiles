@@ -10,7 +10,8 @@
 (defun exwm/lemonbar-restart (&rest args)
   (interactive)
   (when exwm/lemonbar-process
-    (interrupt-process exwm/lemonbar-process))
+    (ignore-errors
+      (interrupt-process exwm/lemonbar-process)))
 
   (let ((bw 200) (bh 18) (screen-w 1600))
     (setq exwm/lemonbar-process
@@ -41,5 +42,6 @@
    (t
     (cancel-timer exwm/lemonbar-timer)
     (advice-remove 'enable-theme #'exwm/lemonbar-restart)
-    (interrupt-process exwm/lemonbar-process)
+    (ignore-errors
+      (interrupt-process exwm/lemonbar-process))
     (setq exwm/lemonbar-process nil))))

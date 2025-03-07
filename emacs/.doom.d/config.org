@@ -328,9 +328,9 @@ REVERSE? it when true. Returns the selected buffer."
 
   (advice-add 'app-launcher-list-desktop-files :filter-return
               (lambda (apps)
-                (let ((keep '("lutris" "libreoffice-startcenter" "flatseal" "spotify"))
-                      (del '("flatpak" "emacs" "qview" "scrcpy" "qutebrowser"
-                             "libreoffice" "mpv" "quake3" "flameshot")))
+                (let ((keep '("lutris" "libreoffice-startcenter" "flatseal" "spotify" "calibre-gui"))
+                      (del '("flatpak" "emacs" "qview" "scrcpy" "qutebrowser" "darkman"
+                             "libreoffice" "mpv" "quake3" "flameshot" "calibre")))
                   (seq-filter (lambda (el)
                                 (or
                                  (-any? (lambda (i) (s-contains? i (cdr el) t)) keep)
@@ -358,6 +358,7 @@ REVERSE? it when true. Returns the selected buffer."
       doom-symbol-font (font-spec :family "Hack"))
 #+end_src
 
+Note: use =consult-theme= to quickly preview themes.
 [[*dark mode][see: dark mode]]
 * flatpaks
 #+begin_src sh :tangle no
@@ -472,26 +473,6 @@ dbusserver: true
   (start-process-shell-command "redshift" nil "redshift -x"))
 
 (add-hook! exwm-init #'sarg/redshift-start)
-#+end_src
-** wpa-manager
-#+begin_src elisp :tangle packages.el :exports none
-(package! wpa-manager
-  :recipe (:host github :repo "sarg/wpa-manager.el")
-  :pin "5bb92e5b6acb2128604e65961d27863d1947bc4e")
-#+end_src
-
-#+begin_src elisp
-(use-package! wpa-manager
-  :init
-  (after! evil-collection
-    (evil-collection-inhibit-insert-state 'wpa-manager-mode-map)
-    (evil-set-initial-state 'wpa-manager-mode-map 'normal)
-    (evil-collection-define-key 'normal 'wpa-manager-mode-map
-      "s" 'wpa-manager-scan
-      "r" 'revert-buffer
-      "c" 'wpa-manager-connect
-      "d" 'wpa-manager-delete-network
-      (kbd "RET") 'wpa-manager-connect)))
 #+end_src
 ** bluetooth
 #+begin_src scheme
@@ -1016,8 +997,12 @@ choose_entry() {
           (emms-playlist-mode-play-current-track)))))))
 #+end_src
 * elfeed
+#+begin_src scheme
+"emacs-elfeed-org"
+#+end_src
 #+begin_src elisp :tangle packages.el
 (package! elfeed-goodies :disable t)
+(package! elfeed-org :built-in t)
 #+end_src
 #+begin_src elisp
 (defun elfeed-open-special ()
@@ -1327,14 +1312,6 @@ emacsclient -e \
 guix shell sane-airscan simple-scan -- sh -c 'LD_LIBRARY_PATH=$GUIX_ENVIRONMENT/lib/sane SANE_CONFIG_DIR=$GUIX_ENVIRONMENT/etc/sane.d simple-scan'
 #+end_src
 * experimental
-** theme-cycle
-#+begin_src elisp :tangle packages.el
-(package! theme-cycle :recipe (:host github :repo "tsengf/theme-cycle"))
-#+end_src
-#+begin_src elisp
-(use-package! theme-cycle
-  :commands cycle-themes)
-#+end_src
 ** bookmark
 #+begin_src scheme
 "emacs-bookmark-plus"
