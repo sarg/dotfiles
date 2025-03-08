@@ -989,10 +989,16 @@ choose_entry() {
         (emms-player-spotify-expand-album
          (nth 2 (string-split (uri playable) ":"))))
 
+       ((counsel-spotify-track-p playable)
+        (let ((track (emms-track 'url (uri playable))))
+          (emms-track-set track 'info-artist (counsel-spotify--utf8 (name (artist playable))))
+          (emms-track-set track 'info-title (counsel-spotify--utf8 (name playable)))
+          (emms-playlist-insert-track track)))
+
        (t
         (let ((track (emms-track 'url (uri playable))))
           (emms-track-set track 'info-artist "Spotify Playlist")
-          (emms-track-set track 'info-title (counsel-spotify--utf8 playable))
+          (emms-track-set track 'info-title (counsel-spotify--utf8 (name playable)))
           (emms-playlist-insert-track track)
           (emms-playlist-mode-play-current-track)))))))
 #+end_src
