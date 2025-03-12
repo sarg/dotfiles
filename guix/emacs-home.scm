@@ -51,7 +51,7 @@
          "emacs-emms"
          "emacs-elfeed-org"
          "emacs-lexic" "sdcv" "emacs-google-translate"
-         "mu" "isync" "msmtp"
+         "mu" "isync" "msmtp" "emacs-consult-mu"
          "emacs-mpv" "emacs-webpaste" "emacs-yeetube"
          "emacs-eat" "emacs-detached"
          "emacs-dired-hacks" "emacs-dired-du"

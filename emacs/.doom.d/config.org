@@ -1076,16 +1076,22 @@ qutebrowser --nowindow --target tab-bg-silent $@
 #+end_src
 * email
 #+begin_src scheme
-"mu" "isync" "msmtp"
+"mu" "isync" "msmtp" "emacs-consult-mu"
 #+end_src
 #+begin_src elisp :tangle packages.el
 (package! mu4e-alert :disable t)
+(package! consult-mu :built-in t)
 #+end_src
 #+begin_src elisp
 (use-package! mu4e-alert
   :disabled
   :custom
   (mu4e-alert-interesting-mail-query mu4e-filter-inbox))
+
+(use-package! consult-mu
+  :after mu4e)
+(use-package! consult-mu-contacts
+  :after consult-mu)
 
 (after! mu4e
   (set-popup-rule! "^\\*mu4e-main\\*$" :ignore t)
