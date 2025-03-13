@@ -4,9 +4,14 @@
   #:use-module (gnu services shepherd)
   #:use-module (ice-9 match)
 
-  #:export (no-autostart augment-computed-file chmod-computed-file))
+  #:export (transform-shepherd-extension
+            augment-computed-file
+            chmod-computed-file))
 
-(define (no-autostart input-service)
+(define (no-autostart service)
+  (shepherd-service (inherit service) (auto-start? #f)))
+
+(define (transform-shepherd-extension input-service proc)
   "Augment shepherd extension of INPUT-SERVICE to disable auto-start."
   (define (transform-extension ex)
     (match ex
@@ -18,7 +23,7 @@
         kind
         (lambda (config)
           (let ((orig (car (compute config))))
-            (list (shepherd-service (inherit orig) (auto-start? #f)))))))
+            (list (proc orig))))))
 
       (_ ex)))
 

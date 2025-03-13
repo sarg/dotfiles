@@ -6,6 +6,9 @@
              (guix channels)
              (guix utils)
              (srfi srfi-1)
+             (sops secrets)
+             (sops services sops)
+             (personal services hetzner)
              (personal services utils)
              (personal services iwd)
              (nongnu system linux-initrd)
@@ -135,15 +138,16 @@
      (service wireguard-service-type
               (wireguard-configuration
                (auto-start? #f)
+               (shepherd-requirement '(sops-secrets hetzner-vpn))
                (addresses '("10.66.66.2/32" "fd42:42:42::2/128"))
-               (private-key "/home/sarg/.dotfiles/secure/wireguard.key")
+               (private-key "/run/secrets/hetzner/wireguard/private")
                (peers
                 (list
                  (wireguard-peer
                   (name "hetzner")
                   (endpoint "[2a01:4f9:c012:f933::1]:52817")
                   (public-key "6gNRvmvi5oRGSPr8J0dBcyDyKS94zO4Y4Jbwo2u+iV0=")
-                  (preshared-key "/home/sarg/.dotfiles/secure/wireguard.psk")
+                  (preshared-key "/run/secrets/hetzner/wireguard/psk")
                   (allowed-ips '("0.0.0.0/0" "::/0")))))))
 
      (simple-service 'sysctl-custom sysctl-service-type
@@ -183,6 +187,42 @@
      (simple-service 'polkit-wheel-policies polkit-service-type
                      (list polkit-udisks-wheel spice-gtk))
      (service polkit-service-type)
+
+     (service sops-secrets-service-type
+              (sops-service-configuration
+               (age-key-file "/root/agekeys.txt")
+               (config (local-file (relative-file "../.sops.yaml") "sops.yaml"))
+               (secrets (list
+                         (sops-secret
+                          (key '("hetzner" "wireguard" "psk"))
+                          (file (local-file (relative-file "sops/hetzner.yaml")))
+                          (output-type "binary"))
+
+                         (sops-secret
+                          (key '("hetzner" "wireguard" "private"))
+                          (file (local-file (relative-file "sops/hetzner.yaml")))
+                          (output-type "binary"))
+
+                         (sops-secret
+                          (key '("hetzner" "user-data" "vpn"))
+                          (file (local-file (relative-file "sops/hetzner.yaml")))
+                          (output-type "yaml"))
+
+                         (sops-secret
+                          (key '("hetzner" "hcloud.toml"))
+                          (file (local-file (relative-file "sops/hetzner.yaml")))
+                          (output-type "binary"))))))
+
+     (service hetzner-vm-service-type
+              (hetzner-vm
+               (name "vpn")
+               (type "cax11")
+               (image "ubuntu-24.04")
+               (user-data-file "/run/secrets/hetzner/user-data/vpn")
+               (cli-config "/run/secrets/hetzner/hcloud.toml")
+               (extra-args '("--location" "hel1"
+                             "--primary-ipv6" "vpn_ipv6"
+                             "--ssh-key" "thinkpad"))))
 
      (service upower-service-type)
      (service bluetooth-service-type)
