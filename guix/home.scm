@@ -87,7 +87,7 @@
      ("data/mail" . ".mail")
      ;; ("data/gnupg" . ".gnupg") ; TODO: clashes with home service
      ("data/events" . ".events")
-     ("data/syncthing" . ".config/syncthing")
+     ("data/syncthing" . ".local/state/syncthing")
      ("data/stardict" . ".local/share/stardict")
      ("data/qutebrowser" . ".local/share/qutebrowser")
      ("apps/quake3" . ".q3a"))))
@@ -156,7 +156,8 @@
                     (for-home (syncthing-configuration
                                (config-file
                                 (syncthing-config-file
-                                 (ur-accepted -1)
+                                 (usage-reporting-accepted -1)
+                                 (gui-enabled? #f)
                                  (folders (list (syncthing-folder
                                                  (label "Sync")
                                                  (path "~/Sync")
