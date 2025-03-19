@@ -173,6 +173,71 @@ EXWM has a separate [[../.doom.d/modules/app/exwm][doom app]]. Here are just the
 #+end_src
 #+begin_src elisp :tangle packages.el
 (package! mini-echo :built-in t)
+(package! noether :recipe (:local-repo "~/devel/ext/noether"))
+#+end_src
+#+begin_src elisp
+(use-package! noether
+  :config
+  (require 'noether-units)
+
+  (defun noether--exwm-workspace-format (_ v _ _)
+    "Format workspace name"
+    (nth v exwm-workspace-names))
+
+  (noether-defunit noether-exwm-workspace-unit
+    "Show the exwm workspace."
+    :len 4
+    :var 'exwm-workspace-current-index
+    :fn #'noether--exwm-workspace-format)
+
+  (noether-defunit noether-battery
+    "Show battery."
+    :len 4
+    :var 'battery-mode-line-string
+    :fn (lambda (_ v _ _) (format "%4s" v)))
+
+  (noether-defunit noether-kbd-layout-unit
+    "Show alternative layout when enabled."
+    :len 2
+    :var '(exwm-input-current-group current-input-method)
+    :fn (lambda (s v _ _)
+          (let ((layout (pcase major-mode
+                          ('exwm-mode
+                           (when (> v 0) (nth v exwm/input-layout-names)))
+                          (_ v))))
+
+            (propertize
+             (upcase (substring (or layout "  ") 0 2))
+             'face 'bold))))
+
+  (defun noether-init ()
+    (noether-defview main-bar
+      "Main bar"
+
+      :buffer "*mainview*"
+      :visible? 't
+      :sticky? 't
+      :hide-when-minibuffer? 't
+      :separator "|"
+
+      :frame
+      (list
+       :position (cons (- (frame-outer-width) 80)
+                       (- (frame-outer-height) 16))
+       :z-group 'above)
+
+      :units
+      (list
+       (noether-battery)
+       (noether-kbd-layout-unit)
+       (noether-exwm-workspace-unit)
+       (time-unit :label nil)))
+    (setq noether-views (list main-bar))
+    (noether-global-mode 1))
+
+  (setq battery-mode-line-format "%b%>2p%")
+  (display-battery-mode 1)
+  (add-hook! exwm-init #'noether-init))
 #+end_src
 #+begin_src elisp
 (defun xkb-layout-segment ()
@@ -184,6 +249,7 @@ EXWM has a separate [[../.doom.d/modules/app/exwm][doom app]]. Here are just the
     (_ evil-input-method)))
 
 (use-package! mini-echo
+  :disabled
   :custom
   (battery-mode-line-format "%b%>2p%")
   (battery-mode-line-limit 50)
