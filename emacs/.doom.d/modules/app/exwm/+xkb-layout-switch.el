@@ -1,33 +1,27 @@
+(defvar-local exwm-input-current-group 0)
 (defvar exwm-input--numGroups 2)
 (defvar exwm/input-layout-names nil)
 
-(defun exwm-input--current-group ()
-  (interactive)
-  (slot-value
-   (xcb:+request-unchecked+reply exwm--connection
-       (make-instance
-        'xcb:xkb:GetState
-        :deviceSpec xcb:xkb:ID:UseCoreKbd))
-   'group))
+(defun exwm-input--on-xkb-StateNotify (data _synthetic)
+  "Handle XKB State change."
+  (exwm--log)
+  (let ((obj1 (make-instance 'xcb:xkb:StateNotify)))
+    (xcb:unmarshal obj1 data)
+    (with-slots (group changed) obj1
+      (when (/= 0 (logand changed xcb:xkb:StatePart:GroupState))
+        (setq exwm-input-current-group group)))))
 
 (defun exwm-input--layout-names ()
   (interactive)
-  (mapcar
-   (lambda (atom)
-     (slot-value
-      (xcb:+request-unchecked+reply exwm--connection
-          (make-instance
-           'xcb:GetAtomName
-           :atom atom))
-      :name))
+  (mapcar #'x-get-atom-name
 
-   (slot-value
-    (xcb:+request-unchecked+reply exwm--connection
-        (make-instance
-         'xcb:xkb:GetNames
-         :deviceSpec xcb:xkb:ID:UseCoreKbd
-         :which (logior 4096 4)))
-    :groups)))
+          (slot-value
+           (xcb:+request-unchecked+reply exwm--connection
+               (make-instance
+                'xcb:xkb:GetNames
+                :deviceSpec xcb:xkb:ID:UseCoreKbd
+                :which xcb:xkb:NameDetail:GroupNames))
+           'groups)))
 
 (defun exwm-xkb-set-layout (num)
   (interactive)
@@ -47,7 +41,7 @@
 (defun exwm-xkb-next-layout (&optional inc)
   (interactive)
   (exwm-xkb-set-layout
-   (mod (+ (or inc 1) (exwm-input--current-group))
+   (mod (+ (or inc 1) exwm-input-current-group)
         exwm-input--numGroups)))
 
 (defun exwm-xkb-reset-layout ()
@@ -65,6 +59,22 @@
 
         exwm/input-layout-names
         (exwm-input--layout-names))
+
+  (xcb:+event exwm--connection 'xcb:xkb:StateNotify
+              #'exwm-input--on-xkb-StateNotify)
+
+  (xcb:+request exwm--connection
+      (make-instance 'xcb:xkb:SelectEvents
+                     :deviceSpec xcb:xkb:ID:UseCoreKbd
+                     :affectWhich (logior xcb:xkb:EventType:StateNotify)
+                     :clear 0
+                     :selectAll 0
+                     :affectMap 0
+                     :map 0
+                     :affectState (logior xcb:xkb:StatePart:GroupState)
+                     :stateDetails (logior xcb:xkb:StatePart:GroupState)))
+
+  (xcb:flush exwm--connection)
 
   (add-hook! doom-switch-window #'exwm-xkb-reset-layout)
   (add-hook! exwm-exit (remove-hook! doom-switch-window #'exwm-xkb-reset-layout)))
