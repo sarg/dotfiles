@@ -1,0 +1,8 @@
+encryption:
+    tag: GPG
+    contents: '0x3ADB423B40A20785'
+
+services:
+  google:
+    client_id: '406964657835-aq8lmia8j95dhl1a2bvharmfk3t1hgqj.apps.googleusercontent.com'
+    client_secret: 'kSmqreRr0qwBWJgbf5Y-PjSU'

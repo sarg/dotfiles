@@ -1076,7 +1076,11 @@ qutebrowser --nowindow --target tab-bg-silent $@
 #+end_src
 * email
 #+begin_src scheme
-"mu" "isync" "msmtp" "emacs-consult-mu"
+"mu" "isync" "msmtp" "emacs-consult-mu" "oama" "cyrus-sasl-xoauth2"
+#+end_src
+#+begin_src scheme :noweb-ref guix-srv
+(simple-service 'cyrus-vars home-environment-variables-service-type
+  `(("SASL_PATH" . "$HOME/.guix-home/profile/lib/sasl2")))
 #+end_src
 #+begin_src elisp :tangle packages.el
 (package! mu4e-alert :disable t)
@@ -1104,12 +1108,11 @@ qutebrowser --nowindow --target tab-bg-silent $@
         mu4e-drafts-folder "/gmail/drafts"
         mu4e-trash-folder "/gmail/trash"
         mu4e-refile-folde "/gmail/all"
-        smtpmail-smtp-server "smtp.gmail.com"
-        smtpmail-servers-requiring-authorization "smtp\\.gmail\\.com"
-        smtpmail-smtp-service 587
-        smtpmail-stream-type 'starttls
-        send-mail-function #'smtpmail-send-it
-        message-send-mail-function #'smtpmail-send-it)
+        sendmail-program "msmtp"
+        message-sendmail-f-is-evil t
+        message-sendmail-extra-arguments '("--read-envelope-from")
+        send-mail-function (lambda () (error "Don't call me"))
+        message-send-mail-function #'message-send-mail-with-sendmail)
 
   (add-to-list 'mm-body-charset-encoding-alist '(utf-8 . 8bit))
 
@@ -1126,7 +1129,8 @@ qutebrowser --nowindow --target tab-bg-silent $@
                        (string-prefix-p ,email
                                         (mu4e-contact-email
                                          (nth 0
-                                          (mu4e-message-field msg :to))) t)))))))
+                                          (mu4e-message-field msg :to)))
+                                        t)))))))
 #+end_src
 * browsing
 #+begin_src elisp :tangle packages.el

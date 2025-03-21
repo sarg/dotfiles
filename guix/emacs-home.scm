@@ -16,6 +16,8 @@
               (ssh-support? #t)
               (default-cache-ttl 86400)
               (max-cache-ttl 86400)))
+            (simple-service 'cyrus-vars home-environment-variables-service-type
+              `(("SASL_PATH" . "$HOME/.guix-home/profile/lib/sasl2")))
             (simple-service 'eat-bash-integration home-bash-service-type
              (home-bash-extension
               (bashrc (list
@@ -28,6 +30,9 @@
          "emacs-next"
          "emacs-telega" "emacs-telega-contrib"
          "emacs-vterm"
+         
+         ; modules dependencies
+         "shfmt" "shellcheck" "fd"
          "emacs-exwm"
          "emacs-exwm-ss"
          "emacs-ednc"
@@ -51,7 +56,7 @@
          "emacs-emms"
          "emacs-elfeed-org"
          "emacs-lexic" "sdcv" "emacs-google-translate"
-         "mu" "isync" "msmtp" "emacs-consult-mu"
+         "mu" "isync" "msmtp" "emacs-consult-mu" "oama" "cyrus-sasl-xoauth2"
          "emacs-mpv" "emacs-webpaste" "emacs-yeetube"
          "emacs-eat" "emacs-detached"
          "emacs-dired-hacks" "emacs-dired-du"
