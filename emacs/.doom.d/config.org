@@ -1056,6 +1056,8 @@ qutebrowser --nowindow --target tab-bg-silent $@
 
 (use-package! lexic
   :config
+  (set-lookup-handlers! 'lexic-mode
+    :documentation #'lexic-search)
   (set-popup-rule!
     '(major-mode . lexic-mode)
     :ttl nil
@@ -1064,9 +1066,17 @@ qutebrowser --nowindow --target tab-bg-silent $@
     :select t
     :width 60)
 
+  (defun lexic-open-bword-link (link &rest _)
+    (lexic-search (substring link 8 (length link)) nil nil 'interactive nil))
+
+  (add-to-list 'browse-url-handlers
+        '("bword://" . lexic-open-bword-link))
+
   (map! :map lexic-mode-map
         :n
         "RET" #'lexic-search-word-at-point
+        "," #'lexic-search-history-backwards
+        "." #'lexic-search-history-forwards
         "a" #'outline-show-all
         "n" #'lexic-next-entry
         "p" #'lexic-previous-entry)
@@ -1176,7 +1186,8 @@ emacsclient -e \
 (setq browse-url-handlers
       `((,(rx string-start "https://" (opt "www.") "youtu" (opt ".") "be") . browse-url-mpv)
         ("https://t.me/" . telega-browse-url)
-        ("open.spotify.com" . browse-url-emms)))
+        ("open.spotify.com" . browse-url-emms)
+        ,@browse-url-handlers))
 
 (setq-default
  browse-url-browser-function 'browse-url-generic
