@@ -1,6 +1,5 @@
 (use-modules (gnu)
              (gnu services)
-             (gnu services)
              (gnu system privilege)
              (gnu packages)
              (guix packages)
@@ -235,6 +234,7 @@
 
      (udev-rules-service 'android android-udev-rules #:groups '("adbusers"))
      (udev-rules-service 'qmk qmk-udev-rules)
+     (udev-rules-service 'kindle kindle-usbnet-udev-rules)
      (udev-rules-service 'brightness brightnessctl)
 
      (simple-service
