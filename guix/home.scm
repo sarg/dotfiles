@@ -214,22 +214,25 @@
                            ("mpv/scripts/uosc"
                             ,(file-append (specification->package "mpv-uosc") "/share/mpv/scripts/uosc"))))
 
-         (simple-service 'extra-channels
-                         home-channels-service-type
-                         (list
-                          (channel
-                           (name 'nonguix)
-                           (url "https://gitlab.com/nonguix/nonguix")
-                           ;; Enable signature verification:
-                           (introduction
-                            (make-channel-introduction
-                             "897c1a470da759236cc11798f4e0a5f7d4d59fbc"
-                             (openpgp-fingerprint
-                              "2A39 3FFF 68F4 EF7A 3D29  12AF 6F51 20A0 22FB B2D5"))))
+         (service home-channels-service-type
+                  (list
+                   (channel
+                    (inherit %default-guix-channel)
+                    (url "https://codeberg.org/guix/guix-mirror.git"))
 
-                          (channel
-                           (name 'personal)
-                           (url "https://github.com/sarg/dotfiles"))))
+                   (channel
+                    (name 'nonguix)
+                    (url "https://gitlab.com/nonguix/nonguix")
+                    ;; Enable signature verification:
+                    (introduction
+                     (make-channel-introduction
+                      "897c1a470da759236cc11798f4e0a5f7d4d59fbc"
+                      (openpgp-fingerprint
+                       "2A39 3FFF 68F4 EF7A 3D29  12AF 6F51 20A0 22FB B2D5"))))
+
+                   (channel
+                    (name 'personal)
+                    (url "https://github.com/sarg/dotfiles"))))
 
          (simple-service 'additional-env-vars-service
                          home-environment-variables-service-type
