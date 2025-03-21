@@ -58,4 +58,4 @@
 ;; Minor mode to disable the screensaver when one or more X clients are fullscreen. ;;
 (use-package! exwm-ss
   :after exwm
-  :init (exwm-ss-mode 1))
+  :config (exwm-ss-mode 1))
