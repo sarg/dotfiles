@@ -23,6 +23,7 @@
  (gnu home services shells)
  (gnu home services guix)
  (personal services symlinks)
+ (personal services utils)
  (personal services supercron)
  (personal packages binary)
  (srfi srfi-1)
@@ -111,6 +112,17 @@
                          #:period (period "1d")))
       #:arguments '("/storage/Resources/dashboard/git2rss.clj" #$fn)))
 
+(define %backup-script
+  (chmod-computed-file
+   (mixed-text-file "restic-storage"
+                    "#!/bin/sh\n"
+                    restic "/bin/restic"
+                    " -p /media/500GB/restic/pass"
+                    " -r /media/500GB/restic"
+                    " --exclude-if-present .borgbackupexclude"
+                    " backup /storage")
+   #o555))
+
 (define %storage-backup-task
   #~(make <task>
       #:name "backup-storage"
@@ -118,11 +130,7 @@
       #:schedule (list (make <interval>
                          #:start (time "2025-01-01T06:00:00+0000")
                          #:period (period "1d")))
-      #:arguments '(#$(file-append restic "/bin/restic")
-                    "-p" "/media/500GB/restic/pass"
-                    "-r" "/media/500GB/restic"
-                    "--exclude-if-present" ".borgbackupexclude"
-                    "backup" "/storage")))
+      #:arguments '(#$%backup-script)))
 
 (define %emacs-home (load "./emacs-home.scm"))
 (home-environment
@@ -183,6 +191,8 @@
                          `((".icons/default"
                             ,(file-append (specification->package "bibata-cursor-theme")
                                           "/share/icons/Bibata-Modern-Ice"))
+
+                           (".local/bin/restic-storage" ,%backup-script)
                            (".xinitrc"
                             ,(mixed-text-file "xinitrc"
                               "slock &\n"

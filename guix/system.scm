@@ -109,7 +109,7 @@
             %base-packages)
 
     (map specification->package
-         '("bluez" "intel-vaapi-driver"
+         '("bluez" "intel-vaapi-driver" "restic"
            "tlp" "brightnessctl" "libratbag"))))
 
   (privileged-programs
