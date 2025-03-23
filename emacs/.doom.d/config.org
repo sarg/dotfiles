@@ -148,7 +148,16 @@ EXWM has a separate [[../.doom.d/modules/app/exwm][doom app]]. Here are just the
 #+end_src
 #+begin_src elisp :noweb yes
 (after! exwm
-  <<exwm>>)
+  <<exwm>>
+
+  (defun exwm-autostart-apps ()
+    (interactive)
+    (cl-loop
+     for cmd in (list
+                 "<<autostart>>")
+     do (start-process-shell-command "autostart" "*autostart*" cmd)))
+
+  (add-hook! exwm-init #'exwm-autostart-apps))
 #+end_src
 ** notifications
 #+begin_src elisp
@@ -1164,6 +1173,30 @@ qutebrowser --nowindow --target tab-bg-silent $@
 #+begin_src scheme :noweb-ref guix-srv
 (simple-service 'cyrus-vars home-environment-variables-service-type
   `(("SASL_PATH" . "$HOME/.guix-home/profile/lib/sasl2")))
+
+(simple-service
+ 'goimapnotify
+ home-shepherd-service-type
+ (list
+  (shepherd-service
+   (provision '(pass))
+   (auto-start? #f)
+   (one-shot? #t)
+   (start #~(lambda () (system* "pass" "show" "unlock"))))
+
+  (shepherd-service
+   (provision '(goimapnotify))
+   (requirement '(pass))
+   (modules `(((shepherd support) #:hide (mkdir-p)) ;for '%user-log-dir'
+              ,@(@ (gnu services shepherd) %default-modules)))
+   (auto-start? #f)
+   (start #~(make-forkexec-constructor
+             (list #$(file-append (@ (gnu packages mail) goimapnotify) "/bin/goimapnotify"))
+             #:log-file (string-append %user-log-dir "/goimapnotify.log")))
+   (stop #~(make-kill-destructor)))))
+#+end_src
+#+begin_src sh :noweb-ref autostart :tangle no
+herd start goimapnotify
 #+end_src
 #+begin_src elisp :tangle packages.el
 (package! mu4e-alert :disable t)
@@ -1181,9 +1214,12 @@ qutebrowser --nowindow --target tab-bg-silent $@
   :after consult-mu)
 
 (after! mu4e
+  (map! :map mu4e-main-mode-map
+        :n "q" #'bury-buffer
+        :n "Q" #'mu4e-quit)
   (set-popup-rule! "^\\*mu4e-main\\*$" :ignore t)
   (set-popup-rule! "^\\*mu4e-headers\\*$" :ignore t)
-  (setq mu4e-bookmarks '(("flag:unread" "Unread" ?u))
+  (setq mu4e-bookmarks '(("flag:unread and not maildir:/gmail/trash" "Unread" ?u))
         mu4e-modeline-support nil
         mu4e-sent-folder "/gmail/sent"
         mu4e-drafts-folder "/gmail/drafts"
@@ -1192,7 +1228,7 @@ qutebrowser --nowindow --target tab-bg-silent $@
         sendmail-program "msmtp"
         message-sendmail-f-is-evil t
         message-sendmail-extra-arguments '("--read-envelope-from")
-        send-mail-function (lambda () (error "Don't call me"))
+        send-mail-function #'sendmail-send-it
         message-send-mail-function #'message-send-mail-with-sendmail)
 
   (add-to-list 'mm-body-charset-encoding-alist '(utf-8 . 8bit))

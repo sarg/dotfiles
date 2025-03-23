@@ -19,6 +19,27 @@
               (extra-content "disable-scdaemon")))
             (simple-service 'cyrus-vars home-environment-variables-service-type
               `(("SASL_PATH" . "$HOME/.guix-home/profile/lib/sasl2")))
+            
+            (simple-service
+             'goimapnotify
+             home-shepherd-service-type
+             (list
+              (shepherd-service
+               (provision '(pass))
+               (auto-start? #f)
+               (one-shot? #t)
+               (start #~(lambda () (system* "pass" "show" "unlock"))))
+            
+              (shepherd-service
+               (provision '(goimapnotify))
+               (requirement '(pass))
+               (modules `(((shepherd support) #:hide (mkdir-p)) ;for '%user-log-dir'
+                          ,@(@ (gnu services shepherd) %default-modules)))
+               (auto-start? #f)
+               (start #~(make-forkexec-constructor
+                         (list #$(file-append (@ (gnu packages mail) goimapnotify) "/bin/goimapnotify"))
+                         #:log-file (string-append %user-log-dir "/goimapnotify.log")))
+               (stop #~(make-kill-destructor)))))
             (simple-service 'eat-bash-integration home-bash-service-type
              (home-bash-extension
               (bashrc (list

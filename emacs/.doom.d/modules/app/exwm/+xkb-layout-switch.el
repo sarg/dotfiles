@@ -48,7 +48,7 @@
   (interactive)
   (exwm-xkb-set-layout 0))
 
-(add-hook! exwm-init
+(defun exwm-xkb-layout-init ()
   (setq exwm-input--numGroups
         (slot-value
          (xcb:+request-unchecked+reply exwm--connection
@@ -78,3 +78,5 @@
 
   (add-hook! doom-switch-window #'exwm-xkb-reset-layout)
   (add-hook! exwm-exit (remove-hook! doom-switch-window #'exwm-xkb-reset-layout)))
+
+(add-hook! exwm-init #'exwm-xkb-layout-init)
