@@ -18,8 +18,8 @@
        (prepend perl-encode-locale)))))
 
 (define-public jaro
-  (let ((commit "27f6def5b636a12344fd98b1bd66feb7a14c3657")
-        (revision "0"))
+  (let ((commit "a5744a686e43a148536b04db5be779aabfed1603")
+        (revision "1"))
     (package
       (name "jaro")
       (version (git-version "0.5.5" revision commit))
@@ -30,7 +30,7 @@
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
-                 (base32 "1lspbdyr819bijbdfqznyr8ns4x6s495dadfs7b28vf7y4fnahly"))))
+                 (base32 "0jf6ciwvk0ix9gv1gymmyhicx07hsxivryf6fcqvi7gg38czqwzl"))))
       (build-system copy-build-system)
       (native-inputs (list guile-3.0))
       (inputs (list perl-file-mimeinfo-patched))

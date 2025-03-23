@@ -10,6 +10,7 @@
              (personal services iwd)
              (nongnu system linux-initrd)
              (nongnu packages linux)
+             (personal packages kindle)
              (ice-9 textual-ports))
 
 (use-package-modules

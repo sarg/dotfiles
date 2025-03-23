@@ -78,6 +78,9 @@ To define guix dependencies add a =scheme= source code block. It'll be then tang
 "emacs-next"
 "emacs-telega" "emacs-telega-contrib"
 "emacs-vterm"
+
+; modules dependencies
+"shfmt" "shellcheck" "fd"
 #+end_src
 #+begin_src scheme :noweb-ref guix-srv
 (simple-service 'doom-vars home-environment-variables-service-type
@@ -105,7 +108,7 @@ To define guix dependencies add a =scheme= source code block. It'll be then tang
               rest sh plantuml (python +pyenv +lsp) (web +html) yaml json
  :app         calendar telega (rss +org) torrent irc exwm emms
  :email       (mu4e +gmail)
- :config      (default +bindings +smartparens) literate)
+ :config      (default +bindings +smartparens +gnupg) literate)
 #+end_src
 ** font fix
 Dunno, but doom resets the fontspec. Let me fix it here.
@@ -450,33 +453,33 @@ tw.ddnet.ddnet
 "jaro"
 #+end_src
 #+begin_src scheme :tangle ~/.config/associations :noweb-ref nil
-(assoc
- #:pattern '("^mailto:.*")
- #:program '("emacsclient" "--eval" "(message-mailto \"%f\")"))
+(bind
+ #:pattern "^mailto:.*"
+ #:program '(emacsclient --eval "(message-mailto \"%f\")"))
 
-(assoc
- #:pattern '("^https://t.me/.*")
- #:program '("emacsclient" "--eval" "(telega-browse-url \"%f\")"))
+(bind
+ #:pattern "^https://t.me/.*"
+ #:program '(emacsclient --eval "(telega-browse-url \"%f\")"))
 
-(assoc
- #:pattern '("^org-protocol:.*")
- #:program '("emacsclient" "%f"))
+(bind
+ #:pattern "^org-protocol:.*"
+ #:program '(emacsclient %f))
 
-(assoc
+(bind
  #:pattern '("(application|text)/(x-)?(pdf|postscript|ps|epub.*)" "image/(x-)?eps" "image/vnd.djvu")
- #:program '("zathura" "%f"))
+ #:program '(zathura %f))
 
-(assoc
- #:pattern '("^video/.*")
- #:program '("mpv" "%f"))
+(bind
+ #:pattern "^video/.*"
+ #:program '(mpv %f))
 
-(assoc
- #:pattern '("^https?://")
- #:program '("qutebrowser" "%f"))
+(bind
+ #:pattern "^https?://"
+ #:program '(qutebrowser %f))
 
-(assoc
- #:pattern '("^image/.*")
- #:program '("qview" "%f"))
+(bind
+ #:pattern "^image/.*"
+ #:program '(qview %f))
 #+end_src
 ** multimedia keys
 #+begin_src elisp :noweb-ref exwm :tangle no
@@ -576,7 +579,8 @@ dbusserver: true
    (file-append pinentry-emacs "/bin/pinentry-emacs"))
   (ssh-support? #t)
   (default-cache-ttl 86400)
-  (max-cache-ttl 86400)))
+  (max-cache-ttl 86400)
+  (extra-content "disable-scdaemon")))
 #+end_src
 #+begin_src elisp :tangle packages.el
 (package! pinentry :built-in t)
@@ -611,7 +615,10 @@ dbusserver: true
 
 (setq-default
  ;; russian layout on C-\
- default-input-method "russian-computer")
+ default-input-method "russian-computer"
+
+ ;; start scrolling when this far from the top or bottom of the buffer
+ scroll-margin 15)
 #+end_src
 
 ** Debug icons in modeline, find out their names. :noexport:
@@ -623,7 +630,7 @@ dbusserver: true
 * buffers
 #+begin_src elisp :tangle packages.el :exports none
 (package! map :built-in 't) ; macro-expansion fails on the latest map.el, use the older built-in
-(package! bufler :pin "ef3b28bbdcb1e813a1d5b06a91d09774998967c5")
+(package! bufler :pin "b96822d2132fda6bd1dd86f017d7e76e3b990c82")
 #+end_src
 
 #+begin_src elisp
@@ -656,11 +663,12 @@ dbusserver: true
 #+begin_src elisp :tangle packages.el
 (package! org-modern-indent
     :recipe (:host github :repo "jdtsmith/org-modern-indent")
-    :pin "52b46c6ecd63e627ab5bfb83c580b51f68a23774")
+    :pin "fcd4368476a9c4eadfac4d6f51159d90a15de15a")
 (package! corg
   :recipe (:host github :repo "isamert/corg.el")
   :pin "16d2b80fb2ff4daf0ab9bf89e5c9f649431337fc")
-(package! org-modern :pin "ae0d91fa16f0e72df50633d0941242eecd78721b")
+(package! org-modern :pin "0e0756f319c637abf424cef96ee35617a7d8c320")
+
 (package! org-tidy :pin "0bea3a2ceaa999e0ad195ba525c5c1dcf5fba43b")
 #+end_src
 #+begin_src scheme
@@ -752,9 +760,10 @@ os.execlp('xdg-open', 'xdg-open',
   (appendq!
    +org-babel-mode-alist '((es . elasticsearch))))
 #+end_src
-* git
+* vcs
 #+begin_src elisp :tangle packages.el
 (package! magit-todos :disable t) ; too slow
+(package! vc-fossil :recipe (:local-repo "~/devel/ext/emacs-fossil"))
 #+end_src
 
 #+begin_src elisp
@@ -762,6 +771,9 @@ os.execlp('xdg-open', 'xdg-open',
   (let ((sarg-repos-dir (expand-file-name "~/devel/")))
     (setq magit-repository-directories `((,sarg-repos-dir . 2))
           magit-clone-default-directory `,sarg-repos-dir)))
+
+(use-package! vc-fossil)
+
 
 (after! browse-at-remote
   (setq browse-at-remote-prefer-symbolic nil))
@@ -837,6 +849,9 @@ include theme
 #+end_src
 
 #+begin_src elisp
+(after! auth-source
+  (setq auth-sources '(password-store)))
+
 (after! embark
   (defvar-keymap embark-pass-actions
     :doc "Keymap for actions for pass entries."
@@ -998,7 +1013,7 @@ choose_entry() {
 ** spotify
 *** player
 #+begin_src elisp :tangle packages.el
-(package! emms-player-spotify :pin "b2f2be8222f0852276cccef05ca820982b6ec33a")
+(package! emms-player-spotify :pin "e553a2157fb2ebf4e0b00594067eea4c680a1940")
 #+end_src
 #+begin_src elisp
 (use-package! emms-player-spotify
@@ -1017,65 +1032,27 @@ choose_entry() {
 #+end_src
 #+begin_src elisp
 (use-package! counsel-spotify
-  :defer t
+  :after-call counsel-spotify-search-album
   :custom
   (counsel-spotify-use-notifications nil) ; conflicts with handlers of emms-player-spotify
 
   :config
-  (if (string-empty-p counsel-spotify-client-secret)
-      (setq counsel-spotify-client-id (auth-source-pass-get "client-id" "Sites/spotify.com")
-            counsel-spotify-client-secret (auth-source-pass-get "client-secret" "Sites/spotify.com")))
-
-  (defun counsel-spotify--utf8 (str)
-    (when str
-      (decode-coding-string (string-make-unibyte str) 'utf-8)))
-
-  (defun emms-player-spotify-expand-album (id)
-    (counsel-spotify-with-auth-token (auth-token)
-     (counsel-spotify-with-query-results
-      (auth-token (concat counsel-spotify-spotify-api-url "/albums/" id "/tracks") results)
-
-      (with-current-emms-playlist
-        (goto-char (point-max))
-        (ignore (mapc (lambda (el)
-            (let ((track (emms-track 'url (uri el))))
-              (emms-track-set track 'info-title
-                              (counsel-spotify--utf8 (name el)))
-              (emms-track-set track 'info-artist
-                              (counsel-spotify--utf8 (name (artist el))))
-              (emms-track-set track 'info-album
-                              (counsel-spotify--utf8 (name (album el))))
-              (emms-track-set track 'info-playing-time (round (* 1e-6 (duration-in-ms el))))
-              (emms-playlist-insert-track track)))
-          (counsel-spotify-parse-items (list (cons 'tracks results)) 'tracks)))))))
-
-  (cl-defmethod counsel-spotify-do-play ((backend counsel-spotify-linux-backend) (playable counsel-spotify-playable))
-    (with-current-emms-playlist
-      (goto-char (point-max))
-      (cond
-       ((counsel-spotify-album-p playable)
-        (emms-player-spotify-expand-album
-         (nth 2 (string-split (uri playable) ":"))))
-
-       ((counsel-spotify-track-p playable)
-        (let ((track (emms-track 'url (uri playable))))
-          (emms-track-set track 'info-artist (counsel-spotify--utf8 (name (artist playable))))
-          (emms-track-set track 'info-title (counsel-spotify--utf8 (name playable)))
-          (emms-playlist-insert-track track)))
-
-       (t
-        (let ((track (emms-track 'url (uri playable))))
-          (emms-track-set track 'info-artist "Spotify Playlist")
-          (emms-track-set track 'info-title (counsel-spotify--utf8 (name playable)))
-          (emms-playlist-insert-track track)
-          (emms-playlist-mode-play-current-track)))))))
+  (require 'emms)
+  (require 'emms-player-spotify-counsel)
+  (defun counsel-spotify-verify-credentials () (ignore))
+  (defun counsel-spotify-basic-auth-credentials ()
+    (concat "Basic " (base64-encode-string
+                      (concat
+                       (auth-source-pass-get "client-id" "Sites/spotify.com")
+                       ":"
+                       (auth-source-pass-get "client-secret" "Sites/spotify.com"))
+                      t))))
 #+end_src
 * elfeed
 #+begin_src scheme
 "emacs-elfeed-org"
 #+end_src
 #+begin_src elisp :tangle packages.el
-(package! elfeed-goodies :disable t)
 (package! elfeed-org :built-in t)
 #+end_src
 #+begin_src elisp
@@ -1095,7 +1072,8 @@ choose_entry() {
         elfeed-show-entry-switch #'display-buffer)
 
   (evil-define-key 'normal elfeed-search-mode-map
-    (kbd "RET") 'elfeed-open-special))
+    (kbd "RET") #'elfeed-open-special
+    "q" #'elfeed-search-quit-window))
 #+end_src
 
 #+begin_src sh :tangle ~/.local/bin/qutebrowser-background :shebang #!/bin/sh :exports none
@@ -1174,6 +1152,8 @@ qutebrowser --nowindow --target tab-bg-silent $@
   :after mu4e)
 (use-package! consult-mu-contacts
   :after consult-mu)
+
+(map! :leader "om" (lambda () (interactive) (require 'mu4e-transient) (mu4e-transient-menu)))
 
 (after! mu4e
   (set-popup-rule! "^\\*mu4e-main\\*$" :ignore t)
@@ -1271,9 +1251,11 @@ emacsclient -e \
 
 (use-package! qutebrowser
   :config
-  (global-qutebrowser-exwm-mode 1)
-  (qutebrowser-evil-state-mode 1)
-  (qutebrowser-theme-export-mode 1))
+  (add-hook! exwm-init-hook
+    (lambda ()
+      (global-qutebrowser-exwm-mode 1)
+      (qutebrowser-evil-state-mode 1)
+      (qutebrowser-theme-export-mode 1))))
 (use-package! yeetube
   :config
   (map! :map yeetube-mode-map :ni "RET" #'yeetube-play))
@@ -1529,7 +1511,19 @@ emacsclient -e '(dmenu/select-line-from-file "'$tmp'" :prompt '"$prompt"' :lines
 #+begin_src elisp
 (use-package! org-node)
 #+end_src
+** gptel
+#+begin_src elisp :tangle packages.el
+(package! gptel :pin "dfd88798c1ca26b28c1eb1987cb9967a4fc4d712")
+#+end_src
 
+#+begin_src elisp
+(use-package! gptel
+  :config
+  (gptel-make-gemini "Gemini"
+    :key (lambda (&rest args)
+           (gptel-api-key-from-auth-source "google.com" "gemini"))
+    :stream t))
+#+end_src
 * TODO todo [7/12]
 ** DONE console font
 ** DONE mingetty with xorg autostart (under sarg), put `lock.sh` first in the .xsession

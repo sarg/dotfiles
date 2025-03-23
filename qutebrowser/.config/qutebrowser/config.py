@@ -37,6 +37,7 @@ c.url.start_pages = 'about:blank'
 c.url.searchengines = {
     '!yt': 'https://www.youtube.com/results?search_query={}',
     'DEFAULT': 'https://duckduckgo.com/lite?q={}',
+    '!imdb': 'https://www.imdb.com/find/?s=all&q={}',
     '!g': 'https://www.google.ru/search?hl=en&q={}',
     '!gh': 'https://github.com/search?utf8=✓&type=Code&q={}',
     '!gm': 'https://www.google.com/maps?hl=en&q={}',
@@ -53,6 +54,7 @@ config.unbind('<Ctrl-n>', mode='command')
 #config.unbind('xx', mode='normal')
 
 
+config.bind("ym", "yank inline [[{url:yank}][{title}]]")
 config.bind("t", "spawn -u emacsclient-wrapper '(qutebrowser-launcher-window)'")
 config.bind("o", "spawn -u emacsclient-wrapper '(qutebrowser-launcher)'")
 config.bind("O", "spawn -u emacsclient-wrapper '(qutebrowser-launcher \"{url:pretty}\")'")

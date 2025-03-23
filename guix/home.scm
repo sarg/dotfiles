@@ -32,7 +32,7 @@
   '("adb" "fdroidcl" "socat" "scrcpy"))
 
 (define %pkg-utils
-  '("aria2" "curl" "rsync"
+  '("aria2" "curl" "rsync" "man-db"
     "atool" "p7zip" "unzip" "jq" "openssh"
     "ripgrep" "moreutils" "libiconv"
     "powertop" "graphviz" "bind:utils"  ; dig
@@ -190,8 +190,8 @@
 
                               ;; unredir fixes performance in fullscreen apps, e.g. q3
                               ;; https://github.com/chjj/compton/wiki/perf-guide
-                              (specification->package "picom")
-                              "/bin/picom --backend glx --vsync -b --unredir-if-possible\n"
+                              ;; (specification->package "picom")
+                              ;; "/bin/picom --backend glx --vsync -b --unredir-if-possible\n"
 
                               "keymap.sh\n"
 

@@ -15,7 +15,8 @@
                (file-append pinentry-emacs "/bin/pinentry-emacs"))
               (ssh-support? #t)
               (default-cache-ttl 86400)
-              (max-cache-ttl 86400)))
+              (max-cache-ttl 86400)
+              (extra-content "disable-scdaemon")))
             (simple-service 'cyrus-vars home-environment-variables-service-type
               `(("SASL_PATH" . "$HOME/.guix-home/profile/lib/sasl2")))
             (simple-service 'eat-bash-integration home-bash-service-type
