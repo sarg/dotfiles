@@ -386,6 +386,34 @@ REVERSE? it when true. Returns the selected buffer."
 (after! consult
   (define-key consult-async-map [remap vertico-insert] nil))
 #+end_src
+* TODO fix waiting for upstream
+#+begin_src elisp :noweb-ref exwm :tangle no
+; https://github.com/emacs-exwm/exwm/pull/85
+(defun sarg/exwm--on-net-active-window (id _data)
+  "Handle _NET_ACTIVE_WINDOW message with ID."
+  (let ((buffer (exwm--id->buffer id))
+        window)
+    (if (buffer-live-p buffer)
+        ;; Either an `exwm-mode' buffer (an X window) or a floating frame.
+        (with-current-buffer buffer
+          (when (and (eq exwm--frame exwm-workspace--current)
+                     (not (plist-get exwm--configurations 'dont-steal-focus)))
+            (if exwm--floating-frame
+                (select-frame exwm--floating-frame)
+              (setq window (get-buffer-window nil t))
+              (unless window
+                ;; State change: iconic => normal.
+                (setq window (frame-selected-window exwm--frame))
+                (set-window-buffer window (current-buffer)))
+              ;; Focus transfer.
+              (select-window window))))
+      ;; A workspace.
+      (dolist (f exwm-workspace--list)
+        (when (eq id (frame-parameter f 'exwm-outer-id))
+          (x-focus-frame f t))))))
+
+(advice-add 'exwm--on-net-active-window :override #'sarg/exwm--on-net-active-window)
+#+end_src
 * theme
 #+begin_src scheme
 "emacs-catppuccin-theme"
