@@ -2,8 +2,6 @@
         (name 'guix)
         (url "https://git.savannah.gnu.org/git/guix.git")
         (branch "master")
-        (commit
-          "c1cb7f1031c5dde2a260d8d8ad7547d6c79cc532")
         (introduction
           (make-channel-introduction
             "9edb3f66fd807b096b48283debdcddccfea34bad"
@@ -13,8 +11,6 @@
         (name 'nonguix)
         (url "https://gitlab.com/nonguix/nonguix")
         (branch "master")
-        (commit
-          "99574ff94b6fb97794ba720b6fdadf470963dbdc")
         (introduction
           (make-channel-introduction
             "897c1a470da759236cc11798f4e0a5f7d4d59fbc"
@@ -23,6 +19,4 @@
       (channel
         (name 'personal)
         (url "https://github.com/sarg/dotfiles")
-        (branch "master")
-        (commit
-          "2cbacc5333f1a545d7833b37891105cabdc07390")))
+        (branch "master")))

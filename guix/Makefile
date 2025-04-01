@@ -1,7 +1,7 @@
 HOSTNAME := $(shell hostname)
 
 ifeq ($(LOCK), 1)
-guix-lock := guix time-machine -C channels.scm --
+guix-lock := guix time-machine -C channels.lock --
 else
 guix-lock := guix
 endif
@@ -14,7 +14,7 @@ install:
 	guix pull -C channels.scm
 
 update-channels:
-	guix describe --format=channels > channels.scm
+	guix describe --format=channels > channels.lock
 
 system:
 	sudo $(guix-lock) system reconfigure system.scm
