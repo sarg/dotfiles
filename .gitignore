@@ -3,7 +3,6 @@ xmonad/.xmonad/xmonad*
 !xmonad/.xmonad/xmonad.hs
 /qutebrowser/.config/qutebrowser/autoconfig.yml
 /qutebrowser/.config/qutebrowser/__pycache__
-/emacs/.doom.d/custom.el
 /emacs/.doom.d/packages.el
 /emacs/.doom.d/config.el
 /emacs/.doom.d/init.el
