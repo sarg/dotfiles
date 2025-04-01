@@ -211,7 +211,7 @@
                (listen-addresses '("::1" "127.0.1.1"))
                ;; (addresses '("/dev.local/127.0.0.1"
                ;;              "/local/127.0.0.1"))
-               (servers '("1.1.1.1"))
+               (servers '("9.9.9.9"))
                (extra-options '("--bind-interfaces"
                                 "--interface=lo"))))
 

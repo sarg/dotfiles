@@ -164,12 +164,6 @@ EXWM has a separate [[../.doom.d/modules/app/exwm][doom app]]. Here are just the
 
   (add-hook 'ednc-notification-presentation-functions #'pop-to-ednc))
 #+end_src
-* completion
-#+begin_src elisp
-; have no use for vertico-next-group
-(after! consult
-  (define-key consult-async-map [remap vertico-insert] nil))
-#+end_src
 ** bar
 #+begin_src scheme
 "emacs-mini-echo"
@@ -360,9 +354,6 @@ REVERSE? it when true. Returns the selected buffer."
     (and (or next first)
          (switch-to-buffer (or next first) t t))))
 
-; disable <f13> h (help-map) conflicting with window movements
-(map! :leader "h" nil)
-
 (exwm/bind-command
  "<f13> r"     #'app-launcher-run-app
 
@@ -407,6 +398,12 @@ REVERSE? it when true. Returns the selected buffer."
                               apps))))
 
   (setq app-launcher--action-function #'app-launcher--action-dex))
+#+end_src
+* completion
+#+begin_src elisp
+; have no use for vertico-next-group
+(after! consult
+  (define-key consult-async-map [remap vertico-insert] nil))
 #+end_src
 * theme
 #+begin_src scheme
@@ -853,12 +850,19 @@ include theme
   (setq auth-sources '(password-store)))
 
 (after! embark
+  (defun password-store-otp-token-copy-and-echo (entry)
+    "Copy an OTP token from ENTRY to clipboard."
+    (interactive (list (read-string "Password entry: ")))
+    (let ((token (password-store-otp-token entry)))
+      (message "OTP %s: %s" entry token)
+      (password-store-otp--safe-copy token)))
+
   (defvar-keymap embark-pass-actions
     :doc "Keymap for actions for pass entries."
     :parent embark-general-map
     "f" #'password-store-copy-field
     "b" #'password-store-url
-    "o" #'password-store-otp-token-copy
+    "o" #'password-store-otp-token-copy-and-echo
     "e" #'password-store-edit
     "g" #'password-store-generate
     "r" #'password-store-rename
@@ -1153,8 +1157,6 @@ qutebrowser --nowindow --target tab-bg-silent $@
 (use-package! consult-mu-contacts
   :after consult-mu)
 
-(map! :leader "om" (lambda () (interactive) (require 'mu4e-transient) (mu4e-transient-menu)))
-
 (after! mu4e
   (set-popup-rule! "^\\*mu4e-main\\*$" :ignore t)
   (set-popup-rule! "^\\*mu4e-headers\\*$" :ignore t)
@@ -1381,7 +1383,9 @@ emacsclient -e \
   :n "q" #'kill-current-buffer)
 
  :leader
- :desc "Music" "oM" #'=emms)
+ "h" nil
+ :desc "Music" "oM" #'=emms
+ :desc "Mu4e" "om" (lambda () (interactive) (require 'mu4e-transient) (mu4e-transient-menu)))
 #+end_src
 * hardware
 ** scanner
@@ -1519,10 +1523,12 @@ emacsclient -e '(dmenu/select-line-from-file "'$tmp'" :prompt '"$prompt"' :lines
 #+begin_src elisp
 (use-package! gptel
   :config
-  (gptel-make-gemini "Gemini"
-    :key (lambda (&rest args)
-           (gptel-api-key-from-auth-source "google.com" "gemini"))
-    :stream t))
+  (setq gptel-model 'gemini-2.0-flash
+        gptel-backend
+        (gptel-make-gemini "Gemini"
+          :key (lambda (&rest args)
+                 (gptel-api-key-from-auth-source "google.com" "gemini"))
+          :stream t)))
 #+end_src
 * TODO todo [7/12]
 ** DONE console font

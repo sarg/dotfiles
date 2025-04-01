@@ -14,7 +14,9 @@
                           `(lambda () (interactive)
                              (start-process-shell-command "exwm-bind" nil ,command))))
     (setq key (pop bindings)
-          command (pop bindings))))
+          command (pop bindings)))
+
+  (exwm-input--update-global-prefix-keys))
 
 (defun exwm/init ()
   (when (modulep! +lemonbar)
