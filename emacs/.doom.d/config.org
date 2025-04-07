@@ -104,7 +104,7 @@ To define guix dependencies add a =scheme= source code block. It'll be then tang
  :tools       editorconfig (eval +overlay) (lookup +docsets) magit pdf (pass +auth) make tree-sitter lsp
  :checkers    syntax
  :lang        clojure data emacs-lisp
-              (org +contacts +dragndrop +pandoc +present +hugo +roam2) beancount
+              (org +contacts +dragndrop +pandoc +present +hugo +roam2 +pretty) beancount
               rest sh plantuml (python +pyenv +lsp) (web +html) yaml json
  :app         calendar telega (rss +org) torrent irc exwm emms
  :email       (mu4e +gmail)
@@ -127,6 +127,17 @@ Dunno, but doom resets the fontspec. Let me fix it here.
 
 (def-modeline! 'project
   `(" " (:eval (abbreviate-file-name default-directory))) '(""))
+#+end_src
+** override popup params
+#+begin_src shell
+(setq +popup--display-buffer-alist
+      (seq-remove
+       (lambda (el) (and (stringp (car el)) (string= (car el) "^\\*info\\*$")))
+       +popup--display-buffer-alist))
+
+(set-popup-rule!
+ "^\\*info\\*$"
+ :slot 2 :vslot 2 :size 0.45 :select t :quit nil :ttl nil)
 #+end_src
 * exwm
 EXWM has a separate [[../.doom.d/modules/app/exwm][doom app]]. Here are just the settings.
@@ -664,8 +675,7 @@ dbusserver: true
 (package! corg
   :recipe (:host github :repo "isamert/corg.el")
   :pin "16d2b80fb2ff4daf0ab9bf89e5c9f649431337fc")
-(package! org-modern :pin "0e0756f319c637abf424cef96ee35617a7d8c320")
-
+(package! org-projectile :pin "bf1c30b750020ab8dd634dd66b2c7b76c56286c5")
 (package! org-tidy :pin "0bea3a2ceaa999e0ad195ba525c5c1dcf5fba43b")
 #+end_src
 #+begin_src scheme
@@ -682,19 +692,23 @@ dbusserver: true
  org-src-window-setup 'current-window
  org-fold-catch-invisible-edits 'show-and-error)
 
-(use-package corg
+(use-package! org-checklist)
+(use-package! org-projectile
+  :config
+  (setq org-project-capture-default-backend
+        (make-instance 'org-project-capture-projectile-backend))
+  (org-project-capture-per-project))
+
+(use-package! corg
   :hook (org-mode . corg-setup))
 
-(use-package org-tidy
+(use-package! org-tidy
   :disabled
   :hook (org-mode . org-tidy-mode))
 
 (use-package! org-contacts
   :custom
   (org-contacts-files (list (expand-file-name "contacts.org" org-directory))))
-
-(use-package! org-modern
-  :hook ((org-mode org-agenda-finalize) . org-modern-mode))
 
 (use-package! org-modern-indent
   :hook (org-mode . org-modern-indent-mode))
@@ -732,9 +746,11 @@ os.execlp('xdg-open', 'xdg-open',
 
 (setq
  org-agenda-files
- (-map (lambda (el) (expand-file-name el org-directory))
-       '("projects.org"
-         "tickler.org")))
+ (-concat
+  (org-project-capture-todo-files)
+  (-map (lambda (el) (expand-file-name el org-directory))
+        '("main.org"
+          "tickler.org"))))
 #+end_src
 
 ** roam
@@ -760,7 +776,6 @@ os.execlp('xdg-open', 'xdg-open',
 * vcs
 #+begin_src elisp :tangle packages.el
 (package! magit-todos :disable t) ; too slow
-(package! vc-fossil :recipe (:local-repo "~/devel/ext/emacs-fossil"))
 #+end_src
 
 #+begin_src elisp
@@ -768,9 +783,6 @@ os.execlp('xdg-open', 'xdg-open',
   (let ((sarg-repos-dir (expand-file-name "~/devel/")))
     (setq magit-repository-directories `((,sarg-repos-dir . 2))
           magit-clone-default-directory `,sarg-repos-dir)))
-
-(use-package! vc-fossil)
-
 
 (after! browse-at-remote
   (setq browse-at-remote-prefer-symbolic nil))
@@ -853,6 +865,7 @@ include theme
   (defun password-store-otp-token-copy-and-echo (entry)
     "Copy an OTP token from ENTRY to clipboard."
     (interactive (list (read-string "Password entry: ")))
+    (require 'password-store-otp)
     (let ((token (password-store-otp-token entry)))
       (message "OTP %s: %s" entry token)
       (password-store-otp--safe-copy token)))
@@ -908,7 +921,7 @@ include theme
 #+NAME: password_fill_rc
 #+begin_src bash :tangle ~/.config/qutebrowser/password_fill_rc
 choose_entry() {
-    MENU_COMMAND=( emacs-dmenu -p pass )
+    MENU_COMMAND=( emacs-dmenu -p pass -c pass )
     choose_entry_menu || true
     #file=$( emacsclient -e '(qute/choose-pass "'$simple_url'" )' | jq -r . ) || true
 }
@@ -1017,11 +1030,18 @@ choose_entry() {
 ** spotify
 *** player
 #+begin_src elisp :tangle packages.el
-(package! emms-player-spotify :pin "e553a2157fb2ebf4e0b00594067eea4c680a1940")
+(package! emms-player-spotify
+  :recipe (:host github :repo "sarg/emms-spotify" :files (:defaults "contrib"))
+  :pin "dec0d34736da7ff538117033b3758edde3b8e546")
 #+end_src
 #+begin_src elisp
 (use-package! emms-player-spotify
   :after emms
+  :load-path
+  (lambda ()
+    (list (concat doom-local-dir "straight/build-" emacs-version "/emms-player-spotify/contrib")
+          (concat doom-local-dir "straight/build-" emacs-version "/emms-player-spotify")))
+
   :custom
   (emms-player-spotify-launch-cmd "flatpak run com.spotify.Client")
   (emms-player-spotify-adblock t)
@@ -1043,7 +1063,10 @@ choose_entry() {
   :config
   (require 'emms)
   (require 'emms-player-spotify-counsel)
-  (defun counsel-spotify-verify-credentials () (ignore))
+  (defun counsel-spotify-verify-credentials ()
+    (unless (auth-source-pass-get "client-id" "Sites/spotify.com")
+      (error "Spotify pass not available")))
+
   (defun counsel-spotify-basic-auth-credentials ()
     (concat "Basic " (base64-encode-string
                       (concat
@@ -1160,14 +1183,12 @@ qutebrowser --nowindow --target tab-bg-silent $@
 (after! mu4e
   (set-popup-rule! "^\\*mu4e-main\\*$" :ignore t)
   (set-popup-rule! "^\\*mu4e-headers\\*$" :ignore t)
-  (setq mu4e-filter-inbox "flag:unread AND NOT flag:trashed AND maildir:/gmail/all"
-        mu4e-bookmarks `((,mu4e-filter-inbox "Gmail messages" ?u)
-                         ("date:today..now AND NOT flag:trashed AND NOT maildir:/gmail/trash" "Today's messages" 116))
+  (setq mu4e-bookmarks '(("flag:unread" "Unread" ?u))
         mu4e-modeline-support nil
         mu4e-sent-folder "/gmail/sent"
         mu4e-drafts-folder "/gmail/drafts"
         mu4e-trash-folder "/gmail/trash"
-        mu4e-refile-folde "/gmail/all"
+        mu4e-refile-folder "/gmail/all"
         sendmail-program "msmtp"
         message-sendmail-f-is-evil t
         message-sendmail-extra-arguments '("--read-envelope-from")
@@ -1470,28 +1491,32 @@ current buffer, killing it."
 
 ** emacs-dmenu
 #+begin_src elisp
-(cl-defun dmenu/select-line-from-file (file &key prompt lines)
+(cl-defun dmenu/select-line-from-file (file &key prompt lines category)
   "completing-read a line from FILE."
-  (completing-read (concat (or prompt "Select") ": ")
-                   (with-temp-buffer
-                     (insert-file-contents file)
-                     (string-lines (buffer-string)))
-                   nil t))
+  (consult--read
+   (with-temp-buffer
+     (insert-file-contents file)
+     (string-lines (buffer-string)))
+   :prompt (concat (or prompt "Select") ": ")
+   :category category
+   :require-match t))
 #+end_src
 
 #+begin_src sh :tangle ~/.local/bin/emacs-dmenu :shebang #!/usr/bin/env bash
 usage() {
-  echo "Usage: $0 -p prompt -l lines"
+  echo "Usage: $0 -p prompt -l lines -c category"
   exit 1
 }
 
 prompt=nil
 lines=nil
-while getopts ":p:l:" opt; do
+while getopts ":p:l:c:" opt; do
   case $opt in
     p) prompt="\"$OPTARG\""
     ;;
     l) lines="$OPTARG"
+    ;;
+    c) category="'$OPTARG"
     ;;
     ,*) usage
     ;;
@@ -1503,7 +1528,7 @@ if [ "$prompt" == "nil" ] && [ "$lines" == "nil" ]; then
 fi
 
 tmp=$(mktemp); cat > $tmp
-emacsclient -e '(dmenu/select-line-from-file "'$tmp'" :prompt '"$prompt"' :lines '$lines')' | jq -r .
+emacsclient -e '(dmenu/select-line-from-file "'$tmp'" :prompt '"$prompt"' :lines '$lines' :category '$category')' | jq -r .
 #+end_src
 ** org-node
 #+begin_src scheme
