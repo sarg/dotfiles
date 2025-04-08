@@ -162,27 +162,50 @@ EXWM has a separate [[../.doom.d/modules/app/exwm][doom app]]. Here are just the
 ** notifications
 #+begin_src elisp
 (use-package! ednc
-  :hook ((exwm-init . ednc-mode)
-         (ednc-view-mode . dont-kill-buffer-mode)
-         (ednc-view-mode . doom-mark-buffer-as-real-h))
+  :hook (exwm-init . ednc-mode)
 
   :config
-  (set-popup-rule!
-      '(major-mode . ednc-view-mode)
-      :ttl nil
-      :quit t
-      :select t
-      :height 5)
+  ; https://github.com/hiecaq/guix-config/blob/666d15b1f79b2b9171c430c24b877879ab61fd02/readme.org#desktop-notification-daemon
+  (defvar my-ednc-posframe--buffer "*ednc-posframe*"
+    "Buffer used for ednc notification posframe display.")
 
-  (map! :mode ednc-view-mode
-        :n
-        "TAB" #'ednc-toggle-expanded-view
-        "RET" #'ednc-invoke-action)
+  (defun my-ednc-posframe-show ()
+    (interactive)
+    (when (and (buffer-live-p (get-buffer my-ednc-posframe--buffer))
+               (posframe-workable-p))
+      (posframe-show my-ednc-posframe--buffer
+                     :poshandler #'posframe-poshandler-frame-top-right-corner
+                     :border-width 1)))
 
-  (defun pop-to-ednc (old new)
-    (when new (pop-to-buffer ednc-log-name)))
+  (defun my-ednc-posframe-hide ()
+    (interactive)
+    (when (posframe-workable-p)
+      (posframe-hide my-ednc-posframe--buffer)))
 
-  (add-hook 'ednc-notification-presentation-functions #'pop-to-ednc))
+  (defun my-ednc-posframe--update (&rest _)
+    (let ((notifications (ednc-notifications)))
+      (with-current-buffer (get-buffer-create my-ednc-posframe--buffer)
+        (erase-buffer)
+        (insert (mapconcat
+                 (lambda (n) (ednc-format-notification n :expand))
+                 notifications "")))
+      (when (posframe-workable-p)
+        (if notifications
+            (my-ednc-posframe-show)
+          (my-ednc-posframe-hide)))))
+
+  (defun my-ednc--dismiss-first-notification ()
+    (when-let* ((buffer (get-buffer my-ednc-posframe--buffer))
+                (frame (with-current-buffer buffer
+                         posframe--frame))
+                ((frame-visible-p frame))
+                (notification (ednc-notifications)))
+      (ednc-dismiss-notification (car notification))))
+
+  (advice-add #'keyboard-quit :before #'my-ednc--dismiss-first-notification)
+  (add-hook 'ednc-notification-presentation-functions #'my-ednc-posframe--update))
+#+end_src
+#+begin_src elisp
 #+end_src
 ** bar
 #+begin_src scheme
