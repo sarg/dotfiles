@@ -106,7 +106,7 @@ To define guix dependencies add a =scheme= source code block. It'll be then tang
  :lang        clojure data emacs-lisp
               (org +contacts +dragndrop +pandoc +present +hugo +roam2 +pretty) beancount
               rest sh plantuml (python +pyenv +lsp) (web +html) yaml json
- :app         calendar telega (rss +org) torrent irc exwm emms
+ :app         calendar telega (rss +org) torrent irc exwm emms dash-menu
  :email       (mu4e +gmail)
  :config      (default +bindings +smartparens +gnupg) literate)
 #+end_src
@@ -501,6 +501,7 @@ tw.ddnet.ddnet
 ** multimedia keys
 #+begin_src elisp :noweb-ref exwm :tangle no
 (exwm/bind-command
+   "<XF86Launch1>" #'dash-menu
    "<XF86MonBrightnessUp>" "brightnessctl -e set 10%+"
    "<XF86MonBrightnessDown>" "brightnessctl -e set 10%-"
    "<XF86ScreenSaver>" "lock.sh"
@@ -1214,12 +1215,20 @@ herd start goimapnotify
   :after consult-mu)
 
 (after! mu4e
+  (defun mu4e~headers-quit-buffer ()
+    "Quit the mu4e-headers buffer."
+    (interactive)
+    (mu4e-mark-handle-when-leaving)
+    (quit-window t)
+    ;; clear the decks before going to the main-view
+    (mu4e--query-items-refresh 'reset-baseline))
+
   (map! :map mu4e-main-mode-map
         :n "q" #'bury-buffer
         :n "Q" #'mu4e-quit)
   (set-popup-rule! "^\\*mu4e-main\\*$" :ignore t)
   (set-popup-rule! "^\\*mu4e-headers\\*$" :ignore t)
-  (setq mu4e-bookmarks '(("flag:unread and not maildir:/gmail/trash" "Unread" ?u))
+  (setq mu4e-bookmarks '(("flag:unread and not maildir:/gmail/trash and not maildir:/gmail/sent" "unread" ?m))
         mu4e-modeline-support nil
         mu4e-sent-folder "/gmail/sent"
         mu4e-drafts-folder "/gmail/drafts"
@@ -1442,7 +1451,7 @@ emacsclient -e \
  :leader
  "h" nil
  :desc "Music" "oM" #'=emms
- :desc "Mu4e" "om" (lambda () (interactive) (require 'mu4e-transient) (mu4e-transient-menu)))
+ :desc "Dash" "om" #'dash-menu)
 #+end_src
 * hardware
 ** scanner
