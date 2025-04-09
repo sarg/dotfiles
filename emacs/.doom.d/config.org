@@ -110,12 +110,6 @@ To define guix dependencies add a =scheme= source code block. It'll be then tang
  :email       (mu4e +gmail)
  :config      (default +bindings +smartparens +gnupg) literate)
 #+end_src
-** font fix
-Dunno, but doom resets the fontspec. Let me fix it here.
-#+begin_src elisp
-(add-hook! after-setting-font :append
-  (set-fontset-font t 'unicode "Noto Color Emoji" nil 'append)) ; 💪🕹
-#+end_src
 ** modeline
 #+begin_src elisp
 (setq! +modeline-encoding nil
@@ -1376,11 +1370,13 @@ emacsclient -e \
 (setq read-process-output-max (* 4 1024 1024))
 
 (after! eshell
+  (setq! eshell-prefer-lisp-functions 't)
+  (set-eshell-alias!
+   "doom" "$doom-core-dir/../bin/doom $@*"
+   "guix" "*guix $@*")
   (add-to-list 'eshell-modules-list 'eshell-smart)
-  (add-hook 'eshell-first-time-mode-hook
-            (lambda ()
-              (map! :map eshell-mode-map
-                    :ni "C-r" #'+eshell/search-history))))
+  (map! :map eshell-mode-map
+        :ni "C-r" #'consult-history))
 
 (use-package! eat
   :hook ((eshell-load . eat-eshell-mode)
@@ -1473,6 +1469,7 @@ emacsclient -e \
 
  :leader
  "h" nil
+ "," #'bufler-switch-buffer
  :desc "Music" "oM" #'=emms
  :desc "Dash" "om" #'dash-menu)
 #+end_src
@@ -1502,7 +1499,8 @@ guix shell sane-airscan simple-scan -- sh -c 'LD_LIBRARY_PATH=$GUIX_ENVIRONMENT/
   :bind ("M-o" . cyclekey-cycle)
 
   :config
-  (cyclekey-add-language "German"))
+  (cyclekey-add-language "German")
+  (cyclekey-init))
 #+end_src
 ** magic sqlite
 #+begin_src elisp

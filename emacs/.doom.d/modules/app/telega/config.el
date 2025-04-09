@@ -28,10 +28,6 @@
     (when (-any (lambda (re) (string-match re text)) re-list)
       (kill-new (match-string 1 text)))))
 
-(defun telega-set-my-name (first last)
-  (interactive "sFirst name: \nsLast name: ")
-  (telega-server--call (list :@type "setName" :first_name first :last_name last)))
-
 (use-package! telega
   :commands (telega)
 
@@ -48,11 +44,19 @@
   :custom
   (telega-chat-show-deleted-messages-for '(not saved-messages))
   (telega-root-show-avatars nil)
+  (telega-root-default-view-function #'telega-view-compact)
+  (telega-chat-button-width 30)
+  (telega-filter-custom-one-liners '(custom))
+  (telega-filter-custom-show-folders nil)
+  (telega-filters-custom
+   '(("lng_filters_type_no_archived" . archive)
+     ("Unread" . (and main unread))))
   (telega-chat-show-avatars nil)
   (telega-chat-use-date-breaks nil)
   (telega-chat-input-markups '("markdown2" nil))
   (telega-animation-play-inline nil)
   (telega-sticker-size '(8 . 48))
+  (telega-emoji-use-images nil)
   (telega-emoji-custom-alist '((":s:" . "¯\\_(ツ)_/¯")))
 
   :config
@@ -60,13 +64,12 @@
   (add-hook! telega-chat-mode (cd telega-directory))
 
   ;; disable not used minor modes
+  (global-telega-url-shorten-mode 1)
   (telega-patrons-mode -1)
   (telega-active-locations-mode -1)
   (telega-active-video-chats-mode -1)
   (telega-contact-birthdays-mode -1)
   (telega-active-stories-mode -1)
-
-
 
   (advice-add #'telega-ins--sponsored-message :override #'ignore)
 
@@ -97,7 +100,7 @@
 
   (set-popup-rule! (regexp-quote telega-root-buffer-name)
     :side 'left
-    :size 0.25
+    :size 36
     :ttl nil
     :quit t
     :select t)
@@ -105,7 +108,7 @@
   (after! dired
     (load "telega-dired-dwim.el"))
 
-  (when (featurep! :editor evil)
+  (when (modulep! :editor evil)
     (map!
      (:map telega-msg-button-map
            "k" nil

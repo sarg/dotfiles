@@ -1,0 +1,12 @@
+# -*- mode: snippet -*-
+# name: src block tangling to packages.el
+# uuid: f7283bf3-ef96-4f62-bbbe-590353e4dac3
+# key: pkg
+# condition: t
+# --
+#+begin_src elisp :tangle packages.el
+(package! $1)
+#+end_src
+#+begin_src elisp
+(use-package! $1)
+#+end_src

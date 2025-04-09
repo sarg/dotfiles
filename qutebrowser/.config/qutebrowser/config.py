@@ -13,6 +13,7 @@ c.content.cookies.accept = 'no-3rdparty'
 c.new_instance_open_target = 'tab-silent'
 c.editor.command = ['emacsclient', '{}']
 c.content.default_encoding = 'utf-8'
+c.content.javascript.clipboard = 'access'
 c.scrolling.smooth = True
 c.downloads.location.prompt = False
 c.downloads.remove_finished = 15000
@@ -62,6 +63,7 @@ config.bind('xx', 'spawn -u orgprotocol')
 config.bind('xp', 'spawn -u password_fill')
 config.bind('xm', 'spawn --detach mpv --force-window=immediate {url}')
 config.bind(';m', 'hint links spawn --detach mpv --force-window=immediate {hint-url}')
+config.bind(';a', 'hint links run open -t https://web.archive.org/web/{hint-url}')
 
 config.bind('<Ctrl-w>', 'fake-key <Ctrl-Backspace>', mode='insert')
 config.bind('<Ctrl-h>', 'fake-key <Backspace>', mode='insert')

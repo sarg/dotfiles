@@ -21,3 +21,9 @@ system:
 
 home:
 	$(guix-lock) home reconfigure home.scm
+
+gc:
+	guix home delete-generations
+	sudo guix system delete-generations
+	guix pull --delete-generations
+	guix gc
