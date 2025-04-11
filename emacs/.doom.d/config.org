@@ -140,17 +140,17 @@ EXWM has a separate [[../.doom.d/modules/app/exwm][doom app]]. Here are just the
 "emacs-exwm-ss"
 "emacs-ednc"
 #+end_src
-#+begin_src elisp :noweb yes
-(after! exwm
-  <<exwm>>
-
-  (defun exwm-autostart-apps ()
+#+begin_src elisp :noweb yes :noweb-prefix no
+(defun exwm-autostart-apps ()
     (interactive)
     (cl-loop
      for cmd in (list
-                 "<<autostart>>")
+                 <<autostart>>
+                 )
      do (start-process-shell-command "autostart" "*autostart*" cmd)))
 
+(after! exwm
+  <<exwm>>
   (add-hook! exwm-init #'exwm-autostart-apps))
 #+end_src
 ** notifications
@@ -199,131 +199,55 @@ EXWM has a separate [[../.doom.d/modules/app/exwm][doom app]]. Here are just the
   (advice-add #'keyboard-quit :before #'my-ednc--dismiss-first-notification)
   (add-hook 'ednc-notification-presentation-functions #'my-ednc-posframe--update))
 #+end_src
-#+begin_src elisp
-#+end_src
 ** bar
-#+begin_src scheme
-"emacs-mini-echo"
-#+end_src
-#+begin_src elisp :tangle packages.el
-(package! mini-echo :built-in t)
-(package! noether :recipe (:local-repo "~/devel/ext/noether"))
-#+end_src
 #+begin_src elisp
-(use-package! noether
-  :config
-  (require 'noether-units)
+(setq!
+ battery-mode-line-format " %b%>2p% "
+ battery-mode-line-limit 50
+ display-time-string-forms '((substring (format-time-string "%a") 0 1)
+                              (format-time-string "%d %R")))
 
-  (defun noether--exwm-workspace-format (_ v _ _)
-    "Format workspace name"
-    (nth v exwm-workspace-names))
-
-  (noether-defunit noether-exwm-workspace-unit
-    "Show the exwm workspace."
-    :len 4
-    :var 'exwm-workspace-current-index
-    :fn #'noether--exwm-workspace-format)
-
-  (noether-defunit noether-battery
-    "Show battery."
-    :len 4
-    :var 'battery-mode-line-string
-    :fn (lambda (_ v _ _) (format "%4s" v)))
-
-  (noether-defunit noether-kbd-layout-unit
-    "Show alternative layout when enabled."
-    :len 2
-    :var '(exwm-input-current-group current-input-method)
-    :fn (lambda (s v _ _)
-          (let ((layout (pcase major-mode
-                          ('exwm-mode
-                           (when (> v 0) (nth v exwm/input-layout-names)))
-                          (_ v))))
-
-            (propertize
-             (upcase (substring (or layout "  ") 0 2))
-             'face 'bold))))
-
-  (defun noether-init ()
-    (noether-defview main-bar
-      "Main bar"
-
-      :buffer "*mainview*"
-      :visible? 't
-      :sticky? 't
-      :hide-when-minibuffer? 't
-      :separator "|"
-
-      :frame
-      (list
-       :position (cons (- (frame-outer-width) 80)
-                       (- (frame-outer-height) 16))
-       :z-group 'above)
-
-      :units
-      (list
-       (noether-battery)
-       (noether-kbd-layout-unit)
-       (noether-exwm-workspace-unit)
-       (time-unit :label nil)))
-    (setq noether-views (list main-bar))
-    (noether-global-mode 1))
-
-  (setq battery-mode-line-format "%b%>2p%")
-  (display-battery-mode 1)
-  (add-hook! exwm-init #'noether-init))
-#+end_src
-#+begin_src elisp
-(defun xkb-layout-segment ()
-  (pcase major-mode
-    ('exwm-mode
-     (when-let ((group (exwm-input--current-group))
-                ((> group 0)))
-       (nth group exwm/input-layout-names)))
-    (_ evil-input-method)))
-
-(use-package! mini-echo
-  :disabled
-  :custom
-  (battery-mode-line-format "%b%>2p%")
-  (battery-mode-line-limit 50)
-  (display-time-string-forms '((substring (format-time-string "%a") 0 1)
-                               (format-time-string "%d %R")))
-
-  (mini-echo-persistent-function (-const nil))
-  (mini-echo-temporary-rule '(:both ("xkb-layout")))
-  (mini-echo-persistent-rule '(:both ("time" "battery" "exwm-workspace")))
-
-  :config
-  (mini-echo-define-segment "exwm-workspace"
-    "Indicator that shows current EXWM workspace name."
-    :fetch
-    (mini-echo-segment--print (nth exwm-workspace-current-index exwm-workspace-names)))
-
-  (mini-echo-define-segment "xkb-layout"
-    "Indicator that shows current xkb layout if it is active."
-    :fetch
-    (when-let ((layout (xkb-layout-segment)))
-      (mini-echo-segment--print (upcase (substring layout 0 2)) 'bold)))
-
-  (mini-echo-mode 1)
-  (mini-echo-hide-mode-line 'show))
+(display-battery-mode 1)
+(display-time-mode 1)
 #+end_src
 ** workspaces
 #+begin_src elisp :noweb-ref exwm :tangle no
-(setq exwm-workspace-names '("code" "brow" "extr" "lisp"))
+(tab-rename "code" 1)
+(progn (tab-new) (tab-rename "brow" 2))
+(progn (tab-new) (tab-rename "dash" 3))
+(tab-bar-mode 1)
+
+(exwm/bind-command
+ "<f13> 1" (lambda () (interactive) (tab-bar-switch-to-tab "code"))
+ "<f13> 2" (lambda () (interactive) (tab-bar-switch-to-tab "brow")))
+
+(custom-set-faces!
+  '(tab-bar-tab :weight bold)
+  '(tab-bar-tab-inactive :weight normal))
+
+(setq!
+ tab-bar-auto-width nil
+ tab-bar-select-restore-windows nil
+ tab-bar-new-tab-choice "*scratch*"
+ tab-bar-format '(tab-bar-format-tabs
+                  tab-bar-separator
+                  tab-bar-format-align-right
+                  tab-bar-format-global))
 #+end_src
 ** per-app settings
 #+begin_src elisp :noweb-ref exwm :tangle no
-(setq exwm-manage-configurations
-      `(((-any? (lambda (el) (equal exwm-class-name el))
-          '("mpv" "scrcpy" "AusweisApp2"))
-         floating t
-         floating-mode-line nil)
-        ((equal exwm-class-name "Spotify")
-         dont-steal-focus t)
-        ((equal exwm-class-name "qutebrowser")
-         workspace ,(exwm-workspace-name-to-index "brow"))))
+(setopt exwm-manage-configurations
+        `(((-any? (lambda (el) (equal exwm-class-name el))
+            '("mpv" "scrcpy" "AusweisApp2"))
+           floating t
+           floating-mode-line nil)
+          ((equal exwm-class-name "Spotify")
+           dont-steal-focus t)
+          ((equal exwm-class-name "Pavucontrol")
+           floating t
+           floating-mode-line nil
+           width 560
+           height 400)))
 #+end_src
 ** bindings
 *** simulation
@@ -400,7 +324,7 @@ REVERSE? it when true. Returns the selected buffer."
  "<f13> l"     #'evil-window-right
 
  "<f13> E"    `(lambda () (interactive)
-                 (exwm-workspace-switch (exwm-workspace-name-to-index "brow"))
+                 (tab-switch "brow")
                  (cond
                   ((string= "qutebrowser" exwm-class-name)
                    (exwm/switch-to-next-buffer "qutebrowser" 'reverse))
@@ -409,7 +333,7 @@ REVERSE? it when true. Returns the selected buffer."
                    (start-process "qutebrowser" nil "setsid" "-w" "qutebrowser"))))
 
  "<f13> e"    `(lambda () (interactive)
-                 (exwm-workspace-switch (exwm-workspace-name-to-index "brow"))
+                 (tab-switch "brow")
                  (or (exwm/switch-to-next-buffer "qutebrowser")
                      (start-process "qutebrowser" nil "setsid" "-w" "qutebrowser"))))
 #+end_src
@@ -421,7 +345,7 @@ REVERSE? it when true. Returns the selected buffer."
 ;; the default one messes up exec path of wine programs due to wrong parsing
 (after! app-launcher
   (defun app-launcher--action-dex (selected)
-    (call-process "dex" nil nil nil (cdr (assq 'file (gethash selected app-launcher--cache)))))
+    (call-process "dex" nil nil nil (alist-get 'file selected)))
 
   (advice-add 'app-launcher-list-desktop-files :filter-return
               (lambda (apps)
@@ -1214,7 +1138,7 @@ qutebrowser --nowindow --target tab-bg-silent $@
    (stop #~(make-kill-destructor)))))
 #+end_src
 #+begin_src sh :noweb-ref autostart :tangle no
-herd start goimapnotify
+"herd start goimapnotify"
 #+end_src
 #+begin_src elisp :tangle packages.el
 (package! mu4e-alert :disable t)
@@ -1621,6 +1545,30 @@ emacsclient -e '(dmenu/select-line-from-file "'$tmp'" :prompt '"$prompt"' :lines
                  (gptel-api-key-from-auth-source "google.com" "gemini"))
           :stream t)))
 #+end_src
+** org-supertag
+#+begin_src elisp :tangle packages.el
+(package! org-supertag
+  :recipe (:host github
+           :repo "yibie/org-supertag"
+           :files (:defaults (:exclude "*sim*"))))
+#+end_src
+#+begin_src elisp
+(use-package! org-supertag
+  :disabled
+  :after org
+  :config
+  (org-supertag-setup))
+#+end_src
+** eee
+#+begin_src elisp :tangle packages.el
+(package! eee
+  :recipe (:host github :repo "eval-exec/eee.el"
+           :files (:defaults "*.el" "*.sh")))
+#+end_src
+#+begin_src elisp
+(use-package! eee)
+#+end_src
+
 * TODO todo [7/12]
 ** DONE console font
 ** DONE mingetty with xorg autostart (under sarg), put `lock.sh` first in the .xsession

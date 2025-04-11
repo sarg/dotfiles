@@ -43,7 +43,7 @@
   (set-popup-rule! "^\\*EXWM\\*$" :ignore t)
 
   :config
-  (load! "+workspaces")
+  (when (modulep! +workspaces) (load! "+workspaces"))
   (load! "+xkb-layout-switch")
 
   ;; Disable dialog boxes since they are unusable in EXWM

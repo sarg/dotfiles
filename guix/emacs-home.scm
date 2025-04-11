@@ -58,7 +58,6 @@
          "emacs-exwm"
          "emacs-exwm-ss"
          "emacs-ednc"
-         "emacs-mini-echo"
          "dex"
          "emacs-catppuccin-theme"
          "jaro"
