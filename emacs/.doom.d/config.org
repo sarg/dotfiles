@@ -81,6 +81,9 @@ To define guix dependencies add a =scheme= source code block. It'll be then tang
 
 ; modules dependencies
 "shfmt" "shellcheck" "fd"
+
+; dirvish
+"ffmpegthumbnailer" "poppler" "mediainfo" "vips"
 #+end_src
 #+begin_src scheme :noweb-ref guix-srv
 (simple-service 'doom-vars home-environment-variables-service-type
@@ -96,10 +99,9 @@ To define guix dependencies add a =scheme= source code block. It'll be then tang
       doom-leader-alt-key "<f13>")
 (doom!
  :completion  corfu vertico ;(ivy +fuzzy +prescient +childframe)
- :ui          nav-flash (modeline +light) ophints (popup +defaults) ligatures
-              (vc-gutter +pretty) treemacs
+ :ui          nav-flash (modeline +light) ophints (popup +defaults) ligatures treemacs
  :editor      (evil +everywhere) fold lispy snippets (format +onsave) multiple-cursors word-wrap
- :emacs       dired electric vc ibuffer undo
+ :emacs       (dired +dirvish +icons) electric vc ibuffer undo
  :term        eshell vterm
  :tools       editorconfig (eval +overlay) (lookup +docsets) magit pdf (pass +auth) make tree-sitter lsp
  :checkers    syntax
@@ -1322,42 +1324,34 @@ emacsclient -e \
 
 * dired
 #+begin_src elisp :tangle packages.el
-(package! dired-filter :built-in t)
 (package! dired-du :built-in t)
-(package! dired-collapse :pin "e9e408e8571aee5574ca0a431ef15cac5a3585d4")
-(package! dired-git-info
-  :recipe (:host github :repo "clemera/dired-git-info")
-  :built-in t)
 (package! openwith :built-in t)
 (package! sxiv :built-in t)
 #+end_src
 
 #+begin_src scheme
 "emacs-dired-hacks" "emacs-dired-du"
-"emacs-dired-git-info" "emacs-openwith" "emacs-sxiv"
+"emacs-openwith" "emacs-sxiv"
 #+end_src
 
 #+begin_src elisp
-(use-package! dired-filter
-  :hook (dired-mode . dired-filter-mode)
-  :custom
-  (dired-filter-stack '((omit) (dot-files)))
-  (dired-filter-revert 'always))
+(after! dirvish
+  (setq dired-omit-files
+        (concat dired-omit-files "\\|^\\..*$"))
 
-(use-package! dired-collapse
-  :hook (dired-mode . dired-collapse-mode))
-
-(use-package! dired-git-info
-  :custom
-  (dgi-commit-message-format "%cr\t%s"))
+  (add-to-list 'dirvish-hide-details 'dired)
+  (setq! dirvish-quick-access-entries
+         `(("h" "~/"                          "Home")
+           ("c" ,(f-dirname doom-core-dir)    "Doom root")
+           ("e" "~/.dotfiles/emacs/.doom.d"   "Emacs config")
+           ("d" "~/Downloads/"                "Downloads")
+           ("m" "/media/500GB/media"          "Media"))))
 
 (use-package! sxiv)
 (use-package! dired-du
   :custom
   ;; human readable
   (dired-du-size-format 't))
-
-(add-hook! dired-mode #'dired-hide-details-mode)
 
 (after! async
   (dired-async-mode 1))

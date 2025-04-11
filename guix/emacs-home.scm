@@ -55,6 +55,9 @@
          
          ; modules dependencies
          "shfmt" "shellcheck" "fd"
+         
+         ; dirvish
+         "ffmpegthumbnailer" "poppler" "mediainfo" "vips"
          "emacs-exwm"
          "emacs-exwm-ss"
          "emacs-ednc"
@@ -81,7 +84,7 @@
          "emacs-mpv" "emacs-webpaste" "emacs-yeetube"
          "emacs-eat" "emacs-detached"
          "emacs-dired-hacks" "emacs-dired-du"
-         "emacs-dired-git-info" "emacs-openwith" "emacs-sxiv"
+         "emacs-openwith" "emacs-sxiv"
          "emacs-bookmark-plus"
          ;; "emacs-gpx"
          "emacs-osm"
