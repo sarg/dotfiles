@@ -102,15 +102,14 @@
           "exec startx"
           ))))
 
+(define git2rss (load "../git2rss/guix.scm"))
 (define (changelog-task fn)
   #~(make <task>
       #:name #$(string-append "changelog-" (basename fn))
-      #:environment '(#$(string-append "PATH=" (getenv "HOME") "/.config/guix/current/bin")
-                      "PWD=/storage/Resources/dashboard")
       #:schedule (list (make <interval>
                          #:start (time "2025-01-01T06:00:00+0000")
                          #:period (period "1d")))
-      #:arguments '("/storage/Resources/dashboard/git2rss.clj" #$fn)))
+      #:arguments '(#$(file-append git2rss "/bin/git2rss") #$fn)))
 
 (define %backup-script
   (chmod-computed-file

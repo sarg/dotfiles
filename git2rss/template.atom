@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns:a="http://www.w3.org/2005/Atom">
+  <title>GUIX commits</title>
+  <link href="https://git.savannah.gnu.org/cgit/guix.git/log/" rel="self"/>
+  <link href="http://guix.gnu.org/"/>
+  <id>urn:uuid:{random uuid}</id>
+  <updated>2025-01-08T07:03:22.000-00:00 {put start date here}</updated>
+  <git2rss>
+    <dir>/home/sarg/devel/ext/guix {repo}</dir>
+    <commit-url>{url template for individual commits:https://git.savannah.gnu.org/cgit/guix.git/commit/?id=%s}</commit-url>
+    <range-url>{url template for commit range:https://git.savannah.gnu.org/cgit/guix.git/log/?qt=range&amp;q=%s..%s}</range-url>
+  </git2rss>
+  <author>
+    <name>Git2rss</name>
+  </author>
+</feed>
