@@ -4,6 +4,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
   #:use-module (gnu packages java)
+  #:use-module (gnu packages video)
   #:use-module (gnu packages compression)
   #:use-module (nonguix build-system binary)
   #:use-module (guix packages))
@@ -87,3 +88,74 @@
       (synopsis "backup software")
       (description "backup software")
       (license license:bsd-2))))
+
+(define-public tinymediamanager
+  (package
+   (name "tinymediamanager")
+   (version "5.1.5")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "https://release.tinymediamanager.org/v5/dist/tinyMediaManager-"
+                                version "-linux-amd64.tar.xz"))
+            (sha256
+             (base32 "0im7ifmyx2czf44d35dsv0shmd9p6rpkxyhhh9k3iy2y283xy5h0"))))
+   (build-system binary-build-system)
+   (inputs (list libmediainfo openjdk))
+   (supported-systems '("x86_64-linux"))
+   (arguments
+    (list
+     #:phases
+     #~(modify-phases %standard-phases
+         (add-after 'install 'create-runner
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((bin (string-append #$output "/bin"))
+                    (lib (string-append #$output "/lib/tinyMediaManager"))
+                    (tmm (string-append bin "/tinyMediaManager")))
+               (mkdir-p bin)
+               (call-with-output-file tmm
+                 (lambda (out)
+                   (format out "#!/bin/sh
+LD_LIBRARY_PATH=~a CLASSPATH=~a/* ~a/bin/java ~a org.tinymediamanager.TinyMediaManager"
+                           (string-join
+                            (list
+                             (string-append (assoc-ref inputs "libmediainfo") "/lib")
+                             (string-append (assoc-ref inputs "libzen") "/lib"))
+                            ":")
+                           lib
+                           (assoc-ref inputs "openjdk")
+                           (string-join
+                            '("-Xms64m"
+                              "-Xmx512m"
+                              "-Xss512k"
+                              "-Dsun.java2d.renderer=sun.java2d.marlin.MarlinRenderingEngine"
+                              "-Djava.net.preferIPv4Stack=true"
+                              "-Dfile.encoding=UTF-8"
+                              "-Dsun.jnu.encoding=UTF-8"
+                              "-Dtmm.consoleloglevel=NONE"
+                              "-Dawt.useSystemAAFontSettings=on"
+                              "-Dswing.aatext=true"
+                              "-Dtmm.contentfolder=$XDG_DATA_HOME/tinyMediaManager"
+                              "-Dtmm.datafolder=$XDG_STATE_HOME/tinyMediaManager"
+                              "-Dtmm.noupdate=true")
+                            " "))))
+               (chmod tmm #o555))
+
+             (make-desktop-entry-file
+              (string-append #$output "/share/applications/tinymediamanager.desktop")
+              #:name "Tiny Media Manager"
+              #:type "Application"
+              #:exec (string-append #$output "/bin/tinyMediaManager")
+              #:icon "tmm"
+              #:categories '("Video" "Database")
+              #:terminal #f
+              #:comment
+              '(("en" "Media collection manager")
+                (#f "Media collection manager"))))))
+     #:validate-runpath? #f
+     #:install-plan #~'(("tmm.png" "share/icons/hicolor/128x128/apps/")
+                        ("lib" "lib/tinyMediaManager")
+                        ("tmm.jar" "lib/tinyMediaManager/"))))
+   (home-page "https://tinymediamanager.org")
+   (synopsis "Media library manager")
+   (description "Media library manager")
+   (license license:asl1.1)))
