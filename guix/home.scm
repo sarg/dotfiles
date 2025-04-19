@@ -21,6 +21,7 @@
  (gnu home services pm)
  (gnu home services sound)
  (gnu home services shells)
+ (gnu home services ssh)
  (gnu home services guix)
  (personal services symlinks)
  (personal services owntracks)
@@ -166,6 +167,15 @@
                   (owntracks-service
                    (config (owntracks-configuration
                             (storage-dir "/storage/data/owntracks")))))
+
+         (service home-openssh-service-type
+                  (home-openssh-configuration
+                   (hosts
+                    (list
+                     (openssh-host
+                      (name "kindle")
+                      (host-name "192.168.15.244")
+                      (user "root"))))))
 
          (service home-syncthing-service-type
                   (let ((pixel (syncthing-device (id "Q4ZQAU5-ZBFVS3E-OULHHHM-3HOCUXT-TVV5UYL-XPZRRWH-EXYYJWG-WVAUAAS")))
