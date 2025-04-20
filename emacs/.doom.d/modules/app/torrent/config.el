@@ -1,22 +1,27 @@
+;;; -*- lexical-binding: t; -*-
+
+;;;###autoload
+(defun torrent-do-download-selected (dest-dir)
+  "Download ARG entries."
+  (interactive
+   (list (read-directory-name "Directory: "
+                              (or (dired-dwim-target-directory)
+                                  aria2-download-directory)
+                              nil
+                              t))
+   torrent-mode)
+
+  (aria2-ensure-started)
+  (addTorrent aria2--cc original-buffer-file-name
+              :select-file (string-join
+                            (seq-map (-compose #'number-to-string #'car) (tablist-get-marked-items))
+                            ",")
+              :dir (expand-file-name dest-dir)))
+
 (use-package! torrent-mode
   :mode ("\\.torrent\\'" . 'torrent-mode)
 
   :config
-  (defun torrent-do-download-selected (dest-dir)
-    "Download ARG entries."
-    (interactive
-     (list (read-directory-name "Directory: "
-                                (or (dired-dwim-target-directory)
-                                    aria2-download-directory)
-                                nil
-                                t))
-     'torrent-mode)
-
-    (aria2-ensure-started)
-    (addTorrent aria2--cc original-buffer-file-name
-                :select-file (seq-map #'car (tablist-get-marked-items))
-                :dir (expand-file-name dest-dir)))
-
   (after! evil-collection
     (evil-collection-define-key 'normal 'torrent-mode-map
       "D" 'torrent-do-download-selected

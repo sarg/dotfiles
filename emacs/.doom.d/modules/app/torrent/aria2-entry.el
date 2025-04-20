@@ -1,3 +1,4 @@
+;;; -*- lexical-binding: t; -*-
 (set-popup-rule! "^\\*aria2-entry"
   :size 0.75 :actions '(display-buffer-below-selected)
   :select t :quit nil :ttl t)
@@ -32,17 +33,18 @@
          (dirPrefixLen (1+ (length (alist-get 'dir status))))
          (info (append (getFiles aria2--cc aria2-entry-gid) nil)))
 
-    (dolist (e info entries)
-      (push (list e (vector
-                     (file-size-human-readable (string-to-number (alist-get 'length e)))
-                     (aria2--entry-Done e)
+    (nreverse
+     (dolist (e info entries)
+       (push (list e (vector
+                      (file-size-human-readable (string-to-number (alist-get 'length e)))
+                      (aria2--entry-Done e)
 
-                     (list
-                      (substring (alist-get 'path e) dirPrefixLen nil)
-                      'face (if (string= "false" (alist-get 'selected e))
-                                'aria2-done-face 'aria2-error-face)
-                      'action #'aria2-details-find-file)))
-            entries))))
+                      (list
+                       (substring (alist-get 'path e) dirPrefixLen nil)
+                       'face (if (string= "false" (alist-get 'selected e))
+                                 'aria2-done-face 'aria2-error-face)
+                       'action #'aria2-details-find-file)))
+             entries)))))
 
 (defun aria2-details-find-file (button-marker)
   (let ((file (get-text-property button-marker 'tabulated-list-id)))
@@ -52,10 +54,18 @@
 (defun aria2--entry-refresh ()
   (setq tabulated-list-entries (aria2--list-entry-files)))
 
+(defvar-local aria2--entry-timer nil)
 (define-derived-mode aria2-entry-mode tabulated-list-mode "Aria2-entry"
   :group 'aria2
   (setq tabulated-list-format [("Size" 8 t) ("Done" 6 t :right-align t) ("File" 80 t)])
   (setq tabulated-list-entries #'aria2--list-entry-files)
+  (setq aria2--entry-timer
+        (run-at-time t 5
+                     (let ((buffer (current-buffer)))
+                       (lambda ()
+                         (with-current-buffer buffer
+                           (tabulated-list-revert))))))
+  (add-hook 'kill-buffer-hook (lambda () (cancel-timer aria2--entry-timer)) nil t)
   (add-hook 'tabulated-list-revert-hook #'aria2--entry-refresh nil t)
   (tabulated-list-init-header)
   (hl-line-mode 1))
