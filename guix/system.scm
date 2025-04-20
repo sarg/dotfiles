@@ -13,7 +13,7 @@
              (personal services iwd)
              (nongnu system linux-initrd)
              (nongnu packages linux)
-             (personal packages kindle)
+             (personal packages udev-rules)
              (ice-9 textual-ports))
 
 (use-package-modules
@@ -127,6 +127,7 @@
                          (guix-configuration
                           (inherit config)
                           ;; prevent guix gc deleting build inputs
+                          (privileged? #f)
                           (extra-options '("--gc-keep-derivations"
                                            "--gc-keep-outputs")))))
 
@@ -156,7 +157,7 @@
      (service fstrim-service-type)
      (service file-database-service-type
               (file-database-configuration
-               (schedule #~'(next-hour '(6)))
+               (schedule #~(calendar-event #:hours '(6) #:minutes '(0)))
                (excluded-directories
                 (append '("/home") %default-file-database-excluded-directories))))
 
@@ -263,6 +264,7 @@
      (udev-rules-service 'android android-udev-rules #:groups '("adbusers"))
      (udev-rules-service 'qmk qmk-udev-rules)
      (udev-rules-service 'kindle kindle-usbnet-udev-rules)
+     (udev-rules-service 'pixel pixel-usbnet-udev-rules)
      (udev-rules-service 'brightness brightnessctl)
 
      (simple-service

@@ -23,6 +23,7 @@
  (gnu home services shells)
  (gnu home services guix)
  (personal services symlinks)
+ (personal services owntracks)
  (personal services utils)
  (personal services supercron)
  (personal packages binary)
@@ -66,15 +67,15 @@
   '("qutebrowser"
 
     ;; "zeal" "qalculate-gtk" "simplescreenrecorder"
-    "libreoffice" "qview" "stapler" "gimp-next" "calibre"
+    "libreoffice" "qview" "stapler" "gimp" "calibre"
 
     ;; "nomacs"
     "zathura" "zathura-pdf-mupdf" "zathura-djvu" "zathura-cb"
-    "yt-dlp" "mpv"
+    "yt-dlp" "mpv" "tinymediamanager"
     ))
 
 (define %pkg-dev
-  '("python" "make" "fossil"
+  '("python" "make"
     "git" "git:send-email" "git-crypt" "perl"))
 
 (define symlinks
@@ -156,6 +157,16 @@
          (service home-pipewire-service-type)
          (service home-symlinks-service-type symlinks)
 
+         (service mosquitto-service-type
+                  (mixed-text-file "mosqiutto.conf"
+                                   "listener 1883\n"
+                                   "allow_anonymous true\n"))
+
+         (service owntracks-service-type
+                  (owntracks-service
+                   (config (owntracks-configuration
+                            (storage-dir "/storage/data/owntracks")))))
+
          (service home-syncthing-service-type
                   (let ((pixel (syncthing-device (id "Q4ZQAU5-ZBFVS3E-OULHHHM-3HOCUXT-TVV5UYL-XPZRRWH-EXYYJWG-WVAUAAS")))
                         (thinkpad (syncthing-device (id "NYWEUMS-WOSRVEG-TD6CQZA-IHZ66GX-HZT2PJ2-IZ244FL-N3JC7DD-3DV57AG"))))
@@ -178,57 +189,62 @@
                    (directories '(".."))
                    (packages '("android" "email" "xsession" "git" "qutebrowser" "desktop"))))
 
-         (simple-service 'changelog-jobs
+         (simple-service
+          'changelog-jobs
           supercron-service-type
           (list
            (changelog-task "/storage/Resources/dashboard/guix.atom")
            (changelog-task "/storage/Resources/dashboard/doomemacs.atom")
            %storage-backup-task))
 
-         (simple-service 'x11-configs
-                         home-files-service-type
-                         `((".icons/default"
-                            ,(file-append (specification->package "bibata-cursor-theme")
-                                          "/share/icons/Bibata-Modern-Ice"))
+         (simple-service
+          'x11-configs
+          home-files-service-type
+          `((".icons/default"
+             ,(file-append (specification->package "bibata-cursor-theme")
+                           "/share/icons/Bibata-Modern-Ice"))
 
-                           (".local/bin/restic-storage" ,%backup-script)
-                           (".xinitrc"
-                            ,(mixed-text-file "xinitrc"
-                              "slock &\n"
-                              (specification->package "xss-lock") "/bin/xss-lock -l lock.sh &\n"
+            (".local/bin/restic-storage" ,%backup-script)
+            (".xinitrc"
+             ,(mixed-text-file "xinitrc"
+                               "slock &\n"
+                               (specification->package "xss-lock") "/bin/xss-lock -l lock.sh &\n"
 
-                              ;; unredir fixes performance in fullscreen apps, e.g. q3
-                              ;; https://github.com/chjj/compton/wiki/perf-guide
-                              ;; (specification->package "picom")
-                              ;; "/bin/picom --backend glx --vsync -b --unredir-if-possible\n"
+                               ;; unredir fixes performance in fullscreen apps, e.g. q3
+                               ;; https://github.com/chjj/compton/wiki/perf-guide
+                               ;; (specification->package "picom")
+                               ;; "/bin/picom --backend glx --vsync -b --unredir-if-possible\n"
 
-                              "keymap.sh\n"
+                               "keymap.sh\n"
 
-                              (specification->package "xhost")
-                              "/bin/xhost +si:localuser:$USER\n"
+                               (specification->package "xhost")
+                               "/bin/xhost +si:localuser:$USER\n"
 
-                              "dbus-update-activation-environment --verbose DBUS_SESSION_BUS_ADDRESS DISPLAY XAUTHORITY\n"
+                               "dbus-update-activation-environment --verbose DBUS_SESSION_BUS_ADDRESS DISPLAY XAUTHORITY\n"
 
-                              "emacs --init-directory=" (specification->package "doomemacs") " --eval '(exwm-enable)'\n"))))
+                               "exec emacs --init-directory=" (specification->package "doomemacs") " --eval '(exwm-enable)'\n"))))
 
-         (simple-service 'configs
-                         home-xdg-configuration-files-service-type
-                         `(("mpv/scripts/mpris.so"
-                            ,(file-append (specification->package "mpv-mpris") "/lib/mpris.so"))
-                           ("mpv/fonts" ,(file-append (specification->package "mpv-uosc") "/share/mpv/fonts"))
-                           ("mpv/scripts/thumbfast.lua"
-                            ,(file-append (specification->package "mpv-thumbfast") "/share/mpv/scripts/thumbfast.lua"))
-                           ("mpv/script-opts/thumbfast.conf"
-                            ,(mixed-text-file "thumbfast.conf" "network=yes"))
-                           ("mpv/scripts/uosc"
-                            ,(file-append (specification->package "mpv-uosc") "/share/mpv/scripts/uosc"))))
+         (simple-service
+          'configs
+          home-xdg-configuration-files-service-type
+          `(("guix/channels.scm" ,(local-file "channels.scm"))
+            ("mpv/scripts/mpris.so"
+             ,(file-append (specification->package "mpv-mpris") "/lib/mpris.so"))
+            ("mpv/fonts" ,(file-append (specification->package "mpv-uosc") "/share/mpv/fonts"))
+            ("mpv/scripts/thumbfast.lua"
+             ,(file-append (specification->package "mpv-thumbfast") "/share/mpv/scripts/thumbfast.lua"))
+            ("mpv/script-opts/thumbfast.conf"
+             ,(mixed-text-file "thumbfast.conf" "network=yes"))
+            ("mpv/scripts/uosc"
+             ,(file-append (specification->package "mpv-uosc") "/share/mpv/scripts/uosc"))))
 
-         (simple-service 'additional-env-vars-service
-                         home-environment-variables-service-type
-                         `(("PATH" . "$HOME/.local/bin:$PATH")
-                           ("QT_PLUGIN_PATH" . ,(file-append qtwayland "/lib/qt6/plugins"))
-                           ("QT_QPA_PLATFORM_PLUGIN_PATH" . ,(file-append qtwayland  "/lib/qt6/plugins/platforms"))
-                           ("_JAVA_AWT_WM_NONREPARENTING" . "1")
-                           ("QT_QPA_PLATFORMTHEME" . "gtk3")
-                           ("XDG_DATA_DIRS" . "$XDG_DATA_DIRS:$HOME/.local/share/flatpak/exports/share")
-                           ("BROWSER" . "qutebrowser")))))))
+         (simple-service
+          'additional-env-vars-service
+          home-environment-variables-service-type
+          `(("PATH" . "$HOME/.local/bin:$PATH")
+            ("QT_PLUGIN_PATH" . ,(file-append qtwayland "/lib/qt6/plugins"))
+            ("QT_QPA_PLATFORM_PLUGIN_PATH" . ,(file-append qtwayland  "/lib/qt6/plugins/platforms"))
+            ("_JAVA_AWT_WM_NONREPARENTING" . "1")
+            ("QT_QPA_PLATFORMTHEME" . "gtk3")
+            ("XDG_DATA_DIRS" . "$XDG_DATA_DIRS:$HOME/.local/share/flatpak/exports/share")
+            ("BROWSER" . "qutebrowser")))))))

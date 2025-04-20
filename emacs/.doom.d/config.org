@@ -1578,7 +1578,6 @@ Reqs:
 - impp for telega/whatsapp
 https://isamert.net/2021/04/21/managing-your-contacts-in-org-mode-and-syncing-them-to-your-phone-android-ios-whatever-.html
 
-** TODO mu4e filtering for guix-patches
 ** DONE guix gc, but not that aggressive
 =--gc-keep-derivations= and =--gc-keep-outputs= to =guix-daemon= params
 ** NO Fix hardcoded =Guix_image= root partition name
@@ -1594,6 +1593,7 @@ Target state:
 - winner to be replaced with custom window management
 - evil bindings in EMMS buffers (q to close, SPC to enter)
 - repeat Super+<digit> to switch (saved) window configurations
+** TODO how to make home services depend on online status?
 * archive :noexport:
 ** emacs-one-frame
 #+begin_src sh :tangle no :shebang #!/bin/bash
