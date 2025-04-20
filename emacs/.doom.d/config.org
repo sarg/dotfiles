@@ -1061,6 +1061,7 @@ qutebrowser --nowindow --target tab-bg-silent $@
 #+end_src
 
 * dict
+[[https://github.com/BoboTiG/ebook-reader-dict][Wiktionary exports]]
 #+begin_src scheme
 "emacs-lexic" "sdcv" "emacs-google-translate"
 #+end_src
@@ -1073,10 +1074,15 @@ qutebrowser --nowindow --target tab-bg-silent $@
 (defun lexic-format-shr (entry &optional _expected-word)
   (with-temp-buffer
     (insert (plist-get entry :info))
-    (let ((tree (libxml-parse-html-region)))
+    (cl-letf* ((tree (libxml-parse-html-region))
+               (dict (plist-get entry :dict))
+               (orig (symbol-function 'shr-urlify))
+               ((symbol-function 'shr-urlify)
+                (lambda (start url &optional title)
+                  (funcall orig start (concat url "?dict=" dict) title))))
       (erase-buffer)
-      (shr-insert-document tree))
-    (buffer-string)))
+      (shr-insert-document tree)
+      (buffer-string))))
 
 (use-package! lexic
   :config
@@ -1091,10 +1097,13 @@ qutebrowser --nowindow --target tab-bg-silent $@
     :width 60)
 
   (defun lexic-open-bword-link (link &rest _)
-    (lexic-search (substring link 8 (length link)) nil nil 'interactive nil))
+    (let* ((qmark (s-index-of "?dict=" link))
+           (word (substring link 8 qmark))
+           (dict (substring link (+ qmark 6))))
+      (lexic-search word nil (list dict) 'interactive nil)))
 
   (add-to-list 'browse-url-handlers
-        '("bword://" . lexic-open-bword-link))
+               '("bword://" . lexic-open-bword-link))
 
   (map! :map lexic-mode-map
         :n
@@ -1108,7 +1117,8 @@ qutebrowser --nowindow --target tab-bg-silent $@
   (setq lexic-dictionary-specs
         '(("Wiktionary DE-DE" :short "Wiktionary" :formatter lexic-format-shr :priority 0)
           ("Duden - Das große Wörterbuch der deutschen Sprache"
-           :short "Duden" :formatter lexic-format-shr :priority 1))))
+           :short "Duden" :formatter lexic-format-shr :priority 1)
+          ("Langenscheidt e-Grosswörterbuch Deutsch als Fremdsprache (Deu-Deu) (de-de)" :short "Langenscheidt" :formatter lexic-format-shr :priority 2))))
 #+end_src
 * email
 #+begin_src scheme
