@@ -71,21 +71,23 @@
 (define (supercron-shepherd-service config)
   (match-record config <supercron-configuration>
                 (supercron jobs log? log-file period)
-    (list (shepherd-service
-           (documentation "Runs supercron instance.")
-           (provision '(supercron))
-           (modules `(((shepherd support) #:hide (mkdir-p)) ;for '%user-log-dir'
-                      ,@%default-modules))
-           (start #~(let ((state-dir (string-append (getenv "XDG_STATE_HOME") "/supercron")))
-                      (mkdir-p state-dir)
-                      (make-forkexec-constructor
-                       (list #$(file-append supercron "/bin/supercron")
-                             #$@(if log? '("--verbose") '())
-                             "--period" #$period
-                             #$(scheme-file "tasks" #~(list #$@jobs)))
-                       #:log-file #$log-file
-                       #:directory state-dir)))
-           (stop #~(make-kill-destructor))))))
+    (let ((job-file (scheme-file "tasks" #~(list #$@jobs))))
+      (list (shepherd-service
+             (documentation "Runs supercron instance.")
+             (provision '(supercron))
+             (modules `(((shepherd support) #:hide (mkdir-p)) ;for '%user-log-dir'
+                        ,@%default-modules))
+             (actions (list (shepherd-configuration-action job-file)))
+             (start #~(let ((state-dir (string-append (getenv "XDG_STATE_HOME") "/supercron")))
+                        (mkdir-p state-dir)
+                        (make-forkexec-constructor
+                         (list #$(file-append supercron "/bin/supercron")
+                               #$@(if log? '("--verbose") '())
+                               "--period" #$period
+                               #$job-file)
+                         #:log-file #$log-file
+                         #:directory state-dir)))
+             (stop #~(make-kill-destructor)))))))
 
 (define-public supercron-service-type
   (service-type
