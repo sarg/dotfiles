@@ -7,6 +7,7 @@
   #:use-module (gnu packages video)
   #:use-module (gnu packages compression)
   #:use-module (nonguix build-system binary)
+  #:use-module (guix build-system copy)
   #:use-module (guix packages))
 
 (define-public babashka
@@ -159,3 +160,60 @@ LD_LIBRARY_PATH=~a CLASSPATH=~a/* ~a/bin/java ~a org.tinymediamanager.TinyMediaM
    (synopsis "Media library manager")
    (description "Media library manager")
    (license license:asl1.1)))
+
+(define-public temporal-io-server
+  (package
+    (name "temporal-io-server")
+    (version "1.27.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/temporalio/temporal/releases/download/v"
+             version "/temporal_" version "_linux_amd64.tar.gz"))
+       (sha256
+        (base32 "0r7xqila3vr6gwy3d9bwp3rzvw67fa7wxc794b2gq498pp8vqzpv"))))
+    (build-system copy-build-system)
+    (arguments
+     (list
+
+     #:phases
+     #~(modify-phases %standard-phases
+         (add-after 'unpack 'get-back
+           (lambda _ (chdir ".."))))
+
+      #:install-plan
+      #~'(("." "bin/" #:include-regexp ("temporal-.*")))))
+    (home-page "https://go.temporal.io/server")
+    (synopsis "Temporal")
+    (description
+     "Temporal is a durable execution platform that enables developers to build
+scalable applications without sacrificing productivity or reliability.  The
+Temporal server executes units of application logic called Workflows in a
+resilient manner that automatically handles intermittent failures, and retries
+failed operations.")
+    (license license:expat)))
+
+(define-public temporal-cli
+  (package
+    (name "temporal-cli")
+    (version "1.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/temporalio/cli/releases/download/v"
+             version "/temporal_cli_" version "_linux_amd64.tar.gz"))
+       (sha256 "0knpzhylx8c3nilflxw5949mg4b5zddbbnkm817hids8p5prf0ya")))
+    (build-system copy-build-system)
+    (arguments
+     (list #:install-plan #~'(("temporal" "bin/"))))
+    (home-page "https://go.temporal.io/cli")
+    (synopsis "Temporal")
+    (description
+     "Temporal is a durable execution platform that enables developers to build
+scalable applications without sacrificing productivity or reliability.  The
+Temporal server executes units of application logic called Workflows in a
+resilient manner that automatically handles intermittent failures, and retries
+failed operations.")
+    (license license:expat)))
