@@ -27,6 +27,7 @@
  (personal services utils)
  (personal services supercron)
  (personal packages binary)
+ (personal packages xorg)
  (srfi srfi-1)
  (srfi srfi-11))
 
@@ -100,8 +101,7 @@
    (list (mixed-text-file
           "x-autostart"
           "[[ ! $DISPLAY && $(tty) == /dev/" tty " ]] && "
-          "exec startx"
-          ))))
+          "exec " startx))))
 
 (define git2rss (load "../git2rss/guix.scm"))
 (define (changelog-task fn)

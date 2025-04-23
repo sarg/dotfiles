@@ -18,11 +18,11 @@
 
 (use-package-modules
  linux ssh android search suckless fonts firmware
- xorg gnome admin cups spice)
+ gnome admin cups spice)
 
 (use-service-modules
  admin desktop ssh networking sysctl cups avahi guix vpn
- linux xorg dbus shepherd sound pm dns virtualization)
+ xorg linux dbus shepherd sound pm dns virtualization)
 
 (define (relative-file file)
   (string-append (current-source-directory) "/" file))
@@ -169,9 +169,6 @@
               (cups-configuration
                (web-interface? #t)
                (extensions (list cups-filters))))
-
-     (service startx-command-service-type
-              (xorg-configuration (modules (list xf86-input-libinput))))
 
      (simple-service 'resolvconf etc-service-type
                      (list `("resolvconf.conf"
