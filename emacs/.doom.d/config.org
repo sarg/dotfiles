@@ -624,10 +624,10 @@ dbusserver: true
 #+begin_src elisp :tangle packages.el
 (package! org-modern-indent
     :recipe (:host github :repo "jdtsmith/org-modern-indent")
-    :pin "fcd4368476a9c4eadfac4d6f51159d90a15de15a")
+    :pin "9973bd3b91e4733a3edd1fca232208c837c05473")
 (package! corg
   :recipe (:host github :repo "isamert/corg.el")
-  :pin "16d2b80fb2ff4daf0ab9bf89e5c9f649431337fc")
+  :pin "79af293aa95936274d7b3a6ba13d4b66a3a6ee76")
 (package! org-projectile :pin "bf1c30b750020ab8dd634dd66b2c7b76c56286c5")
 (package! org-tidy :pin "0bea3a2ceaa999e0ad195ba525c5c1dcf5fba43b")
 #+end_src
@@ -985,7 +985,7 @@ choose_entry() {
 #+begin_src elisp :tangle packages.el
 (package! emms-player-spotify
   :recipe (:host github :repo "sarg/emms-spotify" :files (:defaults "contrib"))
-  :pin "dec0d34736da7ff538117033b3758edde3b8e546")
+  :pin "ca80431b00738e6130b924c64dc1f2cddadcc0b8")
 #+end_src
 #+begin_src elisp
 (use-package! emms-player-spotify
@@ -1526,7 +1526,7 @@ emacsclient -e '(dmenu/select-line-from-file "'$tmp'" :prompt '"$prompt"' :lines
 #+end_src
 ** gptel
 #+begin_src elisp :tangle packages.el
-(package! gptel :pin "dfd88798c1ca26b28c1eb1987cb9967a4fc4d712")
+(package! gptel :pin "42fb1bfa72faa79afc608b17a7a32518ed2915e7")
 #+end_src
 
 #+begin_src elisp
