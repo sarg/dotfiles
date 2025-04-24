@@ -28,6 +28,9 @@
     (when (-any (lambda (re) (string-match re text)) re-list)
       (kill-new (match-string 1 text)))))
 
+(defun telega-sponsored-msg-p (msg)
+  (eq 'sponsoredMessage (telega--tl-type msg)))
+
 (use-package! telega
   :commands (telega)
 
@@ -58,6 +61,8 @@
   (telega-sticker-size '(8 . 48))
   (telega-emoji-use-images nil)
   (telega-emoji-custom-alist '((":s:" . "¯\\_(ツ)_/¯")))
+  (telega-msg-ignore-predicates '(telega-sponsored-msg-p
+                                  telega-msg-special-p))
 
   :config
   (add-hook! telega-root-mode (cd telega-directory))
@@ -70,8 +75,6 @@
   (telega-active-video-chats-mode -1)
   (telega-contact-birthdays-mode -1)
   (telega-active-stories-mode -1)
-
-  (advice-add #'telega-ins--sponsored-message :override #'ignore)
 
   (setq telega-hide-previews 't)
   ;; show previews for photo/video webpages
