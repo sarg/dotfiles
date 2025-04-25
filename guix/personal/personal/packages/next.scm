@@ -1,9 +1,10 @@
-(define-module (personal packages xorg)
+(define-module (personal packages next)
   #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module  (gnu services xorg)
   #:use-module (gnu packages fonts)
+  #:use-module (gnu packages emacs-xyz)
   #:use-module (gnu packages xorg))
 
 (define-public xorg-server-next
@@ -39,3 +40,20 @@
    (xorg-configuration
     (server xorg-server-next)
     (modules (list xf86-input-libinput-next)))))
+
+(define-public emacs-calibredb-next
+  (let ((commit "40a16be1391e526c0a96e6eda3ba6bd44778e5d8")
+        (revision "0"))
+    (package
+      (inherit emacs-calibredb)
+      (name "emacs-calibredb")
+      (version (git-version "2.13.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/chenyanming/calibredb.el")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1a0a119fr4xznscjsgbjfmgn4xsp7kj4ylr5xl4s0xlqjcxjk4yr")))))))
