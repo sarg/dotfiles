@@ -1271,12 +1271,16 @@ emacsclient -e \
 (set-modeline-hook! 'qutebrowser-exwm-mode-hook :qutebrowser)
 
 (use-package! qutebrowser
+  :custom
+  (qutebrowser-launcher-backend #'qutebrowser-consult-launcher)
+
   :config
   (add-hook! exwm-init-hook
     (lambda ()
       (global-qutebrowser-exwm-mode 1)
       (qutebrowser-evil-state-mode 1)
       (qutebrowser-theme-export-mode 1))))
+
 (use-package! yeetube
   :config
   (map! :map yeetube-mode-map :ni "RET" #'yeetube-play))
