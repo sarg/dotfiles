@@ -28,7 +28,7 @@
  (personal services utils)
  (personal services supercron)
  (personal packages binary)
- (personal packages xorg)
+ (personal packages next)
  (srfi srfi-1)
  (srfi srfi-11))
 

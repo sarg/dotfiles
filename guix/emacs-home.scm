@@ -51,7 +51,7 @@
          "emacs-debbugs" "gnu-standards" "mumi-with-jaro" "emacs-guix"
          "emacs-next"
          "emacs-telega" "emacs-telega-contrib"
-         "emacs-vterm"
+         "emacs-vterm" "guix-icons"
          
          ; modules dependencies
          "shfmt" "shellcheck" "fd"
