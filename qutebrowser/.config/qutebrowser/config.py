@@ -48,6 +48,12 @@ c.url.searchengines = {
 c.fonts.default_family = ["Hack"]
 c.fonts.default_size = '14pt'
 
+# allow video calls
+for site in ("meet.google.com", ):
+    for perm in ("content.notifications.enabled", "content.media.audio_video_capture",
+                 "content.media.audio_capture", "content.media.video_capture"):
+        config.set(perm, True, site)
+
 # bindings
 config.unbind('q', mode='normal')
 config.unbind('<Ctrl-p>', mode='command')
