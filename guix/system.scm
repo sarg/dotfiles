@@ -27,19 +27,6 @@
 (define (relative-file file)
   (string-append (current-source-directory) "/" file))
 
-(define extrakeys-service-type
-  (shepherd-service-type
-   'extrakeys
-   (lambda (codes)
-     (let ((setkeycodes (file-append kbd "/bin/setkeycodes"))
-           (args (append-map (lambda (a) (list (car a) (cdr a))) codes)))
-       (shepherd-service
-        (documentation "Load extra keys (setkeycodes) at boot.")
-        (provision '(extrakeys))
-        (start #~(lambda _ (invoke #$setkeycodes #$@args)))
-        (one-shot? #t))))
-   (description "Map special keys")))
-
 (define polkit-udisks-wheel
   (file-union
    "polkit-udisks-wheel"
@@ -253,10 +240,12 @@
                (extra-options '("--bind-interfaces"
                                 "--interface=lo"))))
 
-     (service extrakeys-service-type
-              '(("1d" . "56")   ; lctrl->lalt
-                ("38" . "29")   ; lalt->lctrl
-                ("3a" . "42"))) ; capslock->lshift
+     (simple-service
+      'setkeycodes activation-service-type
+      #~(invoke (string-append #$kbd "/bin/setkeycodes")
+                "1d" "56"                  ; lctrl->lalt
+                "38" "29"                  ; lalt->lctrl
+                "3a" "42"))      ; capslock->lshift
 
      (udev-rules-service 'android android-udev-rules #:groups '("adbusers"))
      (udev-rules-service 'qmk qmk-udev-rules)
