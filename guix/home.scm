@@ -197,7 +197,7 @@
                   (home-dotfiles-configuration
                    (layout 'stow)
                    (directories '(".."))
-                   (packages '("android" "email" "xsession" "git" "qutebrowser" "desktop"))))
+                   (packages '("android" "email" "xsession" "git" "qutebrowser" "desktop" "vim"))))
 
          (simple-service
           'changelog-jobs

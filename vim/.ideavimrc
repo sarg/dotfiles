@@ -2,17 +2,19 @@ set gdefault
 set multiple-cursors
 set surround
 set ignorecase
+set clipboard+=unnamedplus
 
 inoremap jk <Esc>
 
-# linenumbers
+
+" linenumbers
 set rnu
 
 nmap ; :
 
 let mapleader=" "
 
-# goto actions
+" goto actions
 nnoremap <leader>gd :action GotoDeclaration<cr>
 nnoremap <leader>gi :action GotoImplementation<cr>
 nnoremap <leader>gl :action FileStructurePopup<cr>
@@ -22,32 +24,32 @@ nnoremap <leader>gc :action GotoClass<cr>
 
 nnoremap <leader>ff :action GotoFile<cr>
 
-# search
+" search
 nnoremap <leader>sap :action FindInPath<cr>
 
-# buffers
+" buffers
 nnoremap <leader>bd :action CloseContent<CR>
 nnoremap <leader>bb :action RecentFiles<cr>
 nnoremap <leader>bm :action CloseAllEditorsButActive<CR>
 
-# windows
+" windows
 nnoremap <leader>wv :vsplit<CR>
 nnoremap <leader>ws :split<CR>
 
-# select paste in visual mode
+" select paste in visual mode
 nnoremap gp `[v`]
 
-# hybrid mode
+" hybrid mode
 inoremap <c-b> <left>
 inoremap <c-f> <right>
 inoremap <c-d> <Delete>
 inoremap <c-a> <Esc>I
 inoremap <c-e> <End>
 
-# refactoring
+" refactoring
 nnoremap <leader>riv :action IntroduceVariable<CR>
 nnoremap <leader>ric :action IntroduceConstant<CR>
 nnoremap <leader>rif :action IntroduceField<CR>
 
-# search
+" search
 nnoremap <leader><space> :action emacsIDEAs.AceJumpWord<CR>
