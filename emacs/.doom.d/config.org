@@ -356,16 +356,27 @@ REVERSE? it when true. Returns the selected buffer."
   (defun app-launcher--action-dex (selected)
     (call-process "dex" nil nil nil (alist-get 'file selected)))
 
-  (advice-add 'app-launcher-list-desktop-files :filter-return
-              (lambda (apps)
-                (let ((keep '("lutris" "libreoffice-startcenter" "flatseal" "spotify" "calibre-gui"))
-                      (del '("flatpak" "emacs" "qview" "scrcpy" "qutebrowser" "darkman"
-                             "libreoffice" "mpv" "quake3" "flameshot" "calibre")))
-                  (seq-filter (lambda (el)
-                                (or
-                                 (-any? (lambda (i) (s-contains? i (cdr el) t)) keep)
-                                 (-none? (lambda (i) (s-contains? i (cdr el) t)) del)))
-                              apps))))
+  (defvar app-launcher-allow-list
+    '("lutris" "libreoffice-startcenter" "flatseal" "spotify" "calibre-gui" "idea")
+    "Apps that are visible in the app-launcher")
+
+  (defvar app-launcher-hide-list
+    '("flatpak" "emacs" "qview" "scrcpy" "qutebrowser" "darkman"
+      "libreoffice" "mpv" "quake3" "flameshot" "calibre")
+    "Apps to hide from the app-launcher")
+
+  (defun app-launcher-filter (apps)
+    (maphash (lambda (_ def)
+               (let ((file (alist-get 'file def)))
+                 (unless (or
+                          (-any? (lambda (i) (s-contains? i file t)) app-launcher-allow-list)
+                          (-none? (lambda (i) (s-contains? i file t)) app-launcher-hide-list))
+                   (setf (alist-get 'visible def) nil))))
+             apps)
+    apps)
+
+  (advice-add 'app-launcher-parse-files
+              :filter-return #'app-launcher-filter)
 
   (setq app-launcher--action-function #'app-launcher--action-dex))
 #+end_src
