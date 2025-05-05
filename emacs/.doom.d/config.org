@@ -807,7 +807,7 @@ include theme
 (package! nov :built-in t)
 (package! zathura-sync-theme
   :recipe (:host github :repo "sarg/zathura-sync-theme")
-  :pin "c0e6169e76fe6b7a92fd7acda2c27d0209e7d5a6")
+  :pin "ce5ee1ff2e521c39a8c307826c9470003380d40e")
 #+end_src
 
 #+begin_src scheme
