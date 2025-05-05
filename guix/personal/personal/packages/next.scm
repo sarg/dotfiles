@@ -1,9 +1,12 @@
 (define-module (personal packages next)
   #:use-module (guix git-download)
+  #:use-module (guix gexp)
+  #:use-module (guix modules)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
-  #:use-module  (gnu services xorg)
+  #:use-module (gnu services xorg)
   #:use-module (gnu packages fonts)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages emacs-xyz)
   #:use-module (gnu packages xorg))
 
@@ -34,6 +37,86 @@
     (inputs
      (modify-inputs (package-inputs xf86-input-libinput)
        (replace "xorg-server" xorg-server-next)))))
+
+(define* (xorg-start-command-xinit #:optional (config (xorg-configuration)))
+  "Return a @code{startx} script in which the modules, fonts, etc. specified
+in @var{config}, are available.  The result should be used in place of
+@code{startx}.  Compared to the @code{xorg-start-command} it calls xinit,
+therefore it works well when executed from tty."
+  (define X
+    (xorg-wrapper config))
+
+  (define exp
+    ;; Small wrapper providing subset of functionality of typical startx
+    ;; script from distributions like alpine.
+    (with-imported-modules (source-module-closure '((guix build utils)))
+      #~(begin
+          (use-modules (guix build utils)
+                       (ice-9 popen)
+                       (ice-9 textual-ports))
+
+          (define (capture-stdout . prog+args)
+            (let* ((port (apply open-pipe* OPEN_READ prog+args))
+                   (data (get-string-all port)))
+              (if (zero? (status:exit-val (close-pipe port)))
+                  (string-trim-right data #\newline)
+                  (error "Command failed: " prog+args))))
+
+          (define (determine-unused-display n)
+            (let ((lock-file (format #f "/tmp/.X~a-lock" n))
+                  (sock-file (format #f "/tmp/.X11-unix/X~a" n)))
+              (if (or (file-exists? lock-file)
+                      (false-if-exception
+                       (eq? 'socket (stat:type (stat sock-file)))))
+                  (determine-unused-display (+ n 1))
+                  (format #f ":~a" n))))
+
+          (define (vty-from-fd0)
+            (let ((fd0 (readlink "/proc/self/fd/0"))
+                  (pref "/dev/tty"))
+              (if (string-prefix? pref fd0)
+                  (substring fd0 (string-length pref))
+                  (error (format #f "Cannot determine VT from: ~a" fd0)))))
+
+          (define (determine-vty)
+            (string-append "vt" (or (getenv "XDG_VTNR") (vty-from-fd0))))
+
+          (define (enable-xauth server-auth-file display)
+            ;; Configure and enable X authority
+            (or (getenv "XAUTHORITY")
+                (setenv "XAUTHORITY" (string-append (getenv "HOME") "/.Xauthority")))
+
+            (let* ((bin/xauth #$(file-append xauth "/bin/xauth"))
+                   (bin/mcookie #$(file-append util-linux "/bin/mcookie"))
+                   (mcookie (capture-stdout bin/mcookie)))
+              (invoke bin/xauth "-qf" server-auth-file
+                      "add" display "." mcookie)
+              (invoke bin/xauth "-q"
+                      "add" display "." mcookie)))
+
+          (let* ((xinit #$(file-append xinit "/bin/xinit"))
+                 (display (determine-unused-display 0))
+                 (vty (determine-vty))
+                 (server-auth-port (mkstemp "/tmp/serverauth.XXXXXX"))
+                 (server-auth-file (port-filename server-auth-port)))
+            (close-port server-auth-port)
+            (enable-xauth server-auth-file display)
+            (apply execl
+                   xinit
+                   xinit
+                   "--"
+                   #$X
+                   display
+                   vty
+                   "-keeptty"
+                   "-auth" server-auth-file
+                   ;; These are set by xorg-start-command, so do the same to keep
+                   ;; it consistent.
+                   "-logverbose" "-verbose" "-terminate"
+                   #$@(xorg-configuration-server-arguments config)
+                   (cdr (command-line)))))))
+
+  (program-file "startx" exp))
 
 (define-public startx
   (xorg-start-command-xinit

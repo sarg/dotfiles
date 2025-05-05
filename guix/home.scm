@@ -9,6 +9,7 @@
  (gnu home)
  (gnu services)
  (gnu packages)
+ (gnu packages admin)
  (gnu packages gnupg)
  (gnu packages qt)
  (gnu home services)
@@ -96,14 +97,6 @@
      ("data/qutebrowser" . ".local/share/qutebrowser")
      ("apps/quake3" . ".q3a"))))
 
-(define (x-autostart-on tty)
-  (simple-service
-   'x-autostart home-shell-profile-service-type
-   (list (mixed-text-file
-          "x-autostart"
-          "[[ ! $DISPLAY && $(tty) == /dev/" tty " ]] && "
-          "exec " startx))))
-
 (define git2rss (load "../git2rss/guix.scm"))
 (define (changelog-task fn)
   #~(make <task>
@@ -153,7 +146,31 @@
    (home-environment-user-services %emacs-home)
    (list (service home-bash-service-type)
 
-         (x-autostart-on "tty1")
+         (simple-service
+          'startx
+          home-shepherd-service-type
+          (list
+           (shepherd-service
+            (provision '(display))
+            (requirement '(dbus))
+            (start #~(make-forkexec-constructor
+                      (list #$startx)
+                      #:create-session? #f))
+            (stop #~(make-kill-destructor)))))
+
+         (service home-shepherd-service-type
+                  (home-shepherd-configuration
+                   (auto-start? #f)
+                   (daemonize? #f)))
+
+         (simple-service
+          'home-shepherd home-shell-profile-service-type
+          (list (mixed-text-file
+                 "home-shepherd"
+                 "[[ $(tty) == /dev/tty1 ]] && exec "
+                 shepherd-1.0 "/bin/shepherd"
+                 " --silent"
+                 " --config ~/.config/shepherd/init.scm")))
 
          (service home-pipewire-service-type)
          (service home-symlinks-service-type symlinks)

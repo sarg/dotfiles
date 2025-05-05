@@ -42,8 +42,11 @@
   (if (string=? tty (mingetty-configuration-tty config))
       (mingetty-configuration
        (inherit config)
-       (login-pause? #t)
-       (auto-login user))
+       (auto-login user)
+       (shepherd-requirement
+        (cons 'dbus-system
+              (mingetty-configuration-shepherd-requirement
+               config))))
       config))
 
 (operating-system
