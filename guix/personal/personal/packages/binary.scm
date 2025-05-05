@@ -43,14 +43,14 @@
 (define-public oama
   (package
     (name "oama")
-    (version "0.18")
+    (version "0.20.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://github.com/pdobsan/oama/releases/download/"
                     version "/oama-" version "-Linux-x86_64.tar.gz"))
               (sha256
-               (base32 "1pcazb8zmjs6nhhl49wdvv85qnw03b1p0f0vhs6mwn5si705jf69"))))
+               (base32 "01qn02qrsa4rngbd9vg3h0sa2zhhs4npkjcr95n0bz0b3jhqfzg4"))))
 
     (build-system binary-build-system)
     (supported-systems '("x86_64-linux"))

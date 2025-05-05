@@ -30,7 +30,7 @@
 (define-public mpv-uosc
   (package
     (name "mpv-uosc")
-    (version "5.6.0")
+    (version "5.8.0")
     (source
      (origin
        (method url-fetch/zipbomb)
@@ -39,7 +39,7 @@
              version
              "/uosc.zip"))
        (sha256
-        (base32 "13lnnyy9qv7pg3yjvavrjznwvdn9cwj2fzv46ac1cjy57fff3ak1"))))
+        (base32 "06k8anzywywshjikllliabx81fb1455wwazcfwfhanpvb33s1vfh"))))
     (build-system copy-build-system)
     (arguments
      (list
@@ -51,8 +51,8 @@
     (license license:gpl3+)))
 
 (define-public mpv-thumbfast
-  (let ((commit "f1fdf10b17f394f2d42520d0e9bf22feaa20a9f4")
-        (revision "1"))
+  (let ((commit "9deb0733c4e36938cf90e42ddfb7a19a8b2f4641")
+        (revision "2"))
     (package
       (name "mpv-thumbfast")
       (version (git-version "0.1" revision commit))
@@ -64,7 +64,7 @@
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "0wxcbq4ji6qbbml37w5pdhg43k3mixfn6p3hapf7wc0gxmzhna3k"))))
+          (base32 "0q537fjj9ndq7pzg2rv4h5qas8s3812k21bpw064bcvb204vbwba"))))
       (build-system copy-build-system)
       (arguments
        (list #:install-plan
