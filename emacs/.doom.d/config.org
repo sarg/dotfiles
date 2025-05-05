@@ -27,7 +27,7 @@ To define guix dependencies add a =scheme= source code block. It'll be then tang
 * guix-emacs helper
 #+begin_src elisp
 (defun use-guix-package (pkg-name)
-  (interactive "Package:")
+  (interactive "MPackage: ")
 
   (let* ((pkg-path
           (thread-last
@@ -103,7 +103,7 @@ To define guix dependencies add a =scheme= source code block. It'll be then tang
  :editor      (evil +everywhere) fold lispy snippets (format +onsave) multiple-cursors word-wrap
  :emacs       (dired +dirvish +icons) electric vc ibuffer undo
  :term        eshell vterm
- :tools       editorconfig (eval +overlay) (lookup +docsets) magit pdf (pass +auth) make tree-sitter lsp
+ :tools       editorconfig (eval +overlay) (lookup +docsets) magit pdf (pass +auth) make tree-sitter lsp direnv
  :checkers    syntax
  :lang        clojure data emacs-lisp
               (org +contacts +dragndrop +pandoc +present +hugo +roam2 +pretty) beancount
@@ -1310,7 +1310,15 @@ emacsclient -e \
 #+end_src
 
 #+begin_src scheme
-"emacs-eat" "emacs-detached"
+"emacs-eat" "emacs-detached" "direnv"
+#+end_src
+
+#+begin_src scheme :noweb-ref guix-srv
+(simple-service 'direnv-bash-hook home-bash-service-type
+ (home-bash-extension
+  (bashrc (list
+           (plain-file "envrc-hook"
+            "eval \"$(direnv hook bash)\"")))))
 #+end_src
 
 #+begin_src scheme :noweb-ref guix-srv

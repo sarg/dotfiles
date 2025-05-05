@@ -40,6 +40,11 @@
                          (list #$(file-append (@ (gnu packages mail) goimapnotify) "/bin/goimapnotify"))
                          #:log-file (string-append %user-log-dir "/goimapnotify.log")))
                (stop #~(make-kill-destructor)))))
+            (simple-service 'direnv-bash-hook home-bash-service-type
+             (home-bash-extension
+              (bashrc (list
+                       (plain-file "envrc-hook"
+                        "eval \"$(direnv hook bash)\"")))))
             (simple-service 'eat-bash-integration home-bash-service-type
              (home-bash-extension
               (bashrc (list
@@ -82,7 +87,7 @@
          "emacs-lexic" "sdcv" "emacs-google-translate"
          "mu" "isync" "msmtp" "emacs-consult-mu" "oama" "cyrus-sasl-xoauth2"
          "emacs-mpv" "emacs-webpaste" "emacs-yeetube"
-         "emacs-eat" "emacs-detached"
+         "emacs-eat" "emacs-detached" "direnv"
          "emacs-dired-hacks" "emacs-dired-du"
          "emacs-openwith" "emacs-sxiv"
          "emacs-bookmark-plus"
