@@ -217,3 +217,29 @@ Temporal server executes units of application logic called Workflows in a
 resilient manner that automatically handles intermittent failures, and retries
 failed operations.")
     (license license:expat)))
+
+(define-public github-cli
+  (package
+    (name "github-cli")
+    (version "2.72.0")
+    (source
+     (origin
+       (method url-fetch/tarbomb)
+       (uri (string-append "https://github.com/cli/cli/releases/download/v" version
+                           "/gh_" version "_linux_amd64.tar.gz"))
+       (sha256
+        (base32 "0f3zqwab3mplzgxsfx96s67g6n76aijv00hkaccn3kvm21wsklzz"))))
+    (build-system binary-build-system)
+    (arguments
+     (list
+      #:install-plan
+      (let ((dir (string-append "gh_" version "_linux_amd64")))
+        #~'((#$(string-append dir "/bin") "bin")
+            (#$(string-append dir "/share") "share")))))
+    (home-page "https://github.com/cli/cli")
+    (supported-systems '("x86_64-linux"))
+    (synopsis "GitHub’s official command line tool")
+    (description "gh is GitHub on the command line. It brings pull requests,
+issues, and other GitHub concepts to the terminal next to where you are already
+working with git and your code.")
+    (license license:expat)))
