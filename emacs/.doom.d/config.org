@@ -493,7 +493,7 @@ tw.ddnet.ddnet
    "<XF86Launch1>" #'dash-menu
    "<XF86MonBrightnessUp>" "brightnessctl -e set 10%+"
    "<XF86MonBrightnessDown>" "brightnessctl -e set 10%-"
-   "<XF86ScreenSaver>" "lock.sh"
+   "<XF86ScreenSaver>" "xset s activate"
    "<f13> <f12>" "flameshot gui")
 #+end_src
 ** dark mode

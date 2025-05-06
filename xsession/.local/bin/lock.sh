@@ -2,7 +2,7 @@
 
 # taken from xss-lock transfer-sleep-lock-generic-delay.sh
 # Command to start the locker (should not fork)
-locker="slock"
+locker="screen-locker"
 
 # Delay in seconds. Note that by default systemd-logind allows a maximum sleep
 # delay of 5 seconds.
@@ -11,7 +11,7 @@ sleep_delay=1
 # Run before starting the locker
 pre_lock() {
     echo "$(date +%s%N);lock;on" >> ~/.events/lock
-    xset dpms force off
+    #xset dpms force off
     xkb-switch -s us
 }
 

@@ -1,5 +1,6 @@
 (use-modules
  (gnu)
+ (gnu artwork)
  (guix)
  (guix gexp)
  (guix build utils)
@@ -127,6 +128,31 @@
                          #:period (period "1d")))
       #:arguments '(#$%backup-script)))
 
+
+(define feh-saver
+  (chmod-computed-file
+   (mixed-text-file "feh-saver"
+                    "#!/bin/sh\n"
+                    (pkg "feh") "/bin/feh"
+                    " --window-id=${XSCREENSAVER_WINDOW}"
+                    " "
+                    ((@@ (gnu bootloader grub) image->png)
+                     (file-append %artwork-repository "/backgrounds/guix-checkered-16-9.svg")
+                     #:width 1600 #:height 900))
+   #o555))
+
+(define %guix-screen-locker
+  (chmod-computed-file
+   (mixed-text-file "screen-locker"
+                    "#!/bin/sh\n"
+                    " XSECURELOCK_WANT_FIRST_KEYPRESS=1"
+                    " XSECURELOCK_SHOW_KEYBOARD_LAYOUT=0"
+                    " XSECURELOCK_PASSWORD_PROMPT=disco"
+                    " XSECURELOCK_SHOW_HOSTNAME=0"
+                    " XSECURELOCK_SAVER=" feh-saver
+                    " " xsecurelock-next "/bin/xsecurelock")
+   #o555))
+
 (define %emacs-home (load "./emacs-home.scm"))
 (home-environment
  (packages
@@ -233,10 +259,13 @@
                            "/share/icons/Bibata-Modern-Ice"))
 
             (".local/bin/restic-storage" ,%backup-script)
+            (".local/bin/screen-locker" ,%guix-screen-locker)
             (".xinitrc"
              ,(mixed-text-file "xinitrc"
-                               "slock &\n"
-                               (pkg "xss-lock") "/bin/xss-lock -l lock.sh &\n"
+                               "xset s 300 5\n"
+                               (pkg "xss-lock") "/bin/xss-lock -n " xsecurelock-next "/libexec/xsecurelock/dimmer -l lock.sh &\n"
+                               "sleep 0.5; xset s activate\n"
+                               "pidwait -x xsecurelock; sleep 0.1; pkill -x -USR2 xsecurelock\n"
 
                                ;; unredir fixes performance in fullscreen apps, e.g. q3
                                ;; https://github.com/chjj/compton/wiki/perf-guide

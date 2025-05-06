@@ -19,8 +19,8 @@
              (ice-9 textual-ports))
 
 (use-package-modules
- linux ssh android search suckless fonts firmware
- gnome admin cups spice)
+ linux ssh android search fonts firmware
+ gnome admin cups spice xdisorg)
 
 (use-service-modules
  admin desktop ssh networking sysctl cups avahi guix vpn
@@ -111,6 +111,10 @@
   (privileged-programs
    (append (list
             (privileged-program
+             (program (file-append xsecurelock "/libexec/xsecurelock/authproto_pam"))
+             (setuid? #t))
+
+            (privileged-program
              (program (file-append spice-gtk "/libexec/spice-client-glib-usb-acl-helper"))
              (setuid? #t)))
            %default-privileged-programs))
@@ -171,10 +175,6 @@
                              ,(plain-file "resolvconf.conf"
                                           "name_servers=127.0.1.1\ndnsmasq=true\ndnsmasq_conf=/etc/dnsmasq.servers"))))
 
-     (service screen-locker-service-type
-              (screen-locker-configuration
-               (name "slock")
-               (program (file-append slock "/bin/slock"))))
      ;; Add polkit rules, so that non-root users in the wheel group can
      ;; perform administrative tasks (similar to "sudo").
      polkit-wheel-service
