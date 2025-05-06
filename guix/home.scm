@@ -33,6 +33,7 @@
  (srfi srfi-1)
  (srfi srfi-11))
 
+(define-syntax pkg (identifier-syntax specification->package))
 (define %pkg-android
   '("adb" "fdroidcl" "socat" "scrcpy"))
 
@@ -228,42 +229,40 @@
           'x11-configs
           home-files-service-type
           `((".icons/default"
-             ,(file-append (specification->package "bibata-cursor-theme")
+             ,(file-append (pkg "bibata-cursor-theme")
                            "/share/icons/Bibata-Modern-Ice"))
 
             (".local/bin/restic-storage" ,%backup-script)
             (".xinitrc"
              ,(mixed-text-file "xinitrc"
                                "slock &\n"
-                               (specification->package "xss-lock") "/bin/xss-lock -l lock.sh &\n"
+                               (pkg "xss-lock") "/bin/xss-lock -l lock.sh &\n"
 
                                ;; unredir fixes performance in fullscreen apps, e.g. q3
                                ;; https://github.com/chjj/compton/wiki/perf-guide
-                               ;; (specification->package "picom")
+                               ;; (pkg "picom")
                                ;; "/bin/picom --backend glx --vsync -b --unredir-if-possible\n"
 
                                "keymap.sh\n"
-
-                               (specification->package "xhost")
-                               "/bin/xhost +si:localuser:$USER\n"
+                               (pkg "xhost") "/bin/xhost +si:localuser:$USER\n"
 
                                "dbus-update-activation-environment --verbose DBUS_SESSION_BUS_ADDRESS DISPLAY XAUTHORITY\n"
 
-                               "exec emacs --init-directory=" (specification->package "doomemacs") " --eval '(exwm-enable)'\n"))))
+                               "exec emacs --init-directory=" (pkg "doomemacs") " --eval '(exwm-enable)'\n"))))
 
          (simple-service
           'configs
           home-xdg-configuration-files-service-type
           `(("guix/channels.scm" ,(local-file "channels.scm"))
             ("mpv/scripts/mpris.so"
-             ,(file-append (specification->package "mpv-mpris") "/lib/mpris.so"))
-            ("mpv/fonts" ,(file-append (specification->package "mpv-uosc") "/share/mpv/fonts"))
+             ,(file-append (pkg "mpv-mpris") "/lib/mpris.so"))
+            ("mpv/fonts" ,(file-append (pkg "mpv-uosc") "/share/mpv/fonts"))
             ("mpv/scripts/thumbfast.lua"
-             ,(file-append (specification->package "mpv-thumbfast") "/share/mpv/scripts/thumbfast.lua"))
+             ,(file-append (pkg "mpv-thumbfast") "/share/mpv/scripts/thumbfast.lua"))
             ("mpv/script-opts/thumbfast.conf"
              ,(mixed-text-file "thumbfast.conf" "network=yes"))
             ("mpv/scripts/uosc"
-             ,(file-append (specification->package "mpv-uosc") "/share/mpv/scripts/uosc"))))
+             ,(file-append (pkg "mpv-uosc") "/share/mpv/scripts/uosc"))))
 
          (simple-service
           'additional-env-vars-service
