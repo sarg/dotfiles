@@ -1,5 +1,7 @@
 (use-modules (gnu)
+             (gnu artwork)
              (gnu services)
+             (gnu bootloader grub)
              (gnu system privilege)
              (gnu packages)
              (guix packages)
@@ -62,6 +64,10 @@
   (name-service-switch %mdns-host-lookup-nss)
   (bootloader
    (bootloader-configuration
+    (theme (grub-theme
+            (image (file-append %artwork-repository "/grub/guix-16-9.svg"))
+            (resolution '(1600 . 900))
+            (gfxmode '("1600x900" "auto"))))
     (bootloader grub-efi-bootloader)
     (targets '("/boot"))))
 
