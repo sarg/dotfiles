@@ -1,0 +1,23 @@
+lock := "0"
+guix-lock := if lock != "0" { "guix time-machine -C channels.lock --" } else { "guix" }
+
+default:
+    just --list
+
+pull:
+    guix pull -C channels.scm
+
+update-channels:
+    guix describe --format=channels > channels.lock
+
+system:
+    sudo {{ guix-lock }} system reconfigure system.scm
+
+home:
+    {{ guix-lock }} home reconfigure home.scm
+
+gc:
+    guix home delete-generations
+    sudo guix system delete-generations
+    guix pull --delete-generations
+    guix gc

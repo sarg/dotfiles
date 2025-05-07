@@ -80,7 +80,7 @@
     ))
 
 (define %pkg-dev
-  '("python" "make"
+  '("python" "make" "just"
     "git" "git:send-email" "git-crypt" "perl"))
 
 (define symlinks
