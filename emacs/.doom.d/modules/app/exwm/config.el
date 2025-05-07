@@ -18,6 +18,11 @@
 
   (exwm-input--update-global-prefix-keys))
 
+(defun exwm/start ()
+  (start-process-shell-command "show-login" nil "pkill -x -USR2 xsecurelock")
+  (make-frame-visible)
+  (exwm-enable))
+
 (defun exwm/init ()
   (when (modulep! +lemonbar)
     (exwm/lemonbar-mode))

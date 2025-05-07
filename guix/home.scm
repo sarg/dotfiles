@@ -57,7 +57,7 @@
     "font-terminus"))
 
 (define %pkg-x11
-  '("xkbcomp" "xkbset" "xkb-switch"
+  '("xkbcomp" "xkbset" "xkb-switch" "setxkbmap"
     "xprop" "xrandr" "xset" "xwininfo"
     "xev" "xclip" "xinput"
     "hicolor-icon-theme" "adwaita-icon-theme"
@@ -128,6 +128,17 @@
                          #:period (period "1d")))
       #:arguments '(#$%backup-script)))
 
+(define mpv-saver
+  (chmod-computed-file
+   (mixed-text-file "mpv-saver"
+                    "#!/bin/sh\n"
+                    "mpv --terminal=no"
+                    " --loop --fullscreen --osc=no"
+                    " --no-stop-screensaver"
+                    " --wid=${XSCREENSAVER_WINDOW}"
+                    " --osd-bar=no --no-config --no-input-default-bindings"
+                    " /storage/data/splash.mp4")
+   #o555))
 
 (define feh-saver
   (chmod-computed-file
@@ -149,7 +160,7 @@
                     " XSECURELOCK_SHOW_KEYBOARD_LAYOUT=0"
                     " XSECURELOCK_PASSWORD_PROMPT=disco"
                     " XSECURELOCK_SHOW_HOSTNAME=0"
-                    " XSECURELOCK_SAVER=" feh-saver
+                    " XSECURELOCK_SAVER=" mpv-saver
                     " " xsecurelock-next "/bin/xsecurelock")
    #o555))
 
@@ -264,20 +275,13 @@
              ,(mixed-text-file "xinitrc"
                                "xset s 300 5\n"
                                (pkg "xss-lock") "/bin/xss-lock -n " xsecurelock-next "/libexec/xsecurelock/dimmer -l lock.sh &\n"
-                               "sleep 0.5; xset s activate\n"
-                               "pidwait -x xsecurelock; sleep 0.1; pkill -x -USR2 xsecurelock\n"
-
-                               ;; unredir fixes performance in fullscreen apps, e.g. q3
-                               ;; https://github.com/chjj/compton/wiki/perf-guide
-                               ;; (pkg "picom")
-                               ;; "/bin/picom --backend glx --vsync -b --unredir-if-possible\n"
-
                                "keymap.sh\n"
                                (pkg "xhost") "/bin/xhost +si:localuser:$USER\n"
-
                                "dbus-update-activation-environment --verbose DBUS_SESSION_BUS_ADDRESS DISPLAY XAUTHORITY\n"
 
-                               "exec emacs --init-directory=" (pkg "doomemacs") " --eval '(exwm-enable)'\n"))))
+                               "while true; do\n"
+                               "xset s activate\n"
+                               "emacs -mm --init-directory=" (pkg "doomemacs") " --eval '(exwm/start)'\ndone\n"))))
 
          (simple-service
           'configs

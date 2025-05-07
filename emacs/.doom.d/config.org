@@ -95,6 +95,7 @@ To define guix dependencies add a =scheme= source code block. It'll be then tang
 ** init.el
 #+begin_src elisp :tangle init.el
 ;; generated from config.org
+(setq initial-frame-alist '((visibility . nil)))
 (setq doom-leader-key "<f13>"
       doom-leader-alt-key "<f13>")
 (doom!
