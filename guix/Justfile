@@ -2,7 +2,7 @@ lock := "0"
 guix-lock := if lock != "0" { "guix time-machine -C channels.lock --" } else { "guix" }
 
 default:
-    just --list
+    @just --list
 
 pull *args='':
     guix pull -C channels.scm {{args}}

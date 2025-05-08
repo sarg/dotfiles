@@ -935,9 +935,8 @@ include theme
 #+NAME: password_fill_rc
 #+begin_src bash :tangle ~/.config/qutebrowser/password_fill_rc
 choose_entry() {
-    MENU_COMMAND=( emacs-dmenu -p pass -c pass )
+    MENU_COMMAND=( dmenu -p pass -c pass )
     choose_entry_menu || true
-    #file=$( emacsclient -e '(qute/choose-pass "'$simple_url'" )' | jq -r . ) || true
 }
 #+end_src
 
@@ -1564,7 +1563,7 @@ current buffer, killing it."
    :require-match t))
 #+end_src
 
-#+begin_src sh :tangle ~/.local/bin/emacs-dmenu :shebang #!/usr/bin/env bash
+#+begin_src sh :tangle ~/.local/bin/dmenu :shebang #!/usr/bin/env bash
 usage() {
   echo "Usage: $0 -p prompt -l lines -c category"
   exit 1
@@ -1572,6 +1571,7 @@ usage() {
 
 prompt=nil
 lines=nil
+category=nil
 while getopts ":p:l:c:" opt; do
   case $opt in
     p) prompt="\"$OPTARG\""

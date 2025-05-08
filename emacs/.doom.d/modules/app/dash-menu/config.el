@@ -47,6 +47,7 @@
 
 (transient-define-prefix dash-menu ()
   "My Menu"
+  :value '("muted")
   :refresh-suffixes 't
   [["RSS"
     :setup-children
@@ -63,7 +64,7 @@
     (lambda (_)
       (transient-parse-suffixes
        'something
-       `[("mu" "update" mu4e-update-mail-and-index)
+       `[("mu" "update" (lambda () (interactive) (mu4e-update-mail-and-index t)))
          ,@(dash-menu/mu4e-bookmarks)]))]
 
    ["Telega"
