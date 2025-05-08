@@ -139,14 +139,14 @@
      (service wireguard-service-type
               (wireguard-configuration
                (auto-start? #f)
-               (shepherd-requirement '(sops-secrets hetzner-vpn))
+               (shepherd-requirement '(sops-secrets))
                (addresses '("10.66.66.2/32" "fd42:42:42::2/128"))
                (private-key "/run/secrets/hetzner/wireguard/private")
                (peers
                 (list
                  (wireguard-peer
                   (name "hetzner")
-                  (endpoint "[2a01:4f9:c012:f933::1]:52817")
+                  (endpoint "sargvpn.mooo.com:52817")
                   (public-key "6gNRvmvi5oRGSPr8J0dBcyDyKS94zO4Y4Jbwo2u+iV0=")
                   (preshared-key "/run/secrets/hetzner/wireguard/psk")
                   (allowed-ips '("0.0.0.0/0" "::/0")))))))
