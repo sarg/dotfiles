@@ -3,7 +3,9 @@
   #:use-module (guix download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages java)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages video)
   #:use-module (gnu packages compression)
   #:use-module (nonguix build-system binary)
@@ -243,3 +245,33 @@ failed operations.")
 issues, and other GitHub concepts to the terminal next to where you are already
 working with git and your code.")
     (license license:expat)))
+
+(define-public atuin
+  (package
+   (name "atuin")
+   ;; Use revision helper?
+   (version "18.6.0")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (string-append "https://github.com/atuinsh/atuin/releases/download/"
+                         version
+                         "/atuin-x86_64-unknown-linux-gnu.tar.gz"))
+     (sha256 (base32 "0fdrw97hnxy62mpparbxax6r0x0kclv6md61mkr4h2iz1q94ysgs"))))
+   (supported-systems '("x86_64-linux"))
+   (build-system binary-build-system)
+   (inputs `(("gcc:lib" ,gcc "lib")
+             ("glibc" ,glibc)))
+   (arguments
+    `(#:strip-binaries? #f
+      #:install-plan '(("atuin-x86_64-unknown-linux-gnu/atuin" "bin/"))
+      #:patchelf-plan `(("atuin-x86_64-unknown-linux-gnu/atuin" ("glibc" "gcc:lib")))
+      #:phases (modify-phases %standard-phases
+                 (replace 'unpack
+                   (lambda* (#:key inputs source #:allow-other-keys)
+                     (invoke "tar" "-zxf" source))))))
+   (home-page "https://atuin.sh/")
+   (synopsis "Sync, search and backup shell history")
+   (description "Atuin lets you sync, search and backup shell history. It stores your shell
+history in an SQLite database.")
+   (license license:expat)))
