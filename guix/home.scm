@@ -27,6 +27,7 @@
  (gnu home services guix)
  (personal services symlinks)
  (personal services owntracks)
+ (personal services screen-locker)
  (personal services utils)
  (personal services supercron)
  (personal packages binary)
@@ -128,41 +129,6 @@
                          #:period (period "1d")))
       #:arguments '(#$%backup-script)))
 
-(define mpv-saver
-  (chmod-computed-file
-   (mixed-text-file "mpv-saver"
-                    "#!/bin/sh\n"
-                    "mpv --terminal=no"
-                    " --loop --fullscreen --osc=no"
-                    " --no-stop-screensaver"
-                    " --wid=${XSCREENSAVER_WINDOW}"
-                    " --osd-bar=no --no-config --no-input-default-bindings"
-                    " /storage/data/splash.mp4")
-   #o555))
-
-(define feh-saver
-  (chmod-computed-file
-   (mixed-text-file "feh-saver"
-                    "#!/bin/sh\n"
-                    (pkg "feh") "/bin/feh"
-                    " --window-id=${XSCREENSAVER_WINDOW}"
-                    " "
-                    ((@@ (gnu bootloader grub) image->png)
-                     (file-append %artwork-repository "/backgrounds/guix-checkered-16-9.svg")
-                     #:width 1600 #:height 900))
-   #o555))
-
-(define %guix-screen-locker
-  (chmod-computed-file
-   (mixed-text-file "screen-locker"
-                    "#!/bin/sh\n"
-                    " XSECURELOCK_WANT_FIRST_KEYPRESS=1"
-                    " XSECURELOCK_SHOW_KEYBOARD_LAYOUT=0"
-                    " XSECURELOCK_PASSWORD_PROMPT=disco"
-                    " XSECURELOCK_SHOW_HOSTNAME=0"
-                    " XSECURELOCK_SAVER=" mpv-saver
-                    " " xsecurelock-next "/bin/xsecurelock")
-   #o555))
 
 (define %emacs-home (load "./emacs-home.scm"))
 (home-environment
@@ -286,17 +252,15 @@
                            "/share/icons/Bibata-Modern-Ice"))
 
             (".local/bin/restic-storage" ,%backup-script)
-            (".local/bin/screen-locker" ,%guix-screen-locker)
             (".xinitrc"
              ,(mixed-text-file "xinitrc"
-                               "xset s 300 5\n"
-                               (pkg "xss-lock") "/bin/xss-lock -n " xsecurelock-next "/libexec/xsecurelock/dimmer -l lock.sh &\n"
+                               (screen-locker (video-saver "/storage/data/splash.mp4")) " &\n"
                                "keymap.sh\n"
                                (pkg "xhost") "/bin/xhost +si:localuser:$USER\n"
                                "dbus-update-activation-environment --verbose DBUS_SESSION_BUS_ADDRESS DISPLAY XAUTHORITY\n"
 
                                "while true; do\n"
-                               "  xset s activate\n"
+                               "  xset s activate\n" ; lock to show password screen
                                "  emacs -mm --init-directory=" (pkg "doomemacs") " -f exwm-enable\n"
                                "done\n"))))
 
