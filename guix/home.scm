@@ -39,7 +39,7 @@
   '("adb" "fdroidcl" "socat" "scrcpy"))
 
 (define %pkg-utils
-  '("aria2" "curl" "rsync" "man-db"
+  '("aria2" "curl" "rsync" "man-db" "atuin"
     "atool" "p7zip" "unzip" "jq" "openssh"
     "ripgrep" "moreutils" "libiconv"
     "powertop" "graphviz" "bind:utils"  ; dig
@@ -183,6 +183,15 @@
    %base-home-services
    (home-environment-user-services %emacs-home)
    (list (service home-bash-service-type)
+
+         (simple-service
+          'atuin-hook home-bash-service-type
+          (home-bash-extension
+           (bashrc (list
+                    (mixed-text-file
+                     "atuin-hook"
+                     "source " (pkg "blesh") "/share/blesh/ble.sh\n"
+                     "eval \"$(atuin init bash)\"")))))
 
          (simple-service
           'startx
