@@ -25,14 +25,8 @@
              home-shepherd-service-type
              (list
               (shepherd-service
-               (provision '(pass))
-               (auto-start? #f)
-               (one-shot? #t)
-               (start #~(lambda () (system* "pass" "show" "unlock"))))
-            
-              (shepherd-service
                (provision '(goimapnotify))
-               (requirement '(pass))
+               (requirement '(display gpg-agent))
                (modules `(((shepherd support) #:hide (mkdir-p)) ;for '%user-log-dir'
                           ,@(@ (gnu services shepherd) %default-modules)))
                (auto-start? #f)

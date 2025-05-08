@@ -643,7 +643,6 @@ dbusserver: true
 #+end_src
 * buffers
 #+begin_src elisp :tangle packages.el :exports none
-(package! map :built-in 't) ; macro-expansion fails on the latest map.el, use the older built-in
 (package! bufler :pin "b96822d2132fda6bd1dd86f017d7e76e3b990c82")
 #+end_src
 
@@ -1195,14 +1194,8 @@ qutebrowser --nowindow --target tab-bg-silent $@
  home-shepherd-service-type
  (list
   (shepherd-service
-   (provision '(pass))
-   (auto-start? #f)
-   (one-shot? #t)
-   (start #~(lambda () (system* "pass" "show" "unlock"))))
-
-  (shepherd-service
    (provision '(goimapnotify))
-   (requirement '(pass))
+   (requirement '(display gpg-agent))
    (modules `(((shepherd support) #:hide (mkdir-p)) ;for '%user-log-dir'
               ,@(@ (gnu services shepherd) %default-modules)))
    (auto-start? #f)
@@ -1215,15 +1208,9 @@ qutebrowser --nowindow --target tab-bg-silent $@
 "herd start goimapnotify"
 #+end_src
 #+begin_src elisp :tangle packages.el
-(package! mu4e-alert :disable t)
 (package! consult-mu :built-in t)
 #+end_src
 #+begin_src elisp
-(use-package! mu4e-alert
-  :disabled
-  :custom
-  (mu4e-alert-interesting-mail-query mu4e-filter-inbox))
-
 (use-package! consult-mu
   :after mu4e)
 (use-package! consult-mu-contacts
@@ -1280,7 +1267,8 @@ qutebrowser --nowindow --target tab-bg-silent $@
 (package! mpv :built-in t)
 (package! yeetube :built-in t)
 (package! qutebrowser :recipe
-  (:host github :repo "lrustand/qutebrowser.el" :files (:defaults "*.py")))
+  (:host github :repo "lrustand/qutebrowser.el" :files (:defaults "*.py"))
+  :pin "0f1290ada2e389d4a74127b9b6613522962c1435")
 #+end_src
 #+begin_src scheme
 "emacs-mpv" "emacs-webpaste" "emacs-yeetube"
@@ -1480,6 +1468,16 @@ emacsclient -e \
 #+begin_src sh :tangle ~/.local/bin/simple-scan :shebang #!/bin/sh
 guix shell sane-airscan simple-scan -- sh -c 'LD_LIBRARY_PATH=$GUIX_ENVIRONMENT/lib/sane SANE_CONFIG_DIR=$GUIX_ENVIRONMENT/etc/sane.d simple-scan'
 #+end_src
+* llm
+#+begin_src elisp
+(after! gptel
+  (setq gptel-model 'gemini-2.0-flash
+        gptel-backend
+        (gptel-make-gemini "Gemini"
+          :key (lambda (&rest args)
+                 (gptel-api-key-from-auth-source "google.com" "gemini"))
+          :stream t)))
+#+end_src
 * experimental
 ** bookmark
 #+begin_src scheme
@@ -1494,7 +1492,8 @@ guix shell sane-airscan simple-scan -- sh -c 'LD_LIBRARY_PATH=$GUIX_ENVIRONMENT/
 #+end_src
 ** cyclekey
 #+begin_src elisp :tangle packages.el
-(package! cyclekey :recipe (:host github :repo "shankar2k/cyclekey"))
+(package! cyclekey :recipe (:host github :repo "shankar2k/cyclekey")
+  :pin "6f2b5863ab545a68775376825e5a4361a5413a62")
 #+end_src
 #+begin_src elisp
 (use-package! cyclekey
@@ -1608,16 +1607,6 @@ emacsclient -e '(dmenu/select-line-from-file "'$tmp'" :prompt '"$prompt"' :lines
 #+begin_src elisp
 (use-package! org-node)
 #+end_src
-** gptel
-#+begin_src elisp
-(after! gptel
-  (setq gptel-model 'gemini-2.0-flash
-        gptel-backend
-        (gptel-make-gemini "Gemini"
-          :key (lambda (&rest args)
-                 (gptel-api-key-from-auth-source "google.com" "gemini"))
-          :stream t)))
-#+end_src
 ** org-supertag
 #+begin_src elisp :tangle packages.el
 (package! org-supertag
@@ -1632,16 +1621,6 @@ emacsclient -e '(dmenu/select-line-from-file "'$tmp'" :prompt '"$prompt"' :lines
   :config
   (org-supertag-setup))
 #+end_src
-** eee
-#+begin_src elisp :tangle packages.el
-(package! eee
-  :recipe (:host github :repo "eval-exec/eee.el"
-           :files (:defaults "*.el" "*.sh")))
-#+end_src
-#+begin_src elisp
-(use-package! eee)
-#+end_src
-
 * TODO todo [7/12]
 ** DONE console font
 ** DONE mingetty with xorg autostart (under sarg), put `lock.sh` first in the .xsession
