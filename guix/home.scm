@@ -77,7 +77,7 @@
 
     ;; "nomacs"
     "zathura" "zathura-pdf-mupdf" "zathura-djvu" "zathura-cb"
-    "yt-dlp" "mpv" "tinymediamanager"
+    "yt-dlp" "mpv" "tinymediamanager" "simple-scan-with-airscan"
     ))
 
 (define %pkg-dev

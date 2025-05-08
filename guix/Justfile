@@ -4,8 +4,8 @@ guix-lock := if lock != "0" { "guix time-machine -C channels.lock --" } else { "
 default:
     just --list
 
-pull:
-    guix pull -C channels.scm
+pull *args='':
+    guix pull -C channels.scm {{args}}
 
 update-channels:
     guix describe --format=channels > channels.lock

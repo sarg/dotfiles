@@ -364,7 +364,7 @@ REVERSE? it when true. Returns the selected buffer."
     (call-process "dex" nil nil nil (alist-get 'file selected)))
 
   (defvar app-launcher-allow-list
-    '("lutris" "libreoffice-startcenter" "flatseal" "spotify" "calibre-gui" "idea")
+    '("lutris" "libreoffice-startcenter" "flatseal" "spotify" "calibre-gui" "idea" "simple-scan")
     "Apps that are visible in the app-launcher")
 
   (defvar app-launcher-hide-list
@@ -1462,11 +1462,6 @@ emacsclient -e \
  "," #'bufler-switch-buffer
  :desc "Music" "oM" #'=emms
  :desc "Dash" "om" #'dash-menu)
-#+end_src
-* hardware
-** scanner
-#+begin_src sh :tangle ~/.local/bin/simple-scan :shebang #!/bin/sh
-guix shell sane-airscan simple-scan -- sh -c 'LD_LIBRARY_PATH=$GUIX_ENVIRONMENT/lib/sane SANE_CONFIG_DIR=$GUIX_ENVIRONMENT/etc/sane.d simple-scan'
 #+end_src
 * llm
 #+begin_src elisp
