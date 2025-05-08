@@ -280,8 +280,9 @@
                                "dbus-update-activation-environment --verbose DBUS_SESSION_BUS_ADDRESS DISPLAY XAUTHORITY\n"
 
                                "while true; do\n"
-                               "xset s activate\n"
-                               "emacs -mm --init-directory=" (pkg "doomemacs") " --eval '(exwm/start)'\ndone\n"))))
+                               "  xset s activate\n"
+                               "  emacs -mm --init-directory=" (pkg "doomemacs") " -f exwm-enable\n"
+                               "done\n"))))
 
          (simple-service
           'configs
