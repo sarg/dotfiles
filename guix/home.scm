@@ -210,6 +210,13 @@
                  " --silent"
                  " --config ~/.config/shepherd/init.scm")))
 
+         (simple-service
+          'extra-profile home-shell-profile-service-type
+          (list (mixed-text-file
+                 "extra-profile"
+                 "GUIX_PROFILE=~/.guix-profile\n. $GUIX_PROFILE/etc/profile")))
+
+
          (service home-pipewire-service-type)
          (service home-symlinks-service-type symlinks)
 

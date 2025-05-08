@@ -49,7 +49,9 @@ To define guix dependencies add a =scheme= source code block. It'll be then tang
     (bui-insert-action-button
      "Use"
      (lambda (btn)
-       (use-guix-package (button-get btn 'package-name)))
+       (let ((name (car (split-string (button-get btn 'package-name) "@"))))
+         (message "Use %s" name)
+         (use-guix-package name)))
      "Use it without installing"
      'package-name name)))
 
@@ -60,7 +62,10 @@ To define guix dependencies add a =scheme= source code block. It'll be then tang
 #+end_src
 * guix development
 #+begin_src scheme
-"emacs-debbugs" "gnu-standards" "mumi-with-jaro" "emacs-guix"
+"emacs-debbugs" "gnu-standards" "mumi-with-jaro"
+#+end_src
+#+begin_src elisp :tangle packages.el
+(package! guix :built-in t)
 #+end_src
 #+begin_src elisp
 (after! debbugs
@@ -69,8 +74,10 @@ To define guix dependencies add a =scheme= source code block. It'll be then tang
   (set-popup-rule! "^\\*Summary nndoc" :ignore t)
   (set-popup-rule! "^\\*Article" :ignore t))
 
-(after! guix
-  (setq guix-repl-use-server nil))
+(use-package! guix
+  :config
+  (setq guix-repl-use-server nil
+        guix-load-path '("/home/sarg/devel/dotfiles/guix/personal" "/home/sarg/devel/ext/nonguix")))
 #+end_src
 * doom
 ** base packages

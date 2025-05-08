@@ -53,7 +53,7 @@
  (packages
   (map (compose list specification->package+output)
        '(
-         "emacs-debbugs" "gnu-standards" "mumi-with-jaro" "emacs-guix"
+         "emacs-debbugs" "gnu-standards" "mumi-with-jaro"
          "emacs-next"
          "emacs-telega" "emacs-telega-contrib"
          "emacs-vterm" "guix-icons"
