@@ -170,10 +170,16 @@
                (web-interface? #t)
                (extensions (list cups-filters))))
 
-     (simple-service 'resolvconf etc-service-type
-                     (list `("resolvconf.conf"
-                             ,(plain-file "resolvconf.conf"
-                                          "name_servers=127.0.1.1\ndnsmasq=true\ndnsmasq_conf=/etc/dnsmasq.servers"))))
+     (simple-service
+      'resolvconf etc-service-type
+      (list `("resolvconf.conf"
+              ,(plain-file "resolvconf.conf"
+                           (string-join '("name_servers=127.0.1.1"
+                                          "resolv_conf_local_only=no"
+                                          "dnsmasq=true"
+                                          "dnsmasq_conf=/etc/dnsmasq.servers"
+                                          "dnsmasq_resolve=/etc/dnsmasq.resolve")
+                                        "\n")))))
 
      ;; Add polkit rules, so that non-root users in the wheel group can
      ;; perform administrative tasks (similar to "sudo").
@@ -240,7 +246,6 @@
      (service dnsmasq-service-type
               (dnsmasq-configuration
                (no-hosts? #t)
-               (no-resolv? #t)
                (servers-file "/etc/dnsmasq.servers")
                (listen-addresses '("::1" "127.0.1.1"))
                ;; (addresses '("/dev.local/127.0.0.1"

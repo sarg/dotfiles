@@ -212,7 +212,11 @@
                      (openssh-host
                       (name "kindle")
                       (host-name "192.168.15.244")
-                      (user "root"))))))
+                      (user "root"))
+                     (openssh-host
+                      (name "pixel")
+                      (host-name "pixel-6a")
+                      (port 8022))))))
 
          (service home-syncthing-service-type
                   (let ((pixel (syncthing-device (id "Q4ZQAU5-ZBFVS3E-OULHHHM-3HOCUXT-TVV5UYL-XPZRRWH-EXYYJWG-WVAUAAS")))
