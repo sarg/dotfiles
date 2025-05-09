@@ -45,7 +45,7 @@
     "ripgrep" "moreutils" "libiconv"
     "powertop" "graphviz" "bind:utils"  ; dig
     "graphicsmagick" "libwebp" "jpegoptim"
-    "flatpak" "xdg-desktop-portal-gtk"
+    "flatpak" "xdg-desktop-portal-gtk" "iwgtk"
     "lshw" "strace" "nftables" "file" "lsof"))
 
 (define %pkg-desktop

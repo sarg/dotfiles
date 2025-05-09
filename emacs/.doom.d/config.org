@@ -254,7 +254,7 @@ EXWM has a separate [[../.doom.d/modules/app/exwm][doom app]]. Here are just the
 #+begin_src elisp :noweb-ref exwm :tangle no
 (setopt exwm-manage-configurations
         `(((-any? (lambda (el) (equal exwm-class-name el))
-            '("mpv" "scrcpy" "AusweisApp2"))
+            '("mpv" "scrcpy" "AusweisApp2" "iwgtk"))
            floating t
            floating-mode-line nil)
           ((equal exwm-class-name "Spotify")
@@ -364,7 +364,7 @@ REVERSE? it when true. Returns the selected buffer."
     (call-process "dex" nil nil nil (alist-get 'file selected)))
 
   (defvar app-launcher-allow-list
-    '("lutris" "libreoffice-startcenter" "flatseal" "spotify" "calibre-gui" "idea" "simple-scan")
+    '("lutris" "libreoffice-startcenter" "flatseal" "spotify" "calibre-gui" "idea" "simple-scan" "iwgtk")
     "Apps that are visible in the app-launcher")
 
   (defvar app-launcher-hide-list
