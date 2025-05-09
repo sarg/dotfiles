@@ -16,6 +16,8 @@
               (ssh-support? #t)
               (default-cache-ttl 86400)
               (max-cache-ttl 86400)
+              (default-cache-ttl-ssh 86400)
+              (max-cache-ttl-ssh 86400)
               (extra-content "disable-scdaemon")))
             (simple-service 'cyrus-vars home-environment-variables-service-type
               `(("SASL_PATH" . "$HOME/.guix-home/profile/lib/sasl2")))
