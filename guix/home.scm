@@ -93,7 +93,9 @@
      ("Sync/pass" . ".password-store")
      ("data/telega" . ".telega")
      ("data/mail" . ".mail")
-     ;; ("data/gnupg" . ".gnupg") ; TODO: clashes with home service
+     ("data/gnupg/private-keys-v1.d" . ".gnupg/")
+     ("data/gnupg/pubring.kbx" . ".gnupg/")
+     ("data/gnupg/random_seed" . ".gnupg/")
      ("data/events" . ".events")
      ("data/syncthing" . ".local/state/syncthing")
      ("data/stardict" . ".local/share/stardict")
