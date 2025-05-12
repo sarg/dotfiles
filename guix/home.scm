@@ -161,12 +161,13 @@
                      "source " (pkg "blesh") "/share/blesh/ble.sh\n"
                      "eval \"$(atuin init bash)\"")))))
 
+         (service home-x11-service-type)
          (simple-service
           'startx
           home-shepherd-service-type
           (list
            (shepherd-service
-            (provision '(display))
+            (provision '(xorg))
             (requirement '(dbus))
             (start #~(make-forkexec-constructor
                       (list #$startx)

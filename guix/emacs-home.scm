@@ -28,7 +28,7 @@
              (list
               (shepherd-service
                (provision '(goimapnotify))
-               (requirement '(display gpg-agent))
+               (requirement '(x11-display gpg-agent))
                (modules `(((shepherd support) #:hide (mkdir-p)) ;for '%user-log-dir'
                           ,@(@ (gnu services shepherd) %default-modules)))
                (auto-start? #f)
