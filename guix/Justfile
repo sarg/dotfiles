@@ -10,11 +10,11 @@ pull *args='':
 update-channels:
     guix describe --format=channels > channels.lock
 
-system:
-    sudo {{ guix-lock }} system reconfigure system.scm
+system *args='':
+    sudo {{ guix-lock }} system reconfigure system.scm {{args}}
 
-home:
-    {{ guix-lock }} home reconfigure home.scm
+home *args='':
+    {{ guix-lock }} home reconfigure home.scm {{args}}
 
 gc:
     guix home delete-generations

@@ -77,6 +77,7 @@ To define guix dependencies add a =scheme= source code block. It'll be then tang
 (use-package! guix
   :config
   (setq guix-repl-use-server nil
+        guix-current-profile "~/.guix-home/profile"
         guix-load-path '("/home/sarg/devel/dotfiles/guix/personal" "/home/sarg/devel/ext/nonguix")))
 #+end_src
 * doom

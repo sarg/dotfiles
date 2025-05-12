@@ -216,8 +216,7 @@
                       (host-name "192.168.15.244")
                       (user "root"))
                      (openssh-host
-                      (name "pixel")
-                      (host-name "pixel-6a")
+                      (name "puxel")
                       (port 8022))))))
 
          (service home-syncthing-service-type
