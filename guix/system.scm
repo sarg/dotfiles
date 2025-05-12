@@ -266,6 +266,8 @@
      (udev-rules-service 'kindle kindle-usbnet-udev-rules)
      (udev-rules-service 'pixel pixel-usbnet-udev-rules)
      (udev-rules-service 'brightness brightnessctl)
+     (udev-rules-service 'restore-brightness backlight-udev-rules)
+     (udev-rules-service 'leds iwlwifi-led-udev-rules)
 
      (simple-service
       'nongux-substitutes guix-service-type
