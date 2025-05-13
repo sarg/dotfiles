@@ -156,6 +156,7 @@
          (simple-service
           'atuin-hook home-bash-service-type
           (home-bash-extension
+           (aliases '(("g" . "just -g guix")))
            (bashrc (list
                     (mixed-text-file
                      "atuin-hook"

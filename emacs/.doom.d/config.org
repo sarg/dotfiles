@@ -365,7 +365,8 @@ REVERSE? it when true. Returns the selected buffer."
     (call-process "dex" nil nil nil (alist-get 'file selected)))
 
   (defvar app-launcher-allow-list
-    '("lutris" "libreoffice-startcenter" "flatseal" "spotify" "calibre-gui" "idea" "simple-scan" "iwgtk")
+    '("lutris" "libreoffice-startcenter" "flatseal" "spotify" "calibre-gui" "idea" "simple-scan"
+      "iwgtk" "android")
     "Apps that are visible in the app-launcher")
 
   (defvar app-launcher-hide-list
