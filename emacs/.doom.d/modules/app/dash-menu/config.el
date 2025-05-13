@@ -65,6 +65,8 @@
       (transient-parse-suffixes
        'something
        `[("mu" "update" (lambda () (interactive) (mu4e-update-mail-and-index t)))
+         ("ms" "search" consult-mu)
+         ("mo" "open maildir" mu4e-search-maildir)
          ,@(dash-menu/mu4e-bookmarks)]))]
 
    ["Telega"
