@@ -30,6 +30,7 @@
  (personal services screen-locker)
  (personal services utils)
  (personal services supercron)
+ (personal services secretsd)
  (personal packages binary)
  (personal packages next)
  (srfi srfi-1)
@@ -218,6 +219,8 @@
                       (user "root"))
                      (openssh-host
                       (name "puxel")
+                      (identity-file "~/.ssh/puxel_rsa")
+                      (extra-content "IdentitiesOnly yes")
                       (port 8022))))))
 
          (service home-syncthing-service-type
@@ -250,6 +253,9 @@
            (changelog-task "/storage/Resources/dashboard/doomemacs.atom")
            %storage-backup-task))
 
+
+         (service secretsd-service-type
+                  "exec:ssh puxel -- ./unlock-keyring")
          (simple-service
           'x11-configs
           home-files-service-type
