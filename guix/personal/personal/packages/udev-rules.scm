@@ -90,7 +90,7 @@
             (lambda (port)
               (format port
                       "ACTION==~s, SUBSYSTEM==~s, KERNEL==~s, ATTR{trigger}=~s"
-                      "add" "leds" "phy0-led" "phy0radio")))))))
+                      "add" "leds" "phy0-led" "phy0assoc")))))))
    (synopsis "udev rules for iwlwifi led")
    (description "udev rules for iwlwifi led")
    (license license:unlicense)
