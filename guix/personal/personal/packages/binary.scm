@@ -275,3 +275,35 @@ working with git and your code.")
    (description "Atuin lets you sync, search and backup shell history. It stores your shell
 history in an SQLite database.")
    (license license:expat)))
+
+(define-public git-bug
+  (package
+    (name "git-bug")
+    (version "0.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/git-bug/git-bug/releases/download/v" version "/git-bug_linux_amd64"))
+       (sha256 "138n8wrr6z633gfw699mg9hzvvh126rh9gda1rx866l8bxjn12ck")))
+    (build-system binary-build-system)
+    (arguments
+     (list
+      #:patchelf-plan #~'(("git-bug" ()))
+      #:install-plan #~'(("git-bug" "bin/"))
+      #:phases
+      #~(modify-phases %standard-phases
+          (replace 'unpack
+            (lambda* (#:key source #:allow-other-keys)
+              (copy-file source "./git-bug")
+              (chmod "git-bug" #o644)))
+          (add-before 'install 'chmod
+            (lambda* (#:key inputs #:allow-other-keys)
+              (chmod "git-bug" #o555))))))
+    (inputs (list glibc))
+    (home-page "https://github.com/git-bug/git-bug")
+    (synopsis "a decentralized issue tracker")
+    (description "git-bug is a standalone, distributed, offline-first issue management tool that
+embeds issues, comments, and more as objects in a git repository (not files!),
+enabling you to push and pull them to one or more remotes.")
+    (license license:gpl3+)))
