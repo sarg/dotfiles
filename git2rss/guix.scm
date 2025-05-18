@@ -5,7 +5,8 @@
              (guix build-system clojure)
              ((guix licenses) #:prefix license:)
 
-             (personal packages binary)
+             (nongnu packages clojure)
+             (gnu packages java)
              (gnu packages clojure)
              (gnu packages version-control))
 
@@ -40,19 +41,19 @@
 (define clojure-tools
   (package
     (name "clojure-tools")
-    (version "1.12.0.1517")
+    (version "1.12.0.1530")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.clojure.org/install/clojure-tools-"
                            version
                            ".tar.gz"))
-       (sha256 (base32 "1vsi7bina5q2rlw0jv92b0f208xpjcwjqzabdz0n0lvsdj3lws9q"))))
+       (sha256 (base32 "0jgd0lki1mml7ppccxnbhj9jbpy5cy3s11775p9kkfi6h654pwhg"))))
     (build-system copy-build-system)
     (arguments
      `(#:install-plan
        '(("deps.edn" "lib/clojure/")
-         ("clojure-tools-1.12.0.1517.jar" "lib/clojure/libexec/")
+         ("clojure-tools-1.12.0.1530.jar" "lib/clojure/libexec/")
          ("example-deps.edn" "lib/clojure/")
          ("tools.edn" "lib/clojure/")
          ("exec.jar" "lib/clojure/libexec/"))))
@@ -71,7 +72,7 @@ Clojure repl, use Clojure and Java libraries, and start Clojure programs.")
 
   (build-system copy-build-system)
   (inputs (list git babashka))
-  (native-inputs (list clojure clojure-tools clojure-data-zip))
+  (native-inputs (list clojure-tools clojure-data-zip))
   (arguments
    (list
     #:install-plan #~(list '("./git2rss" "bin/git2rss"))
@@ -84,10 +85,6 @@ Clojure repl, use Clojure and Java libraries, and start Clojure programs.")
     #~(modify-phases %standard-phases
         (add-before 'install 'set-paths
           (lambda* (#:key inputs #:allow-other-keys)
-            (substitute* "git2rss.clj"
-              (("(shell/sh )\"git\"" _ a)
-               (string-append a "\"" (search-input-file inputs "/bin/git") "\"")))
-
             (setenv "BABASHKA_CLASSPATH"
                     (string-join
                      (append-map (match-lambda
@@ -97,10 +94,16 @@ Clojure repl, use Clojure and Java libraries, and start Clojure programs.")
                      ":"))
             (invoke "bb" "uberscript" "git2rss" "git2rss.clj")
             (with-atomic-file-replacement "git2rss"
-              (lambda (in out)
-                (display "#!/usr/bin/env bb\n" out)
-                (display (get-string-all in) out)))
-            (chmod "git2rss" #o555))))))
+                                          (lambda (in out)
+                                            (display "#!/usr/bin/env bb\n" out)
+                                            (display (get-string-all in) out)))
+            (chmod "git2rss" #o555)))
+        (add-after 'patch-shebangs 'wrap-programs
+          (lambda* (#:key inputs outputs #:allow-other-keys)
+            (let ((out (assoc-ref outputs "out")))
+              (wrap-program (string-append out "/bin/git2rss")
+                `("BABASHKA_CLASSPATH" ":" = (,(getenv "BABASHKA_CLASSPATH")))
+                `("PATH" ":" prefix (,(string-append (assoc-ref inputs "git") "/bin"))))))))))
   (home-page "https://github.com/sarg/dotfiles")
   (synopsis "Git2rss script")
   (description "Git2rss script")

@@ -12,36 +12,6 @@
   #:use-module (guix build-system copy)
   #:use-module (guix packages))
 
-(define-public babashka
-  (package
-   (name "babashka")
-   (version "1.12.197")
-   (source (origin
-            (method url-fetch)
-            (uri (string-append
-                  "https://github.com/babashka/babashka/releases/download/v"
-                  version "/babashka-" version "-linux-amd64.tar.gz"))
-            (sha256
-             (base32 "0p3025pnf58218ngjdz9kcpr43lyh1c0dljs5ahgyjmpm62lyh44"))))
-   (build-system binary-build-system)
-   (inputs (list zlib openjdk))
-   (supported-systems '("x86_64-linux"))
-   (arguments
-    (list
-     #:install-plan #~'(("bb" "bin/bb"))
-     #:patchelf-plan #~'(("bb" ("zlib")))
-
-     #:phases
-     #~(modify-phases %standard-phases
-         (add-after 'install 'wrap-program
-           (lambda _
-             (wrap-program (string-append #$output "/bin/bb")
-               `("JAVA_HOME" = (#$openjdk))))))))
-   (home-page "https://babashka.org")
-   (synopsis "babashka clojure scripting runtime")
-   (description "babashka clojure scripting runtime")
-   (license license:epl1.0)))
-
 (define-public oama
   (package
     (name "oama")
