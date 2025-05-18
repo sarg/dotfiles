@@ -62,4 +62,18 @@
 ;; Minor mode to disable the screensaver when one or more X clients are fullscreen. ;;
 (use-package! exwm-ss
   :after exwm
-  :config (exwm-ss-mode 1))
+  :config
+  (defclass exwm-ss--xset (exwm-ss)
+    ()
+    :documentation "EXWM-SS implementation which uses xset(1) to disable screensaver.")
+
+  (cl-defmethod exwm-ss-set-inhibited! :after ((ss exwm-ss--xset) inhibit)
+    (let ((cmd (format "xset s %s" (if inhibit "off" "300 5"))))
+      (exwm-ss--with-home (start-process-shell-command "exwm-ss-xset" nil cmd))))
+
+  (defclass exwm-ss-control-xset (exwm-ss-control-base exwm-ss--dpms-command exwm-ss--xset)
+    ()
+    :documentation "xset-based `EXWM-SS-CONTROL' implementation.")
+
+  (setq exwm-ss-controller-class 'exwm-ss-control-xset)
+  (exwm-ss-mode 1))
