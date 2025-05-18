@@ -786,7 +786,6 @@ os.execlp('xdg-open', 'xdg-open',
 ** vcs
 #+begin_src elisp :tangle packages.el
 (package! magit-todos :disable t) ; too slow
-(package! transient :pin "25b994a565ce8035330b0a3071ee430c0282349e") ; 0.8.8
 #+end_src
 
 #+begin_src elisp
