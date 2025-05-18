@@ -5,10 +5,12 @@
   #:use-module (gnu home services shepherd)
   #:use-module (guix packages)
   #:use-module (guix records)
+  #:use-module (guix modules)
   #:use-module (guix gexp)
   #:use-module (guix git-download)
   #:use-module (gnu packages guile)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-19)
   #:use-module ((guix licenses) #:prefix license:)
 
   #:export (supercron-service-type))
@@ -68,6 +70,42 @@
     (description "Persistence job scheduler similar to mcron.")
     (license license:gpl3+)))
 
+(define (shepherd-schedule-action job-file)
+  (shepherd-action
+   (name 'schedule)
+   (documentation "Display jobs that are going to be scheduled.")
+   (procedure
+    #~(lambda* (_ #:optional
+                  (n "5")
+                  (to (strftime "%FT%TZ"
+                                (localtime
+                                 (time-second
+                                  (add-duration
+                                   (current-time)
+                                   (make-time time-duration 0 (* 7 86400))))))))
+        (let ((pipe (open-pipe* OPEN_READ
+                                #$(file-append supercron "/bin/supercron")
+                                "--schedule"
+                                (string-append "--limit=" n)
+                                (string-append "--to=" to)
+                                #$job-file)))
+          (let loop ()
+            (match (read-line pipe 'concat)
+              ((? eof-object?)
+               (catch 'system-error
+                 (lambda ()
+                   (zero? (close-pipe pipe)))
+                 (lambda args
+                   ;; There's a race with the SIGCHLD handler, which
+                   ;; could call 'waitpid' before 'close-pipe' above does.  If
+                   ;; we get ECHILD, that means we lost the race, but that's
+                   ;; fine.
+                   (or (= ECHILD (system-error-errno args))
+                       (apply throw args)))))
+              (line
+               (display line)
+               (loop)))))))))
+
 (define (supercron-shepherd-service config)
   (match-record config <supercron-configuration>
                 (supercron jobs log? log-file period)
@@ -76,8 +114,13 @@
              (documentation "Runs supercron instance.")
              (provision '(supercron))
              (modules `(((shepherd support) #:hide (mkdir-p)) ;for '%user-log-dir'
+                        (ice-9 popen)
+                        (ice-9 rdelim)
+                        (ice-9 match)
+                        (srfi srfi-19)
                         ,@%default-modules))
-             (actions (list (shepherd-configuration-action job-file)))
+             (actions (list (shepherd-configuration-action job-file)
+                            (shepherd-schedule-action job-file)))
              (start #~(let ((state-dir (string-append (getenv "XDG_STATE_HOME") "/supercron")))
                         (mkdir-p state-dir)
                         (make-forkexec-constructor
