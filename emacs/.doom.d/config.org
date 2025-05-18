@@ -786,6 +786,7 @@ os.execlp('xdg-open', 'xdg-open',
 ** vcs
 #+begin_src elisp :tangle packages.el
 (package! magit-todos :disable t) ; too slow
+(package! transient :pin "25b994a565ce8035330b0a3071ee430c0282349e") ; 0.8.8
 #+end_src
 
 #+begin_src elisp
@@ -825,8 +826,8 @@ include theme
 (package! calibredb :built-in t)
 (package! nov :built-in t)
 (package! zathura-sync-theme
-  :recipe (:host github :repo "sarg/zathura-sync-theme")
-  :pin "ce5ee1ff2e521c39a8c307826c9470003380d40e")
+  :recipe (:host github :repo "amolv06/zathura-sync-theme")
+  :pin "7f1dece30d9f03e37d12ebfb3af6b1d663e4c8dd")
 #+end_src
 
 #+begin_src scheme

@@ -53,7 +53,7 @@
     :setup-children
     (lambda (_)
       (transient-parse-suffixes
-       'something
+       'dash-menu
        `[("ru" "update" (lambda () (interactive)
                           (elfeed-update)
                           (elfeed)))
@@ -63,7 +63,7 @@
     :setup-children
     (lambda (_)
       (transient-parse-suffixes
-       'something
+       'dash-menu
        `[("mu" "update" (lambda () (interactive) (mu4e-update-mail-and-index t)))
          ("ms" "search" consult-mu)
          ("mo" "open maildir" mu4e-search-maildir)
@@ -73,7 +73,7 @@
     :setup-children
     (lambda (_)
       (transient-parse-suffixes
-       'something
+       'dash-menu
        `[("tm" "" "muted" :format " %k %v")
          ("tc" "chat" telega-chat-with)
          ,@(dash-menu/telega
