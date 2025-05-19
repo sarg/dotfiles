@@ -70,6 +70,20 @@
     (description "Persistence job scheduler similar to mcron.")
     (license license:gpl3+)))
 
+(define (shepherd-trigger-action job-file)
+  (shepherd-action
+   (name 'trigger)
+   (documentation "Trigger jobs by name")
+   (procedure
+    #~(lambda (running . names)
+        (for-each (lambda (name)
+                    (system*
+                     #$(file-append supercron "/bin/supercron")
+                     "--trigger"
+                     (string-append "--task=" name)
+                     #$job-file))
+         names)))))
+
 (define (shepherd-schedule-action job-file)
   (shepherd-action
    (name 'schedule)
@@ -120,7 +134,8 @@
                         (srfi srfi-19)
                         ,@%default-modules))
              (actions (list (shepherd-configuration-action job-file)
-                            (shepherd-schedule-action job-file)))
+                            (shepherd-schedule-action job-file)
+                            (shepherd-trigger-action job-file)))
              (start #~(let ((state-dir (string-append (getenv "XDG_STATE_HOME") "/supercron")))
                         (mkdir-p state-dir)
                         (make-forkexec-constructor
