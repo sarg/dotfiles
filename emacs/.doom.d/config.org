@@ -946,12 +946,6 @@ choose_entry() {
 
 * music
 ** emms
-#+begin_src scheme
-"emacs-emms"
-#+end_src
-#+begin_src elisp :tangle packages.el
-(package! emms :built-in 't)
-#+end_src
 #+begin_src elisp
 (defun dont-kill-buffer--hook ()
   (bury-buffer)
@@ -975,7 +969,7 @@ choose_entry() {
     (emms)))
 
 (after! emms
-  (setq
+  (setq!
    emms-player-mpv-update-metadata t
    emms-playlist-buffer-name "*Music*"
    emms-source-file-default-directory (expand-file-name "~/Sync/"))

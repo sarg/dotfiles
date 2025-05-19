@@ -78,7 +78,6 @@
          "emacs-password-generator"
          "emacs-password-store"
          "emacs-password-store-otp"
-         "emacs-emms"
          "emacs-elfeed-org"
          "emacs-lexic" "sdcv" "emacs-google-translate"
          "mu" "isync" "msmtp" "emacs-consult-mu" "oama" "cyrus-sasl-xoauth2"
