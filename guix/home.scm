@@ -31,6 +31,7 @@
  (personal services utils)
  (personal services supercron)
  (personal services secretsd)
+ (personal services backup)
  (personal packages binary)
  (personal packages next)
  (srfi srfi-1)
@@ -111,27 +112,6 @@
                          #:start (time "2025-01-01T06:00:00+0000")
                          #:period (period "1d")))
       #:arguments '(#$(file-append git2rss "/bin/git2rss") #$fn)))
-
-(define %backup-script
-  (chmod-computed-file
-   (mixed-text-file "restic-storage"
-                    "#!/bin/sh\n"
-                    restic "/bin/restic"
-                    " -p /media/500GB/restic/pass"
-                    " -r /media/500GB/restic"
-                    " --exclude-if-present .borgbackupexclude"
-                    " backup /storage")
-   #o555))
-
-(define %storage-backup-task
-  #~(make <task>
-      #:name "backup-storage"
-      #:environment '(#$(string-append "HOME=" (getenv "HOME")))
-      #:schedule (list (make <interval>
-                         #:start (time "2025-01-01T06:00:00+0000")
-                         #:period (period "1d")))
-      #:arguments '(#$%backup-script)))
-
 
 (define %emacs-home (load "./emacs-home.scm"))
 (home-environment
@@ -246,14 +226,25 @@
                    (directories '(".."))
                    (packages '("android" "email" "xsession" "git" "qutebrowser" "desktop" "vim"))))
 
+         (service restic-backup-service-type
+                  (restic-backup-configuration
+                   (jobs
+                    (list
+                     (restic-backup-job
+                      (name "storage")
+                      (repository "/media/500GB/restic")
+                      (password-file "/media/500GB/restic/pass")
+                      (schedule #~(list #:start (time "2025-01-01T06:00:00+0000")
+                                        #:period (period "1d")))
+                      (files (list "/storage"))
+                      (extra-flags (list "--exclude-if-present=.borgbackupexclude")))))))
+
          (simple-service
           'changelog-jobs
           supercron-service-type
           (list
            (changelog-task "/storage/Resources/dashboard/guix.atom")
-           (changelog-task "/storage/Resources/dashboard/doomemacs.atom")
-           %storage-backup-task))
-
+           (changelog-task "/storage/Resources/dashboard/doomemacs.atom")))
 
          (service secretsd-service-type
                   "exec:ssh puxel -- ./unlock-keyring")
@@ -264,7 +255,6 @@
              ,(file-append (pkg "bibata-cursor-theme")
                            "/share/icons/Bibata-Modern-Ice"))
 
-            (".local/bin/restic-storage" ,%backup-script)
             (".xinitrc"
              ,(mixed-text-file "xinitrc"
                                (screen-locker (video-saver "/storage/data/splash.mp4")) " &\n"
