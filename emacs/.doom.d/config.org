@@ -1272,20 +1272,12 @@ qutebrowser --nowindow --target tab-bg-silent $@
 (package! mpv :built-in t)
 (package! yeetube :built-in t)
 (package! qutebrowser :recipe
-  (:host github :repo "lrustand/qutebrowser.el" :files (:defaults "*.py"))
-  :pin "0f1290ada2e389d4a74127b9b6613522962c1435")
+  (:host github :repo "sarg/qutebrowser.el" :files (:defaults "*.py"))
+  :pin "7e0978c9fadc4119525902ae8af2e924331c4916a")
 #+end_src
 #+begin_src scheme
 "emacs-mpv" "emacs-webpaste" "emacs-yeetube"
 #+END_src
-#+begin_src sh :tangle ~/.local/share/qutebrowser/userscripts/emacsclient-wrapper :shebang #!/bin/sh
-emacsclient -e \
-  "(let ((qutebrowser-fifo \"$QUTE_FIFO\")
-         (qutebrowser-command-backend 'qutebrowser-fifo-send))
-     (condition-case nil
-         $@
-       (t \"\")))" ; true
-#+end_src
 #+begin_src elisp
 (defun browse-url-qute-private (url &rest _)
   "Make qutebrowser open URL in private-browsing window."
@@ -1326,15 +1318,11 @@ emacsclient -e \
 (set-modeline-hook! 'qutebrowser-exwm-mode-hook :qutebrowser)
 
 (use-package! qutebrowser
+  :hook ((exwm-init . global-qutebrowser-exwm-mode)
+         (exwm-init . qutebrowser-evil-state-mode)
+         (exwm-init . qutebrowser-theme-export-mode))
   :custom
-  (qutebrowser-launcher-backend #'qutebrowser-consult-launcher)
-
-  :config
-  (add-hook! exwm-init-hook
-    (lambda ()
-      (global-qutebrowser-exwm-mode 1)
-      (qutebrowser-evil-state-mode 1)
-      (qutebrowser-theme-export-mode 1))))
+  (qutebrowser-launcher-backend #'qutebrowser-consult-launcher))
 
 (use-package! yeetube
   :config
