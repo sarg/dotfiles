@@ -65,13 +65,13 @@
 (define-public tinymediamanager
   (package
    (name "tinymediamanager")
-   (version "5.1.5")
+   (version "5.1.6")
    (source (origin
             (method url-fetch)
-            (uri (string-append "https://release.tinymediamanager.org/v5/dist/tinyMediaManager-"
-                                version "-linux-amd64.tar.xz"))
+            (uri (string-append "https://archive.tinymediamanager.org/v" version
+                                "/tinyMediaManager-" version "-linux-amd64.tar.xz"))
             (sha256
-             (base32 "0im7ifmyx2czf44d35dsv0shmd9p6rpkxyhhh9k3iy2y283xy5h0"))))
+             (base32 "05s9i3n04k1l8bbfb859wgakyw547cjbpyyxkh1nqld2gzcirfb6"))))
    (build-system binary-build-system)
    (inputs (list libmediainfo openjdk))
    (supported-systems '("x86_64-linux"))
