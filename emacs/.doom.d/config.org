@@ -445,22 +445,30 @@ REVERSE? it when true. Returns the selected buffer."
 Note: use =consult-theme= to quickly preview themes.
 [[*dark mode][see: dark mode]]
 * flatpaks
-#+begin_src sh :tangle no
-flatpak install --or-update --noninteractive \
-br.com.gualandi.Xjump \
-com.endlessnetwork.aqueducts \
-com.github.tchx84.Flatseal \
-com.holypangolin.Animatch \
-com.spotify.Client \
-de.blobbyvolley.BlobbyVolley2 \
-io.sourceforge.zaz \
-net.huitsi.ParallelOverhead \
-net.lutris.Lutris \
-net.sourceforge.lgames.LBreakoutHD \
-org.gnome.Nibbles \
-org.mattdm.icebreaker \
-org.regular_dev.biplanes_revival \
-tw.ddnet.ddnet
+#+NAME: flatpak-list
+#+begin_src sh :tangle no :results output
+flatpak list --app --columns=application | head -n -1
+#+end_src
+
+#+RESULTS: flatpak-list
+#+begin_example
+com.endlessnetwork.aqueducts
+com.github.tchx84.Flatseal
+com.google.AndroidStudio
+com.jetbrains.IntelliJ-IDEA-Community
+com.spotify.Client
+de.blobbyvolley.BlobbyVolley2
+io.sourceforge.zaz
+net.lutris.Lutris
+net.sourceforge.lgames.LBreakoutHD
+org.mattdm.icebreaker
+org.prismlauncher.PrismLauncher
+org.regular_dev.biplanes_revival
+org.sugarlabs.MakeThemFall
+#+end_example
+
+#+begin_src sh :tangle no :stdin flatpak-list
+xargs flatpak install --or-update --noninteractive
 #+end_src
 * desktop
 ** desktop entries
