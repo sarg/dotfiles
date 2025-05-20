@@ -24,7 +24,7 @@
 
 (use-service-modules
  admin desktop ssh networking sysctl cups avahi guix vpn
- xorg linux dbus shepherd sound pm dns virtualization)
+ linux dbus shepherd sound pm dns virtualization)
 
 (define (relative-file file)
   (string-append (current-source-directory) "/" file))

@@ -43,9 +43,8 @@
        range-url (xml1-> feed :git2rss :range-url text)]
 
   (def commits (commits-for gitdir last-seen (.plusDays yesterday 1)))
-  (when (empty? commits)
-    (println "No new commits.")
-    (System/exit 0))
+  (println (count commits) " new commits.")
+  (when (empty? commits) (System/exit 0))
 
   (def latest-commit (:commit (first commits)))
 

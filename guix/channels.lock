@@ -3,7 +3,7 @@
         (url "https://codeberg.org/guix/guix-mirror.git")
         (branch "master")
         (commit
-          "450a361532573a02389530a6a80b7821683ed41b")
+          "e7d73a08d569904f8a71db5b84f5fafaf0dff188")
         (introduction
           (make-channel-introduction
             "9edb3f66fd807b096b48283debdcddccfea34bad"
@@ -14,7 +14,7 @@
         (url "https://gitlab.com/nonguix/nonguix")
         (branch "master")
         (commit
-          "3f530e5b31460fd05a460bec45072201809d57fc")
+          "595c2155a61ef7e552269cb1c569a33e3ec32bb2")
         (introduction
           (make-channel-introduction
             "897c1a470da759236cc11798f4e0a5f7d4d59fbc"
@@ -36,4 +36,4 @@
         (url "https://github.com/sarg/dotfiles")
         (branch "master")
         (commit
-          "72bbcc84daa2fdc8b7590df190e40b4b1212bbbb")))
+          "ef497262780a98f415def124af62b6efb9b45593")))
