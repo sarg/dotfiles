@@ -1,6 +1,10 @@
 [user]
     name = Sergey Trofimov
     email = sarg@sarg.org.ru
+    signingKey = 3ADB423B40A20785
+
+[commit]
+    gpgSign = true
 
 [push]
     default = simple
