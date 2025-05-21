@@ -1,105 +1,57 @@
 (define-module (personal services symlinks)
-  #:use-module (gnu)
-  #:use-module (gnu home services)
-  #:use-module (gnu packages base)
-  #:use-module (gnu services)
   #:use-module (guix gexp)
-  #:use-module (guix store)
-  #:use-module (guix monads)
-  #:use-module (guix modules)
+  #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 ftw)
 
-  #:export (resolve-relative-to
-            home-symlinks-service-type))
-
-(define symlinks-activation-script
-  (program-file
-   "install-symlinks"
-   #~(begin
-       (use-modules (ice-9 ftw))
-       (define home-directory (getenv "HOME"))
-
-       (define (install-symlinks source)
-         (define (strip file)
-           (string-drop file (string-length source)))
-
-         (define (target-file n)
-           (string-append home-directory "/" (strip n)))
-
-         (define (enter? name stat result)
-           (equal? 'directory (stat:type stat)))
-
-         (define (leaf path stat result)
-           (let ((target (target-file path)))
-             (format #t "Installing ~a~%" target)
-             (catch 'system-error
-               (lambda () (symlink (readlink path) target))
-               (const #t))))
-
-         (define (down path stat result)
-           (catch 'system-error
-             (lambda () (mkdir (target-file path)))
-             (const #t)))
-
-         (file-system-fold enter? leaf down
-                           (const #t)
-                           (const #t)
-                           (const #t)
-                           #t source))
-
-       (install-symlinks (string-append (getenv "GUIX_NEW_HOME") "/symlinks/")))))
+  #:export (resolve-relative-to))
 
 (define (resolve-relative-to root links)
-  "Resolves relative paths in the LINKS list of conses (source . target) relative to ROOT.
-When target is not specified - use the same name as source. When target is a
-directory (ends with a slash) - append source file name ot it. Example:
-(resolve-relative-to \"/storage/\"
-   '((\"data/gnupg\" . \".gnupg\") ; (\"/storage/data/gnupg\" . \".gnupg\")
-     (\"Sync\") ; (\"/storage/Sync\" . \"Sync\")
-     (\"data/gnupg/random_seed\" . \".gnupg/\") ; (\"/storage/data/gnupg/random_seed\" . \".gnupg/random_seed\")
-     (\"/some/other/file\" . \"here\") ; as is"
+  "Takes a list of files suitable for home-files-service-type and expands entries
+according to rules: relative paths resolved to ROOT, paths ending with slash
+mean to use it as a directory."
 
-  (map (match-lambda
-         ((from)
-          (cons (string-append root from)
-                from))
+  (define symlink
+    (match-lambda
+      ((to from)
+       (list to (symlink-to from)))))
 
-         ((from . to)
-          (cons (if (absolute-file-name? from)
-                    from
-                    (string-append root from))
+  (define complement
+    (match-lambda
+      ((from) (list from from))
+      (x x)))
 
-                (if (string-suffix? "/" to)
-                    (string-append to (basename from))
-                    to))))
-       links))
+  (define expand-from
+    (match-lambda
+      ((and a (to from))
+       (if (absolute-file-name? from)
+           a
+           (list to (string-append root from))))))
 
-(define (symlinks-union symlinks)
-  (computed-file
-   "symlinks"
-   (with-imported-modules (source-module-closure '((guix build utils)))
-     #~(begin
-         (use-modules (guix build utils)
-                      (ice-9 match))
-         (for-each
-          (match-lambda
-            ((source . target)
-             (let ((target-file (string-append #$output "/" target)))
-               (mkdir-p (dirname target-file))
-               (symlink source target-file))))
-          
-          '#$symlinks)))))
+  (define (dir? a) (string-suffix? "/" a))
 
-(define (symlinks-entry symlinks)
-  (with-monad %store-monad
-    (return `(("symlinks" ,(symlinks-union symlinks))))))
+  (define resolve-from
+    (match-lambda
+      ((and a (to from))
+       (if (dir? from)
+           (map (lambda (f)
+                  (list
+                   (if (dir? to) to (string-append to "/"))
+                   (string-append from f)))
+            (scandir from
+                     (negate (cut member <> '("." "..")))
+                     string<?))
 
-(define home-symlinks-service-type
-  (service-type (name 'symlinks)
-                (extensions
-                 (list
-                  (service-extension home-activation-service-type
-                                     (const #~(primitive-load #$symlinks-activation-script)))
-                  (service-extension home-service-type symlinks-entry)))
-                (description
-                 "symlink user-defined files without putting them into the store")))
+           (list a)))))
+
+  (define resolve-to
+    (match-lambda
+      ((and a (to from))
+       (if (dir? to)
+           (list (string-append to (basename from)) from)
+           a))))
+
+  (map
+   (compose symlink resolve-to)
+   (append-map (compose resolve-from expand-from complement) links)))
