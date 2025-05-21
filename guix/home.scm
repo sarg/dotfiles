@@ -91,18 +91,16 @@
    '(("Sync")
      ("Resources")
      ("devel")
-     ("devel/dotfiles" . ".dotfiles")
-     ("Sync/pass" . ".password-store")
-     ("data/telega" . ".telega")
-     ("data/mail" . ".mail")
-     ("data/gnupg/private-keys-v1.d" . ".gnupg/")
-     ("data/gnupg/pubring.kbx" . ".gnupg/")
-     ("data/gnupg/random_seed" . ".gnupg/")
-     ("data/events" . ".events")
-     ("data/syncthing" . ".local/state/syncthing")
-     ("data/stardict" . ".local/share/stardict")
-     ("data/qutebrowser" . ".local/share/qutebrowser")
-     ("apps/quake3" . ".q3a"))))
+     (".dotfiles"                 "devel/dotfiles")
+     (".password-store"           "Sync/pass")
+     (".telega"                   "data/telega")
+     (".mail"                     "data/mail")
+     (".gnupg"                    "data/gnupg/")
+     (".events"                   "data/events")
+     (".local/state/syncthing"    "data/syncthing/")
+     (".local/share/stardict"     "data/stardict")
+     (".local/share/qutebrowser"  "data/qutebrowser")
+     (".q3a"                      "apps/quake3"))))
 
 (define git2rss (load "../git2rss/guix.scm"))
 (define (changelog-task fn)
@@ -178,7 +176,6 @@
 
 
          (service home-pipewire-service-type)
-         (service home-symlinks-service-type symlinks)
 
          (service mosquitto-service-type
                   (mixed-text-file "mosqiutto.conf"
@@ -251,7 +248,9 @@
          (simple-service
           'x11-configs
           home-files-service-type
-          `((".icons/default"
+          `(,@symlinks
+
+            (".icons/default"
              ,(file-append (pkg "bibata-cursor-theme")
                            "/share/icons/Bibata-Modern-Ice"))
 

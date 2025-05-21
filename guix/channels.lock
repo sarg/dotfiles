@@ -3,7 +3,7 @@
         (url "https://codeberg.org/guix/guix-mirror.git")
         (branch "master")
         (commit
-          "e7d73a08d569904f8a71db5b84f5fafaf0dff188")
+          "11bc17c409d77cd1af91e30b5b9f6a73f873a152")
         (introduction
           (make-channel-introduction
             "9edb3f66fd807b096b48283debdcddccfea34bad"
@@ -36,4 +36,4 @@
         (url "https://github.com/sarg/dotfiles")
         (branch "master")
         (commit
-          "ef497262780a98f415def124af62b6efb9b45593")))
+          "8948434587d977d88d3eab61a1317e94a2150d25")))
