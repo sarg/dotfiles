@@ -28,9 +28,6 @@
     (when (-any (lambda (re) (string-match re text)) re-list)
       (kill-new (match-string 1 text)))))
 
-(defun telega-sponsored-msg-p (msg)
-  (eq 'sponsoredMessage (telega--tl-type msg)))
-
 (use-package! telega
   :commands (telega)
 
@@ -61,8 +58,7 @@
   (telega-sticker-size '(8 . 48))
   (telega-emoji-use-images nil)
   (telega-emoji-custom-alist '((":s:" . "¯\\_(ツ)_/¯")))
-  (telega-msg-ignore-predicates '(telega-sponsored-msg-p
-                                  telega-msg-special-p))
+  (telega-msg-ignore-predicates '(telega-msg-special-p))
 
   :config
   (add-hook! telega-root-mode (cd telega-directory))
@@ -93,6 +89,9 @@
   (advice-add #'telega-msg--pp
               :override
               (apply-partially #'telega-button--insert 'telega-msg))
+
+  (advice-add #'telega-chatbuf--sponsored-messages-fetch
+              :override #'ignore)
 
   (advice-add
    'telega-logout
