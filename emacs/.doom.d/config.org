@@ -1001,6 +1001,8 @@ choose_entry() {
 (after! emms
   (setq!
    emms-player-mpv-update-metadata t
+   emms-player-mpv-parameters
+   '("--quiet" "--really-quiet" "--no-audio-display" "--load-scripts=no")
    emms-playlist-buffer-name "*Music*"
    emms-source-file-default-directory (expand-file-name "~/Sync/"))
 

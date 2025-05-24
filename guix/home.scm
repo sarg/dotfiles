@@ -25,6 +25,7 @@
  (gnu home services shells)
  (gnu home services ssh)
  (gnu home services guix)
+ (gnu system shadow)
  (personal services symlinks)
  (personal services owntracks)
  (personal services screen-locker)
@@ -250,6 +251,7 @@
           home-files-service-type
           `(,@symlinks
 
+            (".guile" ,%default-dotguile)
             (".icons/default"
              ,(file-append (pkg "bibata-cursor-theme")
                            "/share/icons/Bibata-Modern-Ice"))
