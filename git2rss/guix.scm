@@ -38,31 +38,6 @@
     (description "@code{data.xml} is a Clojure library for filtering trees, and XML trees in particular.")
     (license license:epl1.0)))
 
-(define clojure-tools
-  (package
-    (name "clojure-tools")
-    (version "1.12.0.1530")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://download.clojure.org/install/clojure-tools-"
-                           version
-                           ".tar.gz"))
-       (sha256 (base32 "0jgd0lki1mml7ppccxnbhj9jbpy5cy3s11775p9kkfi6h654pwhg"))))
-    (build-system copy-build-system)
-    (arguments
-     `(#:install-plan
-       '(("deps.edn" "lib/clojure/")
-         ("clojure-tools-1.12.0.1530.jar" "lib/clojure/libexec/")
-         ("example-deps.edn" "lib/clojure/")
-         ("tools.edn" "lib/clojure/")
-         ("exec.jar" "lib/clojure/libexec/"))))
-    (home-page "https://clojure.org/releases/tools")
-    (synopsis "CLI tools for the Clojure programming language")
-    (description "The Clojure command line tools can be used to start a
-Clojure repl, use Clojure and Java libraries, and start Clojure programs.")
-    (license license:epl1.0)))
-
 (package
   (name "git2rss")
   (version "0.0.1-git")
@@ -72,7 +47,7 @@ Clojure repl, use Clojure and Java libraries, and start Clojure programs.")
 
   (build-system copy-build-system)
   (inputs (list git babashka))
-  (native-inputs (list clojure-tools clojure-data-zip))
+  (native-inputs (list clojure-data-zip))
   (arguments
    (list
     #:install-plan #~(list '("./git2rss" "bin/git2rss"))
@@ -103,7 +78,7 @@ Clojure repl, use Clojure and Java libraries, and start Clojure programs.")
             (let ((out (assoc-ref outputs "out")))
               (wrap-program (string-append out "/bin/git2rss")
                 `("BABASHKA_CLASSPATH" ":" = (,(getenv "BABASHKA_CLASSPATH")))
-                `("PATH" ":" prefix (,(string-append (assoc-ref inputs "git") "/bin"))))))))))
+                `("PATH" ":" = (,(string-append (assoc-ref inputs "git") "/bin"))))))))))
   (home-page "https://github.com/sarg/dotfiles")
   (synopsis "Git2rss script")
   (description "Git2rss script")
