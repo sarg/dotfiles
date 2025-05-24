@@ -1294,8 +1294,8 @@ qutebrowser --nowindow --target tab-bg-silent $@
 (package! mpv :built-in t)
 (package! yeetube :built-in t)
 (package! qutebrowser :recipe
-  (:host github :repo "sarg/qutebrowser.el" :files (:defaults "*.py"))
-  :pin "7e0978c9fadc4119525902ae8af2e924331c4916a")
+  (:host github :repo "lrustand/qutebrowser.el" :files (:defaults "*.py"))
+  :pin "137f066dac06e1abdbf3285561ce2e1f3059b491")
 #+end_src
 #+begin_src scheme
 "emacs-mpv" "emacs-webpaste" "emacs-yeetube"
@@ -1344,6 +1344,7 @@ qutebrowser --nowindow --target tab-bg-silent $@
          (exwm-init . qutebrowser-evil-state-mode)
          (exwm-init . qutebrowser-theme-export-mode))
   :custom
+  (qutebrowser-pass-username-function (lambda (e) (auth-source-pass-get "login" e)))
   (qutebrowser-launcher-backend #'qutebrowser-consult-launcher))
 
 (use-package! yeetube
