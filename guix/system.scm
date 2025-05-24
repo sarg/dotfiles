@@ -161,7 +161,18 @@
                (excluded-directories
                 (append '("/home") %default-file-database-excluded-directories))))
 
-     (service iwd-service-type)
+     (service iwd-service-type
+              (iwd-configuration
+               (shepherd-provision '(iwd networking wireless-daemon))
+               (config
+                (iwd-settings
+                 (general
+                  (iwd-general-settings
+                   (enable-network-configuration? #t)))
+                 (network
+                  (iwd-network-settings
+                   (name-resolving-service 'resolvconf)))))))
+
      (service libvirt-service-type)
      (service virtlog-service-type)
      (service ntp-service-type)
