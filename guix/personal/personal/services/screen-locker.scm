@@ -4,19 +4,13 @@
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages video)
   #:use-module (personal services utils)
-  #:use-module (personal packages next)
 
   #:export (video-saver image-saver screen-locker))
 
 (define (video-saver file)
-  (chmod-computed-file
-   (mixed-text-file "mpv-saver"
-                    "#!/bin/sh\n"
-                    "exec " mpv "/bin/mpv --terminal=no"
-                    " --loop --fullscreen --osc=no --no-stop-screensaver"
-                    " --osd-bar=no --no-config --no-input-default-bindings"
-                    " --wid=${XSCREENSAVER_WINDOW} " file)
-   #o555))
+  (string-append "saver_mpv"
+   " XSECURELOCK_LIST_VIDEOS_COMMAND='echo " file "'"
+   " XSECURELOCK_VIDEOS_FLAGS='--no-config'"))
 
 (define (image-saver file)
   (chmod-computed-file
@@ -34,12 +28,12 @@
                     " XSECURELOCK_PASSWORD_PROMPT=disco"
                     " XSECURELOCK_SHOW_HOSTNAME=0"
                     " XSECURELOCK_SAVER=" saver
-                    " exec " xsecurelock-next "/bin/xsecurelock")
+                    " exec " xsecurelock "/bin/xsecurelock")
    #o555))
 
 (define (screen-locker saver)
   (let* ((xss-lock (file-append xss-lock "/bin/xss-lock"))
-         (dimmer (file-append xsecurelock-next "/libexec/xsecurelock/dimmer")))
+         (dimmer (file-append xsecurelock "/libexec/xsecurelock/dimmer")))
 
     (chmod-computed-file
      (mixed-text-file "screen-locker"

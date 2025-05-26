@@ -143,17 +143,3 @@ therefore it works well when executed from tty."
          (file-name (git-file-name name version))
          (sha256
           (base32 "1a0a119fr4xznscjsgbjfmgn4xsp7kj4ylr5xl4s0xlqjcxjk4yr")))))))
-
-
-(define-public xsecurelock-next
-  (package
-    (inherit xsecurelock)
-    (version "1.9.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/google/xsecurelock/releases"
-             "/download/v" version "/xsecurelock-" version ".tar.gz"))
-       (sha256
-        (base32 "09c0br8vwx9q728i4iv1pcp4s0sm0cd1c5ligag4k2730kcg93bf"))))))
