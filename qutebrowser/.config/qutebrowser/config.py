@@ -1,4 +1,5 @@
 import urllog
+import os
 
 c.auto_save.session = True
 c.backend = 'webengine'
@@ -35,24 +36,17 @@ c.tabs.width = '30%'
 c.url.default_page = 'about:blank'
 c.url.start_pages = 'about:blank'
 
-c.url.searchengines = {
-    '!yt': 'https://www.youtube.com/results?search_query={}',
-    'DEFAULT': 'https://duckduckgo.com/lite?q={}',
-    '!imdb': 'https://www.imdb.com/find/?s=all&q={}',
-    '!g': 'https://www.google.ru/search?hl=en&q={}',
-    '!gh': 'https://github.com/search?utf8=✓&type=Code&q={}',
-    '!gm': 'https://www.google.com/maps?hl=en&q={}',
-    '!gi': 'https://www.google.com/search?q={}&tbs=imgo:1&udm=2'
-}
+c.url.searchengines = { 'DEFAULT': 'https://duckduckgo.com/lite?q={}' }
 
 c.fonts.default_family = ["Hack"]
 c.fonts.default_size = '14pt'
 
 # allow video calls
-for site in ("meet.google.com", ):
-    for perm in ("content.notifications.enabled", "content.media.audio_video_capture",
-                 "content.media.audio_capture", "content.media.video_capture"):
-        config.set(perm, True, site)
+with config.pattern("meet.google.com") as p:
+    p.content.notifications.enabled = True
+    p.content.media.audio_video_capture = True
+    p.content.media.audio_capture = True
+    p.content.media.video_capture = True
 
 # bindings
 config.unbind('q', mode='normal')
