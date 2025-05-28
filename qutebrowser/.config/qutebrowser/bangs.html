@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html><head>
+    <title>Bang bang!</title>
+    <style>
+     body {background-color: #f0f0f0;}
+     #bangs input { width: 100%; padding: 5px; }
+    </style>
+    <script id="bangsList" type="text/javascript">const bangs = {
+        "DEFAULT": "https://duckduckgo.com/lite?q={}",
+        "!yt": "https://www.youtube.com/results?search_query={}",
+        "!imdb": "https://www.imdb.com/find/?s=all&q={}",
+        "!g": "https://www.google.com/search?hl=en&udm=14&q={}",
+        "!gh": "https://github.com/search?utf8=✓&type=Code&q={}",
+        "!gm": "https://www.google.com/maps?hl=en&q={}",
+        "!gi": "https://www.google.com/search?q={}&tbs=imgo:1&udm=2"
+};</script>
+
+    <script type="text/javascript">
+        function showBangs() {
+            document.body.style.visibility = '';
+            const tbody = document.getElementById("bangs");
+            tbody.innerHTML = '';
+            for (const [bang, url] of Object.entries(bangs)) {
+                tbody.innerHTML += `<tr>` +
+                  `<td><input type="text" value="${bang}" onblur="editBang(event, '${bang}')" /></td>` +
+                  `<td><input type="text" value="${url}" onblur="editUrl(event, '${bang}')"/></td>` +
+                  `<td><button onClick="deleteBang('${bang}')">X</button></td>` +
+                  `</tr>`;
+            }
+        }
+
+        function onBangsUpdated() {
+            document.getElementById("bangsList").innerHTML = `const bangs = ${JSON.stringify(bangs, null, 8)};`;
+            showBangs();
+        }
+
+        function editBang(event, name) {
+            const newName = event.target.value;
+            if (name !== newName) {
+                bangs[newName] = bangs[name];
+                delete bangs[name];
+                onBangsUpdated();
+            }
+        }
+
+        function editUrl(event, name) {
+            bangs[name] = event.target.value;
+            onBangsUpdated();
+        }
+
+        function deleteBang(bang) {
+            delete bangs[bang];
+            onBangsUpdated();
+        }
+
+        function addBang() {
+            bangs[""] = "https://?q={}";
+            onBangsUpdated();
+        }
+
+        function save() {
+            // restore the document to pristine state
+            document.getElementById("bangs").innerHTML = '';
+            document.body.style.visibility = 'hidden';
+            var bb = new Blob(["<!DOCTYPE html>\n" + document.documentElement.outerHTML], { type: 'text/html' });
+            var a = document.createElement('a');
+            const pathItems = document.location.pathname.split('/');
+            a.download = pathItems[pathItems.length - 1];
+            a.href = window.URL.createObjectURL(bb);
+            a.click();
+            showBangs();
+        }
+
+        window.onload = function() {
+            const q = new URLSearchParams(window.location.search).get("q");
+            if (!q) return showBangs();
+
+            const bangRegex = /(![^ ]+)/;
+            const match = q.match(bangRegex);
+
+            if (match) {
+                const bang = bangs[match[1]];
+                if (bang) {
+                    window.location.href = bang.replace('{}', encodeURIComponent(q.replace(bangRegex, '').trim()));
+                    return;
+                }
+            }
+
+            try {
+                new URL(q); // Check if q is a valid URL
+                window.location.href = q;
+            } catch (e) {
+                window.location.href = bangs['DEFAULT'].replace('{}', encodeURIComponent(q));
+            }
+        }
+    </script>
+
+</head>
+<body style="visibility: hidden;">
+    <form method="get">
+        <label for="q"><b>Test</b></label>
+        <input type="text" name="q">
+    </form>
+
+    <table>
+        <thead><tr>
+            <th style="width:10em">Bang</th>
+            <th style="width:40em">URL</th>
+            <th></th>
+        </tr></thead>
+        <tbody id="bangs"></tbody>
+    </table>
+    <button onclick="addBang()">+</button>
+    <button onclick="save()">save</button>
+
+
+</body><style></style></html>
