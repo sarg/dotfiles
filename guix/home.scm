@@ -26,6 +26,7 @@
  (gnu home services ssh)
  (gnu home services guix)
  (gnu system shadow)
+ (gnu services shepherd)
  (personal services symlinks)
  (personal services owntracks)
  (personal services screen-locker)
@@ -36,7 +37,8 @@
  (personal packages binary)
  (personal packages next)
  (srfi srfi-1)
- (srfi srfi-11))
+ (srfi srfi-11)
+ (srfi srfi-26))
 
 (define-syntax pkg (identifier-syntax specification->package))
 (define %pkg-android
@@ -112,6 +114,33 @@
                          #:period (period "1d")))
       #:arguments '(#$(file-append git2rss "/bin/git2rss") #$fn)))
 
+(define minidlna-service-type
+  (service-type
+   (name 'minidlna)
+   (extensions
+    (list
+     (service-extension
+      home-shepherd-service-type
+      (lambda (dirs)
+        (list (shepherd-service
+               (documentation "Run minidlnad")
+               (provision '(minidlnad))
+               (modules `(((shepherd support) #:hide (mkdir-p)) ;for '%user-log-dir'
+                          ,@%default-modules))
+               (start #~(make-forkexec-constructor
+                         (list #$(file-append (pkg "readymedia") "/sbin/minidlnad")
+                               "-S" "-P" (string-append (or (getenv "XDG_RUNTIME_DIR") "/tmp")
+                                                        "/minidlna.pid")
+                               "-f" #$(mixed-text-file "minidlna.conf"
+                                                       (string-join (map (cut string-append "media_dir=" <>) dirs) "\n" 'suffix)
+                                                       "db_dir=.cache/minidlna/\n"
+                                                       "wide_links=yes"))
+                         #:log-file (string-append %user-log-dir "/minidlnad.log")))
+               (stop #~(make-kill-destructor))))))))
+   (compose concatenate)
+   (default-value '())
+   (description "upnp service")))
+
 (define %emacs-home (load "./emacs-home.scm"))
 (home-environment
  (packages
@@ -154,6 +183,9 @@
                       (list #$startx)
                       #:create-session? #f))
             (stop #~(make-kill-destructor)))))
+
+         (service minidlna-service-type
+                  '("V,Movies"))
 
          (service home-shepherd-service-type
                   (home-shepherd-configuration
