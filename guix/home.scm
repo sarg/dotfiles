@@ -27,6 +27,7 @@
  (gnu home services guix)
  (gnu system shadow)
  (gnu services shepherd)
+ (gnu services xorg)
  (personal services symlinks)
  (personal services owntracks)
  (personal services screen-locker)
@@ -180,7 +181,10 @@
             (provision '(xorg))
             (requirement '(dbus))
             (start #~(make-forkexec-constructor
-                      (list #$startx)
+                      (list #$(xorg-start-command-xinit
+                               (xorg-configuration
+                                (server xorg-server-next)
+                                (modules (list xf86-input-libinput-next)))))
                       #:create-session? #f))
             (stop #~(make-kill-destructor)))))
 
