@@ -28,10 +28,10 @@
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/ec-/Quake3e")
-             (commit "3a5601bdae392233e00394d8249d292fb2c3c51d")))
+             (commit "829e8794111199c58f257b96234ff441df5de393")))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "08c2r6x9ymn0d2grw9cclyqm1y1rjhhscnzmfyv3fvp1zglv3f6h"))
+        (base32 "1yx8fcnlhvbq8vwdcc70fmk0bbw515mdss6i1yvzsr87gb7nqm2j"))
        (modules '((guix build utils)))
        (snippet
         ;; Delete the bundled copy of these libraries.
