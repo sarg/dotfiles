@@ -79,6 +79,36 @@ To define guix dependencies add a =scheme= source code block. It'll be then tang
   (setq guix-repl-use-server nil
         guix-current-profile "~/.guix-home/profile"
         guix-load-path '("/home/sarg/devel/dotfiles/guix/personal" "/home/sarg/devel/ext/nonguix")))
+
+(after! magit
+  ;; agit flow
+  (transient-define-suffix magit-push-current-agit (source target args)
+    :if (lambda () (when-let* ((branch (magit-get-current-branch))
+                               (remote (magit-get "branch" branch "remote"))
+                               (agit (magit-get "remote" remote "agit")))
+                     (string= "true" agit)))
+    :description (lambda () (concat (magit-push--upstream-description) " (agit)"))
+    (interactive
+     (let ((source (or (magit-get-current-branch)
+                       (user-error "No branch is checked out"))))
+       (list source
+             (magit-get-upstream-branch source)
+             (magit-push-arguments))))
+
+    (let* ((origin (magit-get "branch" source "remote"))
+           (desc (magit-get "branch" source "description"))
+           (desc (and desc (split-string desc "\n" 't (rx space)))))
+
+      (magit-push-refspecs
+       origin
+       (concat source ":refs/for/master/" source)
+       `(,@args
+         "-o" "force-push=true"
+         ,@(if desc (list "-o" (concat "title=" (car desc))) '())
+         ,@(if (and desc (cdr desc)) (list "-o" (concat "description=" (string-join (cdr desc) "<br>")) '()))))))
+
+  (transient-insert-suffix 'magit-push
+    '(1 0) (list "a" #'magit-push-current-agit)))
 #+end_src
 * doom
 ** base packages
