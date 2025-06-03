@@ -6,7 +6,7 @@
   #:use-module (guix build-system trivial)
   #:use-module (guix gexp)
   #:use-module (guix packages)
-  #:use-module (personal packages secretsd))
+  #:use-module (gnu packages password-utils))
 
 (define (secretsd-shepherd-service key)
   "Return a <shepherd-service> for secretsd with CONFIG."
