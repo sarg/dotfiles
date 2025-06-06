@@ -12,7 +12,6 @@
              (sops services sops)
              (personal services hetzner)
              (personal services utils)
-             (personal services iwd)
              (nongnu system linux-initrd)
              (nongnu packages linux)
              (personal packages udev-rules)
