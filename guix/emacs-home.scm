@@ -54,6 +54,15 @@
          "emacs-telega" "emacs-telega-contrib"
          "emacs-vterm" "guix-icons"
          
+         "tree-sitter-typescript"
+         "tree-sitter-javascript"
+         "tree-sitter-json"
+         "tree-sitter-html"
+         "tree-sitter-css"
+         "tree-sitter-bash"
+         "tree-sitter-python"
+         "tree-sitter-clojure"
+         
          ; modules dependencies
          "shfmt" "shellcheck" "fd"
          

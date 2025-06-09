@@ -120,6 +120,15 @@ To define guix dependencies add a =scheme= source code block. It'll be then tang
 "emacs-telega" "emacs-telega-contrib"
 "emacs-vterm" "guix-icons"
 
+"tree-sitter-typescript"
+"tree-sitter-javascript"
+"tree-sitter-json"
+"tree-sitter-html"
+"tree-sitter-css"
+"tree-sitter-bash"
+"tree-sitter-python"
+"tree-sitter-clojure"
+
 ; modules dependencies
 "shfmt" "shellcheck" "fd"
 
@@ -146,9 +155,9 @@ To define guix dependencies add a =scheme= source code block. It'll be then tang
  :term        eshell vterm
  :tools       editorconfig (eval +overlay) (lookup +docsets) magit pdf (pass +auth) make tree-sitter lsp direnv llm
  :checkers    syntax
- :lang        clojure data emacs-lisp
+ :lang        (clojure +tree-sitter) data emacs-lisp (javascript +tree-sitter +lsp)
               (org +contacts +dragndrop +pandoc +present +hugo +roam2 +pretty) beancount
-              rest sh plantuml (python +pyenv +lsp) (web +html) yaml json
+              rest (sh +tree-sitter) plantuml (python +pyenv +lsp +tree-sitter) (web +tree-sitter) yaml (json +tree-sitter)
  :app         calendar telega (rss +org) torrent irc exwm emms dash-menu
  :email       (mu4e +gmail)
  :config      (default +bindings +smartparens +gnupg) literate)
