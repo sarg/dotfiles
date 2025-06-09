@@ -1,0 +1,17 @@
+name: terraform
+runtime: nodejs
+config:
+  gcp:disableGlobalProjectWarning:
+    value: true
+  gcp:userProjectOverride:
+    value: true
+  openstack:cloud:
+    value: selectel
+  openstack:region:
+    value: ru-9
+packages:
+  telegram:
+    source: terraform-provider
+    version: 0.11.0
+    parameters:
+      - yi-jiayu/telegram
