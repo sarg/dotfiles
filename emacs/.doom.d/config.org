@@ -766,6 +766,7 @@ dbusserver: true
 #+begin_src elisp
 (setq
  org-directory (expand-file-name "~/Sync/org/")
+ org-attach-id-dir ".attach/"
  org-refile-targets `((nil :maxlevel . 3)
                       (,(expand-file-name "bookmarks.org" org-directory) :level . 1)
                       (org-agenda-files :maxlevel . 3))
