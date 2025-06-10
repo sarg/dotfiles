@@ -204,7 +204,7 @@
             (local-file (relative-file "../secrets.yaml"))))
        (service sops-secrets-service-type
                 (sops-service-configuration
-                 (age-key-file "/root/agekeys.txt")
+                 (age-key-file (relative-file "../secure/.config/sops/age/keys.txt"))
                  (config sops-config)
                  (secrets (list
                            (sops-secret
