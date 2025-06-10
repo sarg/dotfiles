@@ -211,28 +211,7 @@
                          (sops-secret
                           (key '("hetzner" "wireguard" "private"))
                           (file (local-file (relative-file "sops/hetzner.yaml")))
-                          (output-type "binary"))
-
-                         (sops-secret
-                          (key '("hetzner" "user-data" "vpn"))
-                          (file (local-file (relative-file "sops/hetzner.yaml")))
-                          (output-type "yaml"))
-
-                         (sops-secret
-                          (key '("hetzner" "hcloud.toml"))
-                          (file (local-file (relative-file "sops/hetzner.yaml")))
                           (output-type "binary"))))))
-
-     (service hetzner-vm-service-type
-              (hetzner-vm
-               (name "vpn")
-               (type "cax11")
-               (image "ubuntu-24.04")
-               (user-data-file "/run/secrets/hetzner/user-data/vpn")
-               (cli-config "/run/secrets/hetzner/hcloud.toml")
-               (extra-args '("--location" "hel1"
-                             "--primary-ipv6" "vpn_ipv6"
-                             "--ssh-key" "thinkpad"))))
 
      (service upower-service-type)
      (service bluetooth-service-type)
