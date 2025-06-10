@@ -6,10 +6,12 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages java)
   #:use-module (gnu packages gcc)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages video)
   #:use-module (gnu packages compression)
   #:use-module (nonguix build-system binary)
   #:use-module (guix build-system copy)
+  #:use-module (guix build-system gnu)
   #:use-module (guix packages))
 
 (define-public oama
@@ -277,3 +279,151 @@ history in an SQLite database.")
 embeds issues, comments, and more as objects in a git repository (not files!),
 enabling you to push and pull them to one or more remotes.")
     (license license:gpl3+)))
+
+(define-public terraform
+  (package
+   (name "terraform")
+   (version "1.6.1")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "https://releases.hashicorp.com/terraform/"
+                                version "/terraform_" version "_linux_amd64.zip"))
+            (sha256
+             (base32 "19p2jbfg76663q4vanr02f97l6zaf7s2g59c65496kf41j2pi9yi"))))
+   (build-system copy-build-system)
+   (supported-systems '("x86_64-linux" "i686-linux"))
+   (arguments
+    `(#:install-plan '(("terraform" "bin/"))))
+   (native-inputs (list unzip))
+   (synopsis "Terraform is a tool for building, changing, and versioning infrastructure safely and efficiently.")
+   (description "Terraform enables you to safely and predictably create, change, and improve infrastructure. It is an open source tool that codifies APIs into declarative configuration files that can be shared amongst team members, treated as code, edited, reviewed, and versioned.")
+   (home-page "https://www.terraform.io/")
+   (license #f)))
+
+(define-public google-cloud-sdk
+  (package
+    (name "google-cloud-sdk")
+    (version "465.0.0")
+    (source (origin
+             (method url-fetch)
+             ;; A starting point for a proper package is here:
+             ;; https://storage.googleapis.com/cloud-sdk-release/for_packagers
+             ;; /linux/google-cloud-sdk_337.0.0.orig.tar.gz
+             (uri (string-append
+                   "https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/"
+                   "google-cloud-sdk-" version "-linux-x86_64.tar.gz"))
+             (sha256
+              (base32 "0mp71q62yj6xmf1n94myq6dzvpjmxc5fikd9gkvh28hwx7q8w2by"))))
+    ;; We use the GNU build system mainly for its patch-shebang phases.
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; This is just copying a binary, so no tests to perform.
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure) ; No configuration, just copying.
+         (delete 'build)     ; No building, just copying.
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out      (assoc-ref outputs "out"))
+                    (bin      (string-append out "/bin"))
+                    (lib      (string-append out "/lib"))
+                    (platform (string-append out "/platform"))
+                    (share    (string-append out "/share/google-cloud-sdk")))
+               (for-each mkdir-p (list out share))
+               (copy-recursively "bin" bin)
+               (copy-recursively "lib" lib)
+               (copy-recursively "platform" platform)))))))
+    (propagated-inputs
+     (list python coreutils))
+    (home-page "https://cloud.google.com/sdk")
+    (synopsis "Google Cloud SDK")
+    (description "This package provides the Google Cloud SDK which includes the
+command-line programs gsutil and gcloud among others.")
+    (license license:asl2.0)))
+
+(define-public terraform-ls
+  (package
+    (name "terraform-ls")
+    (version "0.36.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://releases.hashicorp.com/terraform-ls/" version
+             "/terraform-ls_" version "_linux_amd64.zip"))
+       (sha256
+        (base32 "08wjzabcmjfy8jnng5xh9xvrp6ffsg5gxvkblfkh4rgyblnibx4a"))))
+    (build-system copy-build-system)
+    (supported-systems '("x86_64-linux"))
+    (arguments (list
+                #:install-plan
+                #~(list '("terraform-ls" "bin/"))))
+    (native-inputs (list unzip))
+    (home-page "https://github.com/hashicorp/terraform-ls")
+    (synopsis "Language server for terraform")
+    (description "The official Terraform language server maintained by HashiCorp provides IDE features to any LSP-compatible editor.")
+    (license license:mpl2.0)))
+
+(define-public pulumi-esc
+  (package
+    (name "pulumi-esc")
+    (version "0.14.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://get.pulumi.com/esc/releases/esc-v" version "-linux-x64.tar.gz"))
+       (sha256
+        (base32 "1q4g4gab601acvyrg5p4ry4r3kkhkz9i37d6a78blfr122pbvmbk"))))
+    (build-system copy-build-system)
+    (supported-systems '("x86_64-linux"))
+    (arguments
+     `(#:install-plan '(("." "bin/"))))
+    (home-page "https://www.pulumi.com")
+    (synopsis #f)
+    (description #f)
+    (license license:asl2.0)))
+
+(define-public pulumi
+  (package
+    (name "pulumi")
+    (version "3.175.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://get.pulumi.com/releases/sdk/pulumi-v" version "-linux-x64.tar.gz"))
+       (sha256
+        (base32 "0c8aywfscrn8s00jmky2g87i9l96ndbirb7f4x0s1nr9q842f0y5"))))
+    (build-system binary-build-system)
+    (supported-systems '("x86_64-linux"))
+    (arguments
+     `(#:install-plan '(("." "bin/"))
+       #:patchelf-plan '(("pulumi-watch" ("glibc" "gcc:lib")))))
+    (inputs `(("glibc" ,glibc)
+              ("gcc:lib" ,gcc "lib")))
+    (home-page "https://www.pulumi.com")
+    (synopsis #f)
+    (description #f)
+    (license license:asl2.0)))
+
+(define-public httptap
+  (package
+   (name "httptap")
+   (version "0.1.1")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (string-append
+           "https://github.com/monasticacademy/httptap/releases/download/v"
+           version "/httptap_linux_x86_64.tar.gz"))
+     (sha256
+      (base32 "1vyzlg4h5g71qgbh0zsbfjq1ll3mc4a51mnz055ydhx4dnq97val"))))
+   (build-system copy-build-system)
+   (supported-systems '("x86_64-linux"))
+   (arguments
+    `(#:install-plan '(("httptap" "bin/"))))
+   (home-page "https://github.com/monasticacademy/httptap")
+   (synopsis #f)
+   (description #f)
+   (license license:expat)))
