@@ -24,6 +24,7 @@
  (gnu home services sound)
  (gnu home services shells)
  (gnu home services ssh)
+ (gnu home services mpv)
  (gnu home services guix)
  (gnu system shadow)
  (gnu services shepherd)
@@ -304,19 +305,33 @@
                                "  emacs -mm --init-directory=" (pkg "doomemacs") " -f exwm-enable\n"
                                "done\n"))))
 
+         (service home-mpv-service-type
+                  (make-home-mpv-configuration
+                   #:global
+                   (make-mpv-profile-configuration
+                    #:audio-display 'no
+                    #:hwdec '("auto")
+                    #:fullscreen? #t
+                    #:sub-font-size 24
+                    #:x11-name "mpv"
+                    #:ytdl-format "bestvideo[height<=?900]+bestaudio"
+                    #:osd-fonts-dir (file-append (pkg "mpv-uosc") "/share/mpv/fonts")
+                    #:script-opts '(("network" . "yes")) ; thumbfast
+                    #:input-conf
+                    (plain-file "input.conf"
+                                (string-join
+                                 '("q quit-watch-later"
+                                   "h seek -5" "l seek 5"
+                                   "H seek -60" "L seek 60")
+                                 "\n"))
+                    #:scripts (list
+                               (file-append (pkg "mpv-mpris") "/lib/mpris.so")
+                               (file-append (pkg "mpv-thumbfast") "/share/mpv/scripts/thumbfast.lua")
+                               (file-append (pkg "mpv-uosc") "/share/mpv/scripts/uosc")))))
          (simple-service
           'configs
           home-xdg-configuration-files-service-type
-          `(("guix/channels.scm" ,(local-file "channels.scm"))
-            ("mpv/scripts/mpris.so"
-             ,(file-append (pkg "mpv-mpris") "/lib/mpris.so"))
-            ("mpv/fonts" ,(file-append (pkg "mpv-uosc") "/share/mpv/fonts"))
-            ("mpv/scripts/thumbfast.lua"
-             ,(file-append (pkg "mpv-thumbfast") "/share/mpv/scripts/thumbfast.lua"))
-            ("mpv/script-opts/thumbfast.conf"
-             ,(mixed-text-file "thumbfast.conf" "network=yes"))
-            ("mpv/scripts/uosc"
-             ,(file-append (pkg "mpv-uosc") "/share/mpv/scripts/uosc"))))
+          `(("guix/channels.scm" ,(local-file "channels.scm"))))
 
          (simple-service
           'additional-env-vars-service
