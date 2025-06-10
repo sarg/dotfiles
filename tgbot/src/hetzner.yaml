@@ -1,0 +1,71 @@
+#cloud-config
+wireguard:
+  interfaces:
+    - name: wg0
+      config_path: /etc/wireguard/wg0.conf
+      content: |
+        [Interface]
+        Address = 10.66.66.1/24,fd42:42:42::1/64
+        ListenPort = 52817
+        PrivateKey = [secret:WG_PRIVATE]
+        PostUp = iptables -I INPUT -p udp --dport 52817 -j ACCEPT
+        PostUp = iptables -I FORWARD -i eth0 -o wg0 -j ACCEPT
+        PostUp = iptables -I FORWARD -i wg0 -j ACCEPT
+        PostUp = iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+        PostUp = ip6tables -I FORWARD -i wg0 -j ACCEPT
+        PostUp = ip6tables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+        PostDown = iptables -D INPUT -p udp --dport 52817 -j ACCEPT
+        PostDown = iptables -D FORWARD -i eth0 -o wg0 -j ACCEPT
+        PostDown = iptables -D FORWARD -i wg0 -j ACCEPT
+        PostDown = iptables -t nat -D POSTROUTING -o eth0 -j MASQUERADE
+        PostDown = ip6tables -D FORWARD -i wg0 -j ACCEPT
+        PostDown = ip6tables -t nat -D POSTROUTING -o eth0 -j MASQUERADE
+
+        [Peer]
+        PublicKey = 5iTc/HGytMJyTkftzRFVaWp/Vki5taGQFQR21G6bjCQ=
+        PresharedKey = [secret:WG_PSK]
+        AllowedIPs = 10.66.66.2/32,fd42:42:42::2/128
+
+runcmd:
+  - sysctl -p /etc/sysctl.d/nat.conf
+  - systemd-run -u wg-watch -p "Wants=wg-quick@wg0.service" -p "After=wg-quick@wg0.service" watchdog.sh
+  - curl -s -6 http://v6.sync.afraid.org/u/[secret:AFRAID_V6]/ || true
+  - curl -s -4 http://sync.afraid.org/u/[secret:AFRAID_V4]/ || true
+
+write_files:
+  - content: |
+      net.ipv4.ip_forward = 1
+      net.ipv6.conf.all.forwarding = 1
+    owner: root:root
+    path: /etc/sysctl.d/nat.conf
+    permissions: '0644'
+  - content: |
+      #!/usr/bin/env bash
+      CURL='curl -s -G --data-urlencode'
+      DEST="https://api.telegram.org/bot[secret:BOT_TOKEN]/sendMessage?chat_id=[input:CHAT_ID]"
+      if [ "$1" = '-l' ]; then
+          while read line; do
+              $CURL "text=${line}" $DEST > /dev/null
+          done
+      else
+          $CURL "text@-" $DEST > /dev/null
+      fi
+    owner: root:root
+    path: /usr/bin/notify-tg
+    permissions: '0744'
+  - content: |
+      #!/usr/bin/env bash
+      echo "VPN started" | notify-tg
+      while true; do
+        start=$(date +%s)
+        while sleep 60; do
+          last=$(wg show wg0 latest-handshakes | cut -f2 | sort -rn | head -n1)
+          if [ $last -eq 0 ]; then last=$start; fi
+          now=$(date +%s)
+          test $((now - last)) -gt 300 && break
+        done
+        echo "VPN not used. Please turn it off" | notify-tg
+      done
+    owner: root:root
+    path: /sbin/watchdog.sh
+    permissions: '0744'
