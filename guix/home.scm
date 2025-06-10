@@ -338,8 +338,6 @@
           'additional-env-vars-service
           home-environment-variables-service-type
           `(("PATH" . "$HOME/.local/bin:$PATH")
-            ("QT_PLUGIN_PATH" . ,(file-append qtwayland "/lib/qt6/plugins"))
-            ("QT_QPA_PLATFORM_PLUGIN_PATH" . ,(file-append qtwayland  "/lib/qt6/plugins/platforms"))
             ("_JAVA_AWT_WM_NONREPARENTING" . "1")
             ("QT_QPA_PLATFORMTHEME" . "gtk3")
             ("XDG_DATA_DIRS" . "$XDG_DATA_DIRS:$HOME/.local/share/flatpak/exports/share")
