@@ -259,7 +259,7 @@
                   (home-dotfiles-configuration
                    (layout 'stow)
                    (directories '(".."))
-                   (packages '("android" "email" "xsession" "git"
+                   (packages '("android" "email" "xsession" "git" "secure"
                                "qutebrowser" "desktop" "vim" "sops"))))
 
          (service restic-backup-service-type
