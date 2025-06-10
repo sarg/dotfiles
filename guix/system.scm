@@ -140,14 +140,14 @@
                (auto-start? #f)
                (shepherd-requirement '(sops-secrets))
                (addresses '("10.66.66.2/32" "fd42:42:42::2/128"))
-               (private-key "/run/secrets/hetzner/wireguard/private")
+               (private-key "/run/secrets/vpn/WG_CLIENT")
                (peers
                 (list
                  (wireguard-peer
                   (name "hetzner")
                   (endpoint "sargvpn.mooo.com:52817")
                   (public-key "6gNRvmvi5oRGSPr8J0dBcyDyKS94zO4Y4Jbwo2u+iV0=")
-                  (preshared-key "/run/secrets/hetzner/wireguard/psk")
+                  (preshared-key "/run/secrets/vpn/WG_PSK")
                   (allowed-ips '("0.0.0.0/0" "::/0")))))))
 
      (simple-service 'sysctl-custom sysctl-service-type
@@ -198,20 +198,24 @@
                      (list polkit-udisks-wheel spice-gtk))
      (service polkit-service-type)
 
-     (service sops-secrets-service-type
-              (sops-service-configuration
-               (age-key-file "/root/agekeys.txt")
-               (config (local-file (relative-file "../.sops.yaml") "sops.yaml"))
-               (secrets (list
-                         (sops-secret
-                          (key '("hetzner" "wireguard" "psk"))
-                          (file (local-file (relative-file "sops/hetzner.yaml")))
-                          (output-type "binary"))
+     (let ((sops-config
+            (local-file (relative-file "../sops/.sops.yaml") "sops.yaml"))
+           (secrets-file
+            (local-file (relative-file "../sops/.config/sops/main.yaml"))))
+       (service sops-secrets-service-type
+                (sops-service-configuration
+                 (age-key-file "/root/agekeys.txt")
+                 (config sops-config)
+                 (secrets (list
+                           (sops-secret
+                            (key '("vpn" "WG_PSK"))
+                            (file secrets-file)
+                            (output-type "binary"))
 
-                         (sops-secret
-                          (key '("hetzner" "wireguard" "private"))
-                          (file (local-file (relative-file "sops/hetzner.yaml")))
-                          (output-type "binary"))))))
+                           (sops-secret
+                            (key '("vpn" "WG_CLIENT"))
+                            (file secrets-file)
+                            (output-type "binary")))))))
 
      (service upower-service-type)
      (service bluetooth-service-type)
