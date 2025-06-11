@@ -94,8 +94,10 @@ export class Cloudflare extends pulumi.ComponentResource {
                 observability: { enabled: true },
                 bindings: [
                     "BOT_TOKEN",
+                    "HETZNER_IPV6_ID",
                     "HCLOUD_TOKEN",
                     "SELECTEL_PASS",
+                    "SELECTEL_ORG_ID",
                     "WG_PRIVATE",
                     "WG_PSK",
                     "AFRAID_V4",

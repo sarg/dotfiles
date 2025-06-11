@@ -7,6 +7,7 @@
 	"name": "tgbot",
 	"main": "src/index.ts",
 	"compatibility_date": "2025-06-07",
+	"compatibility_flags": ["nodejs_compat"],
 	"observability": {
 		"enabled": true
 	},
@@ -16,7 +17,7 @@
 			"globs": ["**/*.yaml"],
 			"fallthrough": true
 		}
-	]
+	],
 	/**
 	 * Smart Placement
 	 * Docs: https://developers.cloudflare.com/workers/configuration/smart-placement/#smart-placement
@@ -30,6 +31,12 @@
 	 * https://developers.cloudflare.com/workers/runtime-apis/bindings/
 	 */
 
+	"kv_namespaces": [
+		{
+			"binding": "NOTIFY_TOKENS",
+			"id": "4d54de30849e4d61aafb02d05866b242"
+		}
+	]
 	/**
 	 * Environment Variables
 	 * https://developers.cloudflare.com/workers/wrangler/configuration/#environment-variables
