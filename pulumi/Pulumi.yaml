@@ -7,6 +7,8 @@ config:
     value: true
   openstack:cloud:
     value: selectel
+  openstack:region:
+    value: ru-9
 packages:
   telegram:
     source: terraform-provider

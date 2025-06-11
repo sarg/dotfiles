@@ -11,10 +11,27 @@ export class Telegram extends pulumi.ComponentResource {
         super("components:index:Telegram", name, args, opts);
 
         new telegram.BotWebhook(
-            "sargebutlerbot",
+            "diogenisbot",
             {
                 url: pulumi.interpolate`https://${args.cloudflare.tgbotDomain.hostname}`,
                 maxConnections: 1,
+            },
+            { parent: this },
+        );
+
+        new telegram.BotCommands(
+            "diogenisbot",
+            {
+                commands: [
+                    {
+                        command: "vpn",
+                        description: "start vpn",
+                    },
+                    {
+                        command: "setup",
+                        description: "generate notification link",
+                    },
+                ],
             },
             { parent: this },
         );
