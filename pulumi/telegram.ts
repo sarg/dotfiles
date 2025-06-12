@@ -13,7 +13,7 @@ export class Telegram extends pulumi.ComponentResource {
         new telegram.BotWebhook(
             "diogenisbot",
             {
-                url: pulumi.interpolate`https://${args.cloudflare.tgbotDomain.hostname}`,
+                url: pulumi.interpolate`https://${args.cloudflare.tgbotDomain.hostname}/hook`,
                 maxConnections: 1,
             },
             { parent: this },

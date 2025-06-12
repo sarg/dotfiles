@@ -1,81 +1,57 @@
 import { env } from 'cloudflare:workers';
 import userDataTmpl from './hetzner.yaml';
-import * as openstack from './openstack';
+import { Hetzner } from './hetzner';
+import { Openstack } from './openstack';
 import { randomBytes } from 'node:crypto';
 
 interface Payload {
 	message?: { chat: { id: number }; text?: string };
 }
-const selectelUser = {
-	name: 'openstack',
-	domain: { name: env.SELECTEL_ORG_ID },
-	password: env.SELECTEL_PASS,
+const openstackConfig = {
+	region: 'ru-9',
+	user: {
+		name: 'openstack',
+		domain: { name: env.SELECTEL_ORG_ID },
+		password: env.SELECTEL_PASS,
+	},
 };
-var userData!: string;
 
 async function respond(chatId: number, text: string): Promise<void> {
-	await fetch(
-		`https://api.telegram.org/bot${env.BOT_TOKEN}/sendMessage?chat_id=${chatId}`,
-		{
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ text }),
-		},
-	);
-}
-
-async function deployHetzner(): Promise<void> {
-	await fetch('https://api.hetzner.cloud/v1/servers', {
+	await fetch(`https://api.telegram.org/bot${env.BOT_TOKEN}/sendMessage?chat_id=${chatId}`, {
 		method: 'POST',
-		headers: {
-			Authorization: `Bearer ${env.HCLOUD_TOKEN}`,
-			'Content-Type': 'application/json',
-		},
-		body: JSON.stringify({
-			name: 'vpn',
-			location: 'hel1',
-			server_type: 'cax11',
-			start_after_create: true,
-			image: 'ubuntu-24.04',
-			ssh_keys: ['thinkpad'],
-			public_net: {
-				enable_ipv4: true,
-				enable_ipv6: true,
-				ipv6: env.HETZNER_IPV6_ID, // vpn_ipv6
-			},
-			user_data: userData,
-		}),
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({ text }),
 	});
 }
 
-async function stopHetzner(): Promise<boolean> {
-	const response = await fetch(`https://api.hetzner.cloud/v1/servers?name=vpn`, {
-		headers: {
-			Authorization: `Bearer ${env.HCLOUD_TOKEN}`,
+async function startHetzner(userData: string) {
+	return new Hetzner(env.HCLOUD_TOKEN).createServer({
+		name: 'vpn',
+		location: 'hel1',
+		server_type: 'cax11',
+		start_after_create: true,
+		image: 'ubuntu-24.04',
+		ssh_keys: ['thinkpad'],
+		public_net: {
+			enable_ipv4: true,
+			enable_ipv6: true,
+			ipv6: env.HETZNER_IPV6_ID, // vpn_ipv6
 		},
+		user_data: userData,
 	});
+}
 
+async function stopHetzner() {
+	const hetzner = new Hetzner(env.HCLOUD_TOKEN);
+	const response = await hetzner.findServer('vpn');
 	if (!response.ok) return false;
 
 	const servers = ((await response.json()) as { servers: { id: string }[] }).servers;
-	if (servers.length == 0) return false;
-
-	const deleteResponse = await fetch(
-		`https://api.hetzner.cloud/v1/servers/${servers[0].id}`,
-		{
-			method: 'DELETE',
-			headers: {
-				Authorization: `Bearer ${env.HCLOUD_TOKEN}`,
-				'Content-Type': 'application/json',
-			},
-		},
-	);
-
-	return deleteResponse.ok;
+	return servers[0] && hetzner.deleteServer(servers[0].id).then((r) => r.ok);
 }
 
-async function startSelectel(): Promise<void> {
-	await openstack.auth(selectelUser);
+async function startSelectel(userData: string): Promise<void> {
+	const openstack = new Openstack(openstackConfig);
 	const [port, externalNetwork, image] = await Promise.all([
 		openstack.networkFindPort('vpn'),
 		openstack.networkFindNetwork('external-network'),
@@ -109,7 +85,7 @@ async function startSelectel(): Promise<void> {
 }
 
 async function stopSelectel(): Promise<boolean> {
-	await openstack.auth(selectelUser);
+	const openstack = new Openstack(openstackConfig);
 	const server = await openstack.computeFindServer('vpn');
 	if (!server) return false;
 	openstack.computeDeleteServer(server.id);
@@ -121,19 +97,17 @@ async function stopSelectel(): Promise<boolean> {
 function prepareUserData(chatId: number): string {
 	return userDataTmpl
 		.replace('[input:CHAT_ID]', chatId.toString())
-		.replaceAll(/\[secret:([^\]]+)\]/g, (_, s) => env[s as keyof Env]);
+		.replaceAll(/\[secret:([^\]]+)\]/g, (_, s) => process.env[s]!);
 }
 
 async function vpnHandler(chatId: number, args: string[]) {
 	switch (args[0] ?? 'ru') {
 		case 'de':
-			userData = prepareUserData(chatId);
-			await deployHetzner();
+			await startHetzner(prepareUserData(chatId));
 			await respond(chatId, 'Creating hetzner VPN');
 			break;
 		case 'ru':
-			userData = prepareUserData(chatId);
-			await startSelectel();
+			await startSelectel(prepareUserData(chatId));
 			await respond(chatId, 'Starting selectel VPN');
 			break;
 		case 'stop':
@@ -150,55 +124,94 @@ async function vpnHandler(chatId: number, args: string[]) {
 	}
 }
 
-async function setupHandler(chatId: number, origin: string): Promise<void> {
+async function setupHandler(chatId: number, origin: string, args: string[]): Promise<void> {
 	const chat = chatId.toString();
-	const existing = await env.NOTIFY_TOKENS.get(chat);
-	if (existing) env.NOTIFY_TOKENS.delete(existing);
+	var token = await env.NOTIFY_TOKENS.get(chat);
+	if (!token || args[0] === 'renew') {
+		if (token) env.NOTIFY_TOKENS.delete(token);
+		token = randomBytes(5).toString('hex');
+		env.NOTIFY_TOKENS.put(token, chat);
+		env.NOTIFY_TOKENS.put(chat, token);
+	}
 
-	const token = randomBytes(5).toString('hex');
-	env.NOTIFY_TOKENS.put(token, chat);
-	env.NOTIFY_TOKENS.put(chat, token);
 	return respond(chatId, `${origin}/notify/${token}`);
+}
+
+async function notify(s: string, request: Request): Promise<Response> {
+	const chatId = await env.NOTIFY_TOKENS.get(s);
+	if (!chatId) return notFound();
+
+	return respond(parseInt(chatId), await request.text()).then(accepted);
+}
+
+async function hook(request: Request): Promise<Response> {
+	const url = new URL(request.url);
+
+	const payload = (await request.json()) as Payload;
+	const msg = payload.message;
+
+	if (!msg || !msg.text) {
+		console.log({ msg: 'Unknown command', payload });
+		return accepted();
+	}
+
+	const chatId = msg.chat.id;
+	const args = msg.text.split(' ', 2);
+	switch (args.shift()) {
+		case '/vpn':
+			await vpnHandler(chatId, args);
+			break;
+
+		case '/setup':
+			await setupHandler(chatId, url.origin, args);
+			break;
+
+		default:
+			await respond(chatId, 'Try /vpn or /setup');
+	}
+
+	return accepted();
+}
+
+async function notFound() {
+	return new Response(null, { status: 404 });
+}
+
+async function accepted() {
+	return new Response(null, { status: 201 });
+}
+
+type Method = 'POST';
+type Handler = (m: string[], r: Request) => Promise<Response>;
+class Route {
+	r: RegExp;
+	m: Method;
+	h: Handler;
+
+	constructor(m: Method, r: RegExp, h: Handler) {
+		this.m = m;
+		this.r = r;
+		this.h = h;
+	}
 }
 
 export default {
 	async fetch(request): Promise<Response> {
-		if (request.method != 'POST') return new Response(null, { status: 404 });
 		const url = new URL(request.url);
-		{
-			const m = url.pathname.match(/^\/notify\/(\w+)$/);
-			if (m) {
-				const chatId = await env.NOTIFY_TOKENS.get(m[1]);
-				if (chatId) {
-					await respond(parseInt(chatId), await request.text());
-				}
-				return new Response(null, { status: 201 });
-			}
-		}
+		const routes = [
+			new Route('POST', /^\/notify\/(\w+)$/, (m, r) => notify(m[0], r)),
+			new Route('POST', /^\/hook$/, (_, r) => hook(r)),
+		];
 
-		const payload = (await request.json()) as Payload;
-		const cmd = payload.message?.text;
+		const handler =
+			routes
+				.filter((route) => route.m === request.method)
+				.map((route) => {
+					const m = url.pathname.match(route.r);
+					return m && route.h.call(route, m, request);
+				})
+				.find((m) => m) || notFound();
 
-		if (!cmd) {
-			console.log({ msg: 'Unknown command', payload });
-			return new Response(null, { status: 201 });
-		}
-
-		const chatId = payload.message?.chat.id!;
-		const args = cmd.split(' ', 2);
-		switch (args[0]) {
-			case '/vpn':
-				await vpnHandler(chatId, args.slice(1));
-				break;
-
-			case '/setup':
-				await setupHandler(chatId, url.origin);
-				break;
-
-			default:
-				await respond(chatId, 'Try /vpn or /setup');
-		}
-
-		return new Response(null, { status: 201 });
+		return await handler;
 	},
 } satisfies ExportedHandler<Env>;
