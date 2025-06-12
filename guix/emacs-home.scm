@@ -64,7 +64,14 @@
          "tree-sitter-clojure"
          
          ; modules dependencies
-         "shfmt" "shellcheck" "fd"
+         "shfmt" "shellcheck" "fd" "editorconfig-core-c"
+         
+         ; python
+         "python-isort"
+         "python-pyflakes"
+         "python-pytest"
+         "python-black"
+         "python-nose"
          
          ; dirvish
          "ffmpegthumbnailer" "poppler" "mediainfo" "vips"

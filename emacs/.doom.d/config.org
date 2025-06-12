@@ -130,7 +130,14 @@ To define guix dependencies add a =scheme= source code block. It'll be then tang
 "tree-sitter-clojure"
 
 ; modules dependencies
-"shfmt" "shellcheck" "fd"
+"shfmt" "shellcheck" "fd" "editorconfig-core-c"
+
+; python
+"python-isort"
+"python-pyflakes"
+"python-pytest"
+"python-black"
+"python-nose"
 
 ; dirvish
 "ffmpegthumbnailer" "poppler" "mediainfo" "vips"
@@ -157,7 +164,7 @@ To define guix dependencies add a =scheme= source code block. It'll be then tang
  :checkers    syntax
  :lang        (clojure +tree-sitter) data emacs-lisp (javascript +tree-sitter +lsp)
               (org +contacts +dragndrop +pandoc +present +hugo +roam2 +pretty) beancount
-              rest (sh +tree-sitter) plantuml (python +pyenv +lsp +tree-sitter) (web +tree-sitter) yaml (json +tree-sitter)
+              rest (sh +tree-sitter) plantuml (python +lsp +tree-sitter) (web +tree-sitter) yaml (json +tree-sitter)
  :app         calendar telega (rss +org) torrent irc exwm emms dash-menu
  :email       (mu4e +gmail)
  :config      (default +bindings +smartparens +gnupg) literate)
@@ -263,8 +270,8 @@ EXWM has a separate [[../.doom.d/modules/app/exwm][doom app]]. Here are just the
 (setq!
  battery-mode-line-format " %b%>2p% "
  battery-mode-line-limit 50
- display-time-string-forms '((substring (format-time-string "%a") 0 1)
-                              (format-time-string "%d %R")))
+ display-time-string-forms '((substring (format-time-string "%a") 0 2)
+                              (format-time-string " %d %R")))
 
 (display-battery-mode 1)
 (display-time-mode 1)
