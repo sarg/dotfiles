@@ -1,0 +1,70 @@
+baseURL = "http://sarg.org.ru/"
+languageCode = "en-us"
+title = "Random forest"
+theme = "xmin"
+publishDir = "./dist"
+disableKinds = ["sitemap", "taxonomy", "term"]
+
+[params.author]
+name = "Sergey Trofimov"
+email = "sarg@sarg.org.ru"
+
+[outputs]
+home = ["RSS", "HTML"]
+section = ["HTML"]
+
+[outputFormats.RSS]
+mediatype = "application/rss"
+
+[markup]
+  [markup.goldmark.renderer]
+  unsafe = true
+
+  [markup.highlight]
+    codeFences = true
+    guessSyntax = false
+    hl_Lines = ""
+    lineNoStart = 1
+    lineNos = false
+    lineNumbersInTable = true
+    noClasses = true
+    style = "emacs"
+    tabWidth = 4
+
+[taxonomies]
+tag = "tags"
+
+[[menu.main]]
+name = "Home"
+url = "/"
+weight = 1
+
+[[menu.main]]
+name = "About"
+url = "/about"
+weight = 3
+
+[[menu.main]]
+name = "CV"
+url = "/cv"
+weight = 4
+
+[[menu.main]]
+name = "Books"
+url = "/books"
+weight = 6
+
+[[menu.main]]
+name = "Movies"
+url = "/movies"
+weight = 7
+
+[[menu.main]]
+name = "RSS"
+url = "/index.xml"
+weight = 8
+
+[[menu.main]]
+name = "Github"
+url = "https://github.com/sarg"
+weight = 9

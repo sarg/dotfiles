@@ -1,0 +1,6 @@
+node_modules/
+content/
+dist/
+*.lock
+.wrangler/
+static/ox-hugo/

@@ -1,0 +1,88 @@
+<style>
+.ratings > li > p {
+    font-size: 0.6em;
+    line-height: 10px;
+    color: gray;
+    padding-top: 3px;
+    margin: 0;
+}
+
+.ratings img {
+    border-radius: 4px;
+}
+
+ul.ratings {
+    display: flex;
+    flex-wrap: wrap;
+    padding-left: 0;
+    list-style: none;
+}
+
+ul.ratings > li {
+    margin: 0 0 10px 10px;
+}
+
+ul.ratings > li > div {
+    height: 115px;
+}
+
+ul.tags {
+    display: flex;
+    flex-wrap: wrap;
+    padding-left: 0;
+    list-style: none;
+}
+
+ul.tags > li {
+    margin: 0 0 10px 10px;
+    padding: 3px;
+    border: 1px solid black;
+}
+
+ul.tags > li.active {
+  background: lightgray;
+}
+</style>
+
+<ul class="tags">
+    <li tag="r5">5</li>
+    <li tag="r4">4</li>
+    <li tag="r3">3</li>
+    <li tag="r2">2</li>
+    <li tag="r1">1</li>
+    <li tag='28'>Action</li>
+    <li tag='12'>Adventure</li>
+    <li tag='16'>Animation</li>
+    <li tag='35'>Comedy</li>
+    <li tag='80'>Crime</li>
+    <li tag='99'>Documentary</li>
+    <li tag='18'>Drama</li>
+    <li tag='10751'>Family</li>
+    <li tag='14'>Fantasy</li>
+    <li tag='36'>History</li>
+    <li tag='27'>Horror</li>
+    <li tag='10402'>Music</li>
+    <li tag='9648'>Mystery</li>
+    <li tag='10749'>Romance</li>
+    <li tag='878'>Science Fiction</li>
+    <li tag='10770'>TV Movie</li>
+    <li tag='53'>Thriller</li>
+    <li tag='10752'>War</li>
+    <li tag='37'>Western</lili>
+</ul>
+
+<ul class="ratings">
+{{ range sort $.Site.Data.rated "rating" "desc" -}}
+  {{- $rating := (div (int (index . "rating")) 2) -}}
+  <li data-tags="r{{ $rating }} {{ delimit (index . "genre_ids") " " }}">
+    <div>
+    <a href="https://letterboxd.com/tmdb/{{ index . "id" }}">
+    <img loading=lazy src="https://www.themoviedb.org/t/p/w154{{ index . "poster_path" }}" width="76px" title="{{ index . "title" }}">
+    </a>
+    </div>
+    <p class="rating">{{ strings.Repeat $rating "★" }}</p>
+    </li>
+{{ end }}
+</ul>
+
+<script type="text/javascript" src="/js/filter.js"></script>
