@@ -1716,6 +1716,28 @@ Target state:
 - evil bindings in EMMS buffers (q to close, SPC to enter)
 - repeat Super+<digit> to switch (saved) window configurations
 ** TODO how to make home services depend on online status?
+** TODO set password in system-image
+#+begin_src scheme :noweb-ref nil
+;; (define user-pass
+;;   (let ((user-pass-1 (begin
+;;                        (format #t "Define user password: ")
+;;                        (force-output)
+;;                        (get-line (current-input-port))))
+;;         (user-pass-2 (begin
+;;                        (format #t "Repeat user password: ")
+;;                        (force-output)
+;;                        (get-line (current-input-port)))))
+
+;;     (when (not (string=? user-pass-1 user-pass-2))
+;;       (error "Passwords don't match"))
+
+;;     user-pass-1))
+
+;; (define user-account
+;;   (user-account
+;;    (inherit user)
+;;    (password (crypt user-pass "$6$salt"))))
+#+end_src
 * archive :noexport:
 ** emacs-one-frame
 #+begin_src sh :tangle no :shebang #!/bin/bash
