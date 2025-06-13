@@ -1,3 +1,4 @@
 secrets.yaml diff=sopsdiffer
 secure/** filter=git-crypt diff=git-crypt
 blog/*.org filter=git-crypt diff=git-crypt
+pulumi/.pulumi/** filter=git-crypt diff=git-crypt

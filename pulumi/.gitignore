@@ -1,3 +1,6 @@
-/bin/
-/node_modules/
-.venv
+node_modules/
+.venv/
+.pulumi/locks/
+.pulumi/backups/
+.pulumi/history/
+*.bak*
