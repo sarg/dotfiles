@@ -273,7 +273,8 @@
                       (schedule #~(list #:start (time "2025-01-01T06:00:00+0000")
                                         #:period (period "1d")))
                       (files (list "/storage"))
-                      (extra-flags (list "--exclude-if-present=.borgbackupexclude")))))))
+                      (extra-flags (list "--exclude-if-present=.borgbackupexclude"
+                                         "--exclude-file" (plain-file "excludes" "node_modules"))))))))
 
          (simple-service
           'changelog-jobs
