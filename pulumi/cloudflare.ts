@@ -71,11 +71,35 @@ export class Cloudflare extends pulumi.ComponentResource {
             content: "ghs.googlehosted.com",
             proxied: false,
         });
-        dnsRecord("@", zone, "@", {
-            type: "CNAME",
-            content: "sarg.github.io",
-            proxied: true,
-        });
+
+        const blogWorkersScript = new cloudflare.WorkersScript(
+            "blog",
+            {
+                accountId,
+                scriptName: "blog",
+                observability: { enabled: true },
+                content: `// stub
+                    export default {
+                        async fetch(request, env, ctx) {
+                            return new Response('Hello World!');
+                        },
+                    };`,
+                mainModule: "index.js",
+            },
+            { parent: this, ignoreChanges: ["content"] },
+        );
+
+        const blogDomain = new cloudflare.WorkersCustomDomain(
+            `blog`,
+            {
+                accountId: accountId,
+                environment: "production",
+                hostname: pulumi.interpolate`${zone.name}`,
+                service: blogWorkersScript.scriptName,
+                zoneId: zone.id,
+            },
+            { parent: this },
+        );
 
         const tgbotWorkersScript = new cloudflare.WorkersScript(
             `tgbot`,
