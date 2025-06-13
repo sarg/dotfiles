@@ -145,7 +145,7 @@
                 (list
                  (wireguard-peer
                   (name "hetzner")
-                  (endpoint "sargvpn.mooo.com:52817")
+                  (endpoint "vpn.sarg.org.ru:52817")
                   (public-key "6gNRvmvi5oRGSPr8J0dBcyDyKS94zO4Y4Jbwo2u+iV0=")
                   (preshared-key "/run/secrets/vpn/WG_PSK")
                   (allowed-ips '("0.0.0.0/0" "::/0")))))))

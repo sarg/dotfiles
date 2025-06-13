@@ -29,8 +29,7 @@ wireguard:
 runcmd:
   - sysctl -p /etc/sysctl.d/nat.conf
   - systemd-run -u wg-watch -p "Wants=wg-quick@wg0.service" -p "After=wg-quick@wg0.service" watchdog.sh
-  - curl -s -6 http://v6.sync.afraid.org/u/[secret:AFRAID_V6]/ || true
-  - curl -s -4 http://sync.afraid.org/u/[secret:AFRAID_V4]/ || true
+  - curl -s -4 http://dyndns.sarg.org.ru/set/[secret:DYNDNS_TOKEN] || true
 
 write_files:
   - content: |

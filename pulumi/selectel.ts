@@ -11,10 +11,7 @@ export class Selectel extends pulumi.ComponentResource {
         super("components:index:Selectel", name, args, opts);
         const sshKeyKeypair = new openstack.compute.Keypair(
             `ssh_key`,
-            {
-                name: args.sshKey.name,
-                publicKey: args.sshKey.key,
-            },
+            { name: args.sshKey.name, publicKey: args.sshKey.key },
             { parent: this },
         );
 
@@ -45,16 +42,13 @@ export class Selectel extends pulumi.ComponentResource {
                 dnsNameservers: ["188.93.16.19", "188.93.17.19"],
                 enableDhcp: false,
             },
-            { parent: this },
+            { parent: _private },
         );
 
         const _interface = new openstack.networking.RouterInterface(
             `interface`,
-            {
-                routerId: router.id,
-                subnetId: privateSubnet.id,
-            },
-            { parent: this },
+            { routerId: router.id, subnetId: privateSubnet.id },
+            { parent: router },
         );
 
         const vpn = new openstack.networking.Port(
@@ -64,7 +58,7 @@ export class Selectel extends pulumi.ComponentResource {
                 name: "vpn",
                 fixedIps: [{ subnetId: privateSubnet.id }],
             },
-            { parent: this },
+            { parent: _private },
         );
     }
 }

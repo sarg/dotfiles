@@ -1,4 +1,5 @@
 import * as pulumi from "@pulumi/pulumi";
+import * as random from "@pulumi/random";
 import * as cloudflare from "@pulumi/cloudflare";
 
 function dnsRecord(
@@ -23,8 +24,67 @@ function dnsRecord(
     );
 }
 
+function envSecret(s: string) {
+    return { type: "secret_text", name: s, text: process.env[s]! };
+}
+
+function secret(s: string, v: pulumi.Input<string>) {
+    return { type: "secret_text", name: s, text: v };
+}
+
+function workerDomain(
+    name: string,
+    zone: cloudflare.Zone,
+    worker: cloudflare.WorkersScript,
+    hostname?: pulumi.Input<string>,
+) {
+    return new cloudflare.WorkersCustomDomain(
+        name,
+        {
+            accountId: worker.accountId,
+            environment: "production",
+            hostname:
+                hostname ??
+                pulumi.interpolate`${worker.scriptName}.${zone.name}`,
+            service: worker.scriptName,
+            zoneId: zone.id,
+        },
+        { parent: worker },
+    );
+}
+
 export class Cloudflare extends pulumi.ComponentResource {
     tgbotDomain: cloudflare.WorkersCustomDomain;
+    vpnDyndnsKey: random.RandomId;
+    accountId: string;
+
+    private kvNamespace(name: string, opts?: pulumi.CustomResourceOptions) {
+        return new cloudflare.WorkersKvNamespace(
+            name,
+            { accountId: this.accountId, title: name },
+            { parent: this, ...opts },
+        );
+    }
+
+    private worker(name: string, args?: Partial<cloudflare.WorkerScriptArgs>) {
+        return new cloudflare.WorkersScript(
+            name,
+            {
+                accountId: this.accountId,
+                scriptName: name,
+                observability: { enabled: true },
+                content: `// stub
+                    export default {
+                        async fetch(request, env, ctx) {
+                            return new Response('Hello World!');
+                        },
+                    };`,
+                mainModule: "index.js",
+                ...args,
+            },
+            { parent: this, ignoreChanges: ["content"] },
+        );
+    }
 
     constructor(
         name: string,
@@ -32,11 +92,11 @@ export class Cloudflare extends pulumi.ComponentResource {
         opts?: pulumi.ComponentResourceOptions,
     ) {
         super("components:index:Cloudflare", name, args, opts);
-        const accountId = process.env["CLOUDFLARE_ACCOUNT_ID"]!;
+        this.accountId = process.env["CLOUDFLARE_ACCOUNT_ID"]!;
         const zone = new cloudflare.Zone(
             `sarg.org.ru`,
             {
-                account: { id: accountId },
+                account: { id: this.accountId },
                 name: "sarg.org.ru",
                 type: "full",
             },
@@ -72,51 +132,36 @@ export class Cloudflare extends pulumi.ComponentResource {
             proxied: false,
         });
 
-        const blogWorkersScript = new cloudflare.WorkersScript(
-            "blog",
+        const blogWorkersScript = this.worker("blog");
+        workerDomain("blog", zone, blogWorkersScript, zone.name);
+
+        const dyndnsWorkerScript = this.worker("dyndns", {
+            bindings: [envSecret("CLOUDFLARE_API_TOKEN")],
+        });
+        workerDomain("dyndns", zone, dyndnsWorkerScript);
+        const dyndnsTokens = this.kvNamespace("DYNDNS_TOKENS", {
+            parent: dyndnsWorkerScript,
+        });
+
+        this.vpnDyndnsKey = new random.RandomId(
+            "vpn",
+            { byteLength: 8 },
+            { parent: dyndnsTokens },
+        );
+        new cloudflare.WorkersKv(
+            "vpn",
             {
-                accountId,
-                scriptName: "blog",
-                observability: { enabled: true },
-                content: `// stub
-                    export default {
-                        async fetch(request, env, ctx) {
-                            return new Response('Hello World!');
-                        },
-                    };`,
-                mainModule: "index.js",
+                accountId: dyndnsTokens.accountId,
+                namespaceId: dyndnsTokens.id,
+                keyName: this.vpnDyndnsKey.hex,
+                value: "vpn",
             },
-            { parent: this, ignoreChanges: ["content"] },
+            { parent: dyndnsTokens },
         );
 
-        const blogDomain = new cloudflare.WorkersCustomDomain(
-            `blog`,
-            {
-                accountId: accountId,
-                environment: "production",
-                hostname: pulumi.interpolate`${zone.name}`,
-                service: blogWorkersScript.scriptName,
-                zoneId: zone.id,
-            },
-            { parent: this },
-        );
-
-        const tgbotWorkersScript = new cloudflare.WorkersScript(
-            `tgbot`,
-            {
-                accountId,
-                scriptName: "tgbot",
-                content: `// stub
-                    export default {
-                        async fetch(request, env, ctx) {
-                            return new Response('Hello World!');
-                        },
-                    };`,
-                compatibilityDate: "2025-06-07",
-                compatibilityFlags: [],
-                mainModule: "index.js",
-                observability: { enabled: true },
-                bindings: [
+        const tgbotWorkersScript = this.worker("tgbot", {
+            bindings: [
+                ...[
                     "BOT_TOKEN",
                     "HETZNER_IPV6_ID",
                     "HCLOUD_TOKEN",
@@ -124,29 +169,11 @@ export class Cloudflare extends pulumi.ComponentResource {
                     "SELECTEL_ORG_ID",
                     "WG_PRIVATE",
                     "WG_PSK",
-                    "AFRAID_V4",
-                    "AFRAID_V6",
-                ].map((s) => ({
-                    type: "secret_text",
-                    name: s,
-                    text: process.env[s],
-                })),
-            },
-            { parent: this, ignoreChanges: ["content"] },
-        );
-
-        this.tgbotDomain = new cloudflare.WorkersCustomDomain(
-            `tgbot`,
-            {
-                accountId: accountId,
-                environment: "production",
-                hostname: pulumi.interpolate`tgbot.${zone.name}`,
-                service: tgbotWorkersScript.scriptName,
-                zoneId: zone.id,
-            },
-            { parent: this },
-        );
-
-        this.registerOutputs({ tgbotDomain: this.tgbotDomain });
+                ].map(envSecret),
+                secret("DYNDNS_TOKEN", this.vpnDyndnsKey.hex),
+            ],
+        });
+        this.tgbotDomain = workerDomain("tgbot", zone, tgbotWorkersScript);
+        this.kvNamespace("NOTIFY_TOKENS", { parent: tgbotWorkersScript });
     }
 }
