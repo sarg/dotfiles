@@ -54,16 +54,16 @@ export class Cloudflare extends pulumi.ComponentResource {
 
         dnsRecord("dmarc", zone, "_dmarc", {
             type: "TXT",
-            content: "v=DMARC1; p=none",
+            content: '"v=DMARC1; p=none"',
         });
         dnsRecord("dkim", zone, "google._domainkey", {
             type: "TXT",
             content:
-                "v=DKIM1; k=rsa; p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAy2prlguGQ2S9tKRxBUmgt8ZB76puBdhod705hPnmecmmVdezp7Jo/OMx7Qyl/mq9bcreixGn41fCwHbWmJ0DvGWsMEN2iftvZwllORs1q8vgYVHcZBWBt4Dtg9OBDaoShzuFoOO7ho1XjK5TTjlYSXWkfFvpZR5DTUVETVCezvWExqCLDFJc1aHZOfRU44IVzp6YSlLgKjisBQ485XxsAL888BkSn3ocPPpioe5pNGVJphW1KBtiiR8HI3Z8MDmyAoYDknYCOCaYHd9G6ohSbpdG3Y2qubvVxW6nz1JuFdBNbb0qzGkjbCBXeUSJQl7GV3hdX6OjuJFm89gFwIyelQIDAQAB",
+                '"v=DKIM1; k=rsa; p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAy2prlguGQ2S9tKRxBUmgt8ZB76puBdhod705hPnmecmmVdezp7Jo/OMx7Qyl/mq9bcreixGn41fCwHbWmJ0DvGWsMEN2iftvZwllORs1q8vgYVHcZBWBt4Dtg9OBDaoShzuFoOO7ho1XjK5TTjlYSXWkfFvpZR5DTUVETVCezvWExqCLDFJc1aHZOfRU44IVzp6YSlLgKjisBQ485XxsAL888BkSn3ocPPpioe5pNGVJphW1KBtiiR8HI3Z8MDmyAoYDknYCOCaYHd9G6ohSbpdG3Y2qubvVxW6nz1JuFdBNbb0qzGkjbCBXeUSJQl7GV3hdX6OjuJFm89gFwIyelQIDAQAB"',
         });
         dnsRecord("spf", zone, "@", {
             type: "TXT",
-            content: "v=spf1 include:_spf.google.com ~all",
+            content: '"v=spf1 include:_spf.google.com ~all"',
         });
 
         dnsRecord("mail", zone, "mail", {
