@@ -316,7 +316,7 @@
                     #:fullscreen? #t
                     #:sub-font-size 24
                     #:x11-name "mpv"
-                    #:ytdl-format "bestvideo[height<=?900]+bestaudio"
+                    #:ytdl-format "best[height<=?900]"
                     #:osd-fonts-dir (file-append (pkg "mpv-uosc") "/share/mpv/fonts")
                     #:script-opts '(("network" . "yes")) ; thumbfast
                     #:input-conf
