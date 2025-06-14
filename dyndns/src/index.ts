@@ -1,68 +1,79 @@
 import Cloudflare from 'cloudflare';
 import { env } from 'cloudflare:workers';
 
-const zoneId = 'dc878e614aeb6a02dc27a40ea5faf24b';
-const zone = 'sarg.org.ru';
-const client = new Cloudflare({
-	apiToken: env.CLOUDFLARE_API_TOKEN,
-});
+class Dyndns {
+	private client: Cloudflare;
+	private zone: Promise<Cloudflare.Zones.Zone>;
 
-async function setIp(subdomain: string, ip: string) {
-	const type = ip.includes(':') ? 'AAAA' : 'A';
-	const name = `${subdomain}.${zone}`;
-	const list = await client.dns.records.list({
-		zone_id: zoneId,
-		type,
-		name: { exact: name },
-	});
-
-	if (list.result.length > 0) {
-		return client.dns.records.edit(list.result[0].id, {
-			zone_id: zoneId,
-			content: ip,
-		});
-	} else {
-		return client.dns.records.create({
-			zone_id: zoneId,
-			name,
-			type,
-			ttl: 60,
-			content: ip,
-		});
+	constructor(zoneName: string) {
+		this.client = new Cloudflare({ apiToken: env.CLOUDFLARE_API_TOKEN });
+		this.zone = this.client.zones.list({ name: zoneName }).then((r) => r.result[0]);
 	}
-}
 
-async function clean(subdomain: string) {
-	const r = await client.dns.records.list({
-		zone_id: zoneId,
-		name: { exact: `${subdomain}.${zone}` },
-	});
-
-	if (r.result.length > 0)
-		client.dns.records.batch({
-			zone_id: zoneId,
-			deletes: r.result.map((record) => ({ id: record.id })),
+	async setIp(subdomain: string, ip: string) {
+		const zone = await this.zone;
+		const type = ip.includes(':') ? 'AAAA' : 'A';
+		const name = `${subdomain}.${zone.name}`;
+		const list = await this.client.dns.records.list({
+			zone_id: zone.id,
+			type,
+			name: { exact: name },
 		});
+
+		if (list.result.length > 0) {
+			return this.client.dns.records.edit(list.result[0].id, {
+				zone_id: zone.id,
+				content: ip,
+			});
+		} else {
+			return this.client.dns.records.create({
+				zone_id: zone.id,
+				name,
+				type,
+				ttl: 60,
+				content: ip,
+			});
+		}
+	}
+
+	async clean(subdomain: string) {
+		const zone = await this.zone;
+		const r = await this.client.dns.records.list({
+			zone_id: zone.id,
+			name: { exact: `${subdomain}.${zone.name}` },
+		});
+
+		if (r.result.length > 0)
+			this.client.dns.records.batch({
+				zone_id: zone.id,
+				deletes: r.result.map((record) => ({ id: record.id })),
+			});
+	}
 }
 
 export default {
 	async fetch(request, env, ctx): Promise<Response> {
+		const url = new URL(request.url);
 		const ip = request.headers.get('CF-Connecting-IP')!;
-		const path = new URL(request.url).pathname;
-		const m = path.match(/^\/(\w+)\/(\w+)$/);
+		const m = url.pathname.match(/^\/(\w+)\/(\w+)$/);
 		if (!m) return new Response(JSON.stringify({ origin: ip }), { status: 200 });
 
 		const [_, cmd, token] = m;
 		const name = await env.DYNDNS_TOKENS.get(token);
 		if (!name) return new Response('Wrong token', { status: 403 });
 
+		const zoneName = url.host.substring(url.host.indexOf('.') + 1);
+		const dyndns = new Dyndns(zoneName);
+
 		switch (cmd) {
 			case 'set':
-				await setIp(name, ip);
-				return new Response(`${name} ip set to: ${ip}`, { status: 200 });
+				const ipList = [url.searchParams.get('ipv4'), url.searchParams.get('ipv6')].filter((v) => v !== null);
+				if (ipList.length == 0) ipList.push(ip);
+				await Promise.all(ipList.map((ip) => dyndns.setIp(name, ip)));
+				return new Response(`${name} ip set to: ${ipList}`, { status: 200 });
 
 			case 'rm':
-				await clean(name);
+				await dyndns.clean(name);
 				return new Response(`${name} removed`, { status: 200 });
 		}
 
