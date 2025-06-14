@@ -55,7 +55,7 @@ function workerDomain(
 
 export class Cloudflare extends pulumi.ComponentResource {
     tgbotDomain: cloudflare.WorkersCustomDomain;
-    vpnDyndnsKey: random.RandomId;
+    dyndnsTokens: cloudflare.WorkersKvNamespace;
     accountId: string;
 
     private kvNamespace(name: string, opts?: pulumi.CustomResourceOptions) {
@@ -83,6 +83,24 @@ export class Cloudflare extends pulumi.ComponentResource {
                 ...args,
             },
             { parent: this, ignoreChanges: ["content"] },
+        );
+    }
+
+    private dyndnsToken(name: string) {
+        const rand = new random.RandomId(
+            name,
+            { byteLength: 8 },
+            { parent: this.dyndnsTokens },
+        );
+        return new cloudflare.WorkersKv(
+            name,
+            {
+                accountId: this.accountId,
+                namespaceId: this.dyndnsTokens.id,
+                keyName: rand.hex,
+                value: name,
+            },
+            { parent: this.dyndnsTokens },
         );
     }
 
@@ -139,25 +157,10 @@ export class Cloudflare extends pulumi.ComponentResource {
             bindings: [envSecret("CLOUDFLARE_API_TOKEN")],
         });
         workerDomain("dyndns", zone, dyndnsWorkerScript);
-        const dyndnsTokens = this.kvNamespace("DYNDNS_TOKENS", {
+        this.dyndnsTokens = this.kvNamespace("DYNDNS_TOKENS", {
             parent: dyndnsWorkerScript,
         });
-
-        this.vpnDyndnsKey = new random.RandomId(
-            "vpn",
-            { byteLength: 8 },
-            { parent: dyndnsTokens },
-        );
-        new cloudflare.WorkersKv(
-            "vpn",
-            {
-                accountId: dyndnsTokens.accountId,
-                namespaceId: dyndnsTokens.id,
-                keyName: this.vpnDyndnsKey.hex,
-                value: "vpn",
-            },
-            { parent: dyndnsTokens },
-        );
+        this.dyndnsToken("router");
 
         const tgbotWorkersScript = this.worker("tgbot", {
             bindings: [
@@ -170,9 +173,10 @@ export class Cloudflare extends pulumi.ComponentResource {
                     "WG_PRIVATE",
                     "WG_PSK",
                 ].map(envSecret),
-                secret("DYNDNS_TOKEN", this.vpnDyndnsKey.hex),
+                secret("DYNDNS_TOKEN", this.dyndnsToken("vpn").keyName),
             ],
         });
+
         this.tgbotDomain = workerDomain("tgbot", zone, tgbotWorkersScript);
         this.kvNamespace("NOTIFY_TOKENS", { parent: tgbotWorkersScript });
     }
