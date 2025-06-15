@@ -29,7 +29,8 @@ export interface Dyndn {
 }
 
 export interface Google {
-    ORG_ID: string;
+    ORG_ID:      string;
+    CREDENTIALS: string;
 }
 
 export interface Hetzner {
@@ -241,6 +242,7 @@ const typeMap: any = {
     ], false),
     "Google": o([
         { json: "ORG_ID", js: "ORG_ID", typ: "" },
+        { json: "CREDENTIALS", js: "CREDENTIALS", typ: "" },
     ], false),
     "Hetzner": o([
         { json: "API_TOKEN", js: "API_TOKEN", typ: "" },
