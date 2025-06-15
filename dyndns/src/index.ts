@@ -40,16 +40,20 @@ class Dyndns {
 
 	async clean(subdomain: string) {
 		const zone = await this.zone;
-		const r = await this.client.dns.records.list({
-			zone_id: zone.id,
-			name: { exact: `${subdomain}.${zone.name}` },
-		});
-
-		if (r.result.length > 0)
-			return this.client.dns.records.batch({
+		const deletes = (
+			await this.client.dns.records.list({
 				zone_id: zone.id,
-				deletes: r.result.map((record) => ({ id: record.id })),
-			});
+				name: { exact: `${subdomain}.${zone.name}` },
+			})
+		).result
+			.filter((r) => r.type === 'A' || r.type === 'AAAA')
+			.map((r) => ({ id: r.id }));
+
+		return deletes.length > 0
+			? this.client.dns.records
+					.batch({ zone_id: zone.id, deletes })
+					.then((r) => r.deletes?.map((e) => e.type!))
+			: 'nothing';
 	}
 }
 
@@ -76,8 +80,8 @@ export default {
 				return new Response(`${name} ip set to: ${ipList}`, { status: 200 });
 
 			case 'DELETE':
-				await new Dyndns(env.DOMAIN).clean(name);
-				return new Response(`${name} removed`, { status: 200 });
+				const removed = await new Dyndns(env.DOMAIN).clean(name);
+				return new Response(`removed ${removed} for ${name}`, { status: 200 });
 		}
 
 		return new Response(`${request.method} not supported`, { status: 500 });
