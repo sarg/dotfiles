@@ -8,6 +8,5 @@
 	"main": "src/index.ts",
 	"compatibility_date": "2025-06-13",
 	"observability": { "enabled": true },
-	"kv_namespaces": [{ "binding": "DYNDNS_TOKENS", "id": "8a1ce4aabf9e4961addae7a6999b551f" }],
 	"vars": { "DOMAIN": "sarg.org.ru" }
 }

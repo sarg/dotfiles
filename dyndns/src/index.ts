@@ -1,5 +1,6 @@
 import Cloudflare from 'cloudflare';
 import { env } from 'cloudflare:workers';
+import TOKENS from './tokens.json';
 
 class Dyndns {
 	private client: Cloudflare;
@@ -60,7 +61,8 @@ export default {
 		if (!m) return new Response(JSON.stringify({ origin: ip }), { status: 200 });
 
 		const [_, token] = m;
-		const name = await env.DYNDNS_TOKENS.get(token);
+
+		const name = TOKENS.find((t) => t.token === token)?.name;
 		if (!name) return new Response('Wrong token', { status: 403 });
 
 		switch (request.method) {

@@ -3,7 +3,7 @@
 	"version": "0.0.0",
 	"private": true,
 	"scripts": {
-		"deploy": "wrangler deploy",
+		"deploy": "mv src/tokens.json _tokens; sops exec-file --output-type json ../secrets.yaml 'jq .dyndns {} > src/tokens.json'; wrangler deploy --minify; mv _tmp src/tokens.json",
 		"dev": "wrangler dev",
 		"start": "wrangler dev",
 		"test": "vitest",
