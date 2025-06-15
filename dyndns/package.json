@@ -3,16 +3,13 @@
 	"version": "0.0.0",
 	"private": true,
 	"scripts": {
-		"deploy": "mv src/tokens.json _tokens; sops exec-file --output-type json ../secrets.yaml 'jq .dyndns {} > src/tokens.json'; wrangler deploy --minify; mv _tmp src/tokens.json",
+		"deploy": "TMP=$(mktemp -p .); mv src/tokens.json $TMP; sops exec-file --output-type json ../secrets.yaml 'jq .dyndns {} > src/tokens.json'; wrangler deploy --minify; mv $TMP src/tokens.json",
 		"dev": "wrangler dev",
 		"start": "wrangler dev",
-		"test": "vitest",
 		"cf-typegen": "wrangler types"
 	},
 	"devDependencies": {
-		"@cloudflare/vitest-pool-workers": "^0.8.19",
 		"typescript": "^5.5.2",
-		"vitest": "~3.2.0",
 		"wrangler": "^4.20.0"
 	},
 	"dependencies": {
