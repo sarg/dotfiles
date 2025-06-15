@@ -11,7 +11,7 @@ update-channels:
     guix describe --format=channels > channels.lock
 
 system *args='':
-    sudo {{ guix-lock }} system reconfigure system.scm {{args}}
+    direnv exec . sudo -E {{ guix-lock }} system reconfigure system.scm {{args}}
 
 home *args='':
     {{ guix-lock }} home reconfigure home.scm {{args}}

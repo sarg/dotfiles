@@ -8,8 +8,6 @@
              (guix channels)
              (guix utils)
              (srfi srfi-1)
-             (sops secrets)
-             (sops services sops)
              (personal services hetzner)
              (personal services utils)
              (nongnu system linux-initrd)
@@ -138,16 +136,15 @@
      (service wireguard-service-type
               (wireguard-configuration
                (auto-start? #f)
-               (shepherd-requirement '(sops-secrets))
                (addresses '("10.66.66.2/32" "fd42:42:42::2/128"))
-               (private-key "/run/secrets/vpn/WG_CLIENT")
+               (private-key (plain-file "private" (getenv "WG_CLIENT")))
                (peers
                 (list
                  (wireguard-peer
                   (name "hetzner")
                   (endpoint "vpn.sarg.org.ru:52817")
                   (public-key "6gNRvmvi5oRGSPr8J0dBcyDyKS94zO4Y4Jbwo2u+iV0=")
-                  (preshared-key "/run/secrets/vpn/WG_PSK")
+                  (preshared-key (plain-file "psk" (getenv "WG_PSK")))
                   (allowed-ips '("0.0.0.0/0" "::/0")))))))
 
      (simple-service 'sysctl-custom sysctl-service-type
@@ -197,25 +194,6 @@
      (simple-service 'polkit-wheel-policies polkit-service-type
                      (list polkit-udisks-wheel spice-gtk))
      (service polkit-service-type)
-
-     (let ((sops-config
-            (local-file (relative-file "../sops/.sops.yaml") "sops.yaml"))
-           (secrets-file
-            (local-file (relative-file "../secrets.yaml"))))
-       (service sops-secrets-service-type
-                (sops-service-configuration
-                 (age-key-file (relative-file "../secure/.config/sops/age/keys.txt"))
-                 (config sops-config)
-                 (secrets (list
-                           (sops-secret
-                            (key '("vpn" "WG_PSK"))
-                            (file secrets-file)
-                            (output-type "binary"))
-
-                           (sops-secret
-                            (key '("vpn" "WG_CLIENT"))
-                            (file secrets-file)
-                            (output-type "binary")))))))
 
      (service upower-service-type)
      (service bluetooth-service-type)

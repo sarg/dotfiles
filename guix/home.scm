@@ -49,7 +49,7 @@
 (define %pkg-utils
   '("aria2" "curl" "rsync" "man-db" "atuin"
     "atool" "p7zip" "unzip" "jq" "openssh"
-    "ripgrep" "moreutils" "libiconv"
+    "ripgrep" "moreutils" "libiconv" "sops"
     "powertop" "graphviz" "bind:utils"  ; dig
     "graphicsmagick" "libwebp" "jpegoptim"
     "flatpak" "xdg-desktop-portal-gtk" "iwgtk"
