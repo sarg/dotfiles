@@ -45,7 +45,7 @@ export class Google extends pulumi.ComponentResource {
         new gcp.projects.Service(
           `services-${val}`,
           { project: project.projectId, service: val },
-          { parent: this },
+          { parent: project },
         ),
     );
 
@@ -58,7 +58,7 @@ export class Google extends pulumi.ComponentResource {
           apiTargets: [{ service: 'generativelanguage.googleapis.com' }],
         },
       },
-      { parent: this, dependsOn: servicesService },
+      { parent: project, dependsOn: servicesService },
     );
   }
 }

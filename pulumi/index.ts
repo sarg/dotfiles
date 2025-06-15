@@ -35,6 +35,7 @@ const googleProvider = new gcp.Provider('default', {
   userProjectOverride: true,
   // "Pulumi Deployer" service account
   credentials: secrets.google.CREDENTIALS,
+  project: 'se-da-sa-1',
 });
 
 const sshKey = {
