@@ -21,7 +21,7 @@ new Hetzner("hetzner", { sshKey });
 const cloudflare = new Cloudflare("cloudflare");
 new Telegram(
     "telegram",
-    { cloudflare },
+    {},
     {
         provider: new telegram.Provider("telegram", {
             botToken: process.env["BOT_TOKEN"],

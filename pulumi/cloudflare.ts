@@ -32,29 +32,7 @@ function secret(s: string, v: pulumi.Input<string>) {
     return { type: "secret_text", name: s, text: v };
 }
 
-function workerDomain(
-    name: string,
-    zone: cloudflare.Zone,
-    worker: cloudflare.WorkersScript,
-    hostname?: pulumi.Input<string>,
-) {
-    return new cloudflare.WorkersCustomDomain(
-        name,
-        {
-            accountId: worker.accountId,
-            environment: "production",
-            hostname:
-                hostname ??
-                pulumi.interpolate`${worker.scriptName}.${zone.name}`,
-            service: worker.scriptName,
-            zoneId: zone.id,
-        },
-        { parent: worker },
-    );
-}
-
 export class Cloudflare extends pulumi.ComponentResource {
-    tgbotDomain: cloudflare.WorkersCustomDomain;
     dyndnsTokens: cloudflare.WorkersKvNamespace;
     accountId: string;
 
@@ -151,12 +129,10 @@ export class Cloudflare extends pulumi.ComponentResource {
         });
 
         const blogWorkersScript = this.worker("blog");
-        workerDomain("blog", zone, blogWorkersScript, zone.name);
 
         const dyndnsWorkerScript = this.worker("dyndns", {
             bindings: [envSecret("CLOUDFLARE_API_TOKEN")],
         });
-        workerDomain("dyndns", zone, dyndnsWorkerScript);
         this.dyndnsTokens = this.kvNamespace("DYNDNS_TOKENS", {
             parent: dyndnsWorkerScript,
         });
@@ -177,7 +153,6 @@ export class Cloudflare extends pulumi.ComponentResource {
             ],
         });
 
-        this.tgbotDomain = workerDomain("tgbot", zone, tgbotWorkersScript);
         this.kvNamespace("NOTIFY_TOKENS", { parent: tgbotWorkersScript });
     }
 }
