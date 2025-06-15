@@ -1,0 +1,24 @@
+A DynDNS service implementation.
+
+* Setup
+1. Add a domain to Cloudflare.
+2. Put it in =wrangler.jsonc=
+3. Register API token to deploy the worker.
+4. (optionally) Register API token that can Write DNS records.
+5. =wrangler secret put CLOUDFLARE_API_TOKEN <token>=
+6. Add subdomain tokens to =src/tokens.json=
+7. =wrangler deploy=
+
+* API
+** Populate A/AAAA records from request origin
+#+begin_src restclient
+GET https://127.0.0.1:8787/test
+#+end_src
+** Populate A/AAAA records from params
+#+begin_src restclient
+GET https://127.0.0.1:8787/test?ipv4=1.2.3.4&ipv6=::1
+#+end_src
+** Remove DNS records
+#+begin_src restclient
+DELETE https://127.0.0.1:8787/test
+#+end_src
