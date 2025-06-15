@@ -56,15 +56,16 @@ export default {
 	async fetch(request, env, ctx): Promise<Response> {
 		const url = new URL(request.url);
 		const ip = request.headers.get('CF-Connecting-IP')!;
-		const m = url.pathname.match(/^\/(\w+)\/(\w+)$/);
+		const m = url.pathname.match(/^\/(\w+)$/);
 		if (!m) return new Response(JSON.stringify({ origin: ip }), { status: 200 });
 
-		const [_, cmd, token] = m;
+		const [_, token] = m;
 		const name = await env.DYNDNS_TOKENS.get(token);
 		if (!name) return new Response('Wrong token', { status: 403 });
 
-		switch (cmd) {
-			case 'set':
+		switch (request.method) {
+			case 'POST':
+			case 'GET':
 				const ipList = [url.searchParams.get('ipv4'), url.searchParams.get('ipv6')].filter(
 					(v) => v !== null,
 				);
@@ -72,11 +73,11 @@ export default {
 				await new Dyndns(env.DOMAIN).setIp(name, ipList);
 				return new Response(`${name} ip set to: ${ipList}`, { status: 200 });
 
-			case 'rm':
+			case 'DELETE':
 				await new Dyndns(env.DOMAIN).clean(name);
 				return new Response(`${name} removed`, { status: 200 });
 		}
 
-		return new Response(`Unknown ${cmd}`, { status: 500 });
+		return new Response(`${request.method} not supported`, { status: 500 });
 	},
 } satisfies ExportedHandler<Env>;
