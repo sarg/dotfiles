@@ -10,30 +10,31 @@ class Dyndns {
 		this.zone = this.client.zones.list({ name: zoneName }).then((r) => r.result[0]);
 	}
 
-	async setIp(subdomain: string, ip: string) {
+	async setIp(subdomain: string, ips: string[]) {
 		const zone = await this.zone;
-		const type = ip.includes(':') ? 'AAAA' : 'A';
 		const name = `${subdomain}.${zone.name}`;
-		const list = await this.client.dns.records.list({
-			zone_id: zone.id,
-			type,
-			name: { exact: name },
-		});
+		const records = (
+			await this.client.dns.records.list({ zone_id: zone.id, name: { exact: name } })
+		).result.filter((r) => r.type === 'A' || r.type === 'AAAA');
 
-		if (list.result.length > 0) {
-			return this.client.dns.records.edit(list.result[0].id, {
-				zone_id: zone.id,
-				content: ip,
-			});
-		} else {
-			return this.client.dns.records.create({
-				zone_id: zone.id,
-				name,
-				type,
-				ttl: 60,
-				content: ip,
-			});
+		const updates = [];
+		const creates = [];
+
+		for (const ip of ips) {
+			const type: 'A' | 'AAAA' = ip.includes(':') ? 'AAAA' : 'A';
+			const existing = records.find((r) => r.type === type);
+			if (existing) {
+				updates.push({ id: existing.id, content: ip });
+			} else {
+				creates.push({ name, type, ttl: 60, content: ip });
+			}
 		}
+
+		return this.client.dns.records.batch({
+			zone_id: zone.id,
+			posts: creates,
+			patches: updates,
+		});
 	}
 
 	async clean(subdomain: string) {
@@ -44,7 +45,7 @@ class Dyndns {
 		});
 
 		if (r.result.length > 0)
-			this.client.dns.records.batch({
+			return this.client.dns.records.batch({
 				zone_id: zone.id,
 				deletes: r.result.map((record) => ({ id: record.id })),
 			});
@@ -62,18 +63,17 @@ export default {
 		const name = await env.DYNDNS_TOKENS.get(token);
 		if (!name) return new Response('Wrong token', { status: 403 });
 
-		const zoneName = url.host.substring(url.host.indexOf('.') + 1);
-		const dyndns = new Dyndns(zoneName);
-
 		switch (cmd) {
 			case 'set':
-				const ipList = [url.searchParams.get('ipv4'), url.searchParams.get('ipv6')].filter((v) => v !== null);
+				const ipList = [url.searchParams.get('ipv4'), url.searchParams.get('ipv6')].filter(
+					(v) => v !== null,
+				);
 				if (ipList.length == 0) ipList.push(ip);
-				await Promise.all(ipList.map((ip) => dyndns.setIp(name, ip)));
+				await new Dyndns(env.DOMAIN).setIp(name, ipList);
 				return new Response(`${name} ip set to: ${ipList}`, { status: 200 });
 
 			case 'rm':
-				await dyndns.clean(name);
+				await new Dyndns(env.DOMAIN).clean(name);
 				return new Response(`${name} removed`, { status: 200 });
 		}
 
