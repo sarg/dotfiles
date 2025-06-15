@@ -3,10 +3,7 @@
 	"version": "0.0.0",
 	"private": true,
 	"scripts": {
-		"deploy": "TMP=$(mktemp -p .); mv src/tokens.json $TMP; sops exec-file --output-type json ../secrets.yaml 'jq .dyndns {} > src/tokens.json'; wrangler deploy --minify; mv $TMP src/tokens.json",
-		"dev": "wrangler dev",
-		"start": "wrangler dev",
-		"cf-typegen": "wrangler types"
+		"deploy": "TMP=$(mktemp -p .); mv src/tokens.json $TMP; sops exec-file --output-type json ../secrets.yaml 'jq .dyndns {} > src/tokens.json'; wrangler deploy --minify; mv $TMP src/tokens.json"
 	},
 	"devDependencies": {
 		"typescript": "^5.5.2",
