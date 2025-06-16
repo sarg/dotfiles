@@ -3,6 +3,7 @@ import * as gcp from '@pulumi/gcp';
 
 export class Google extends pulumi.ComponentResource {
   serviceAccountKey: gcp.serviceaccount.Key;
+  gptelKey: gcp.projects.ApiKey;
 
   constructor(name: string, args: { orgId: string }, opts?: pulumi.ComponentResourceOptions) {
     super('components:index:Google', name, args, opts);
@@ -49,7 +50,7 @@ export class Google extends pulumi.ComponentResource {
         ),
     );
 
-    const gptel = new gcp.projects.ApiKey(
+    this.gptelKey = new gcp.projects.ApiKey(
       `gptel`,
       {
         displayName: 'gptel.el',
