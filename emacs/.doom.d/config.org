@@ -104,7 +104,7 @@ To define guix dependencies add a =scheme= source code block. It'll be then tang
 
       (magit-push-refspecs
        origin
-       (concat source ":refs/for/master/" source)
+       (concat source ":refs/for/" (cdr (magit-split-branch-name target)) "/" source)
        `(,@args
          "-o" "force-push=true"
          ,@(if desc (list "-o" (concat "title=" (car desc))) '())
@@ -124,6 +124,7 @@ To define guix dependencies add a =scheme= source code block. It'll be then tang
 "tree-sitter-javascript"
 "tree-sitter-json"
 "tree-sitter-html"
+"tree-sitter-go"
 "tree-sitter-css"
 "tree-sitter-bash"
 "tree-sitter-python"
@@ -131,6 +132,7 @@ To define guix dependencies add a =scheme= source code block. It'll be then tang
 
 ; modules dependencies
 "shfmt" "shellcheck" "fd" "editorconfig-core-c"
+"gopls" "go"
 
 ; python
 "python-isort"
@@ -163,7 +165,7 @@ To define guix dependencies add a =scheme= source code block. It'll be then tang
  :tools       editorconfig (eval +overlay) (lookup +docsets) magit pdf (pass +auth) make tree-sitter lsp direnv llm
  :checkers    syntax
  :lang        (clojure +tree-sitter) data emacs-lisp (javascript +tree-sitter +lsp)
-              (org +contacts +dragndrop +pandoc +present +hugo +roam2 +pretty) beancount
+              (org +contacts +dragndrop +pandoc +present +hugo +roam2 +pretty) beancount (go +lsp +tree-sitter)
               rest (sh +tree-sitter) plantuml (python +lsp +tree-sitter) (web +tree-sitter) yaml (json +tree-sitter)
  :app         calendar telega (rss +org) torrent irc exwm emms dash-menu
  :email       (mu4e +gmail)

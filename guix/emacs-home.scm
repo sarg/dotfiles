@@ -58,6 +58,7 @@
          "tree-sitter-javascript"
          "tree-sitter-json"
          "tree-sitter-html"
+         "tree-sitter-go"
          "tree-sitter-css"
          "tree-sitter-bash"
          "tree-sitter-python"
@@ -65,6 +66,7 @@
          
          ; modules dependencies
          "shfmt" "shellcheck" "fd" "editorconfig-core-c"
+         "gopls" "go"
          
          ; python
          "python-isort"
