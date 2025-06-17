@@ -1685,6 +1685,16 @@ emacsclient -e '(dmenu/select-line-from-file "'$tmp'" :prompt '"$prompt"' :lines
   :config
   (org-supertag-setup))
 #+end_src
+** hnreader
+#+begin_src elisp :tangle packages.el
+(package! hnreader)
+#+end_src
+#+begin_src elisp
+(use-package! hnreader
+  :config
+  (org-link-set-parameters "eww" :follow 'eww-browse-url))
+#+end_src
+
 * TODO todo [7/12]
 ** DONE console font
 ** DONE mingetty with xorg autostart (under sarg), put `lock.sh` first in the .xsession
