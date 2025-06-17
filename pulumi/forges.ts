@@ -10,6 +10,7 @@ export class Forges extends pulumi.ComponentResource {
   ) {
     super('components:index:Forges', name, args, opts);
 
+    /* use oauth
     new github.UserSshKey(
       'default',
       {
@@ -19,6 +20,7 @@ export class Forges extends pulumi.ComponentResource {
       },
       { parent: this },
     );
+    */
 
     new github.UserGpgKey('default', { armoredPublicKey: args.gpgKey.key }, { parent: this });
 

@@ -89,7 +89,7 @@
 
 (define %pkg-dev
   '("python" "make" "just"
-    "git" "git:send-email" "git-crypt" "perl"))
+    "git" "git:send-email" "git-crypt" "perl" "git-credential-oauth"))
 
 (define symlinks
   (resolve-relative-to "/storage/"

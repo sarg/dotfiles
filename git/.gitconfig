@@ -12,11 +12,6 @@
 [sendemail]
     smtpServer = /home/sarg/.guix-home/profile/bin/msmtp
 
-[url "git@github.com:"]
-  pushInsteadOf = "https://github.com/"
-
-[url "git@codeberg.org:"]
-  pushInsteadOf = "https://codeberg.org/"
-
-[url "git@gitlab.com:"]
-  pushInsteadOf = "https://gitlab.com/"
+[credential]
+    helper = cache --timeout 21600  # six hours
+    helper = oauth
