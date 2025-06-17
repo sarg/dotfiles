@@ -1,9 +1,9 @@
 import * as pulumi from '@pulumi/pulumi';
 import * as openstack from '@pulumi/openstack';
-import { SshKey } from '.';
+import { PublicKey } from '.';
 
 export class Selectel extends pulumi.ComponentResource {
-  constructor(name: string, args: { sshKey: SshKey }, opts?: pulumi.ComponentResourceOptions) {
+  constructor(name: string, args: { sshKey: PublicKey }, opts?: pulumi.ComponentResourceOptions) {
     super('components:index:Selectel', name, args, opts);
     new openstack.compute.Keypair(
       'ssh_key',

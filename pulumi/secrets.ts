@@ -40,6 +40,8 @@ export interface Hetzner {
 
 export interface Pulumi {
     PULUMI_CONFIG_PASSPHRASE: string;
+    CODEBERG_API_TOKEN:       string;
+    GITHUB_API_TOKEN:         string;
 }
 
 export interface Selectel {
@@ -250,6 +252,8 @@ const typeMap: any = {
     ], false),
     "Pulumi": o([
         { json: "PULUMI_CONFIG_PASSPHRASE", js: "PULUMI_CONFIG_PASSPHRASE", typ: "" },
+        { json: "CODEBERG_API_TOKEN", js: "CODEBERG_API_TOKEN", typ: "" },
+        { json: "GITHUB_API_TOKEN", js: "GITHUB_API_TOKEN", typ: "" },
     ], false),
     "Selectel": o([
         { json: "PASS", js: "PASS", typ: "" },

@@ -6,14 +6,16 @@ import { Hetzner } from './hetzner';
 import { Selectel } from './selectel';
 import { Telegram } from './telegram';
 import { Convert } from './secrets';
+import { Forges } from './forges';
 import { execSync } from 'node:child_process';
+import * as github from '@pulumi/github';
 import * as hcloud from '@pulumi/hcloud';
 import * as openstack from '@pulumi/openstack';
 import * as gcp from '@pulumi/gcp';
 
 const secretsJson = execSync('sops -d --output-type json ../secrets.yaml');
 const secrets = Convert.toSecrets(secretsJson.toString('utf8'));
-export interface SshKey {
+export interface PublicKey {
   name: string;
   key: string;
 }
@@ -37,16 +39,24 @@ const googleProvider = new gcp.Provider('default', {
   credentials: secrets.google.CREDENTIALS,
   project: 'se-da-sa-1',
 });
+const githubProvider = new github.Provider('default', {
+  token: secrets.pulumi.GITHUB_API_TOKEN,
+});
 
 const sshKey = {
   name: 'thinkpad',
   key: execSync('gpg --export-ssh-key 7B83471F7F88DC24').toString('utf8'),
+};
+const gpgKey = {
+  name: 'sarg',
+  key: execSync('gpg --export -a 3ADB423B40A20785').toString('utf8'),
 };
 const google = new Google('google', { orgId: secrets.google.ORG_ID }, { provider: googleProvider });
 new Selectel('selectel', { sshKey }, { provider: selectelProvider });
 new Hetzner('hetzner', { sshKey }, { provider: hetznerProvider });
 new Cloudflare('cloudflare', { secrets }, { provider: cloudflareProvider });
 new Telegram('telegram', {}, { provider: telegramProvider });
+new Forges('forges', { sshKey, gpgKey }, { providers: [githubProvider] });
 
 export const pulumiKey = google.serviceAccountKey.privateKey;
 export const gptelKey = google.gptelKey.keyString;

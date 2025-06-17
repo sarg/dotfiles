@@ -1,9 +1,9 @@
 import * as pulumi from '@pulumi/pulumi';
 import * as hcloud from '@pulumi/hcloud';
-import { SshKey } from '.';
+import { PublicKey } from '.';
 
 export class Hetzner extends pulumi.ComponentResource {
-  constructor(name: string, args: { sshKey: SshKey }, opts?: pulumi.ComponentResourceOptions) {
+  constructor(name: string, args: { sshKey: PublicKey }, opts?: pulumi.ComponentResourceOptions) {
     super('components:index:Hetzner', name, args, opts);
     new hcloud.PrimaryIp(
       `vpn_ipv6`,
