@@ -1170,6 +1170,20 @@ choose_entry() {
                        (auth-source-pass-get "client-secret" "Sites/spotify.com"))
                       t))))
 #+end_src
+** ytdlp
+#+begin_src emacs-lisp
+(defun emms-add-ytdlp-playlist (url)
+  "Fetch playlist at URL with yt-dlp and add individual tracks to current emms playlist."
+  (interactive "sURL: \n")
+  (let* ((command (concat "yt-dlp -q --flat-playlist --no-download --dump-single-json " url))
+         (json-string (shell-command-to-string command))
+         (json-data (json-read-from-string json-string))
+         (entries (alist-get 'entries json-data)))
+
+    (seq-do
+     (-compose #'emms-add-url (-partial 'alist-get 'url))
+     entries)))
+#+end_src
 * elfeed
 #+begin_src scheme
 "emacs-elfeed-org"
