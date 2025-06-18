@@ -24,7 +24,7 @@ export class Google extends pulumi.ComponentResource {
       {
         role: 'roles/admin',
         project: project.projectId,
-        members: [pulumi.interpolate`serviceAccount:${serviceAccount.email}`],
+        members: [pulumi.concat('serviceAccount:', serviceAccount.email)],
       },
       { parent: serviceAccount },
     );

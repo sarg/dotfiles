@@ -9,6 +9,7 @@
   "dependencies": {
     "@pulumi/cloudflare": "6.2.1",
     "@pulumi/gcp": "8.33.0",
+    "@pulumi/gitea": "file:sdks/gitea",
     "@pulumi/github": "^6.7.2",
     "@pulumi/hcloud": "1.23.0",
     "@pulumi/openstack": "5.1.0",

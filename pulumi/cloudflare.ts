@@ -12,7 +12,7 @@ function dnsRecord(
     `${attrs.type} ${logicalName}`,
     {
       zoneId: zone.id,
-      name: name == '@' ? zone.name : pulumi.interpolate`${name}.${zone.name}`,
+      name: name == '@' ? zone.name : pulumi.concat(name, '.', zone.name),
       type: 'A',
       ttl: 1,
       ...attrs,

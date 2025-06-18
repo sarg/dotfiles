@@ -1,0 +1,42 @@
+{
+    "compilerOptions": {
+        "outDir": "bin",
+        "target": "es2016",
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "declaration": true,
+        "sourceMap": true,
+        "stripInternal": true,
+        "experimentalDecorators": true,
+        "noFallthroughCasesInSwitch": true,
+        "forceConsistentCasingInFileNames": true,
+        "strict": true
+    },
+    "files": [
+        "config/index.ts",
+        "config/vars.ts",
+        "fork.ts",
+        "getOrg.ts",
+        "getRepo.ts",
+        "getUser.ts",
+        "gitHook.ts",
+        "gpgKey.ts",
+        "index.ts",
+        "oauth2App.ts",
+        "org.ts",
+        "provider.ts",
+        "publicKey.ts",
+        "repository.ts",
+        "repositoryActionsSecret.ts",
+        "repositoryActionsVariable.ts",
+        "repositoryBranchProtection.ts",
+        "repositoryKey.ts",
+        "repositoryWebhook.ts",
+        "team.ts",
+        "teamMembers.ts",
+        "teamMembership.ts",
+        "token.ts",
+        "user.ts",
+        "utilities.ts"
+    ]
+}
