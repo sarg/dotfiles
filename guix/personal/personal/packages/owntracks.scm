@@ -23,7 +23,7 @@
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/sarg/recorder")
+             (url "https://github.com/owntracks/recorder")
              (commit "fb3427102501cd509a8f79ef9fb9c38d343645c5")))
        (file-name (git-file-name name version))
        (sha256
