@@ -52,6 +52,22 @@
     (then (lambda (result)
             (frf-render-comments result from count)))))
 
+(defun frf-age (ts now)
+  (let* ((tt (-> ts
+                 (string-to-number)
+                 (/ 1000)
+                 (seconds-to-time)))
+         (ds (float-time (time-subtract now tt)))
+         (dm (/ ds 60))
+         (dh (/ dm 60))
+         (dd (/ dh 24)))
+
+    (cond
+     ((> dd 30) "old")
+     ((> dd 1) (format "%dd" dd))
+     ((> dh 1) (format "%dh" dh))
+     (t "now"))))
+
 (defun frf-render (data buf)
   (with-current-buffer buf
     (read-only-mode -1)
@@ -59,6 +75,7 @@
     (insert "#+STARTUP: overview indent\n")
     (cl-loop
      with users = (alist-get 'users data)
+     with now = (current-time)
      with comments = (alist-get 'comments data)
      with attachments = (alist-get 'attachments data)
      for post across (alist-get 'posts data)
@@ -69,8 +86,9 @@
                  (bodyRest (s-trim (substring body (length title)))))
             (insert "\n* "
                     (if (string-empty-p body) "Media" title)
-                    (format " [💕%d/✍%d] :%s:\n"
-                            (length .likes)
+                    (format " {%s} [💕%d/✍%d] :%s:\n"
+                            (frf-age .createdAt now)
+                            (+ (length .likes) .omittedLikes)
                             (+ (length .comments) .omittedComments)
                             (alist-get 'username user)))
 
