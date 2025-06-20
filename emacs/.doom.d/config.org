@@ -1,6 +1,9 @@
 #+OPTIONS: num:nil
 #+SETUPFILE: ~/devel/ext/org-html-themes/org/theme-readtheorg-local.setup
-#+PROPERTY: header-args:scheme :tangle no :exports none :noweb-ref guix-pkg
+#+PROPERTY: header-args :noweb-prefix no :noweb yes
+#+PROPERTY: header-args:elisp :tangle config.el
+#+PROPERTY: header-args:scheme :tangle no :exports code
+#+PROPERTY: header-args:cfg :tangle no
 #+begin_src elisp :exports none
 ;; -*- lexical-binding: t; -*-
 ;; generated from config.org
@@ -8,207 +11,249 @@
 #+begin_src elisp :tangle packages.el :exports none
 ;; generated from config.org
 #+end_src
-* guix
-To define guix dependencies add a =scheme= source code block. It'll be then tangled to =~/.dotfiles/guix/emacs-packages.scm= and merged with the main =home-environment=.
-
-#+begin_src scheme :noweb yes :noweb-ref nil :tangle ~/.dotfiles/guix/emacs-home.scm
+* channels
+** guix
+#+begin_src scheme :noweb-ref guix-channel
+(channel
+ (name 'guix)
+ (url "https://git.guix.gnu.org/guix.git")
+ (branch "master")
+ (introduction
+  (make-channel-introduction
+   "9edb3f66fd807b096b48283debdcddccfea34bad"
+   (openpgp-fingerprint
+    "BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA"))))
+#+end_src
+** nonguix
+#+begin_src scheme :noweb-ref guix-channel
+(channel
+ (name 'nonguix)
+ (url "https://gitlab.com/nonguix/nonguix")
+ (branch "master")
+ (introduction
+  (make-channel-introduction
+   "897c1a470da759236cc11798f4e0a5f7d4d59fbc"
+   (openpgp-fingerprint
+    "2A39 3FFF 68F4 EF7A 3D29  12AF 6F51 20A0 22FB B2D5"))))
+#+end_src
+** sops
+#+begin_src scheme :noweb-ref guix-channel
+(channel
+ (name 'sops-guix)
+ (url "https://github.com/fishinthecalculator/sops-guix")
+ (branch "main")
+ (introduction
+  (make-channel-introduction
+   "0bbaf1fdd25266c7df790f65640aaa01e6d2dbc9"
+   (openpgp-fingerprint
+    "8D10 60B9 6BB8 292E 829B  7249 AED4 1CC1 93B7 01E2"))))
+#+end_src
+** personal
+#+begin_src scheme :noweb-ref guix-channel
+(channel
+ (name 'personal)
+ (url "https://github.com/sarg/dotfiles")
+ (branch "master"))
+#+end_src
+* global vars
+#+begin_src scheme :noweb-ref globals
+'((name . "Sergey Trofimov")
+  (email . "sarg@sarg.org.ru")
+  (gpgKey . "3ADB423B40A20785"))
+#+end_src
+#+begin_src elisp
+(defvar guix/globals <<globals>>)
+#+end_src
+* home.scm template
+#+begin_src scheme :noweb-ref nil :tangle ~/devel/dotfiles/guix/home.scm :exports none
 ;; generated from config.org
 (use-modules
+ (gnu)
+ (gnu artwork)
+ (guix)
+ (guix gexp)
+ (guix git-download)
+ (guix build-system copy)
+ (guix build utils)
+ (guix utils)
+ (guix modules)
+ (guix channels)
+ (gnu home)
+ (gnu services)
  (gnu packages)
- (gnu home))
+ (gnu packages admin)
+ (gnu packages base)
+ (gnu packages gnupg)
+ (gnu packages qt)
+ (gnu home services)
+ (gnu home services syncthing)
+ (gnu home services dotfiles)
+ (gnu home services shepherd)
+ (gnu home services gnupg)
+ (gnu home services xdg)
+ (gnu home services desktop)
+ (gnu home services pm)
+ (gnu home services sound)
+ (gnu home services shells)
+ (gnu home services ssh)
+ (gnu home services mpv)
+ (gnu home services guix)
+ (gnu system shadow)
+ (gnu services shepherd)
+ (gnu services xorg)
+ (personal services symlinks)
+ (personal services owntracks)
+ (personal services screen-locker)
+ (personal services utils)
+ (personal services supercron)
+ (personal services secretsd)
+ (personal services backup)
+ (personal packages binary)
+ (personal packages next)
+ (srfi srfi-1)
+ (srfi srfi-11)
+ (srfi srfi-26))
+
+(define globals <<globals>>)
+(define (global x) (assq-ref globals x))
+
+(define (relative-file file)
+  (string-append (current-source-directory) "/" file))
+(define (pkg x)
+  (if (string? x) (specification->package+output x) x))
+
 (home-environment
- (services (list
-            <<guix-srv>>))
- (packages
-  (map (compose list specification->package+output)
-       '(
-         <<guix-pkg>>))))
+  (services
+   (cons*
+    (simple-service
+     'files home-files-service-type
+     `((".guile" ,%default-dotguile)
+       (".config/guix/channels.scm"
+        ,(plain-file
+          "channels.scm"
+          (simple-format #f "~s" '(list <<guix-channel>>))))
+       <<guix-file>>))
+    <<guix-srv>>
+    %base-home-services))
+
+  (packages (map pkg (list <<guix-pkg>>))))
 #+end_src
-* guix-emacs helper
-#+begin_src elisp
-(defun use-guix-package (pkg-name)
-  (interactive "MPackage: ")
-
-  (let* ((pkg-path
-          (thread-last
-            pkg-name
-            (format "(guix-command-output %S %S)" "build")
-            (guix-eval-read)
-            (s-trim)))
-
-         (lisp-dir (car (directory-files
-                         (concat pkg-path "/share/emacs/site-lisp")
-                         'full (rx (not ?.))))))
-
-    (add-to-list 'load-path lisp-dir)
-    (require (intern (substring pkg-name 6)))))
-
-(defun guix-package-info-insert-emacs-install-button (id name)
-  "Insert install button for ENTRY if it is an emacs package."
-  (when-let* ((is-emacs (string-prefix-p "emacs-" name)))
-    (bui-insert-action-button
-     "Use"
-     (lambda (btn)
-       (let ((name (car (split-string (button-get btn 'package-name) "@"))))
-         (message "Use %s" name)
-         (use-guix-package name)))
-     "Use it without installing"
-     'package-name name)))
-
-(after! guix-ui-package
-  (add-to-list 'guix-package-info-button-functions
-               'guix-package-info-insert-emacs-install-button
-               'append))
+* apps
+** android
+#+begin_src scheme :noweb-ref guix-pkg
+"adb" "socat" "scrcpy"
 #+end_src
-* guix development
-#+begin_src scheme
-"emacs-debbugs" "gnu-standards" "mumi-with-jaro"
+
+** utils
+#+begin_src scheme :noweb-ref guix-pkg
+"curl" "rsync" "man-db"
+"atool" "p7zip" "unzip" "jq"
+"ripgrep" "moreutils" "libiconv"
+"powertop" "graphviz" "bind:utils"  ; dig
+"graphicsmagick" "libwebp" "jpegoptim"
+"iwgtk" "lshw" "strace" "nftables" "file" "lsof"
+"pavucontrol"
 #+end_src
-#+begin_src elisp :tangle packages.el
-(package! guix :built-in t)
+
+** games
+#+begin_src scheme :noweb-ref guix-pkg
+;; "lierolibre" "chroma" "meandmyshadow" "gcompris-qt"
+;; "tipp10" "quakespasm" "sgt-puzzles" "xonotic"
+"quake3e"
 #+end_src
-#+begin_src elisp
-(after! debbugs
-  (setq debbugs-gnu-default-packages '("guix" "guix-patches"))
-  (set-popup-rule! "^\\*Guix-Patches Bugs\\*$" :ignore t)
-  (set-popup-rule! "^\\*Summary nndoc" :ignore t)
-  (set-popup-rule! "^\\*Article" :ignore t))
-
-(use-package! guix
-  :config
-  (setq guix-repl-use-server nil
-        guix-current-profile "~/.guix-home/profile"
-        guix-load-path '("/home/sarg/devel/dotfiles/guix/personal" "/home/sarg/devel/ext/nonguix")))
-
-(after! magit
-  ;; agit flow
-  (transient-define-suffix magit-push-current-agit (source target args)
-    :if (lambda () (when-let* ((branch (magit-get-current-branch))
-                               (remote (magit-get "branch" branch "remote"))
-                               (agit (magit-get "remote" remote "agit")))
-                     (string= "true" agit)))
-    :description (lambda () (concat (magit-push--upstream-description) " (agit)"))
-    (interactive
-     (let ((source (or (magit-get-current-branch)
-                       (user-error "No branch is checked out"))))
-       (list source
-             (magit-get-upstream-branch source)
-             (magit-push-arguments))))
-
-    (let* ((origin (magit-get "branch" source "remote"))
-           (desc (magit-get "branch" source "description"))
-           (desc (and desc (split-string desc "\n" 't (rx space)))))
-
-      (unless (string= "true" (magit-get "remote" origin "agit"))
-        (user-error "AGit not enabled for remote %s" origin))
-
-      (magit-push-refspecs
-       origin
-       (concat source ":refs/for/" (cdr (magit-split-branch-name target)) "/" source)
-       `(,@args
-         "-o" "force-push=true"
-         ,@(if desc (list "-o" (concat "title=" (car desc))) '())
-         ,@(if (and desc (cdr desc)) (list "-o" (concat "description=" (string-join (cdr desc) "<br>")) '()))))))
-
-  (transient-insert-suffix 'magit-push
-    '(1 0) (list "a" #'magit-push-current-agit)))
+#+begin_src scheme :noweb-ref guix-file
+(".q3a" ,(symlink-to "/storage/apps/quake3"))
 #+end_src
-* doom
-** base packages
-#+begin_src scheme
-"emacs-next"
-"emacs-telega" "emacs-telega-contrib"
-"emacs-vterm" "guix-icons"
+** media
+#+begin_src scheme :noweb-ref guix-pkg
+;; "zeal" "qalculate-gtk" "simplescreenrecorder"
+"libreoffice" "qview" "stapler" "gimp"
 
-"tree-sitter-typescript"
-"tree-sitter-javascript"
-"tree-sitter-json"
-"tree-sitter-html"
-"tree-sitter-go"
-"tree-sitter-css"
-"tree-sitter-bash"
-"tree-sitter-python"
-"tree-sitter-clojure"
+;; "nomacs"
+"tinymediamanager" "simple-scan-with-airscan"
+#+end_src
+#+begin_src scheme :noweb-ref guix-file
+(".local/state/tinyMediaManager" ,(symlink-to "/storage/data/tinyMediaManager"))
+#+end_src
 
-; modules dependencies
-"shfmt" "shellcheck" "fd" "editorconfig-core-c"
-"gopls" "go"
-
-; python
-"python-isort"
-"python-pyflakes"
-"python-pytest"
-"python-black"
-"python-nose"
-
-; dirvish
-"ffmpegthumbnailer" "poppler" "mediainfo" "vips"
+** aria2
+#+begin_src scheme :noweb-ref guix-pkg
+"aria2"
+#+end_src
+#+name: cfg-aria2
+#+begin_src cfg
+seed-time=0
+max-overall-upload-limit=1K
+disable-ipv6=true
+#+end_src
+#+begin_src scheme :noweb-ref guix-file
+(".config/aria2/aria2.conf" ,<<cfg-aria2()>>)
+#+end_src
+** mpv
+#+begin_src scheme :noweb-ref guix-pkg
+"emacs-mpv" "mpv" "yt-dlp"
 #+end_src
 #+begin_src scheme :noweb-ref guix-srv
-(simple-service 'doom-vars home-environment-variables-service-type
-  `(("DOOMLOCALDIR" . "$HOME/.local/doom/")
-    ("DOOMDIR" . "$HOME/.dotfiles/emacs/.doom.d/")
-    ("VISUAL" . "emacsclient")
-    ("EDITOR" . "emacsclient")))
+(service
+ home-mpv-service-type
+ (make-home-mpv-configuration
+  #:global
+  (make-mpv-profile-configuration
+   #:audio-display 'no
+   #:hwdec '("auto")
+   #:fullscreen? #t
+   #:sub-font-size 24
+   #:x11-name "mpv"
+   #:ytdl-format "best[height<=?900]"
+   #:osd-fonts-dir (file-append (pkg "mpv-uosc") "/share/mpv/fonts")
+   #:script-opts '(("network" . "yes")) ; thumbfast
+   #:input-conf
+   (plain-file "input.conf"
+               (string-join
+                '("q quit-watch-later"
+                  "h seek -5" "l seek 5"
+                  "H seek -60" "L seek 60")
+                "\n"))
+   #:scripts (list
+              (file-append (pkg "mpv-mpris") "/lib/mpris.so")
+              (file-append (pkg "mpv-thumbfast") "/share/mpv/scripts/thumbfast.lua")
+              (file-append (pkg "mpv-uosc") "/share/mpv/scripts/uosc")))))
 #+end_src
-** init.el
-#+begin_src elisp :tangle init.el
-;; generated from config.org
-(setq doom-leader-key "<f13>"
-      doom-leader-alt-key "<f13>")
-(doom!
- :completion  corfu vertico ;(ivy +fuzzy +prescient +childframe)
- :ui          nav-flash (modeline +light) ophints (popup +defaults) ligatures treemacs doom-dashboard
- :editor      (evil +everywhere) fold lispy snippets (format +onsave) multiple-cursors word-wrap
- :emacs       (dired +dirvish +icons) electric vc ibuffer undo
- :term        eshell vterm
- :tools       editorconfig (eval +overlay) (lookup +docsets) magit pdf (pass +auth) make tree-sitter lsp direnv llm
- :checkers    syntax
- :lang        (clojure +tree-sitter) data emacs-lisp (javascript +tree-sitter +lsp)
-              (org +contacts +dragndrop +pandoc +present +hugo +roam2 +pretty) beancount (go +lsp +tree-sitter)
-              rest (sh +tree-sitter) plantuml (python +lsp +tree-sitter) (web +tree-sitter) yaml (json +tree-sitter)
- :app         calendar telega (rss +org) torrent irc exwm emms dash-menu
- :email       (mu4e +gmail)
- :config      (default +bindings +smartparens +gnupg) literate)
+#+begin_src elisp :tangle packages.el
+(package! mpv :built-in t)
 #+end_src
-** dashboard
 #+begin_src elisp
-(setq fancy-splash-image "~/.guix-home/profile/share/icons/hicolor/scalable/apps/guix-icon.svg")
-(setq +doom-dashboard-functions
-      '(doom-dashboard-widget-banner
-        doom-dashboard-widget-shortmenu))
+(defun browse-url-mpv (url &rest _) (mpv-play-url url))
+(add-to-list 'browse-url-handlers
+             (cons (rx string-start "https://" (opt "www.") "youtu" (opt ".") "be")
+                   #'browse-url-mpv))
+
+(use-package! mpv
+  :init
+  :commands mpv-play-url
+  :custom
+  (mpv-default-options '("--force-window=immediate")))
 #+end_src
-** modeline
+** telega
+#+begin_src scheme :noweb-ref guix-pkg
+"emacs-telega" "emacs-telega-contrib"
+#+end_src
+#+begin_src scheme :noweb-ref guix-file
+(".telega" ,(symlink-to "/storage/data/telega"))
+#+end_src
 #+begin_src elisp
-(setq! +modeline-encoding nil
-       +modeline-height 20)
-
-(def-modeline! :main
-  '(" " +modeline-buffer-identification) `(""))
-(set-modeline! :main 'default)
-
-(def-modeline! 'project
-  `(" " (:eval (abbreviate-file-name default-directory))) '(""))
+(after! telega
+  (add-to-list 'browse-url-handlers
+               '("https://t.me/" . telega-browse-url)))
 #+end_src
-** override popup params
-#+begin_src shell
-(setq +popup--display-buffer-alist
-      (seq-remove
-       (lambda (el) (and (stringp (car el)) (string= (car el) "^\\*info\\*$")))
-       +popup--display-buffer-alist))
-
-(set-popup-rule!
- "^\\*info\\*$"
- :slot 2 :vslot 2 :size 0.45 :select t :quit nil :ttl nil)
-#+end_src
-* exwm
+** exwm
 EXWM has a separate [[../.doom.d/modules/app/exwm][doom app]]. Here are just the settings.
-#+begin_src scheme
+#+begin_src scheme :noweb-ref guix-pkg
 "emacs-exwm"
 "emacs-exwm-ss"
 "emacs-ednc"
 #+end_src
-#+begin_src elisp :noweb yes :noweb-prefix no
+#+begin_src elisp
 (defun exwm-autostart-apps ()
     (interactive)
     (cl-loop
@@ -221,7 +266,7 @@ EXWM has a separate [[../.doom.d/modules/app/exwm][doom app]]. Here are just the
   <<exwm>>
   (add-hook! exwm-init #'exwm-autostart-apps))
 #+end_src
-** notifications
+*** notifications
 #+begin_src elisp
 (use-package! ednc
   :hook (exwm-init . ednc-mode)
@@ -267,7 +312,7 @@ EXWM has a separate [[../.doom.d/modules/app/exwm][doom app]]. Here are just the
   (advice-add #'keyboard-quit :before #'my-ednc--dismiss-first-notification)
   (add-hook 'ednc-notification-presentation-functions #'my-ednc-posframe--update))
 #+end_src
-** bar
+*** bar
 #+begin_src elisp
 (setq!
  battery-mode-line-format " %b%>2p% "
@@ -278,7 +323,7 @@ EXWM has a separate [[../.doom.d/modules/app/exwm][doom app]]. Here are just the
 (display-battery-mode 1)
 (display-time-mode 1)
 #+end_src
-** workspaces
+*** workspaces
 #+begin_src elisp :noweb-ref exwm :tangle no
 (tab-rename "code" 1)
 (progn (tab-new) (tab-rename "brow" 2))
@@ -302,7 +347,7 @@ EXWM has a separate [[../.doom.d/modules/app/exwm][doom app]]. Here are just the
                   tab-bar-format-align-right
                   tab-bar-format-global))
 #+end_src
-** per-app settings
+*** per-app settings
 #+begin_src elisp :noweb-ref exwm :tangle no
 (setopt exwm-manage-configurations
         `(((-any? (lambda (el) (equal exwm-class-name el))
@@ -317,8 +362,8 @@ EXWM has a separate [[../.doom.d/modules/app/exwm][doom app]]. Here are just the
            width 560
            height 400)))
 #+end_src
-** bindings
-*** simulation
+*** bindings
+**** simulation
 When this key event occurs, replace it with another.
 #+begin_src elisp :noweb-ref exwm :tangle no
 (setq exwm-input-simulation-keys
@@ -328,14 +373,14 @@ When this key event occurs, replace it with another.
         ; key h in ru layout
         (,(kbd "C-р") . backspace)))
 #+end_src
-*** floating
+**** floating
 As I've remapped =LWIN= to =F13=, I've lost the floating window resize/move bindings.
 Let's restore them with =Ctrl= instead of =Super=.
 #+begin_src elisp :noweb-ref exwm :tangle no
 (setq exwm-input-resize-event 'C-down-mouse-3
       exwm-input-move-event 'C-down-mouse-1)
 #+end_src
-*** prefix
+**** prefix
 These are not full bindings, but the first keys in some sequence. Tell EXWM to
 send these events to emacs.
 #+begin_src elisp :noweb-ref exwm :tangle no
@@ -347,7 +392,7 @@ send these events to emacs.
         ;; cyrillic
         ?\C-р))
 #+end_src
-*** x11-only
+**** x11-only
 These are bound only for X11 apps.
 #+begin_src elisp :noweb-ref exwm :tangle no
 (define-key! exwm-mode-map
@@ -366,7 +411,7 @@ These are bound only for X11 apps.
     (start-process "keymap.sh" nil "keymap.sh"
                    (if (eq exwm--input-mode 'char-mode) "enable" "disable"))))
 #+end_src
-*** global
+**** global
 #+begin_src elisp :noweb-ref exwm :tangle no
 (defun exwm/switch-to-next-buffer (class &optional reverse?)
   "Form a cycle of CLASS buffers and return the one next to current buffer.
@@ -405,15 +450,15 @@ REVERSE? it when true. Returns the selected buffer."
                  (or (exwm/switch-to-next-buffer "qutebrowser")
                      (start-process "qutebrowser" nil "setsid" "-w" "qutebrowser"))))
 #+end_src
-** app launcher
-#+begin_src scheme
+*** app launcher
+#+begin_src text :noweb-ref emacs-dep
 "dex"
 #+end_src
 #+begin_src elisp
 ;; the default one messes up exec path of wine programs due to wrong parsing
 (after! app-launcher
   (defun app-launcher--action-dex (selected)
-    (call-process "dex" nil nil nil (alist-get 'file selected)))
+    (call-process (guix/pkg 'dex "/bin/dex") nil nil nil (alist-get 'file selected)))
 
   (defvar app-launcher-allow-list
     '("lutris" "libreoffice-startcenter" "flatseal" "spotify" "calibre-gui" "idea" "simple-scan"
@@ -462,13 +507,7 @@ REVERSE? it when true. Returns the selected buffer."
   (app-launcher-to-M-x)
   (setq app-launcher--action-function #'app-launcher--action-dex))
 #+end_src
-* completion
-#+begin_src elisp
-; have no use for vertico-next-group
-(after! consult
-  (define-key consult-async-map [remap vertico-insert] nil))
-#+end_src
-* TODO fix waiting for upstream
+*** TODO fix waiting for upstream
 #+begin_src elisp :noweb-ref exwm :tangle no
 ; https://github.com/emacs-exwm/exwm/pull/85
 (defun sarg/exwm--on-net-active-window (id _data)
@@ -496,538 +535,40 @@ REVERSE? it when true. Returns the selected buffer."
 
 (advice-add 'exwm--on-net-active-window :override #'sarg/exwm--on-net-active-window)
 #+end_src
-* theme
-#+begin_src scheme
-"emacs-catppuccin-theme"
+** elfeed
+#+begin_src scheme :noweb-ref guix-pkg
+"emacs-elfeed-org"
 #+end_src
-#+begin_src elisp :tangle packages.el :exports none
-(package! greymatters-theme :pin "a7220a8c6cf18ccae2b76946b6f01188a7c9d5d1")
-(package! catppuccin-theme :built-in t)
-#+end_src
-
-#+begin_src elisp
-(use-package! greymatters-theme)
-(use-package! catppuccin-theme)
-(defvar doom-theme-dark 'catppuccin)
-(setq doom-theme 'greymatters
-      doom-font (font-spec :family "Hack" :size 18)
-      doom-serif-font (font-spec :family "Hack")
-      doom-symbol-font (font-spec :family "Hack"))
-#+end_src
-
-Note: use =consult-theme= to quickly preview themes.
-[[*dark mode][see: dark mode]]
-* flatpaks
-#+NAME: flatpak-list
-#+begin_src sh :tangle no :results output
-flatpak list --app --columns=application | head -n -1
-#+end_src
-
-#+RESULTS: flatpak-list
-#+begin_example
-com.endlessnetwork.aqueducts
-com.github.tchx84.Flatseal
-com.google.AndroidStudio
-com.jetbrains.IntelliJ-IDEA-Community
-com.spotify.Client
-de.blobbyvolley.BlobbyVolley2
-io.sourceforge.zaz
-net.lutris.Lutris
-net.sourceforge.lgames.LBreakoutHD
-org.mattdm.icebreaker
-org.prismlauncher.PrismLauncher
-org.regular_dev.biplanes_revival
-org.sugarlabs.MakeThemFall
-#+end_example
-
-#+begin_src sh :tangle no :stdin flatpak-list
-xargs flatpak install --or-update --noninteractive
-#+end_src
-* desktop
-** desktop entries
-#+begin_src scheme
-"jaro"
-#+end_src
-#+begin_src scheme :tangle ~/.config/associations :noweb-ref nil
-(bind
- #:pattern "^mailto:.*"
- #:program '(emacsclient --eval "(message-mailto \"%f\")"))
-
-(bind
- #:pattern "^https://t.me/.*"
- #:program '(emacsclient --eval "(telega-browse-url \"%f\")"))
-
-(bind
- #:pattern "^org-protocol:.*"
- #:program '(emacsclient %f))
-
-(bind
- #:pattern '("(application|text)/(x-)?(pdf|postscript|ps|epub.*)" "image/(x-)?eps" "image/vnd.djvu")
- #:program '(zathura %f))
-
-(bind
- #:pattern "^video/.*"
- #:program '(mpv %f))
-
-(bind
- #:pattern "^https?://"
- #:program '(qutebrowser %f))
-
-(bind
- #:pattern "^image/.*"
- #:program '(qview %f))
-#+end_src
-** multimedia keys
-#+begin_src elisp :noweb-ref exwm :tangle no
-(exwm/bind-command
-   "<XF86Launch1>" #'dash-menu
-   "<XF86MonBrightnessUp>" "brightnessctl -e set 10%+"
-   "<XF86MonBrightnessDown>" "brightnessctl -e set 10%-"
-   "<XF86ScreenSaver>" "xset s activate"
-   "<f13> <f12>" "flameshot gui")
-#+end_src
-** dark mode
-#+begin_src scheme
-"darkman"
-"redshift"
-#+end_src
-#+begin_src elisp :tangle packages.el :exports none
-(package! darkman)
-(package! solar :built-in t)
-#+end_src
-#+begin_src yaml :tangle ~/.config/darkman/config.yaml
-lat: 52.52
-lng: 13.39
-dbusserver: true
+#+begin_src elisp :tangle packages.el
+(package! elfeed-org :built-in t)
 #+end_src
 #+begin_src elisp
-;; Change color theme based on day time
-(use-package! solar
-  :custom
-  (calendar-latitude 52.52)
-  (calendar-longitude 13.39))
-
-(use-package! darkman
-  :custom
-  (darkman-themes `(:light ,doom-theme
-                    :dark ,doom-theme-dark))
-  :config
-  (defadvice load-theme (before no-theme-stacking activate)
-    "Disable the previous theme before loading a new one."
-    (mapc #'disable-theme custom-enabled-themes))
-
-  (if (display-graphic-p)
-      (add-hook! 'after-init-hook (darkman-mode))))
-
-(defvar sarg-redshift-timer 'nil
-  "Stores redshift-adjust timer")
-
-(defun sarg/redshift-adjust ()
+(defun elfeed-open-special ()
+  "Open videos directly."
   (interactive)
-  (start-process-shell-command
-   "redshift" nil
-   (format "redshift -m randr -Po -l %f:%f" calendar-latitude calendar-longitude)))
+  (let ((entry (elfeed-search-selected :single)))
+    (if (seq-contains-p (elfeed-entry-tags entry) 'youtube)
+        (elfeed-search-browse-url)
+      (elfeed-search-show-entry entry))))
 
-(defun sarg/redshift-start ()
-  (interactive)
-  (unless sarg-redshift-timer
-    (setq sarg-redshift-timer (run-at-time nil 60 #'sarg/redshift-adjust))))
+(after! elfeed
+  (setq elfeed-db-directory "/storage/data/elfeed")
+  (add-hook 'elfeed-show-mode-hook (lambda () (setq-local browse-url-generic-program "qutebrowser-background")))
 
-(defun sarg/redshift-cancel ()
-  (interactive)
-  (when sarg-redshift-timer (cancel-timer sarg-redshift-timer))
-  (start-process-shell-command "redshift" nil "redshift -x"))
+  (setq elfeed-search-filter "@2-week-ago +unread -youtube"
+        elfeed-show-entry-switch #'display-buffer)
 
-(add-hook! exwm-init #'sarg/redshift-start)
-#+end_src
-** bluetooth
-#+begin_src scheme
-"emacs-bluetooth"
-#+end_src
-#+begin_src elisp :tangle packages.el
-(package! bluetooth :built-in t)
-#+end_src
-#+begin_src elisp
-(use-package! bluetooth)
-#+end_src
-** udisks
-#+begin_src scheme
-"emacs-discomfort"
-#+end_src
-#+begin_src elisp :tangle packages.el
-(package! discomfort :built-in t)
-#+end_src
-#+begin_src elisp
-(use-package! discomfort
-  :config
-  (add-to-list 'evil-emacs-state-modes 'discomfort-mode)
-  (define-key! discomfort-mode-map
-    "j" #'next-line
-    "k" #'previous-line))
-#+end_src
-* gpg
-#+begin_src scheme
-"emacs-pinentry" "gnupg"
-#+end_src
-#+begin_src scheme :noweb-ref guix-srv
-(service home-gpg-agent-service-type
- (home-gpg-agent-configuration
-  (pinentry-program
-   (file-append pinentry-emacs "/bin/pinentry-emacs"))
-  (ssh-support? #t)
-  (default-cache-ttl 86400)
-  (max-cache-ttl 86400)
-  (default-cache-ttl-ssh 86400)
-  (max-cache-ttl-ssh 86400)
-  (extra-content "disable-scdaemon")))
-#+end_src
-#+begin_src elisp :tangle packages.el
-(package! pinentry :built-in t)
-#+end_src
-#+begin_src elisp
-(use-package! pinentry
-  :config
-  (pinentry-start))
-#+end_src
-* emacs screencast recording
-#+begin_src elisp :tangle packages.el
-(package! command-log-mode :pin "af600e6b4129c8115f464af576505ea8e789db27")
-;(package! keycast)
-;(package! camcorder) autoloads fail because of names.el usage. todo: debug
+  (evil-define-key 'normal elfeed-search-mode-map
+    (kbd "RET") #'elfeed-open-special
+    "q" #'elfeed-search-quit-window))
 #+end_src
 
-#+begin_src elisp
-(use-package! command-log-mode
-  :commands command-log-mode)
-;; (use-package! camcorder
-;;   :commands camcorder-mode
-;;   :hook (camcorder-mode-hook . clm/command-log-clear))
+#+begin_src sh :tangle ~/.local/bin/qutebrowser-background :shebang #!/bin/sh :exports none
+qutebrowser --nowindow --target tab-bg-silent $@
 #+end_src
 
-#+begin_src scheme
-"recordmydesktop"
-#+end_src
-* miscellaneous
-#+begin_src elisp
-;; C-h deletes character backwards
-(define-key key-translation-map [?\C-h] [?\C-?])
-
-(setq-default
- ;; russian layout on C-\
- default-input-method "russian-computer"
-
- ;; start scrolling when this far from the top or bottom of the buffer
- scroll-margin 15)
-#+end_src
-
-** Debug icons in modeline, find out their names. :noexport:
-#+begin_src elisp :tangle no
-(defadvice! +debug-modeline-format-icon (icon-set icon label &optional face &rest args)
-  :override +modeline-format-icon
-  (propertize (format "X %s" label) 'face face))
-#+end_src
-* buffers
-#+begin_src elisp :tangle packages.el :exports none
-(package! bufler :pin "b96822d2132fda6bd1dd86f017d7e76e3b990c82")
-#+end_src
-
-#+begin_src elisp
-(use-package! bufler
-  :init
-  (set-popup-rule! "^\\*Bufler\\*$" :ignore t)
-
-  :config
-  (after! exwm
-    (exwm-input-set-key (kbd "s-b") #'bufler-switch-buffer))
-
-  (after! evil-collection
-    (evil-collection-define-key 'normal 'bufler-list-mode-map
-      (kbd "C-k") 'bufler-list-buffer-kill
-      "r" 'bufler
-      (kbd "RET") 'bufler-list-buffer-switch))
-
-  :custom
-  (bufler-groups
-   (bufler-defgroups
-     (group (mode-match "Telega" (rx bos "telega-chat")))
-     (group
-      (group-and "X11" (mode-match "exwm-mode" (rx bos "exwm-mode")))
-      (group-and "WWW"
-       (lambda (b) (string= "qutebrowser" (buffer-local-value 'exwm-class-name b)))))
-     (group (auto-project))
-     (auto-directory))))
-#+end_src
-* org mode
-#+begin_src elisp :tangle packages.el
-(package! org-modern-indent
-    :recipe (:host github :repo "jdtsmith/org-modern-indent")
-    :pin "9973bd3b91e4733a3edd1fca232208c837c05473")
-(package! corg
-  :recipe (:host github :repo "isamert/corg.el")
-  :pin "79af293aa95936274d7b3a6ba13d4b66a3a6ee76")
-(package! org-projectile :pin "bf1c30b750020ab8dd634dd66b2c7b76c56286c5")
-(package! org-tidy :pin "0bea3a2ceaa999e0ad195ba525c5c1dcf5fba43b")
-#+end_src
-#+begin_src scheme
-"font-iosevka-curly" ; for org-modern bullets
-#+end_src
-
-#+begin_src elisp
-(setq
- org-directory (expand-file-name "~/Sync/org/")
- org-attach-id-dir ".attach/"
- org-refile-targets `((nil :maxlevel . 3)
-                      (,(expand-file-name "bookmarks.org" org-directory) :level . 1)
-                      (org-agenda-files :maxlevel . 3))
-
- org-src-window-setup 'current-window
- org-fold-catch-invisible-edits 'show-and-error)
-
-(use-package! org-checklist)
-(use-package! org-projectile
-  :config
-  (setq org-project-capture-default-backend
-        (make-instance 'org-project-capture-projectile-backend))
-  (org-project-capture-per-project))
-
-(use-package! corg
-  :hook (org-mode . corg-setup))
-
-(use-package! org-tidy
-  :disabled
-  :hook (org-mode . org-tidy-mode))
-
-(use-package! org-contacts
-  :custom
-  (org-contacts-files (list (expand-file-name "contacts.org" org-directory))))
-
-(use-package! org-modern-indent
-  :hook (org-mode . org-modern-indent-mode))
-
-(after! org-download
-  (setq org-download-screenshot-method "flameshot gui --raw > %s"))
-
-(load! "org-defuns")
-#+end_src
-** capture :noexport:
-#+begin_src python :tangle ~/.local/share/qutebrowser/userscripts/orgprotocol :shebang #!/usr/bin/env python3
-import os
-from urllib.parse import quote
-os.execlp('xdg-open', 'xdg-open',
-          'org-protocol://capture?template=b&url={url}&title={title}&body={body}'.format(
-              url   = quote(os.environ.get('QUTE_URL', '')),
-              title = quote(os.environ.get('QUTE_TITLE', '')),
-              body  = quote(os.environ.get('QUTE_SELECTED_TEXT', ''))))
-#+end_src
-#+begin_src elisp
-(pushnew! org-capture-templates
-          '("b" "Bookmark URL" entry
-            (file+headline +org-capture-todo-file "Inbox")
-            "* %?%a\n%i" :prepend t))
-#+end_src
-** agenda
-#+begin_src elisp :tangle packages.el :exports none
-(package! german-holidays :pin "a8462dffccaf2b665f2032e646b5370e993a386a")
-#+end_src
-
-#+begin_src elisp
-(use-package! german-holidays
-  :custom
-  (calendar-holidays holiday-german-BE-holidays))
-
-(setq
- org-agenda-files
- (-concat
-  (org-project-capture-todo-files)
-  (-map (lambda (el) (expand-file-name el org-directory))
-        '("main.org"
-          "tickler.org"))))
-#+end_src
-
-** roam
-#+begin_src elisp
-(after! org-roam
-  (setq org-roam-db-node-include-function
-        (lambda ()
-          (not (member "ATTACH" (org-get-tags))))))
-#+end_src
-** elasticsearch :noexport:
-#+begin_src elisp :tangle no
-(package! es-mode :pin "e82465fd785688bb58918ea62ca4de06a2a23a1e")
-#+end_src
-
-#+begin_src elisp :tangle no
-(use-package! es-mode
-  :commands (org-babel-execute:es)
-
-  :config
-  (appendq!
-   +org-babel-mode-alist '((es . elasticsearch))))
-#+end_src
-* programming
-** vcs
-#+begin_src elisp :tangle packages.el
-(package! magit-todos :disable t) ; too slow
-#+end_src
-
-#+begin_src elisp
-(after! magit
-  (let ((sarg-repos-dir (expand-file-name "~/devel/")))
-    (setq magit-repository-directories `((,sarg-repos-dir . 2))
-          magit-clone-default-directory `,sarg-repos-dir)))
-
-(after! browse-at-remote
-  (setq browse-at-remote-prefer-symbolic nil))
-#+end_src
-** just
-#+begin_src elisp :tangle packages.el
-(package! just-mode)
-#+end_src
-#+begin_src elisp
-(use-package! just-mode)
-#+end_src
-
-* tramp
-#+begin_src elisp
-(after! tramp
-  (pushnew! tramp-remote-path 'tramp-own-remote-path))
-#+end_src
-* book reading
-#+begin_src elisp
-(use-package! zathura-sync-theme
-  :config
-  (zathura-sync-theme-mode))
-#+end_src
-#+begin_src text :tangle ~/.config/zathura/zathurarc
-set guioptions ""
-set statusbar-basename true
-include theme
-#+end_src
-#+begin_src elisp :tangle packages.el
-(package! calibredb :built-in t)
-(package! nov :built-in t)
-(package! zathura-sync-theme
-  :recipe (:host github :repo "amolv06/zathura-sync-theme")
-  :pin "7f1dece30d9f03e37d12ebfb3af6b1d663e4c8dd")
-#+end_src
-
-#+begin_src scheme
-"emacs-calibredb" "sqlite" "emacs-nov-el" "emacs-pdf-tools"
-#+end_src
-
-#+begin_src elisp :tangle no
-(use-package! nov
-  :mode ("\\.epub\\'" . nov-mode)
-
-  :custom
-  (nov-variable-pitch nil)
-  (nov-text-width t))
-#+end_src
-
-#+begin_src elisp
-(use-package! calibredb
-  :commands calibredb
-
-  :custom
-  (calibredb-root-dir (alist-get 'library_path (json-read-file "~/.config/calibre/global.py.json")))
-  (calibredb-preferred-format 'epub) ;; just open it, don't ask
-
-  ;; hide extra columns
-  (calibredb-date-width 0)
-  (calibredb-format-width 0)
-  (calibredb-title-width 80)
-  (calibredb-tag-width -1)
-  (calibredb-comment-width 0)
-
-  :config
-  (defalias 'calibredb-open-with-default-tool #'find-file))
-#+end_src
-
-* password-store
-#+begin_src elisp :tangle packages.el :exports none
-(package! password-generator :built-in t)
-(package! password-store :built-in t)
-(package! password-store-otp :built-in t)
-#+end_src
-#+begin_src scheme
-"password-store"
-"pass-otp"
-"emacs-password-generator"
-"emacs-password-store"
-"emacs-password-store-otp"
-#+end_src
-
-#+begin_src elisp
-(after! auth-source
-  (setq auth-sources '(password-store)))
-
-(after! embark
-  (defun password-store-otp-token-copy-and-echo (entry)
-    "Copy an OTP token from ENTRY to clipboard."
-    (interactive (list (read-string "Password entry: ")))
-    (require 'password-store-otp)
-    (let ((token (password-store-otp-token entry)))
-      (message "OTP %s: %s" entry token)
-      (password-store-otp--safe-copy token)))
-
-  (defvar-keymap embark-pass-actions
-    :doc "Keymap for actions for pass entries."
-    :parent embark-general-map
-    "f" #'password-store-copy-field
-    "b" #'password-store-url
-    "o" #'password-store-otp-token-copy-and-echo
-    "e" #'password-store-edit
-    "g" #'password-store-generate
-    "r" #'password-store-rename
-    "d" #'password-store-remove)
-
-
-  (add-to-list 'embark-keymap-alist '(pass . embark-pass-actions)))
-#+end_src
-
-#+begin_src elisp
-(setq password-cache-expiry (* 60 15))
-
-;; for magithub auth to work create pass entry user^magithub@api.github.com
-(after! magit
-    (setq magit-process-find-password-functions '(magit-process-password-auth-source)))
-
-(use-package! password-generator
-  :after password-store
-
-  :config
-  (defadvice! +password-store-edit-locally (entry)
-    :override #'password-store-edit
-    (interactive (list (password-store--completing-read t)))
-    (find-file (password-store--entry-to-file entry)))
-
-  (defadvice! +password-store-generate-strong (entry &optional len)
-    :override #'password-store-generate
-    (interactive (list (password-store--completing-read)
-                       (when current-prefix-arg
-                         (abs (prefix-numeric-value current-prefix-arg)))))
-    (let ((pass
-           (password-generator-strong
-            (or len password-store-password-length) t)))
-      (password-store-insert entry pass))))
-#+end_src
-
-** qutebrowser integration
-#+begin_src elisp
-(defun qute/choose-pass (url)
-   (completing-read "Pass: " (password-store-list) nil t url))
-#+end_src
-
-#+NAME: password_fill_rc
-#+begin_src bash :tangle ~/.config/qutebrowser/password_fill_rc
-choose_entry() {
-    MENU_COMMAND=( dmenu -p pass -c pass )
-    choose_entry_menu || true
-}
-#+end_src
-
-* music
 ** emms
+*** package
 #+begin_src elisp
 (defun dont-kill-buffer--hook ()
   (bury-buffer)
@@ -1113,8 +654,8 @@ choose_entry() {
 (exwm/bind-command
  "<XF86AudioRaiseVolume>" #'emms-volume-raise
  "<XF86AudioLowerVolume>" #'emms-volume-lower
- "<XF86AudioMute>" "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
- "<XF86AudioMicMute>" "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle")
+ "<XF86AudioMute>" "pactl set-sink-mute @DEFAULT_SINK@ toggle"
+ "<XF86AudioMicMute>" "pactl set-source-mute @DEFAULT_SOURCE@ toggle")
 
 (after! emms
   (exwm/bind-command
@@ -1122,14 +663,17 @@ choose_entry() {
    "<XF86AudioPrev>" #'emms-previous
    "<XF86AudioNext>" (lambda () (interactive) (if emms-random-playlist (emms-random) (emms-next)))))
 #+end_src
-** spotify
-*** player
+*** spotify
+**** player
 #+begin_src elisp :tangle packages.el
 (package! emms-player-spotify
   :recipe (:host github :repo "sarg/emms-spotify" :files (:defaults "contrib"))
   :pin "ca80431b00738e6130b924c64dc1f2cddadcc0b8")
 #+end_src
 #+begin_src elisp
+(defun browse-url-emms (url &rest _) (emms-add-url url))
+(add-to-list 'browse-url-handlers '("open.spotify.com" . browse-url-emms))
+
 (use-package! emms-player-spotify
   :after emms
   :load-path
@@ -1145,7 +689,7 @@ choose_entry() {
   (setq emms-player-spotify-debug t)
   (add-to-list 'emms-player-list emms-player-spotify))
 #+end_src
-*** search
+**** search
 #+begin_src elisp :tangle packages.el
 (package! counsel-spotify :pin "2743ad52a9def53534fd505397fbe1ac49e53015")
 #+end_src
@@ -1170,8 +714,8 @@ choose_entry() {
                        (auth-source-pass-get "client-secret" "Sites/spotify.com"))
                       t))))
 #+end_src
-** ytdlp
-#+begin_src emacs-lisp
+*** ytdlp
+#+begin_src elisp
 (defun emms-add-ytdlp-playlist (url)
   "Fetch playlist at URL with yt-dlp and add individual tracks to current emms playlist."
   (interactive "sURL: \n")
@@ -1184,42 +728,13 @@ choose_entry() {
      (-compose #'emms-add-url (-partial 'alist-get 'url))
      entries)))
 #+end_src
-* elfeed
-#+begin_src scheme
-"emacs-elfeed-org"
-#+end_src
-#+begin_src elisp :tangle packages.el
-(package! elfeed-org :built-in t)
-#+end_src
-#+begin_src elisp
-(defun elfeed-open-special ()
-  "Open videos directly."
-  (interactive)
-  (let ((entry (elfeed-search-selected :single)))
-    (if (seq-contains-p (elfeed-entry-tags entry) 'youtube)
-        (elfeed-search-browse-url)
-      (elfeed-search-show-entry entry))))
-
-(after! elfeed
-  (setq elfeed-db-directory "/storage/data/elfeed")
-  (add-hook 'elfeed-show-mode-hook (lambda () (setq-local browse-url-generic-program "qutebrowser-background")))
-
-  (setq elfeed-search-filter "@2-week-ago +unread -youtube"
-        elfeed-show-entry-switch #'display-buffer)
-
-  (evil-define-key 'normal elfeed-search-mode-map
-    (kbd "RET") #'elfeed-open-special
-    "q" #'elfeed-search-quit-window))
-#+end_src
-
-#+begin_src sh :tangle ~/.local/bin/qutebrowser-background :shebang #!/bin/sh :exports none
-qutebrowser --nowindow --target tab-bg-silent $@
-#+end_src
-
-* dict
+** dict
 [[https://github.com/BoboTiG/ebook-reader-dict][Wiktionary exports]]
-#+begin_src scheme
+#+begin_src scheme :noweb-ref guix-pkg
 "emacs-lexic" "sdcv" "emacs-google-translate"
+#+end_src
+#+begin_src scheme :noweb-ref guix-file
+(".local/share/stardict" ,(symlink-to "/storage/data/stardict"))
 #+end_src
 #+begin_src elisp :tangle packages.el
 (package! lexic :built-in t)
@@ -1241,6 +756,7 @@ qutebrowser --nowindow --target tab-bg-silent $@
       (buffer-string))))
 
 (use-package! lexic
+  :commands lexic-search
   :config
   (set-lookup-handlers! 'lexic-mode
     :documentation #'lexic-search)
@@ -1276,14 +792,50 @@ qutebrowser --nowindow --target tab-bg-silent $@
            :short "Duden" :formatter lexic-format-shr :priority 1)
           ("Langenscheidt e-Grosswörterbuch Deutsch als Fremdsprache (Deu-Deu) (de-de)" :short "Langenscheidt" :formatter lexic-format-shr :priority 2))))
 #+end_src
-* email
-#+begin_src scheme
-"mu" "isync" "msmtp" "emacs-consult-mu" "oama" "cyrus-sasl-xoauth2"
+** email
+*** oauth
+#+begin_src scheme :noweb-ref guix-pkg
+"oama"
+#+end_src
+#+name: cfg-oama
+#+begin_src cfg
+encryption:
+    tag: GPG
+    contents: '0x🐜(global 'gpgKey)🐜'
+
+services:
+  google:
+    client_id: '406964657835-aq8lmia8j95dhl1a2bvharmfk3t1hgqj.apps.googleusercontent.com'
+    client_secret: 'kSmqreRr0qwBWJgbf5Y-PjSU' # thunderbird
+#+end_src
+#+begin_src scheme :noweb-ref guix-file
+(".config/oama/config.yaml" ,<<cfg-oama()>>)
+#+end_src
+*** sending
+#+begin_src scheme :noweb-ref guix-pkg
+"msmtp"
+#+end_src
+#+begin_src scheme :noweb-ref guix-file
+(".msmtprc" ,(local-file "../email/.msmtprc" "msmtprc"))
+#+end_src
+*** receiving
+#+begin_src scheme :noweb-ref guix-pkg
+"isync" "cyrus-sasl-xoauth2"
 #+end_src
 #+begin_src scheme :noweb-ref guix-srv
 (simple-service 'cyrus-vars home-environment-variables-service-type
   `(("SASL_PATH" . "$HOME/.guix-home/profile/lib/sasl2")))
-
+#+end_src
+#+begin_src scheme :noweb-ref guix-file
+(".mail" ,(symlink-to "/storage/data/mail"))
+(".mbsyncrc" ,(local-file "../email/.mbsyncrc" "mbsyncrc"))
+#+end_src
+*** notification
+#+begin_src scheme :noweb-ref guix-file
+(".config/goimapnotify/goimapnotify.yaml"
+ ,(local-file "../email/.config/goimapnotify/goimapnotify.yaml"))
+#+end_src
+#+begin_src scheme :noweb-ref guix-srv
 (simple-service
  'goimapnotify
  home-shepherd-service-type
@@ -1301,6 +853,10 @@ qutebrowser --nowindow --target tab-bg-silent $@
 #+end_src
 #+begin_src sh :noweb-ref autostart :tangle no
 "herd start goimapnotify"
+#+end_src
+*** client
+#+begin_src scheme :noweb-ref guix-pkg
+"mu" "emacs-consult-mu"
 #+end_src
 #+begin_src elisp :tangle packages.el
 (package! consult-mu :built-in t)
@@ -1340,34 +896,1116 @@ qutebrowser --nowindow --target tab-bg-silent $@
   (add-to-list 'mm-body-charset-encoding-alist '(utf-8 . 8bit))
 
   (setq mu4e-contexts
-        (cl-loop
-         for email in '("sarg@sarg.org.ru" "de.strofimov@gmail.com")
-         collect (make-mu4e-context
-                  :name email
-                  :vars `((user-mail-address . ,email)
-                          (smtpmail-smtp-user . ,email))
-                  :match-func
-                  `(lambda (msg)
-                     (when msg
-                       (string-prefix-p ,email
-                                        (mu4e-contact-email
-                                         (nth 0
-                                          (mu4e-message-field msg :to)))
-                                        t)))))))
+        (mapcar (lambda (email)
+                  (make-mu4e-context
+                   :name email
+                   :vars `((user-mail-address . ,email)
+                           (smtpmail-smtp-user . ,email))
+                   :match-func
+                   `(lambda (msg)
+                      (when msg
+                        (string-prefix-p ,email
+                                         (mu4e-contact-email
+                                          (nth 0
+                                               (mu4e-message-field msg :to)))
+                                         t)))))
+                '("sarg@sarg.org.ru" "de.strofimov@gmail.com"))))
 #+end_src
+* storage symlinks
+#+begin_src scheme :noweb-ref guix-file
+("Resources" ,(symlink-to "/storage/Resources"))
+("devel" ,(symlink-to "/storage/devel"))
+(".events" ,(symlink-to "/storage/data/events"))
+#+end_src
+* secrets
+** sops
+#+begin_src scheme :noweb-ref guix-pkg
+"sops"
+#+end_src
+#+name: cfg-direnv-sops
+#+begin_src cfg
+#!/usr/bin/env bash
+use_sops() {
+    local path=${1:-$PWD/secrets.yaml}
+    shift
+
+    read_vars() {
+        SOPS="sops -d --output-type dotenv"
+        if [[ $# -eq 0 ]]; then
+            $SOPS "$path"
+        else
+            for x in "$@"; do
+                $SOPS --extract "['$x']" "$path"
+            done
+        fi | direnv dotenv bash /dev/stdin
+    }
+
+    eval "$(read_vars "$@")"
+    watch_file "$path"
+}
+#+end_src
+#+begin_src scheme :noweb-ref guix-file
+(".config/direnv/lib/sops.sh" ,<<cfg-direnv-sops()>>)
+(".config/openstack/clouds.yaml" ,(symlink-to (relative-file "../secure/.config/openstack/clouds.yaml")))
+#+end_src
+** password-store
+#+begin_src elisp :tangle packages.el :exports none
+(package! password-generator :built-in t)
+(package! password-store :built-in t)
+(package! password-store-otp :built-in t)
+#+end_src
+#+begin_src scheme :noweb-ref guix-pkg
+"password-store"
+"pass-otp"
+"emacs-password-generator"
+"emacs-password-store"
+"emacs-password-store-otp"
+#+end_src
+#+begin_src scheme :noweb-ref guix-file
+(".password-store" ,(symlink-to "/storage/Sync/pass"))
+#+end_src
+
+#+begin_src elisp
+(after! auth-source
+  (setq auth-sources '(password-store)))
+
+(after! embark
+  (defun password-store-otp-token-copy-and-echo (entry)
+    "Copy an OTP token from ENTRY to clipboard."
+    (interactive (list (read-string "Password entry: ")))
+    (require 'password-store-otp)
+    (let ((token (password-store-otp-token entry)))
+      (message "OTP %s: %s" entry token)
+      (password-store-otp--safe-copy token)))
+
+  (defvar-keymap embark-pass-actions
+    :doc "Keymap for actions for pass entries."
+    :parent embark-general-map
+    "f" #'password-store-copy-field
+    "b" #'password-store-url
+    "o" #'password-store-otp-token-copy-and-echo
+    "e" #'password-store-edit
+    "g" #'password-store-generate
+    "r" #'password-store-rename
+    "d" #'password-store-remove)
+
+
+  (add-to-list 'embark-keymap-alist '(pass . embark-pass-actions)))
+#+end_src
+
+#+begin_src elisp
+(setq password-cache-expiry (* 60 15))
+
+;; for magithub auth to work create pass entry user^magithub@api.github.com
+(after! magit
+    (setq! magit-process-find-password-functions '(magit-process-password-auth-source)))
+
+(use-package! password-generator
+  :after password-store
+
+  :config
+  (defadvice! +password-store-edit-locally (entry)
+    :override #'password-store-edit
+    (interactive (list (password-store--completing-read t)))
+    (find-file (password-store--entry-to-file entry)))
+
+  (defadvice! +password-store-generate-strong (entry &optional len)
+    :override #'password-store-generate
+    (interactive (list (password-store--completing-read)
+                       (when current-prefix-arg
+                         (abs (prefix-numeric-value current-prefix-arg)))))
+    (let ((pass
+           (password-generator-strong
+            (or len password-store-password-length) t)))
+      (password-store-insert entry pass))))
+#+end_src
+
+*** qutebrowser integration
+#+begin_src elisp
+(defun qute/choose-pass (url)
+   (completing-read "Pass: " (password-store-list) nil t url))
+#+end_src
+
+#+name: cfg-password-fill
+#+begin_src cfg :session '(:name "password_fill_rc")
+choose_entry() {
+    MENU_COMMAND=( dmenu -p pass -c pass )
+    choose_entry_menu || true
+}
+#+end_src
+#+begin_src scheme :noweb-ref guix-file
+(".config/qutebrowser/password_fill_rc"
+ ,<<cfg-password-fill()>>)
+#+end_src
+
+** gpg
+#+begin_src scheme :noweb-ref guix-pkg
+"emacs-pinentry" "gnupg"
+#+end_src
+#+begin_src scheme :noweb-ref guix-file
+,@(resolve-relative-to "/storage/" '((".gnupg" "data/gnupg/")))
+#+end_src
+#+begin_src scheme :noweb-ref guix-srv
+(service secretsd-service-type
+            "exec:ssh puxel -- ./unlock-keyring")
+(service home-gpg-agent-service-type
+ (home-gpg-agent-configuration
+  (pinentry-program
+   (file-append pinentry-emacs "/bin/pinentry-emacs"))
+  (ssh-support? #t)
+  (default-cache-ttl 86400)
+  (max-cache-ttl 86400)
+  (default-cache-ttl-ssh 86400)
+  (max-cache-ttl-ssh 86400)
+  (extra-content "disable-scdaemon")))
+#+end_src
+#+begin_src elisp :tangle packages.el
+(package! pinentry :built-in t)
+#+end_src
+#+begin_src elisp
+(use-package! pinentry
+  :config
+  (pinentry-start))
+#+end_src
+* x11
+#+begin_src scheme :noweb-ref guix-pkg
+"xset" "xclip"
+"hicolor-icon-theme" "adwaita-icon-theme"
+"greybird-gtk-theme"
+"font-fira-code"
+"font-google-noto-emoji" ; 💪🕹
+"font-hack"
+"font-terminus"
+#+end_src
+#+name: cfg-gtk
+#+begin_src cfg
+[Settings]
+gtk-theme-name="Greybird"
+gtk-icon-theme-name="Adwaita"
+gtk-font-name="Fira Code 12"
+#+end_src
+#+begin_src scheme :noweb-ref guix-pkg
+(package
+  (name "keymap-helper")
+  (version "0")
+  (source (local-file "../xsession/.local/bin/keymap.sh" #:recursive? #t))
+  (build-system copy-build-system)
+  (arguments
+    (list
+     #:install-plan ''(("keymap.sh" "bin/"))
+     #:phases
+     #~(modify-phases %standard-phases
+         (add-before 'install 'wrap
+           (lambda _
+             (substitute* "keymap.sh"
+               (("/bin/sh" all)
+                (string-append all "\nPATH="
+                               #$(this-package-input "xkbcomp") "/bin:"
+                               #$(this-package-input "xset") "/bin"))))))))
+  (inputs (map pkg '("xkbcomp" "xset")))
+  (description "keymap helper script")
+  (home-page #f)
+  (synopsis #f)
+  (license #f))
+#+end_src
+#+begin_src scheme :noweb-ref guix-file
+(".config/gtk-3.0/settings.ini" ,<<cfg-gtk()>>)
+#+end_src
+#+begin_src scheme :noweb-ref guix-env-var
+("_JAVA_AWT_WM_NONREPARENTING" . "1")
+("QT_QPA_PLATFORMTHEME" . "gtk3")
+#+end_src
+#+name: cfg-xinitrc
+#+begin_src cfg
+🐜(screen-locker (video-saver "/storage/data/splash.mp4"))🐜 &
+keymap.sh
+🐜(pkg "xhost")🐜/bin/xhost +si:localuser:$USER
+dbus-update-activation-environment --verbose DBUS_SESSION_BUS_ADDRESS DISPLAY XAUTHORITY
+
+while true; do
+  xset s activate # lock to show password screen
+  emacs -mm -f exwm-enable
+done
+#+end_src
+#+begin_src scheme :noweb-ref guix-srv
+(service home-x11-service-type)
+(simple-service
+ 'startx
+ home-shepherd-service-type
+ (list
+  (shepherd-service
+   (provision '(xorg))
+   (requirement '(dbus))
+   (start #~(make-forkexec-constructor
+             (list #$(xorg-start-command-xinit
+                      (xorg-configuration
+                       (server xorg-server-next)
+                       (modules (list xf86-input-libinput-next)))))
+             #:create-session? #f))
+   (stop #~(make-kill-destructor)))))
+(simple-service
+ 'x11-configs
+ home-files-service-type
+ `((".icons/default"
+    ,(file-append (pkg "bibata-cursor-theme") "/share/icons/Bibata-Modern-Ice"))
+
+   (".xinitrc" ,<<cfg-xinitrc()>>)))
+#+end_src
+* ssh
+#+begin_src scheme :noweb-ref guix-pkg
+"openssh"
+#+end_src
+#+begin_src scheme :noweb-ref guix-file
+(".ssh/puxel_rsa" ,(symlink-to (relative-file "../secure/.ssh/puxel_rsa")))
+#+end_src
+#+begin_src scheme :noweb-ref guix-srv
+(service
+ home-openssh-service-type
+ (home-openssh-configuration
+  (hosts
+   (list
+    (openssh-host
+     (name "kindle")
+     (host-name "192.168.15.244")
+     (user "root"))
+    (openssh-host
+     (name "puxel")
+     (identity-file "~/.ssh/puxel_rsa")
+     (extra-content "IdentitiesOnly yes")
+     (port 8022))))))
+#+end_src
+* services
+** profile
+#+begin_src scheme :noweb-ref guix-srv
+(simple-service
+ 'additional-env-vars-service
+ home-environment-variables-service-type
+ `(("PATH" . "$HOME/.local/bin:$PATH")
+   <<guix-env-var>>))
+
+(simple-service
+ 'extra-profile home-shell-profile-service-type
+ (list (plain-file "profile" "GUIX_PROFILE=~/.guix-profile\n. $GUIX_PROFILE/etc/profile")))
+#+end_src
+** shepherd
+#+begin_src scheme :noweb-ref guix-srv
+(service
+ home-shepherd-service-type
+ (home-shepherd-configuration
+  (auto-start? #f)
+  (daemonize? #f)))
+
+(simple-service
+ 'home-shepherd home-shell-profile-service-type
+ (list (mixed-text-file
+        "home-shepherd"
+        "[[ $(tty) == /dev/tty1 ]] && exec "
+        shepherd-1.0 "/bin/shepherd"
+        " --silent"
+        " --config ~/.config/shepherd/init.scm")))
+#+end_src
+** minidlna
+#+begin_src scheme :noweb-ref guix-srv
+(simple-service
+ 'minidlna home-shepherd-service-type
+ (list
+  (let ((dirs '("V,Movies")))
+    (shepherd-service
+     (documentation "Run minidlnad")
+     (provision '(minidlnad))
+     (modules `(((shepherd support) #:hide (mkdir-p)) ;for '%user-log-dir'
+                ,@%default-modules))
+     (start #~(make-forkexec-constructor
+               (list #$(file-append (pkg "readymedia") "/sbin/minidlnad")
+                     "-S" "-P" (string-append (or (getenv "XDG_RUNTIME_DIR") "/tmp")
+                                              "/minidlna.pid")
+                     "-f" #$(mixed-text-file "minidlna.conf"
+                                             (string-join (map (cut string-append "media_dir=" <>) dirs) "\n" 'suffix)
+                                             "db_dir=.cache/minidlna/\n"
+                                             "wide_links=yes"))
+               #:log-file (string-append %user-log-dir "/minidlnad.log")))
+     (stop #~(make-kill-destructor))))))
+#+end_src
+** changelogs
+#+begin_src scheme :noweb-ref guix-srv
+(let* ((git2rss (load "../git2rss/guix.scm"))
+       (changelog-task
+        (lambda (fn)
+          #~(make <task>
+              #:name #$(string-append "changelog-" (basename fn))
+              #:schedule (list (make <interval>
+                                 #:start (time "2025-01-01T06:00:00+0000")
+                                 #:period (period "1d")))
+              #:arguments '(#$(file-append git2rss "/bin/git2rss") #$fn)))))
+
+  (simple-service 'changelog-jobs supercron-service-type
+                  (list
+                   (changelog-task "/storage/Resources/dashboard/guix.atom")
+                   (changelog-task "/storage/Resources/dashboard/doomemacs.atom"))))
+#+end_src
+** backup
+#+begin_src scheme :noweb-ref guix-srv
+(service
+ restic-backup-service-type
+ (restic-backup-configuration
+  (jobs
+   (list
+    (restic-backup-job
+     (name "storage")
+     (repository "/media/500GB/restic")
+     (password-file "/media/500GB/restic/pass")
+     (schedule #~(list #:start (time "2025-01-01T06:00:00+0000")
+                       #:period (period "1d")))
+     (files (list "/storage"))
+     (extra-flags (list "--exclude-if-present=.borgbackupexclude"
+                        "--exclude-file" (plain-file "excludes" "node_modules"))))))))
+#+end_src
+** syncthing
+#+begin_src scheme :noweb-ref guix-file
+("Sync" ,(symlink-to "/storage/Sync"))
+#+end_src
+#+begin_src scheme :noweb-ref guix-srv
+(service
+ home-syncthing-service-type
+ (let ((pixel (syncthing-device (id "Q4ZQAU5-ZBFVS3E-OULHHHM-3HOCUXT-TVV5UYL-XPZRRWH-EXYYJWG-WVAUAAS")))
+       (thinkpad (syncthing-device (id "NYWEUMS-WOSRVEG-TD6CQZA-IHZ66GX-HZT2PJ2-IZ244FL-N3JC7DD-3DV57AG"))))
+
+   (for-home (syncthing-configuration
+              (arguments '("--data=/storage/data/syncthing"
+                           "--config=.local/state/syncthing"))
+              (config-file
+               (syncthing-config-file
+                (usage-reporting-accepted -1)
+                (gui-enabled? #f)
+                (folders (list (syncthing-folder
+                                (label "Sync")
+                                (path "~/Sync")
+                                (devices (list pixel thinkpad)))))))))))
+#+end_src
+** owntracks
+#+name: cfg-mosquitto
+#+begin_src cfg
+listener 1883
+allow_anonymous true
+#+end_src
+#+begin_src scheme :noweb-ref guix-srv
+(service mosquitto-service-type <<cfg-mosquitto()>>)
+(service owntracks-service-type
+         (owntracks-service
+          (config (owntracks-configuration
+                   (storage-dir "/storage/data/owntracks")))))
+#+end_src
+** desktop
+#+begin_src scheme :noweb-ref guix-srv
+(service home-dbus-service-type)
+(service home-batsignal-service-type)
+(service home-pipewire-service-type)
+#+end_src
+* guix-emacs helper
+#+begin_src elisp
+(defun use-guix-package (pkg-name)
+  (interactive "MPackage: ")
+
+  (let* ((pkg-path
+          (thread-last
+            pkg-name
+            (format "(guix-command-output %S %S)" "build")
+            (guix-eval-read)
+            (s-trim)))
+
+         (lisp-dir (car (directory-files
+                         (concat pkg-path "/share/emacs/site-lisp")
+                         'full (rx (not ?.))))))
+
+    (add-to-list 'load-path lisp-dir)
+    (require (intern (substring pkg-name 6)))))
+
+(defun guix-package-info-insert-emacs-install-button (id name)
+  "Insert install button for ENTRY if it is an emacs package."
+  (when-let* ((is-emacs (string-prefix-p "emacs-" name)))
+    (bui-insert-action-button
+     "Use"
+     (lambda (btn)
+       (let ((name (car (split-string (button-get btn 'package-name) "@"))))
+         (message "Use %s" name)
+         (use-guix-package name)))
+     "Use it without installing"
+     'package-name name)))
+
+(after! guix-ui-package
+  (add-to-list 'guix-package-info-button-functions
+               'guix-package-info-insert-emacs-install-button
+               'append))
+#+end_src
+* doom
+** base packages
+#+begin_src scheme :noweb-ref guix-pkg
+"emacs-next"
+"emacs-vterm"
+"tree-sitter-typescript"
+"tree-sitter-javascript"
+"tree-sitter-json"
+"tree-sitter-html"
+"tree-sitter-go"
+"tree-sitter-css"
+"tree-sitter-bash"
+"tree-sitter-python"
+"tree-sitter-clojure"
+
+; modules dependencies
+"shfmt" "shellcheck" "fd" "editorconfig-core-c"
+"gopls" "go"
+
+; python
+"python"
+"python-isort"
+"python-pyflakes"
+"python-pytest"
+"python-black"
+"python-nose"
+
+; dirvish
+"ffmpegthumbnailer" "poppler" "mediainfo" "vips"
+#+end_src
+#+begin_src scheme :noweb-ref doom-config
+(package
+  (name "doomemacs-config")
+  (version "0")
+  (source (local-file "../emacs/.doom.d" "src"
+                      #:recursive? #t
+                      #:select? (git-predicate "../emacs/.doom.d")))
+  (build-system copy-build-system)
+  (arguments
+    (list
+     #:install-plan ''(("." ""))
+     #:phases
+     #~(modify-phases %standard-phases
+         (add-before 'install 'tangle
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "config.org"
+               (("\\(guix[/]pkg '([^ )]+)" _ pkg)
+                (format #f "(concat ~s"
+                        (or (assoc-ref inputs pkg)
+                            (error (format #f "~a is required for emacs config but not present in inputs" pkg))))))
+
+             (invoke "emacs" "-Q" "-l" "ob-cfg.el" "--batch" "--eval"
+                     (simple-format #f "~s"
+                                    '(progn
+                                      (require 'ob-tangle)
+                                      (setq org-confirm-babel-evaluate nil)
+                                      (with-current-buffer
+                                       (find-file-noselect "config.org")
+                                       (org-babel-tangle nil nil "elisp")))))
+             (delete-file "config.org"))))))
+  (inputs (map pkg '(<<emacs-dep>>)))
+  (native-inputs (map pkg '("emacs-org" "emacs-next-minimal")))
+  (description "doom config")
+  (home-page #f)
+  (synopsis #f)
+  (license #f))
+#+end_src
+#+begin_src scheme :noweb-ref guix-file
+(".config/emacs" ,(pkg "doomemacs"))
+(".config/doom" ,<<doom-config>>)
+#+end_src
+#+begin_src scheme :noweb-ref guix-srv
+(simple-service 'doom-vars home-environment-variables-service-type
+  `(("DOOMLOCALDIR" . "$HOME/.local/doom/")
+    ("VISUAL" . "emacsclient")
+    ("EDITOR" . "emacsclient")))
+#+end_src
+** init.el
+#+begin_src elisp :tangle init.el
+;; generated from config.org
+(setq doom-leader-key "<f13>"
+      doom-leader-alt-key "<f13>")
+(doom!
+ :completion  corfu vertico ;(ivy +fuzzy +prescient +childframe)
+ :ui          nav-flash (modeline +light) ophints (popup +defaults) ligatures treemacs doom-dashboard
+ :editor      (evil +everywhere) fold lispy snippets (format +onsave) multiple-cursors word-wrap
+ :emacs       (dired +dirvish +icons) electric vc ibuffer undo
+ :term        eshell vterm
+ :tools       editorconfig (eval +overlay) (lookup +docsets) magit pdf (pass +auth) make tree-sitter lsp direnv llm
+ :checkers    syntax
+ :lang        (clojure +tree-sitter) data emacs-lisp (javascript +tree-sitter +lsp)
+              (org +contacts +dragndrop +pandoc +present +hugo +roam2 +pretty) beancount (go +lsp +tree-sitter)
+              rest (sh +tree-sitter) plantuml (python +lsp +tree-sitter) (web +tree-sitter) yaml (json +tree-sitter)
+ :app         calendar telega (rss +org) torrent irc exwm emms dash-menu
+ :email       (mu4e +gmail +org)
+ :config      (default +bindings +smartparens +gnupg))
+#+end_src
+** dashboard
+#+begin_src text :noweb-ref emacs-dep
+"guix-icons"
+#+end_src
+#+begin_src elisp
+(setq fancy-splash-image
+      (guix/pkg 'guix-icons "/share/icons/hicolor/scalable/apps/guix-icon.svg"))
+(setq +doom-dashboard-functions
+      '(doom-dashboard-widget-banner
+        doom-dashboard-widget-shortmenu))
+#+end_src
+** modeline
+#+begin_src elisp
+(setq! +modeline-encoding nil
+       +modeline-height 20)
+
+(def-modeline! :main
+  '(" " +modeline-buffer-identification) `(""))
+(set-modeline! :main 'default)
+
+(def-modeline! 'project
+  `(" " (:eval (abbreviate-file-name default-directory))) '(""))
+#+end_src
+** override popup params
+#+begin_src elisp
+(setq +popup--display-buffer-alist
+      (seq-remove
+       (lambda (el) (and (stringp (car el)) (string= (car el) "^\\*info\\*$")))
+       +popup--display-buffer-alist))
+
+(set-popup-rule!
+ "^\\*info\\*$"
+ :slot 2 :vslot 2 :size 0.45 :select t :quit nil :ttl nil)
+#+end_src
+** completion
+#+begin_src elisp
+; have no use for vertico-next-group
+(after! consult
+  (define-key consult-async-map [remap vertico-insert] nil))
+#+end_src
+** theme
+#+begin_src scheme :noweb-ref guix-pkg
+"emacs-catppuccin-theme"
+#+end_src
+#+begin_src elisp :tangle packages.el :exports none
+(package! greymatters-theme :pin "a7220a8c6cf18ccae2b76946b6f01188a7c9d5d1")
+(package! catppuccin-theme :built-in t)
+#+end_src
+
+#+begin_src elisp
+(use-package! greymatters-theme)
+(use-package! catppuccin-theme)
+(defvar doom-theme-dark 'catppuccin)
+(setq doom-theme 'greymatters
+      doom-font (font-spec :family "Hack" :size 18)
+      doom-serif-font (font-spec :family "Hack")
+      doom-symbol-font (font-spec :family "Hack"))
+#+end_src
+
+Note: use =consult-theme= to quickly preview themes.
+[[*dark mode][see: dark mode]]
+* flatpaks
+#+begin_src scheme :noweb-ref guix-env-var
+("XDG_DATA_DIRS" . "$XDG_DATA_DIRS:$HOME/.local/share/flatpak/exports/share")
+#+end_src
+#+begin_src scheme :noweb-ref guix-pkg
+"flatpak" "xdg-desktop-portal-gtk"
+#+end_src
+#+NAME: flatpak-list
+#+begin_src sh :tangle no :results output
+flatpak list --app --columns=application | head -n -1
+#+end_src
+
+#+RESULTS: flatpak-list
+#+begin_example
+com.endlessnetwork.aqueducts
+com.github.tchx84.Flatseal
+com.google.AndroidStudio
+com.jetbrains.IntelliJ-IDEA-Community
+com.spotify.Client
+de.blobbyvolley.BlobbyVolley2
+io.sourceforge.zaz
+net.lutris.Lutris
+net.sourceforge.lgames.LBreakoutHD
+org.mattdm.icebreaker
+org.prismlauncher.PrismLauncher
+org.regular_dev.biplanes_revival
+org.sugarlabs.MakeThemFall
+#+end_example
+
+#+begin_src sh :tangle no :stdin flatpak-list
+xargs flatpak install --or-update --noninteractive
+#+end_src
+* desktop
+** desktop entries
+#+begin_src scheme :noweb-ref guix-pkg
+"jaro"
+#+end_src
+#+name: cfg-jaro
+#+begin_src cfg
+(bind
+ #:pattern "^mailto:.*"
+ #:program '(emacsclient --eval "(message-mailto \"%f\")"))
+
+(bind
+ #:pattern "^https://t.me/.*"
+ #:program '(emacsclient --eval "(telega-browse-url \"%f\")"))
+
+(bind
+ #:pattern "^org-protocol:.*"
+ #:program '(emacsclient %f))
+
+(bind
+ #:pattern '("(application|text)/(x-)?(pdf|postscript|ps|epub.*)" "image/(x-)?eps" "image/vnd.djvu")
+ #:program '(zathura %f))
+
+(bind
+ #:pattern "^video/.*"
+ #:program '(mpv %f))
+
+(bind
+ #:pattern "^https?://"
+ #:program '(qutebrowser %f))
+
+(bind
+ #:pattern "^image/.*"
+ #:program '(qview %f))
+#+end_src
+#+begin_src scheme :noweb-ref guix-file
+(".config/associations"
+ ,<<cfg-jaro()>>)
+#+end_src
+** multimedia keys
+#+begin_src text :noweb-ref emacs-dep
+"brightnessctl" "flameshot"
+#+end_src
+#+begin_src elisp :noweb-ref exwm :tangle no
+(exwm/bind-command
+   "<XF86Launch1>" #'dash-menu
+   "<XF86MonBrightnessUp>" (guix/pkg 'brightnessctl "/bin/brightnessctl -e set 10%+")
+   "<XF86MonBrightnessDown>" (guix/pkg 'brightnessctl "/bin/brightnessctl -e set 10%-")
+   "<XF86ScreenSaver>" "xset s activate"
+   "<f13> <f12>" (guix/pkg 'flameshot "/bin/flameshot gui"))
+#+end_src
+** dark mode
+#+begin_src scheme :noweb-ref guix-pkg
+"darkman"
+#+end_src
+#+begin_src elisp :tangle packages.el :exports none
+(package! darkman)
+#+end_src
+#+name: cfg-darkman
+#+begin_src cfg
+lat: 52.52
+lng: 13.39
+dbusserver: true
+#+end_src
+#+begin_src scheme :noweb-ref guix-file
+(".config/darkman/config.yaml" ,<<cfg-darkman()>>)
+#+end_src
+#+begin_src elisp
+(use-package! darkman
+  :custom
+  (darkman-themes `(:light ,doom-theme
+                    :dark ,doom-theme-dark))
+  :config
+  (defadvice load-theme (before no-theme-stacking activate)
+    "Disable the previous theme before loading a new one."
+    (mapc #'disable-theme custom-enabled-themes))
+
+  (if (display-graphic-p)
+      (add-hook! 'after-init-hook (darkman-mode))))
+#+end_src
+** redshift
+#+begin_src scheme :noweb-ref guix-srv
+(service
+ home-redshift-service-type
+ (home-redshift-configuration
+  (location-provider 'manual)
+  (latitude 52.52)
+  (longitude 13.39)))
+#+end_src
+** bluetooth
+#+begin_src scheme :noweb-ref guix-pkg
+"emacs-bluetooth"
+#+end_src
+#+begin_src elisp :tangle packages.el
+(package! bluetooth :built-in t)
+#+end_src
+#+begin_src elisp
+(use-package! bluetooth)
+#+end_src
+** udisks
+#+begin_src scheme :noweb-ref guix-pkg
+"emacs-discomfort"
+#+end_src
+#+begin_src elisp :tangle packages.el
+(package! discomfort :built-in t)
+#+end_src
+#+begin_src elisp
+(use-package! discomfort
+  :config
+  (add-to-list 'evil-emacs-state-modes 'discomfort-mode)
+  (define-key! discomfort-mode-map
+    "j" #'next-line
+    "k" #'previous-line))
+#+end_src
+* miscellaneous
+#+begin_src elisp
+;; C-h deletes character backwards
+(define-key key-translation-map [?\C-h] [?\C-?])
+
+(setq-default
+ ;; russian layout on C-\
+ default-input-method "russian-computer"
+
+ ;; start scrolling when this far from the top or bottom of the buffer
+ scroll-margin 15)
+#+end_src
+
+** Debug icons in modeline, find out their names. :noexport:
+#+begin_src elisp :tangle no
+(defadvice! +debug-modeline-format-icon (icon-set icon label &optional face &rest args)
+  :override +modeline-format-icon
+  (propertize (format "X %s" label) 'face face))
+#+end_src
+* buffers
+#+begin_src elisp :tangle packages.el :exports none
+(package! bufler :pin "b96822d2132fda6bd1dd86f017d7e76e3b990c82")
+#+end_src
+
+#+begin_src elisp
+(use-package! bufler
+  :init
+  (set-popup-rule! "^\\*Bufler\\*$" :ignore t)
+
+  :config
+  (after! exwm
+    (exwm-input-set-key (kbd "s-b") #'bufler-switch-buffer))
+
+  (after! evil-collection
+    (evil-collection-define-key 'normal 'bufler-list-mode-map
+      (kbd "C-k") 'bufler-list-buffer-kill
+      "r" 'bufler
+      (kbd "RET") 'bufler-list-buffer-switch))
+
+  :custom
+  (bufler-groups
+   (bufler-defgroups
+     (group (mode-match "Telega" (rx bos "telega-chat")))
+     (group
+      (group-and "X11" (mode-match "exwm-mode" (rx bos "exwm-mode")))
+      (group-and "WWW"
+       (lambda (b) (string= "qutebrowser" (buffer-local-value 'exwm-class-name b)))))
+     (group (auto-project))
+     (auto-directory))))
+#+end_src
+* org mode
+#+begin_src elisp :tangle packages.el
+(package! org-modern-indent
+    :recipe (:host github :repo "jdtsmith/org-modern-indent")
+    :pin "9973bd3b91e4733a3edd1fca232208c837c05473")
+(package! corg
+  :recipe (:host github :repo "isamert/corg.el")
+  :pin "79af293aa95936274d7b3a6ba13d4b66a3a6ee76")
+(package! org-projectile :pin "bf1c30b750020ab8dd634dd66b2c7b76c56286c5")
+(package! org-tidy :pin "0bea3a2ceaa999e0ad195ba525c5c1dcf5fba43b")
+#+end_src
+#+begin_src scheme :noweb-ref guix-pkg
+"font-iosevka-curly" ; for org-modern bullets
+#+end_src
+#+begin_src elisp
+(load! "ob-cfg.el") ; to tangle config.org
+
+(setq
+ org-directory (expand-file-name "~/Sync/org/")
+ org-attach-id-dir ".attach/"
+ org-refile-targets `((nil :maxlevel . 3)
+                      (,(expand-file-name "bookmarks.org" org-directory) :level . 1)
+                      (org-agenda-files :maxlevel . 3))
+
+ org-src-window-setup 'current-window
+ org-fold-catch-invisible-edits 'show-and-error)
+
+(use-package! org-checklist)
+(use-package! org-projectile
+  :config
+  (setq org-project-capture-default-backend
+        (make-instance 'org-project-capture-projectile-backend))
+  (org-project-capture-per-project))
+
+(use-package! corg
+  :hook (org-mode . corg-setup))
+
+(use-package! org-tidy
+  :disabled
+  :hook (org-mode . org-tidy-mode))
+
+(use-package! org-contacts
+  :custom
+  (org-contacts-files (list (expand-file-name "contacts.org" org-directory))))
+
+(use-package! org-modern-indent
+  :hook (org-mode . org-modern-indent-mode))
+
+(after! org-download
+  (setq org-download-screenshot-method
+        (guix/pkg 'flameshot "/bin/flameshot gui --raw > %s")))
+
+(load! "org-defuns")
+#+end_src
+** capture :noexport:
+#+begin_src python :tangle ~/.local/share/qutebrowser/userscripts/orgprotocol :shebang #!/usr/bin/env python3
+import os
+from urllib.parse import quote
+os.execlp('xdg-open', 'xdg-open',
+          'org-protocol://capture?template=b&url={url}&title={title}&body={body}'.format(
+              url   = quote(os.environ.get('QUTE_URL', '')),
+              title = quote(os.environ.get('QUTE_TITLE', '')),
+              body  = quote(os.environ.get('QUTE_SELECTED_TEXT', ''))))
+#+end_src
+#+begin_src elisp
+(pushnew! org-capture-templates
+          '("b" "Bookmark URL" entry
+            (file+headline +org-capture-todo-file "Inbox")
+            "* %?%a\n%i" :prepend t))
+#+end_src
+** agenda
+#+begin_src elisp :tangle packages.el :exports none
+(package! german-holidays :pin "a8462dffccaf2b665f2032e646b5370e993a386a")
+#+end_src
+
+#+begin_src elisp
+(use-package! german-holidays
+  :custom
+  (calendar-holidays holiday-german-BE-holidays))
+
+(setq
+ org-agenda-files
+ (-concat
+  (org-project-capture-todo-files)
+  (-map (lambda (el) (expand-file-name el org-directory))
+        '("main.org"
+          "tickler.org"))))
+#+end_src
+
+** roam
+#+begin_src elisp
+(after! org-roam
+  (setq org-roam-db-node-include-function
+        (lambda ()
+          (not (member "ATTACH" (org-get-tags))))))
+#+end_src
+** elasticsearch :noexport:
+#+begin_src elisp :tangle no
+(package! es-mode :pin "e82465fd785688bb58918ea62ca4de06a2a23a1e")
+#+end_src
+
+#+begin_src elisp :tangle no
+(use-package! es-mode
+  :commands (org-babel-execute:es)
+
+  :config
+  (appendq!
+   +org-babel-mode-alist '((es . elasticsearch))))
+#+end_src
+* programming
+** vcs
+#+begin_src elisp :tangle packages.el
+(package! magit-todos :disable t) ; too slow
+#+end_src
+
+#+begin_src elisp
+(after! magit
+  (let ((sarg-repos-dir (expand-file-name "~/devel/")))
+    (setq magit-repository-directories `((,sarg-repos-dir . 2))
+          magit-clone-default-directory `,sarg-repos-dir)))
+
+(after! browse-at-remote
+  (setq browse-at-remote-prefer-symbolic nil))
+#+end_src
+** just
+#+begin_src scheme :noweb-ref guix-pkg
+"just"
+#+end_src
+#+name: cfg-justfile
+#+begin_src cfg
+default:
+    @just -f {{justfile()}} --list
+
+mod? guix '~/devel/dotfiles/guix/Justfile'
+#+end_src
+#+begin_src scheme :noweb-ref guix-file
+(".justfile" ,<<cfg-justfile()>>)
+#+end_src
+#+begin_src elisp :tangle packages.el
+(package! just-mode)
+#+end_src
+#+begin_src elisp
+(use-package! just-mode)
+#+end_src
+
+** git
+#+begin_src scheme :noweb-ref guix-pkg
+"git" "git:send-email" "git-crypt" "perl" "git-credential-oauth"
+#+end_src
+#+name: cfg-gitconfig
+#+begin_src cfg
+[user]
+    name = 🐜(global 'name)🐜
+    email = 🐜(global 'email)🐜
+    signingKey = 🐜(global 'gpgKey)🐜
+
+[commit]
+    gpgSign = true
+
+[push]
+    default = simple
+
+[sendemail]
+    smtpServer = 🐜(pkg "msmtp")🐜/bin/msmtp
+
+[credential]
+    helper = cache --timeout 21600  # six hours
+    helper = oauth
+#+end_src
+#+begin_src scheme :noweb-ref guix-file
+(".gitconfig" ,<<cfg-gitconfig()>>)
+#+end_src
+
+#+begin_src elisp
+(after! magit
+  ;; agit flow
+  (transient-define-suffix magit-push-current-agit (source target args)
+    :if (lambda () (when-let* ((branch (magit-get-current-branch))
+                               (remote (magit-get "branch" branch "remote"))
+                               (agit (magit-get "remote" remote "agit")))
+                     (string= "true" agit)))
+    :description (lambda () (concat (magit-push--upstream-description) " (agit)"))
+    (interactive
+     (let ((source (or (magit-get-current-branch)
+                       (user-error "No branch is checked out"))))
+       (list source
+             (magit-get-upstream-branch source)
+             (magit-push-arguments))))
+
+    (let* ((origin (magit-get "branch" source "remote"))
+           (desc (magit-get "branch" source "description"))
+           (desc (and desc (split-string desc "\n" 't (rx space)))))
+
+      (unless (string= "true" (magit-get "remote" origin "agit"))
+        (user-error "AGit not enabled for remote %s" origin))
+
+      (magit-push-refspecs
+       origin
+       (concat source ":refs/for/" (cdr (magit-split-branch-name target)) "/" source)
+       `(,@args
+         "-o" "force-push=true"
+         ,@(if desc (list "-o" (concat "title=" (car desc))) '())
+         ,@(if (and desc (cdr desc)) (list "-o" (concat "description=" (string-join (cdr desc) "<br>")) '()))))))
+
+  (transient-insert-suffix 'magit-push
+    '(1 0) (list "a" #'magit-push-current-agit)))
+#+end_src
+** guix development
+#+begin_src scheme :noweb-ref guix-pkg
+"emacs-debbugs" "gnu-standards" "mumi-with-jaro"
+#+end_src
+#+begin_src elisp :tangle packages.el
+(package! guix :built-in t)
+#+end_src
+#+begin_src elisp
+(after! debbugs
+  (setq debbugs-gnu-default-packages '("guix" "guix-patches"))
+  (set-popup-rule! "^\\*Guix-Patches Bugs\\*$" :ignore t)
+  (set-popup-rule! "^\\*Summary nndoc" :ignore t)
+  (set-popup-rule! "^\\*Article" :ignore t))
+
+(use-package! guix
+  :config
+  (setq! guix-repl-use-server nil
+         guix-current-profile "~/.guix-home/profile"
+         guix-load-path (mapcar #'expand-file-name
+                                '("~/devel/dotfiles/guix/personal" "~/devel/ext/nonguix"))))
+#+end_src
+* tramp
+#+begin_src elisp
+(after! tramp
+  (pushnew! tramp-remote-path 'tramp-own-remote-path))
+#+end_src
+* book reading
+** zathura
+#+begin_src scheme :noweb-ref guix-pkg
+"zathura" "zathura-pdf-mupdf" "zathura-djvu" "zathura-cb"
+#+end_src
+#+begin_src elisp :tangle packages.el
+(package! zathura-sync-theme
+  :recipe (:host github :repo "amolv06/zathura-sync-theme")
+  :pin "7f1dece30d9f03e37d12ebfb3af6b1d663e4c8dd")
+#+end_src
+#+begin_src elisp
+(use-package! zathura-sync-theme
+  :config
+  (zathura-sync-theme-mode))
+#+end_src
+#+name: cfg-zathurarc
+#+begin_src cfg
+set guioptions ""
+set statusbar-basename true
+include theme
+#+end_src
+#+begin_src scheme :noweb-ref guix-file
+(".config/zathura/zathurarc" ,<<cfg-zathurarc()>>)
+#+end_src
+#+begin_src elisp :tangle packages.el
+(package! calibredb :built-in t)
+(package! nov :built-in t)
+#+end_src
+** nov.el
+#+begin_src scheme :noweb-ref guix-pkg
+"emacs-nov-el"
+#+end_src
+#+begin_src elisp :tangle no
+(use-package! nov
+  :mode ("\\.epub\\'" . nov-mode)
+
+  :custom
+  (nov-variable-pitch nil)
+  (nov-text-width t))
+#+end_src
+** calibre
+#+begin_src scheme :noweb-ref guix-pkg
+"emacs-calibredb" "sqlite" "calibre"
+#+end_src
+#+begin_src elisp
+(use-package! calibredb
+  :commands calibredb
+
+  :custom
+  (calibredb-root-dir (alist-get 'library_path (json-read-file "~/.config/calibre/global.py.json")))
+  (calibredb-preferred-format 'epub) ;; just open it, don't ask
+
+  ;; hide extra columns
+  (calibredb-date-width 0)
+  (calibredb-format-width 0)
+  (calibredb-title-width 80)
+  (calibredb-tag-width -1)
+  (calibredb-comment-width 0)
+
+  :config
+  (defalias 'calibredb-open-with-default-tool #'find-file))
+#+end_src
+
 * browsing
 #+begin_src elisp :tangle packages.el
 (package! webpaste :built-in t)
-(package! web-search :pin "a22cbdc663a1895d5a5b69de91e1e3b9eb64b92f")
-(package! mpv :built-in t)
 (package! yeetube :built-in t)
 (package! qutebrowser :recipe
   (:host github :repo "lrustand/qutebrowser.el" :files (:defaults "*.py"))
   :pin "137f066dac06e1abdbf3285561ce2e1f3059b491")
 #+end_src
-#+begin_src scheme
-"emacs-mpv" "emacs-webpaste" "emacs-yeetube"
+#+begin_src scheme :noweb-ref guix-pkg
+"qutebrowser" "emacs-webpaste" "emacs-yeetube"
 #+END_src
+#+begin_src scheme :noweb-reg guix-env-var
+("BROWSER" . "qutebrowser")
+#+end_src
+#+begin_src scheme :noweb-ref guix-file
+(".config/qutebrowser/urllog.py" ,(local-file "../qutebrowser/.config/qutebrowser/urllog.py"))
+(".config/qutebrowser/config.py" ,(local-file "../qutebrowser/.config/qutebrowser/config.py"))
+(".local/share/qutebrowser" ,(symlink-to "/storage/data/qutebrowser"))
+#+end_src
 #+begin_src elisp
 (defun browse-url-qute-private (url &rest _)
   "Make qutebrowser open URL in private-browsing window."
@@ -1376,31 +2014,9 @@ qutebrowser --nowindow --target tab-bg-silent $@
     (start-process "qutebrowser-private" nil
            "qutebrowser" "--target" "private-window" url)))
 
-(use-package! mpv
-  :commands mpv-play-url
-  :custom
-  (mpv-default-options '("--force-window=immediate")))
-
-(defun browse-url-mpv (url &rest _)
-  (mpv-play-url url))
-
-(defun browse-url-emms (url &rest _)
-  (emms-add-url url))
-
-(setq browse-url-handlers
-      `((,(rx string-start "https://" (opt "www.") "youtu" (opt ".") "be") . browse-url-mpv)
-        ("https://t.me/" . telega-browse-url)
-        ("open.spotify.com" . browse-url-emms)
-        ,@browse-url-handlers))
-
 (setq-default
  browse-url-browser-function 'browse-url-generic
  browse-url-generic-program "qutebrowser")
-
-(use-package! web-search
-  :commands web-search
-  :custom
-  (web-search-default-provider "DuckDuckGo"))
 
 (def-modeline! :qutebrowser
                '("" evil-mode-line-tag "%b") `(""))
@@ -1416,6 +2032,7 @@ qutebrowser --nowindow --target tab-bg-silent $@
   (qutebrowser-launcher-backend #'qutebrowser-consult-launcher))
 
 (use-package! yeetube
+  :commands yeetube-search
   :config
   (map! :map yeetube-mode-map :ni "RET" #'yeetube-play))
 #+end_src
@@ -1425,24 +2042,26 @@ qutebrowser --nowindow --target tab-bg-silent $@
 (package! detached :built-in t)
 #+end_src
 
-#+begin_src scheme
-"emacs-eat" "emacs-detached" "direnv"
+#+begin_src scheme :noweb-ref guix-pkg
+"emacs-eat" "emacs-detached" "direnv" "atuin"
+#+end_src
+
+#+name: cfg-bash
+#+begin_src cfg
+[ -n "$EAT_SHELL_INTEGRATION_DIR" ] && source "$EAT_SHELL_INTEGRATION_DIR/bash"
+eval "$(direnv hook bash)"
+
+source 🐜(pkg "blesh")🐜/share/blesh/ble.sh
+eval "$(atuin init bash)"
 #+end_src
 
 #+begin_src scheme :noweb-ref guix-srv
-(simple-service 'direnv-bash-hook home-bash-service-type
+(service home-bash-service-type)
+(simple-service
+ 'extensions home-bash-service-type
  (home-bash-extension
-  (bashrc (list
-           (plain-file "envrc-hook"
-            "eval \"$(direnv hook bash)\"")))))
-#+end_src
-
-#+begin_src scheme :noweb-ref guix-srv
-(simple-service 'eat-bash-integration home-bash-service-type
- (home-bash-extension
-  (bashrc (list
-           (plain-file "eat"
-            "[ -n \"$EAT_SHELL_INTEGRATION_DIR\" ] && source \"$EAT_SHELL_INTEGRATION_DIR/bash\"")))))
+  (aliases '(("g" . "just -g guix")))
+  (bashrc (list <<cfg-bash()>>))))
 #+end_src
 
 #+begin_src elisp
@@ -1485,7 +2104,7 @@ qutebrowser --nowindow --target tab-bg-silent $@
 (package! sxiv :built-in t)
 #+end_src
 
-#+begin_src scheme
+#+begin_src scheme :noweb-ref guix-pkg
 "emacs-dired-hacks" "emacs-dired-du"
 "emacs-openwith" "emacs-sxiv"
 #+end_src
@@ -1497,13 +2116,14 @@ qutebrowser --nowindow --target tab-bg-silent $@
 
   (add-to-list 'dirvish-hide-details 'dired)
   (setq! dirvish-quick-access-entries
-         `(("h" "~/"                          "Home")
-           ("c" ,(f-dirname doom-core-dir)    "Doom root")
-           ("e" "~/.dotfiles/emacs/.doom.d"   "Emacs config")
-           ("d" "~/Downloads/"                "Downloads")
-           ("m" "/media/500GB/media"          "Media"))))
+         `(("h" "~/"                             "Home")
+           ("c" ,(f-dirname doom-core-dir)       "Doom root")
+           ("e" "~/devel/dotfiles/emacs/.doom.d" "Emacs config")
+           ("d" "~/Downloads/"                   "Downloads")
+           ("m" "/media/500GB/media"             "Media"))))
 
-(use-package! sxiv)
+(use-package! sxiv
+  :commands sxiv)
 (use-package! dired-du
   :custom
   ;; human readable
@@ -1557,9 +2177,30 @@ qutebrowser --nowindow --target tab-bg-silent $@
                  (gptel-api-key-from-auth-source "google.com" "gemini"))
           :stream t)))
 #+end_src
+* emacs screencast recording
+:PROPERTIES:
+:header-args: :tangle no
+:END:
+#+begin_src elisp :tangle packages.el
+(package! command-log-mode :pin "af600e6b4129c8115f464af576505ea8e789db27")
+;(package! keycast)
+;(package! camcorder) autoloads fail because of names.el usage. todo: debug
+#+end_src
+
+#+begin_src elisp
+(use-package! command-log-mode
+  :commands command-log-mode)
+;; (use-package! camcorder
+;;   :commands camcorder-mode
+;;   :hook (camcorder-mode-hook . clm/command-log-clear))
+#+end_src
+
+#+begin_src scheme :noweb-ref guix-pkg
+"recordmydesktop"
+#+end_src
 * experimental
 ** bookmark
-#+begin_src scheme
+#+begin_src scheme :noweb-ref guix-pkg
 "emacs-bookmark-plus"
 #+end_src
 #+begin_src elisp :tangle packages.el
@@ -1585,7 +2226,7 @@ qutebrowser --nowindow --target tab-bg-silent $@
 ** magic sqlite
 #+begin_src elisp
 ; https://christiantietze.de/posts/2024/01/emacs-sqlite-mode-open-sqlite-files-automatically/
-(use-package sqlite-mode
+(use-package! sqlite-mode
   :config
   (defun ct/sqlite-view-file-magically ()
     "Runs `sqlite-mode-open-file' on the file name visited by the
@@ -1598,12 +2239,14 @@ current buffer, killing it."
   (add-to-list 'magic-mode-alist '("SQLite format 3\x00" . ct/sqlite-view-file-magically)))
 #+end_src
 ** gpx-mode
-#+begin_src scheme
+#+begin_src scheme :noweb-ref guix-pkg
 ;; "emacs-gpx"
 "emacs-osm"
 #+end_src
 #+begin_src elisp
 (use-package! osm
+  :commands osm
+
   :init
   (set-popup-rule! "^\\*osm" :ignore t)
 
@@ -1678,7 +2321,7 @@ tmp=$(mktemp); cat > $tmp
 emacsclient -e '(dmenu/select-line-from-file "'$tmp'" :prompt '"$prompt"' :lines '$lines' :category '$category')' | jq -r .
 #+end_src
 ** org-node
-#+begin_src scheme
+#+begin_src scheme :noweb-ref guix-pkg
 "emacs-org-node"
 #+end_src
 #+begin_src elisp :tangle packages.el
@@ -1707,6 +2350,7 @@ emacsclient -e '(dmenu/select-line-from-file "'$tmp'" :prompt '"$prompt"' :lines
 #+end_src
 #+begin_src elisp
 (use-package! hnreader
+  :commands hnreader-news
   :config
   (org-link-set-parameters "eww" :follow 'eww-browse-url))
 #+end_src
