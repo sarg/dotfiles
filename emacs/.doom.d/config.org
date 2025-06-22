@@ -1361,7 +1361,18 @@ allow_anonymous true
 ; dirvish
 "ffmpegthumbnailer" "poppler" "mediainfo" "vips"
 #+end_src
-#+begin_src scheme :noweb-ref doom-config
+#+begin_src scheme :tangle ../../guix/doomcfg.scm
+(use-modules
+ (gnu)
+ (gnu artwork)
+ (guix)
+ (guix gexp)
+ (guix git-download)
+ (guix build-system copy))
+
+(define pkg specification->package+output)
+#+end_src
+#+begin_src scheme :noweb-ref doom-config :tangle ../../guix/doomcfg.scm
 (package
   (name "doomemacs-config")
   (version "0")

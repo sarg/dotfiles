@@ -1,7 +1,7 @@
 ;; -*- lexical-binding: t; -*-
 (require 'rx)
 (defun org-babel-execute:cfg (body params)
-  (when-let ((fn (alist-get :file params)))
+  (when-let* ((fn (alist-get :file params)))
     (with-temp-buffer
       (insert-file-contents-literally fn nil)
       (setf body (buffer-string))))
@@ -11,12 +11,15 @@
     (rx (group (*? anything))
         (: ?🐜 (group (*? anything)) ?🐜))
     (lambda (e)
-      (concat
-       (string-join
-        (mapcar
-         (-cut prin1-to-string <> nil '((escape-newlines . t)))
-         (s-lines (match-string 1 e)))
-        "\"\\n\"\n")
-       (match-string 2 e)))
+      (let ((string-part (match-string 1 e))
+            (scheme-part (match-string 2 e)))
+        (concat
+         (if (string-empty-p string-part) ""
+           (string-join
+            (mapcar
+             (lambda (l) (prin1-to-string l nil '((escape-newlines . t))))
+             (string-lines string-part nil t))
+            "\n"))
+         scheme-part)))
     (concat body "🐜🐜") t t)
    ")"))
