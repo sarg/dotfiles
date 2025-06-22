@@ -553,7 +553,6 @@ REVERSE? it when true. Returns the selected buffer."
 
 (after! elfeed
   (setq elfeed-db-directory "/storage/data/elfeed")
-  (add-hook 'elfeed-show-mode-hook (lambda () (setq-local browse-url-generic-program "qutebrowser-background")))
 
   (setq elfeed-search-filter "@2-week-ago +unread -youtube"
         elfeed-show-entry-switch #'display-buffer)
@@ -561,10 +560,6 @@ REVERSE? it when true. Returns the selected buffer."
   (evil-define-key 'normal elfeed-search-mode-map
     (kbd "RET") #'elfeed-open-special
     "q" #'elfeed-search-quit-window))
-#+end_src
-
-#+begin_src sh :tangle ~/.local/bin/qutebrowser-background :shebang #!/bin/sh :exports none
-qutebrowser --nowindow --target tab-bg-silent $@
 #+end_src
 
 ** emms
@@ -1180,8 +1175,7 @@ done
 (simple-service
  'additional-env-vars-service
  home-environment-variables-service-type
- `(("PATH" . "$HOME/.local/bin:$PATH")
-   <<guix-env-var>>))
+ `(<<guix-env-var>>))
 
 (simple-service
  'extra-profile home-shell-profile-service-type
@@ -1824,7 +1818,8 @@ os.execlp('xdg-open', 'xdg-open',
 default:
     @just -f {{justfile()}} --list
 
-mod? guix '~/devel/dotfiles/guix/Justfile'
+mod? guix '~/devel/ext/guix/Justfile'
+mod? dotfiles '~/devel/dotfiles/guix/Justfile'
 #+end_src
 #+begin_src scheme :noweb-ref guix-file
 (".justfile" ,<<cfg-justfile()>>)
@@ -2060,7 +2055,8 @@ eval "$(atuin init bash)"
 (simple-service
  'extensions home-bash-service-type
  (home-bash-extension
-  (aliases '(("g" . "just -g guix")))
+  (aliases '(("g" . "just -g dotfiles")
+             ("gu" . "just -g guix")))
   (bashrc (list <<cfg-bash()>>))))
 #+end_src
 
@@ -2277,49 +2273,6 @@ current buffer, killing it."
 
 (add-hook! 'server-visit-hook #'qute/dired-hook)
 #+end_src
-
-** emacs-dmenu
-#+begin_src elisp
-(cl-defun dmenu/select-line-from-file (file &key prompt lines category)
-  "completing-read a line from FILE."
-  (consult--read
-   (with-temp-buffer
-     (insert-file-contents file)
-     (string-lines (buffer-string)))
-   :prompt (concat (or prompt "Select") ": ")
-   :category category
-   :require-match t))
-#+end_src
-
-#+begin_src sh :tangle ~/.local/bin/dmenu :shebang #!/usr/bin/env bash
-usage() {
-  echo "Usage: $0 -p prompt -l lines -c category"
-  exit 1
-}
-
-prompt=nil
-lines=nil
-category=nil
-while getopts ":p:l:c:" opt; do
-  case $opt in
-    p) prompt="\"$OPTARG\""
-    ;;
-    l) lines="$OPTARG"
-    ;;
-    c) category="'$OPTARG"
-    ;;
-    ,*) usage
-    ;;
-  esac
-done
-
-if [ "$prompt" == "nil" ] && [ "$lines" == "nil" ]; then
-  usage
-fi
-
-tmp=$(mktemp); cat > $tmp
-emacsclient -e '(dmenu/select-line-from-file "'$tmp'" :prompt '"$prompt"' :lines '$lines' :category '$category')' | jq -r .
-#+end_src
 ** org-node
 #+begin_src scheme :noweb-ref guix-pkg
 "emacs-org-node"
@@ -2355,7 +2308,7 @@ emacsclient -e '(dmenu/select-line-from-file "'$tmp'" :prompt '"$prompt"' :lines
   (org-link-set-parameters "eww" :follow 'eww-browse-url))
 #+end_src
 
-* TODO todo [7/12]
+* TODO todo [8/13]
 ** DONE console font
 ** DONE mingetty with xorg autostart (under sarg), put `lock.sh` first in the .xsession
 ** DONE user syncthing
@@ -2373,7 +2326,7 @@ https://isamert.net/2021/04/21/managing-your-contacts-in-org-mode-and-syncing-th
 ** DONE guix gc, but not that aggressive
 =--gc-keep-derivations= and =--gc-keep-outputs= to =guix-daemon= params
 ** NO Fix hardcoded =Guix_image= root partition name
-** TODO Fix =gnupg= symlink\\
+** DONE Fix =gnupg= symlink\\
 =guix home= =update-symlinks= creates =~/.gnupg= before my symlink activation service runs
 therefore gnupg private keys are not symlinked\\
 Target state:

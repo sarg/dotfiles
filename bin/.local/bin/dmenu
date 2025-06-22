@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+usage() {
+  echo "Usage: $0 -p prompt -c category"
+  exit 1
+}
+
+prompt="Select"
+category=nil
+while getopts ":p:l:c:" opt; do
+  case $opt in
+  p)
+    prompt="$OPTARG"
+    ;;
+  c)
+    category="'$OPTARG"
+    ;;
+  *)
+    usage
+    ;;
+  esac
+done
+
+tmp=$(mktemp)
+cat >$tmp
+emacsclient -e "
+(consult--read
+   (with-temp-buffer
+     (insert-file-contents \"${tmp}\")
+     (string-lines (buffer-string)))
+   :prompt \"${prompt}: \"
+   :category ${category}
+   :require-match t)" | jq -r .
