@@ -1,0 +1,233 @@
+# -*- mode: org -*-
+#+PROPERTY: header-args :noweb-prefix no :noweb no-export
+
+* Intro
+[[file:./literate.txt][This file]] is a literate configuration of a Guix and Emacs system. Tangling it
+(=C-c C-v t=) produces =home.scm= , which could be then installed as usual.
+
+Using this template you'll be able to structure a =home-environment= definition in
+a way that is convenient to you. Besides regular =noweb= features, a new source
+code block language is implemented, allowing templated configuration files (see
+[[*templated][example]] below). Emacs configuration is included in the =home-environment= as a
+=package= (see the [[*config package][definition]]), which is built by tangling this org file.
+
+* Template
+Main template which tangles to =home.scm=.
+#+begin_src org
+,#+begin_src scheme :tangle home.scm
+#+end_src
+#+begin_src scheme :tangle home.scm
+(use-modules
+ (gnu)
+ (gnu services)
+ (gnu home services)
+ (gnu home services desktop)
+ (guix gexp)
+ (guix git-download)
+ (guix build-system copy)
+ (guix packages))
+
+(define (pkg x)
+  (if (string? x) (specification->package+output x) x))
+
+(home-environment
+ (services
+  (cons*
+   (simple-service
+    'files home-files-service-type
+    `((".guile" ,%default-dotguile)
+      (".config/guix/channels.scm"
+       ,(plain-file
+         "channels.scm"
+         (simple-format #f "~s" '(list <<guix-channel>>))))
+      <<guix-file>>))
+   <<guix-srv>>
+   %base-home-services))
+
+   (packages (map pkg (list <<guix-pkg>>))))
+#+end_src
+* Channels
+** guix
+#+begin_src org
+,#+begin_src scheme :noweb-ref guix-channel
+#+end_src
+#+begin_src scheme :noweb-ref guix-channel
+(channel
+ (name 'guix)
+ (url "https://git.guix.gnu.org/guix.git")
+ (branch "master")
+ (introduction
+  (make-channel-introduction
+   "9edb3f66fd807b096b48283debdcddccfea34bad"
+   (openpgp-fingerprint
+    "BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA"))))
+#+end_src
+* Example content
+** package
+#+begin_src org
+,#+begin_src scheme :noweb-ref guix-pkg
+#+end_src
+#+begin_src scheme :noweb-ref guix-pkg
+"emacs-next" "emacs-org"
+#+end_src
+** service
+#+begin_src org
+,#+begin_src scheme :noweb-ref guix-srv
+#+end_src
+#+begin_src scheme :noweb-ref guix-srv
+(service home-dbus-service-type)
+#+end_src
+** file
+#+begin_src org
+,#+begin_src scheme :noweb-ref guix-file
+#+end_src
+*** plain
+#+begin_src scheme :noweb-ref guix-file
+("plain" ,(plain-file "file" "hello, world"))
+#+end_src
+*** local
+#+begin_src scheme :noweb-ref guix-file
+("local" ,(local-file "." #:recursive? #t))
+#+end_src
+*** templated
+Given a =cfg= source block:
+#+begin_src org
+,#+name: cfg-some
+,#+begin_src cfg
+#+end_src
+#+name: cfg-some
+#+begin_src cfg :exports both :wrap src scheme
+this template gets converted to mixed-text-file
+ANT unicode characters mark scheme code
+some-program = 🐜 (pkg "msmtp") 🐜/bin/msmtp
+#+end_src
+
+which renders to:
+#+RESULTS: cfg-some
+#+begin_src scheme
+(mixed-text-file
+  "cfg-file"
+"this template gets converted to mixed-text-file\n"
+"ANT unicode characters mark scheme code\n"
+"some-program = " (pkg "msmtp") "/bin/msmtp")
+#+end_src
+
+You can then add it to home configuration:
+#+begin_src org
+,#+begin_src scheme :noweb-ref guix-file
+#+end_src
+#+begin_src scheme :noweb-ref guix-file
+("tmpl" ,<<cfg-some()>>)
+#+end_src
+* emacs config
+** ob-cfg.el
+A helper script that renders =cfg= source code blocks.
+#+begin_src elisp :tangle ob-cfg.el
+;; -*- lexical-binding: t; -*-
+(require 'rx)
+(defun org-babel-execute:cfg (body params)
+  "Wrap BODY in a (mixed-text-file). If PARAMS contains :file, use its
+contents instead of BODY. If PARAMS contain :tangle-mode, additionally
+wrap with (chmod-computed-file)."
+  (let* ((fn (alist-get :file params))
+         (tangle-mode (alist-get :tangle-mode params))
+         (perms (and tangle-mode (org-babel-interpret-file-mode tangle-mode))))
+    (when fn
+      (with-temp-buffer
+        (insert-file-contents-literally fn nil)
+        (setf body (buffer-string))))
+
+    (concat
+     (if perms "(chmod-computed-file " "")
+     "(mixed-text-file\n  \"cfg-file\"\n"
+     ;; split string into parts 'string-part🐜scheme-part🐜'
+     ;; - output each line of 'string-part' quoted.
+     ;; - output 'scheme-part' as is
+     ;; - note: add an empty 'scheme-part' at the end of input string
+     ;;   so that the last 'string-part' is matched
+     (replace-regexp-in-string
+      (rx (minimal-match
+           (group (zero-or-more anything))
+           ?🐜 (group (zero-or-more anything)) ?🐜))
+      (lambda (e)
+        (let ((string-part (match-string 1 e))
+              (scheme-part (match-string 2 e)))
+          (concat
+           (if (string-empty-p string-part) ""
+             (string-join
+              (mapcar
+               (lambda (l) (prin1-to-string l nil '((escape-newlines . t))))
+               (string-lines string-part nil t))
+              "\n"))
+           scheme-part)))
+      (concat body "🐜🐜") t t)
+     ")"
+     (if perms (format " #o%o)" perms) ""))))
+#+end_src
+** config package
+#+name: self
+#+begin_src elisp :tangle no :exports none
+;(file-name-nondirectory (buffer-file-name))
+"literate.org"
+#+end_src
+#+begin_src org
+,#+begin_src scheme :noweb-ref emacs-config :noweb yes
+#+end_src
+#+begin_src scheme :noweb-ref emacs-config :noweb yes
+(package
+  (name "emacs-config")
+  (version "0")
+  (source (local-file "." "src" #:recursive? #t))
+  ;; you really should put the files in git and enable filtering
+  ;; #:select? (git-predicate ".")
+  (build-system copy-build-system)
+  (arguments
+    (list
+     #:install-plan ''(("." "" #:include (".el")))
+     #:phases
+     #~(modify-phases %standard-phases
+         (add-before 'install 'tangle
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "<<self()>>"
+               (("\\(guix[/]pkg '([^ )]+)" _ pkg)
+                (format #f "(concat ~s"
+                        (or (assoc-ref inputs pkg)
+                            (error (format #f "~a is required for emacs config but not present in inputs" pkg))))))
+
+             (invoke "emacs" "-Q" "-l" "ob-cfg.el" "--batch" "--eval"
+                     (simple-format #f "~s"
+                                    '(progn
+                                      (require 'ob-tangle)
+                                      (setq org-confirm-babel-evaluate nil)
+                                      (with-current-buffer
+                                       (find-file-noselect "<<self()>>")
+                                       (org-babel-tangle nil "early-init.el" "elisp")))))
+             (delete-file "<<self()>>"))))))
+  (inputs (map pkg '(<<emacs-dep>>)))
+  (native-inputs (map pkg '("emacs-org" "emacs-next-minimal")))
+  (description "emacs config")
+  (home-page #f)
+  (synopsis #f)
+  (license #f))
+#+end_src
+#+begin_src org
+,#+begin_src scheme :noweb-ref guix-file
+#+end_src
+#+begin_src scheme :noweb-ref guix-file
+(".config/emacs" ,<<emacs-config>>)
+#+end_src
+** config parts
+#+begin_src org
+,#+begin_src text :noweb-ref emacs-dep
+#+end_src
+#+begin_src text :noweb-ref emacs-dep
+"msmtp"
+#+end_src
+#+begin_src org
+,#+begin_src elisp
+#+end_src
+#+begin_src elisp
+(load (concat user-emacs-directory "ob-cfg.el"))
+(require 'sendmail)
+(setq sendmail-program (guix/pkg 'msmtp "/bin/msmtp"))
+#+end_src
