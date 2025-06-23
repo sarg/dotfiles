@@ -1,9 +1,9 @@
 #+OPTIONS: num:nil
 #+SETUPFILE: ~/devel/ext/org-html-themes/org/theme-readtheorg-local.setup
-#+PROPERTY: header-args :noweb-prefix no :noweb yes
+#+PROPERTY: header-args :noweb-prefix no :noweb yes :eval no
 #+PROPERTY: header-args:elisp :tangle config.el
 #+PROPERTY: header-args:scheme :tangle no :exports code
-#+PROPERTY: header-args:cfg :tangle no
+#+PROPERTY: header-args:cfg :tangle no :eval yes :cache yes :exports code :wrap "src text :noweb-ref guix-file"
 #+begin_src elisp :exports none
 ;; -*- lexical-binding: t; -*-
 ;; generated from config.org
@@ -143,7 +143,6 @@
 #+begin_src scheme :noweb-ref guix-pkg
 "adb" "socat" "scrcpy"
 #+end_src
-
 ** utils
 #+begin_src scheme :noweb-ref guix-pkg
 "curl" "rsync" "man-db"
@@ -180,15 +179,23 @@
 #+begin_src scheme :noweb-ref guix-pkg
 "aria2"
 #+end_src
-#+name: cfg-aria2
-#+begin_src cfg
+
+#+begin_src cfg :dest ".config/aria2/aria2.conf"
 seed-time=0
 max-overall-upload-limit=1K
 disable-ipv6=true
 #+end_src
-#+begin_src scheme :noweb-ref guix-file
-(".config/aria2/aria2.conf" ,<<cfg-aria2()>>)
+
+#+RESULTS[cb2175e995d635acf1d08c01366829afac80ffe8]:
+#+begin_src text :noweb-ref guix-file
+(".config/aria2/aria2.conf"
+,(mixed-text-file
+  "cfg-file"
+"seed-time=0\n"
+"max-overall-upload-limit=1K\n"
+"disable-ipv6=true"))
 #+end_src
+
 ** mpv
 #+begin_src scheme :noweb-ref guix-pkg
 "emacs-mpv" "mpv" "yt-dlp"
@@ -792,8 +799,7 @@ REVERSE? it when true. Returns the selected buffer."
 #+begin_src scheme :noweb-ref guix-pkg
 "oama"
 #+end_src
-#+name: cfg-oama
-#+begin_src cfg
+#+begin_src cfg :dest ".config/oama/config.yaml"
 encryption:
     tag: GPG
     contents: '0x🐜(global 'gpgKey)🐜'
@@ -803,9 +809,22 @@ services:
     client_id: '406964657835-aq8lmia8j95dhl1a2bvharmfk3t1hgqj.apps.googleusercontent.com'
     client_secret: 'kSmqreRr0qwBWJgbf5Y-PjSU' # thunderbird
 #+end_src
-#+begin_src scheme :noweb-ref guix-file
-(".config/oama/config.yaml" ,<<cfg-oama()>>)
+
+#+RESULTS[1d110c70333f0662f3ef657c241a1254076d8da3]:
+#+begin_src text :noweb-ref guix-file
+(".config/oama/config.yaml"
+,(mixed-text-file
+  "cfg-file"
+"encryption:\n"
+"    tag: GPG\n"
+"    contents: '0x"(global 'gpgKey)"'\n"
+"\n"
+"services:\n"
+"  google:\n"
+"    client_id: '406964657835-aq8lmia8j95dhl1a2bvharmfk3t1hgqj.apps.googleusercontent.com'\n"
+"    client_secret: 'kSmqreRr0qwBWJgbf5Y-PjSU' # thunderbird"))
 #+end_src
+
 *** sending
 #+begin_src scheme :noweb-ref guix-pkg
 "msmtp"
@@ -917,8 +936,7 @@ services:
 #+begin_src scheme :noweb-ref guix-pkg
 "sops"
 #+end_src
-#+name: cfg-direnv-sops
-#+begin_src cfg
+#+begin_src cfg :dest ".config/direnv/lib/sops.sh"
 #!/usr/bin/env bash
 use_sops() {
     local path=${1:-$PWD/secrets.yaml}
@@ -939,8 +957,34 @@ use_sops() {
     watch_file "$path"
 }
 #+end_src
+
+#+RESULTS[41a4761751301563b5829ddcdb739da575c84771]:
+#+begin_src text :noweb-ref guix-file
+(".config/direnv/lib/sops.sh"
+,(mixed-text-file
+  "cfg-file"
+"#!/usr/bin/env bash\n"
+"use_sops() {\n"
+"    local path=${1:-$PWD/secrets.yaml}\n"
+"    shift\n"
+"\n"
+"    read_vars() {\n"
+"        SOPS=\"sops -d --output-type dotenv\"\n"
+"        if [[ $# -eq 0 ]]; then\n"
+"            $SOPS \"$path\"\n"
+"        else\n"
+"            for x in \"$@\"; do\n"
+"                $SOPS --extract \"['$x']\" \"$path\"\n"
+"            done\n"
+"        fi | direnv dotenv bash /dev/stdin\n"
+"    }\n"
+"\n"
+"    eval \"$(read_vars \"$@\")\"\n"
+"    watch_file \"$path\"\n"
+"}"))
+#+end_src
+
 #+begin_src scheme :noweb-ref guix-file
-(".config/direnv/lib/sops.sh" ,<<cfg-direnv-sops()>>)
 (".config/openstack/clouds.yaml" ,(symlink-to (relative-file "../secure/.config/openstack/clouds.yaml")))
 #+end_src
 ** password-store
@@ -1020,17 +1064,22 @@ use_sops() {
 (defun qute/choose-pass (url)
    (completing-read "Pass: " (password-store-list) nil t url))
 #+end_src
-
-#+name: cfg-password-fill
-#+begin_src cfg :session '(:name "password_fill_rc")
+#+begin_src cfg :dest ".config/qutebrowser/password_fill_rc"
 choose_entry() {
     MENU_COMMAND=( dmenu -p pass -c pass )
     choose_entry_menu || true
 }
 #+end_src
-#+begin_src scheme :noweb-ref guix-file
+
+#+RESULTS[c0f957fd6ec042c723a189a752494909afc53e2e]:
+#+begin_src text :noweb-ref guix-file
 (".config/qutebrowser/password_fill_rc"
- ,<<cfg-password-fill()>>)
+,(mixed-text-file
+  "cfg-file"
+"choose_entry() {\n"
+"    MENU_COMMAND=( dmenu -p pass -c pass )\n"
+"    choose_entry_menu || true\n"
+"}"))
 #+end_src
 
 ** gpg
@@ -1072,13 +1121,24 @@ choose_entry() {
 "font-hack"
 "font-terminus"
 #+end_src
-#+name: cfg-gtk
-#+begin_src cfg
+#+begin_src cfg :dest ".config/gtk-3.0/settings.ini"
 [Settings]
 gtk-theme-name="Greybird"
 gtk-icon-theme-name="Adwaita"
 gtk-font-name="Fira Code 12"
 #+end_src
+
+#+RESULTS[52ea22c206099d9f59631a452159fdcac1d4e0a6]:
+#+begin_src text :noweb-ref guix-file
+(".config/gtk-3.0/settings.ini"
+,(mixed-text-file
+  "cfg-file"
+"[Settings]\n"
+"gtk-theme-name=\"Greybird\"\n"
+"gtk-icon-theme-name=\"Adwaita\"\n"
+"gtk-font-name=\"Fira Code 12\""))
+#+end_src
+
 #+begin_src scheme :noweb-ref guix-pkg
 (package
   (name "keymap-helper")
@@ -1103,15 +1163,11 @@ gtk-font-name="Fira Code 12"
   (synopsis #f)
   (license #f))
 #+end_src
-#+begin_src scheme :noweb-ref guix-file
-(".config/gtk-3.0/settings.ini" ,<<cfg-gtk()>>)
-#+end_src
 #+begin_src scheme :noweb-ref guix-env-var
 ("_JAVA_AWT_WM_NONREPARENTING" . "1")
 ("QT_QPA_PLATFORMTHEME" . "gtk3")
 #+end_src
-#+name: cfg-xinitrc
-#+begin_src cfg
+#+begin_src cfg :dest ".xinitrc"
 🐜(screen-locker (video-saver "/storage/data/splash.mp4"))🐜 &
 keymap.sh
 🐜(pkg "xhost")🐜/bin/xhost +si:localuser:$USER
@@ -1122,6 +1178,22 @@ while true; do
   emacs -mm -f exwm-enable
 done
 #+end_src
+
+#+RESULTS[16d4a68d39d7eca6c13ec8546dd98e14ba708453]:
+#+begin_src text :noweb-ref guix-file
+(".xinitrc"
+,(mixed-text-file
+  "cfg-file"
+(screen-locker (video-saver "/storage/data/splash.mp4"))" &\n"
+"keymap.sh\n"(pkg "xhost")"/bin/xhost +si:localuser:$USER\n"
+"dbus-update-activation-environment --verbose DBUS_SESSION_BUS_ADDRESS DISPLAY XAUTHORITY\n"
+"\n"
+"while true; do\n"
+"  xset s activate # lock to show password screen\n"
+"  emacs -mm -f exwm-enable\n"
+"done"))
+#+end_src
+
 #+begin_src scheme :noweb-ref guix-srv
 (service home-x11-service-type)
 (simple-service
@@ -1138,13 +1210,10 @@ done
                        (modules (list xf86-input-libinput-next)))))
              #:create-session? #f))
    (stop #~(make-kill-destructor)))))
-(simple-service
- 'x11-configs
- home-files-service-type
- `((".icons/default"
+#+end_src
+#+begin_src scheme :noweb-ref guix-file
+(".icons/default"
     ,(file-append (pkg "bibata-cursor-theme") "/share/icons/Bibata-Modern-Ice"))
-
-   (".xinitrc" ,<<cfg-xinitrc()>>)))
 #+end_src
 * ssh
 #+begin_src scheme :noweb-ref guix-pkg
@@ -1278,10 +1347,19 @@ done
 #+end_src
 ** owntracks
 #+name: cfg-mosquitto
-#+begin_src cfg
+#+begin_src cfg :wrap src text
 listener 1883
 allow_anonymous true
 #+end_src
+
+#+RESULTS[6c69b22e57a6a059f2edeee700647503864f3a90]: cfg-mosquitto
+#+begin_src text
+(mixed-text-file
+  "cfg-file"
+"listener 1883\n"
+"allow_anonymous true")
+#+end_src
+
 #+begin_src scheme :noweb-ref guix-srv
 (service mosquitto-service-type <<cfg-mosquitto()>>)
 (service owntracks-service-type
@@ -1538,8 +1616,7 @@ xargs flatpak install --or-update --noninteractive
 #+begin_src scheme :noweb-ref guix-pkg
 "jaro"
 #+end_src
-#+name: cfg-jaro
-#+begin_src cfg
+#+begin_src cfg :dest ".config/associations"
 (bind
  #:pattern "^mailto:.*"
  #:program '(emacsclient --eval "(message-mailto \"%f\")"))
@@ -1568,10 +1645,41 @@ xargs flatpak install --or-update --noninteractive
  #:pattern "^image/.*"
  #:program '(qview %f))
 #+end_src
-#+begin_src scheme :noweb-ref guix-file
+
+#+RESULTS[473a0e9deb4afda552ae48522c3ed1ad2a4a78cf]:
+#+begin_src text :noweb-ref guix-file
 (".config/associations"
- ,<<cfg-jaro()>>)
+,(mixed-text-file
+  "cfg-file"
+"(bind\n"
+" #:pattern \"^mailto:.*\"\n"
+" #:program '(emacsclient --eval \"(message-mailto \\\"%f\\\")\"))\n"
+"\n"
+"(bind\n"
+" #:pattern \"^https://t.me/.*\"\n"
+" #:program '(emacsclient --eval \"(telega-browse-url \\\"%f\\\")\"))\n"
+"\n"
+"(bind\n"
+" #:pattern \"^org-protocol:.*\"\n"
+" #:program '(emacsclient %f))\n"
+"\n"
+"(bind\n"
+" #:pattern '(\"(application|text)/(x-)?(pdf|postscript|ps|epub.*)\" \"image/(x-)?eps\" \"image/vnd.djvu\")\n"
+" #:program '(zathura %f))\n"
+"\n"
+"(bind\n"
+" #:pattern \"^video/.*\"\n"
+" #:program '(mpv %f))\n"
+"\n"
+"(bind\n"
+" #:pattern \"^https?://\"\n"
+" #:program '(qutebrowser %f))\n"
+"\n"
+"(bind\n"
+" #:pattern \"^image/.*\"\n"
+" #:program '(qview %f))"))
 #+end_src
+
 ** multimedia keys
 #+begin_src text :noweb-ref emacs-dep
 "brightnessctl" "flameshot"
@@ -1591,15 +1699,22 @@ xargs flatpak install --or-update --noninteractive
 #+begin_src elisp :tangle packages.el :exports none
 (package! darkman)
 #+end_src
-#+name: cfg-darkman
-#+begin_src cfg
+#+begin_src cfg :dest ".config/darkman/config.yaml"
 lat: 52.52
 lng: 13.39
 dbusserver: true
 #+end_src
-#+begin_src scheme :noweb-ref guix-file
-(".config/darkman/config.yaml" ,<<cfg-darkman()>>)
+
+#+RESULTS[3b0d89f7cd9a2190e0b8f0c97833c9c47b81bf01]:
+#+begin_src text :noweb-ref guix-file
+(".config/darkman/config.yaml"
+,(mixed-text-file
+  "cfg-file"
+"lat: 52.52\n"
+"lng: 13.39\n"
+"dbusserver: true"))
 #+end_src
+
 #+begin_src elisp
 (use-package! darkman
   :custom
@@ -1751,7 +1866,7 @@ dbusserver: true
 
 (load! "org-defuns")
 #+end_src
-** capture :noexport:
+** COMMENT capture
 #+begin_src python :tangle ~/.local/share/qutebrowser/userscripts/orgprotocol :shebang #!/usr/bin/env python3
 import os
 from urllib.parse import quote
@@ -1825,17 +1940,26 @@ os.execlp('xdg-open', 'xdg-open',
 #+begin_src scheme :noweb-ref guix-pkg
 "just"
 #+end_src
-#+name: cfg-justfile
-#+begin_src cfg
+#+begin_src cfg :dest ".justfile"
 default:
     @just -f {{justfile()}} --list
 
 mod? guix '~/devel/ext/guix/Justfile'
 mod? dotfiles '~/devel/dotfiles/guix/Justfile'
 #+end_src
-#+begin_src scheme :noweb-ref guix-file
-(".justfile" ,<<cfg-justfile()>>)
+
+#+RESULTS[9e0b8f4bbfa4334959fcac62cedd3fc6f0115b4f]:
+#+begin_src text :noweb-ref guix-file
+(".justfile"
+,(mixed-text-file
+  "cfg-file"
+"default:\n"
+"    @just -f {{justfile()}} --list\n"
+"\n"
+"mod? guix '~/devel/ext/guix/Justfile'\n"
+"mod? dotfiles '~/devel/dotfiles/guix/Justfile'"))
 #+end_src
+
 #+begin_src elisp :tangle packages.el
 (package! just-mode)
 #+end_src
@@ -1847,8 +1971,7 @@ mod? dotfiles '~/devel/dotfiles/guix/Justfile'
 #+begin_src scheme :noweb-ref guix-pkg
 "git" "git:send-email" "git-crypt" "perl" "git-credential-oauth"
 #+end_src
-#+name: cfg-gitconfig
-#+begin_src cfg
+#+begin_src cfg :dest ".gitconfig"
 [user]
     name = 🐜(global 'name)🐜
     email = 🐜(global 'email)🐜
@@ -1867,8 +1990,29 @@ mod? dotfiles '~/devel/dotfiles/guix/Justfile'
     helper = cache --timeout 21600  # six hours
     helper = oauth
 #+end_src
-#+begin_src scheme :noweb-ref guix-file
-(".gitconfig" ,<<cfg-gitconfig()>>)
+
+#+RESULTS[3c508390d04187cb80d16b03321c315e19755151]:
+#+begin_src text :noweb-ref guix-file
+(".gitconfig"
+,(mixed-text-file
+  "cfg-file"
+"[user]\n"
+"    name = "(global 'name)"\n"
+"    email = "(global 'email)"\n"
+"    signingKey = "(global 'gpgKey)"\n"
+"\n"
+"[commit]\n"
+"    gpgSign = true\n"
+"\n"
+"[push]\n"
+"    default = simple\n"
+"\n"
+"[sendemail]\n"
+"    smtpServer = "(pkg "msmtp")"/bin/msmtp\n"
+"\n"
+"[credential]\n"
+"    helper = cache --timeout 21600  # six hours\n"
+"    helper = oauth"))
 #+end_src
 
 #+begin_src elisp
@@ -1946,15 +2090,22 @@ mod? dotfiles '~/devel/dotfiles/guix/Justfile'
   :config
   (zathura-sync-theme-mode))
 #+end_src
-#+name: cfg-zathurarc
-#+begin_src cfg
+#+begin_src cfg :dest ".config/zathura/zathurarc"
 set guioptions ""
 set statusbar-basename true
 include theme
 #+end_src
-#+begin_src scheme :noweb-ref guix-file
-(".config/zathura/zathurarc" ,<<cfg-zathurarc()>>)
+
+#+RESULTS[8de98bd4192bf531aa3c0458ec57e9742aca84c6]:
+#+begin_src text :noweb-ref guix-file
+(".config/zathura/zathurarc"
+,(mixed-text-file
+  "cfg-file"
+"set guioptions \"\"\n"
+"set statusbar-basename true\n"
+"include theme"))
 #+end_src
+
 #+begin_src elisp :tangle packages.el
 (package! calibredb :built-in t)
 (package! nov :built-in t)
@@ -2007,8 +2158,7 @@ include theme
 #+begin_src scheme :noweb-reg guix-env-var
 ("BROWSER" . "qutebrowser")
 #+end_src
-#+name: cfg-darkman-qutebrowser-dark
-#+begin_src cfg :tangle-mode "u+x"
+#+begin_src cfg :tangle-mode "u+x" :dest ".local/share/dark-mode.d/qutebrowser"
 #!🐜(pkg "bash-minimal")🐜/bin/sh
 cat <<EOF > ~/.config/qutebrowser/darkmode.py
 c.colors.webpage.darkmode.enabled = True
@@ -2017,8 +2167,22 @@ EOF
 
 pgrep -f QtWebEngineProcess && qutebrowser ':config-source darkmode.py'
 #+end_src
-#+name: cfg-darkman-qutebrowser-light
-#+begin_src cfg :tangle-mode "u+x"
+
+#+RESULTS[e9ab3a9a5ffa2cecd3591cd96d0acac6ab58d6f4]:
+#+begin_src text :noweb-ref guix-file
+(".local/share/dark-mode.d/qutebrowser"
+,(chmod-computed-file (mixed-text-file
+  "cfg-file"
+"#!"(pkg "bash-minimal")"/bin/sh\n"
+"cat <<EOF > ~/.config/qutebrowser/darkmode.py\n"
+"c.colors.webpage.darkmode.enabled = True\n"
+"c.colors.webpage.bg = \"black\"\n"
+"EOF\n"
+"\n"
+"pgrep -f QtWebEngineProcess && qutebrowser ':config-source darkmode.py'") #o744))
+#+end_src
+
+#+begin_src cfg :tangle-mode "u+x" :dest ".local/share/light-mode.d/qutebrowser"
 #!🐜(pkg "bash-minimal")🐜/bin/sh
 cat <<EOF > ~/.config/qutebrowser/darkmode.py
 c.colors.webpage.darkmode.enabled = False
@@ -2027,12 +2191,25 @@ EOF
 
 pgrep -f QtWebEngineProcess && qutebrowser ':config-source darkmode.py'
 #+end_src
+
+#+RESULTS[38ffc05e4c296df8734f5dd37967bd6882f45a8e]:
+#+begin_src text :noweb-ref guix-file
+(".local/share/light-mode.d/qutebrowser"
+,(chmod-computed-file (mixed-text-file
+  "cfg-file"
+"#!"(pkg "bash-minimal")"/bin/sh\n"
+"cat <<EOF > ~/.config/qutebrowser/darkmode.py\n"
+"c.colors.webpage.darkmode.enabled = False\n"
+"c.colors.webpage.bg = \"white\"\n"
+"EOF\n"
+"\n"
+"pgrep -f QtWebEngineProcess && qutebrowser ':config-source darkmode.py'") #o744))
+#+end_src
+
 #+begin_src scheme :noweb-ref guix-file
 (".config/qutebrowser/urllog.py" ,(local-file "../qutebrowser/.config/qutebrowser/urllog.py"))
 (".config/qutebrowser/config.py" ,(local-file "../qutebrowser/.config/qutebrowser/config.py"))
 (".local/share/qutebrowser" ,(symlink-to "/storage/data/qutebrowser"))
-(".local/share/dark-mode.d/qutebrowser" ,<<cfg-darkman-qutebrowser-dark()>>)
-(".local/share/light-mode.d/qutebrowser" ,<<cfg-darkman-qutebrowser-light()>>)
 #+end_src
 #+begin_src elisp
 (defun browse-url-qute-private (url &rest _)
@@ -2083,12 +2260,23 @@ pgrep -f QtWebEngineProcess && qutebrowser ':config-source darkmode.py'
 #+end_src
 
 #+name: cfg-bash
-#+begin_src cfg
+#+begin_src cfg :wrap src text
 [ -n "$EAT_SHELL_INTEGRATION_DIR" ] && source "$EAT_SHELL_INTEGRATION_DIR/bash"
 eval "$(direnv hook bash)"
 
 source 🐜(pkg "blesh")🐜/share/blesh/ble.sh
 eval "$(atuin init bash)"
+#+end_src
+
+#+RESULTS[3bc21a5abbd58df0dc09573a45968149bab50439]: cfg-bash
+#+begin_src text
+(mixed-text-file
+  "cfg-file"
+"[ -n \"$EAT_SHELL_INTEGRATION_DIR\" ] && source \"$EAT_SHELL_INTEGRATION_DIR/bash\"\n"
+"eval \"$(direnv hook bash)\"\n"
+"\n"
+"source "(pkg "blesh")"/share/blesh/ble.sh\n"
+"eval \"$(atuin init bash)\"")
 #+end_src
 
 #+begin_src scheme :noweb-ref guix-srv
@@ -2214,10 +2402,7 @@ eval "$(atuin init bash)"
                  (gptel-api-key-from-auth-source "google.com" "gemini"))
           :stream t)))
 #+end_src
-* emacs screencast recording
-:PROPERTIES:
-:header-args: :tangle no
-:END:
+* COMMENT emacs screencast recording
 #+begin_src elisp :tangle packages.el
 (package! command-log-mode :pin "af600e6b4129c8115f464af576505ea8e789db27")
 ;(package! keycast)
@@ -2488,6 +2673,7 @@ fi
 #+NAME: api
 #+begin_src elisp
 (add-hook 'after-save-hook (lambda () (org-babel-tangle nil nil "scheme")) 0 t)
+(add-hook 'org-babel-pre-tangle-hook #'org-babel-execute-buffer 0 t)
 #+end_src
 # Local Variables:
 # eval: (sarg/eval-org-src-block "api")

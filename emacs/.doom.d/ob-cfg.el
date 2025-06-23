@@ -5,6 +5,7 @@
 contents instead of BODY. If PARAMS contain :tangle-mode, additionally
 wrap with (chmod-computed-file)."
   (let* ((fn (alist-get :file params))
+         (dest (alist-get :dest params))
          (tangle-mode (alist-get :tangle-mode params))
          (perms (and tangle-mode (org-babel-interpret-file-mode tangle-mode))))
     (when fn
@@ -13,6 +14,7 @@ wrap with (chmod-computed-file)."
         (setf body (buffer-string))))
 
     (concat
+     (if dest (format "(%S\n," dest) "")
      (if perms "(chmod-computed-file " "")
      "(mixed-text-file\n  \"cfg-file\"\n"
      ;; split string into parts 'string-part🐜scheme-part🐜'
@@ -37,4 +39,5 @@ wrap with (chmod-computed-file)."
            scheme-part)))
       (concat body "🐜🐜") t t)
      ")"
-     (if perms (format " #o%o)" perms) ""))))
+     (if perms (format " #o%o)" perms) "")
+     (if dest ")" ""))))

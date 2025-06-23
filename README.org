@@ -2,8 +2,8 @@ Hello there!
 
 The dotfiles here are managed with [[https://guix.gnu.org/][GNU Guix]]. I have documented how to boostrap
 from this repo on a new laptop in [[http://sarg.org.ru/blog/guix-restore-drill/][a blog post]]. Earlier I have used [[https://www.gnu.org/software/stow/][GNU Stow]] to
-manage symlinks in the ~$HOME~, but nowadays I have a declarative =guix home=
-[[./guix/home.scm][configuration]] for my home directory.
+manage symlinks in the ~$HOME~, but nowadays I have a literate declarative =guix home=
+[[./emacs/.doom.d/config.org][configuration]] for my home directory.
 
 My base apps are:
 - emacs ([[https://github.com/doomemacs/doomemacs][doomemacs]], [[https://github.com/ch11ng/exwm][EXWM]], [[https://github.com/djcb/mu][mu4e]], org-mode, [[https://github.com/zevlg/telega.el][telega]], [[https://github.com/skeeto/elfeed][elfeed]])
@@ -11,5 +11,3 @@ My base apps are:
 - [[https://syncthing.net/][syncthing]]
 - [[https://mpv.io][mpv]] + [[https://github.com/yt-dlp/yt-dlp][yt-dlp]]
 - [[https://calibre-ebook.com/][calibre]]
-
-I use the literate style for my emacs configuration, which you could see [[./emacs/.doom.d/config.org][here]].
