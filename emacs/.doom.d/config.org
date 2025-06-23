@@ -1994,23 +1994,44 @@ include theme
 #+end_src
 
 * browsing
+** qutebrowser
 #+begin_src elisp :tangle packages.el
-(package! webpaste :built-in t)
-(package! yeetube :built-in t)
 (package! qutebrowser :recipe
   (:host github :repo "lrustand/qutebrowser.el" :files (:defaults "*.py"))
   :pin "137f066dac06e1abdbf3285561ce2e1f3059b491")
 #+end_src
 #+begin_src scheme :noweb-ref guix-pkg
-"qutebrowser" "emacs-webpaste" "emacs-yeetube"
+"qutebrowser"
 #+END_src
 #+begin_src scheme :noweb-reg guix-env-var
 ("BROWSER" . "qutebrowser")
+#+end_src
+#+name: cfg-darkman-qutebrowser-dark
+#+begin_src cfg :tangle-mode "u+x"
+#!🐜(pkg "bash-minimal")🐜/bin/sh
+cat <<EOF > ~/.config/qutebrowser/darkmode.py
+c.colors.webpage.darkmode.enabled = True
+c.colors.webpage.bg = "black"
+EOF
+
+pgrep -f QtWebEngineProcess && qutebrowser ':config-source darkmode.py'
+#+end_src
+#+name: cfg-darkman-qutebrowser-light
+#+begin_src cfg :tangle-mode "u+x"
+#!🐜(pkg "bash-minimal")🐜/bin/sh
+cat <<EOF > ~/.config/qutebrowser/darkmode.py
+c.colors.webpage.darkmode.enabled = False
+c.colors.webpage.bg = "white"
+EOF
+
+pgrep -f QtWebEngineProcess && qutebrowser ':config-source darkmode.py'
 #+end_src
 #+begin_src scheme :noweb-ref guix-file
 (".config/qutebrowser/urllog.py" ,(local-file "../qutebrowser/.config/qutebrowser/urllog.py"))
 (".config/qutebrowser/config.py" ,(local-file "../qutebrowser/.config/qutebrowser/config.py"))
 (".local/share/qutebrowser" ,(symlink-to "/storage/data/qutebrowser"))
+(".local/share/dark-mode.d/qutebrowser" ,<<cfg-darkman-qutebrowser-dark()>>)
+(".local/share/light-mode.d/qutebrowser" ,<<cfg-darkman-qutebrowser-light()>>)
 #+end_src
 #+begin_src elisp
 (defun browse-url-qute-private (url &rest _)
@@ -2036,7 +2057,15 @@ include theme
   :custom
   (qutebrowser-pass-username-function (lambda (e) (auth-source-pass-get "login" e)))
   (qutebrowser-launcher-backend #'qutebrowser-consult-launcher))
-
+#+end_src
+** yeetube
+#+begin_src elisp :tangle packages.el
+(package! yeetube :built-in t)
+#+end_src
+#+begin_src scheme :noweb-ref guix-pkg
+"emacs-yeetube"
+#+END_src
+#+begin_src elisp
 (use-package! yeetube
   :commands yeetube-search
   :config
@@ -2454,3 +2483,11 @@ fi
             (fate:escape left)
             (fate:escape right))))
 #+end_src
+* COMMENT Local variables
+#+NAME: api
+#+begin_src elisp
+(add-hook 'after-save-hook (lambda () (org-babel-tangle nil nil "scheme")) 0 t)
+#+end_src
+# Local Variables:
+# eval: (sarg/eval-org-src-block "api")
+# End:

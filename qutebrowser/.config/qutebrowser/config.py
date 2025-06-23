@@ -81,3 +81,4 @@ config.load_autoconfig(False)
 
 ## theme loader
 config.source("emacs_theme.py")
+config.source("darkmode.py")
