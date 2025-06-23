@@ -110,6 +110,7 @@
  (personal services backup)
  (personal packages binary)
  (personal packages next)
+ (ice-9 receive)
  (srfi srfi-1)
  (srfi srfi-11)
  (srfi srfi-26))
@@ -120,7 +121,12 @@
 (define (relative-file file)
   (string-append (current-source-directory) "/" file))
 (define (pkg x)
-  (if (string? x) (specification->package+output x) x))
+  (if (string? x)
+      (receive (package out)
+          (specification->package+output x)
+        (if (string= "out" out) package
+            (list package out)))
+      x))
 
 (home-environment
   (services
@@ -834,11 +840,10 @@ services:
 #+end_src
 *** receiving
 #+begin_src scheme :noweb-ref guix-pkg
-"isync" "cyrus-sasl-xoauth2"
+"isync"
 #+end_src
-#+begin_src scheme :noweb-ref guix-srv
-(simple-service 'cyrus-vars home-environment-variables-service-type
-  `(("SASL_PATH" . "$HOME/.guix-home/profile/lib/sasl2")))
+#+begin_src scheme :noweb-ref guix-env-var
+("SASL_PATH" . ,(file-append (pkg "cyrus-sasl-xoauth2") "/lib/sasl2"))
 #+end_src
 #+begin_src scheme :noweb-ref guix-file
 (".mail" ,(symlink-to "/storage/data/mail"))
@@ -1491,11 +1496,10 @@ allow_anonymous true
 (".config/emacs" ,(pkg "doomemacs"))
 (".config/doom" ,<<doom-config>>)
 #+end_src
-#+begin_src scheme :noweb-ref guix-srv
-(simple-service 'doom-vars home-environment-variables-service-type
-  `(("DOOMLOCALDIR" . "$HOME/.local/doom/")
-    ("VISUAL" . "emacsclient")
-    ("EDITOR" . "emacsclient")))
+#+begin_src scheme :noweb-ref guix-env-var
+("DOOMLOCALDIR" . "$HOME/.local/doom/")
+("VISUAL" . "emacsclient")
+("EDITOR" . "emacsclient")
 #+end_src
 ** init.el
 #+begin_src elisp :tangle init.el
@@ -2499,7 +2503,7 @@ current buffer, killing it."
 
 (add-hook! 'server-visit-hook #'qute/dired-hook)
 #+end_src
-** org-node
+** COMMENT org-node
 #+begin_src scheme :noweb-ref guix-pkg
 "emacs-org-node"
 #+end_src
@@ -2509,7 +2513,7 @@ current buffer, killing it."
 #+begin_src elisp
 (use-package! org-node)
 #+end_src
-** org-supertag
+** COMMENT org-supertag
 #+begin_src elisp :tangle packages.el
 (package! org-supertag
   :recipe (:host github

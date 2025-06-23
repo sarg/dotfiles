@@ -2,20 +2,17 @@
 (require 'rx)
 (defun org-babel-execute:cfg (body params)
   "Wrap BODY in a (mixed-text-file). If PARAMS contains :file, use its
-contents instead of BODY. If PARAMS contain :tangle-mode, additionally
-wrap with (chmod-computed-file)."
-  (let* ((fn (alist-get :file params))
-         (dest (alist-get :dest params))
-         (tangle-mode (alist-get :tangle-mode params))
-         (perms (and tangle-mode (org-babel-interpret-file-mode tangle-mode))))
-    (when fn
+contents instead of BODY. If PARAMS contain :chmod, additionally wrap
+with (chmod-computed-file)."
+  (let-alist params
+    (when .:file
       (with-temp-buffer
-        (insert-file-contents-literally fn nil)
+        (insert-file-contents-literally .:file nil)
         (setf body (buffer-string))))
 
     (concat
-     (if dest (format "(%S\n," dest) "")
-     (if perms "(chmod-computed-file " "")
+     (if .:dest (format "(%S\n," .:dest) "")
+     (if .:chmod "(chmod-computed-file " "")
      "(mixed-text-file\n  \"cfg-file\"\n"
      ;; split string into parts 'string-part🐜scheme-part🐜'
      ;; - output each line of 'string-part' quoted.
@@ -39,5 +36,5 @@ wrap with (chmod-computed-file)."
            scheme-part)))
       (concat body "🐜🐜") t t)
      ")"
-     (if perms (format " #o%o)" perms) "")
-     (if dest ")" ""))))
+     (if .:chmod (format " #o%o)" (org-babel-interpret-file-mode .:chmod)) "")
+     (if .:dest ")" ""))))

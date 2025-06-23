@@ -5,7 +5,7 @@ default:
     @just --list
 
 pull *args='':
-    guix pull -C channels.scm {{args}}
+    guix pull {{args}}
 
 update-channels:
     guix describe --format=channels > channels.lock
