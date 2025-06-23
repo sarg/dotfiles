@@ -63,7 +63,7 @@
          (dd (/ dh 24)))
 
     (cond
-     ((> dd 30) "old")
+     ((> dd 30) ">1m")
      ((> dd 1) (format "%dd" dd))
      ((> dh 1) (format "%dh" dh))
      (t "now"))))
@@ -115,7 +115,7 @@
                    (insert (format "\n** [[elisp:(frf-load-comments \"%s\" %d %d)][%d more comments with %d likes]]"
                                    .id .omittedCommentsOffset .omittedComments
                                    .omittedComments .omittedCommentLikes)))
-                 (insert "\n** [" (alist-get 'username author) "]\n"
+                 (insert "\n** " (alist-get 'username author) "\n"
                          (alist-get 'body cmt))))
              .comments))))
     (org-mode)))
