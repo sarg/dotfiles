@@ -1423,7 +1423,8 @@ allow_anonymous true
 #+begin_src elisp :tangle init.el
 ;; generated from config.org
 (setq doom-leader-key "<f13>"
-      doom-leader-alt-key "<f13>")
+      doom-leader-alt-key "<f13>"
+      custom-file "~/devel/dotfiles/emacs/.doom.d/custom.el")
 (doom!
  :completion  corfu vertico ;(ivy +fuzzy +prescient +childframe)
  :ui          nav-flash (modeline +light) ophints (popup +defaults) ligatures treemacs doom-dashboard
