@@ -1,4 +1,7 @@
+from qutebrowser.browser.qutescheme import add_handler, Redirect
+from qutebrowser.qt.core import QUrl, QUrlQuery
 import urllog
+import re
 import os
 
 c.auto_save.session = True
@@ -35,8 +38,6 @@ c.tabs.width = "30%"
 
 c.url.default_page = "qute://blank"
 c.url.start_pages = "qute://blank"
-
-c.url.searchengines = {"DEFAULT": "https://duckduckgo.com/lite?q={}"}
 
 c.fonts.default_family = ["Hack"]
 c.fonts.default_size = "14pt"
@@ -82,10 +83,8 @@ config.load_autoconfig(False)
 ## theme loader
 config.source("emacs_theme.py")
 
-from qutebrowser.browser.qutescheme import add_handler
-from qutebrowser.qt.core import QUrl
 
-
+## dark mode
 @add_handler("blank")
 def qute_blank(_url: QUrl):
     return (
@@ -95,3 +94,33 @@ def qute_blank(_url: QUrl):
 
 
 config.source("darkmode.py")
+
+## bangs
+c.url.searchengines = {"DEFAULT": "qute://bangs?q={}"}
+BANGS = {
+    "DEFAULT": "https://duckduckgo.com/lite?q={}",
+    "!arch": "https://wiki.archlinux.org/index.php?search={}",
+    "!yt": "https://www.youtube.com/results?search_query={}",
+    "!imdb": "https://www.imdb.com/find/?s=all&q={}",
+    "!g": "https://www.google.com/search?hl=en&udm=14&q={}",
+    "!gh": "https://github.com/search?utf8=✓&type=Code&q={}",
+    "!gm": "https://www.google.com/maps?hl=en&q={}",
+    "!gi": "https://www.google.com/search?q={}&tbs=imgo:1&udm=2",
+}
+
+BANG_RE = re.compile(r"![^ ]+")
+
+
+@add_handler("bangs")
+def qute_bangs(url: QUrl):
+    q = QUrlQuery(url).queryItemValue("q")
+    bang = None
+
+    def repl(m):
+        bang = BANGS.get(m.group(0), None)
+        return "" if bang else m.group(0)
+
+    q = re.sub(BANG_RE, repl, q, 1)
+    bang = bang or BANGS["DEFAULT"]
+
+    raise Redirect(QUrl(bang.replace("{}", q)))
