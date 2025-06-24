@@ -2166,13 +2166,12 @@ include theme
 #!🐜(pkg "bash-minimal")🐜/bin/sh
 cat <<EOF > ~/.config/qutebrowser/darkmode.py
 c.colors.webpage.darkmode.enabled = True
-c.colors.webpage.bg = "black"
 EOF
 
 pgrep -f QtWebEngineProcess && qutebrowser ':config-source darkmode.py'
 #+end_src
 
-#+RESULTS[e9ab3a9a5ffa2cecd3591cd96d0acac6ab58d6f4]:
+#+RESULTS[fbdbd7d5cfcbf1ff96b52e07ded04403341f8621]:
 #+begin_src text :noweb-ref guix-file
 (".local/share/dark-mode.d/qutebrowser"
 ,(chmod-computed-file (mixed-text-file
@@ -2180,7 +2179,6 @@ pgrep -f QtWebEngineProcess && qutebrowser ':config-source darkmode.py'
 "#!"(pkg "bash-minimal")"/bin/sh\n"
 "cat <<EOF > ~/.config/qutebrowser/darkmode.py\n"
 "c.colors.webpage.darkmode.enabled = True\n"
-"c.colors.webpage.bg = \"black\"\n"
 "EOF\n"
 "\n"
 "pgrep -f QtWebEngineProcess && qutebrowser ':config-source darkmode.py'") #o744))
@@ -2190,13 +2188,12 @@ pgrep -f QtWebEngineProcess && qutebrowser ':config-source darkmode.py'
 #!🐜(pkg "bash-minimal")🐜/bin/sh
 cat <<EOF > ~/.config/qutebrowser/darkmode.py
 c.colors.webpage.darkmode.enabled = False
-c.colors.webpage.bg = "white"
 EOF
 
 pgrep -f QtWebEngineProcess && qutebrowser ':config-source darkmode.py'
 #+end_src
 
-#+RESULTS[38ffc05e4c296df8734f5dd37967bd6882f45a8e]:
+#+RESULTS[40d25edf97d0468c05dbafe4d9b5d60d9c9d5220]:
 #+begin_src text :noweb-ref guix-file
 (".local/share/light-mode.d/qutebrowser"
 ,(chmod-computed-file (mixed-text-file
@@ -2204,7 +2201,6 @@ pgrep -f QtWebEngineProcess && qutebrowser ':config-source darkmode.py'
 "#!"(pkg "bash-minimal")"/bin/sh\n"
 "cat <<EOF > ~/.config/qutebrowser/darkmode.py\n"
 "c.colors.webpage.darkmode.enabled = False\n"
-"c.colors.webpage.bg = \"white\"\n"
 "EOF\n"
 "\n"
 "pgrep -f QtWebEngineProcess && qutebrowser ':config-source darkmode.py'") #o744))
@@ -2238,7 +2234,10 @@ pgrep -f QtWebEngineProcess && qutebrowser ':config-source darkmode.py'
          (exwm-init . qutebrowser-theme-export-mode))
   :custom
   (qutebrowser-pass-username-function (lambda (e) (auth-source-pass-get "login" e)))
-  (qutebrowser-launcher-backend #'qutebrowser-consult-launcher))
+  (qutebrowser-launcher-backend #'qutebrowser-consult-launcher)
+
+  :config
+  (add-to-list 'qutebrowser-theme-export-face-mappings '(webpage.bg . default)))
 #+end_src
 ** yeetube
 #+begin_src elisp :tangle packages.el

@@ -2,44 +2,44 @@ import urllog
 import os
 
 c.auto_save.session = True
-c.backend = 'webengine'
-c.statusbar.show = 'never'
+c.backend = "webengine"
+c.statusbar.show = "never"
 
-c.fileselect.handler = 'external'
-c.fileselect.single_file.command = ['emacsclient', '{}']
-c.fileselect.folder.command = ['emacsclient', '{}']
-c.fileselect.multiple_files.command = ['emacsclient', '{}']
-c.content.cookies.accept = 'no-3rdparty'
+c.fileselect.handler = "external"
+c.fileselect.single_file.command = ["emacsclient", "{}"]
+c.fileselect.folder.command = ["emacsclient", "{}"]
+c.fileselect.multiple_files.command = ["emacsclient", "{}"]
+c.content.cookies.accept = "no-3rdparty"
 
-c.new_instance_open_target = 'tab-silent'
-c.editor.command = ['emacsclient', '{}']
-c.content.default_encoding = 'utf-8'
-c.content.javascript.clipboard = 'access'
+c.new_instance_open_target = "tab-silent"
+c.editor.command = ["emacsclient", "{}"]
+c.content.default_encoding = "utf-8"
+c.content.javascript.clipboard = "access"
 c.scrolling.smooth = True
 c.downloads.location.prompt = False
 c.downloads.remove_finished = 15000
-c.window.title_format = '{audio}{private}{current_title}{title_sep}{current_url}'
+c.window.title_format = "{audio}{private}{current_title}{title_sep}{current_url}"
 c.input.partial_timeout = 0
 c.input.links_included_in_focus_chain = False
 
 c.tabs.background = True
-c.tabs.last_close = 'close'
+c.tabs.last_close = "close"
 c.tabs.tabs_are_windows = True
-c.tabs.show = 'switching'
-c.tabs.position = 'left'
-c.tabs.favicons.show = 'never'
-c.tabs.width = '30%'
+c.tabs.show = "switching"
+c.tabs.position = "left"
+c.tabs.favicons.show = "never"
+c.tabs.width = "30%"
 
 # c.hints.next_regexes = [ '\bnext\b','\bmore\b','\bnewer\b','\b[>→≫]\b','\b(>>|»)\b','\bcontinue\b','\bследующая\b' ]
 # c.hints.prev_regexes = ['\bprev(ious)?\b','\bback\b','\bolder\b','\b[<←≪]\b','\b(<<|«)\b','\bпредыдущая\b' ]
 
-c.url.default_page = 'about:blank'
-c.url.start_pages = 'about:blank'
+c.url.default_page = "qute://blank"
+c.url.start_pages = "qute://blank"
 
-c.url.searchengines = { 'DEFAULT': 'https://duckduckgo.com/lite?q={}' }
+c.url.searchengines = {"DEFAULT": "https://duckduckgo.com/lite?q={}"}
 
 c.fonts.default_family = ["Hack"]
-c.fonts.default_size = '14pt'
+c.fonts.default_size = "14pt"
 
 # allow video calls
 with config.pattern("meet.google.com") as p:
@@ -49,36 +49,49 @@ with config.pattern("meet.google.com") as p:
     p.content.media.video_capture = True
 
 # bindings
-config.unbind('q', mode='normal')
-config.unbind('<Ctrl-p>', mode='command')
-config.unbind('<Ctrl-n>', mode='command')
-#config.unbind('xx', mode='normal')
+config.unbind("q", mode="normal")
+config.unbind("<Ctrl-p>", mode="command")
+config.unbind("<Ctrl-n>", mode="command")
+# config.unbind('xx', mode='normal')
 
 
 config.bind("ym", "yank inline [[{url:yank}][{title}]]")
-config.bind("t", "emacs '(qutebrowser-launcher-window)'")
-config.bind("o", "emacs '(qutebrowser-launcher)'")
-config.bind("O", "emacs '(qutebrowser-launcher \"{url:pretty}\")'")
-config.bind('xx', 'spawn -u orgprotocol')
-config.bind('xp', "emacs '(qutebrowser-pass \"{url}\")'")
-config.bind('xm', 'spawn --detach mpv --force-window=immediate {url}')
-config.bind(';m', 'hint links spawn --detach mpv --force-window=immediate {hint-url}')
-config.bind(';a', 'hint links run open -t https://web.archive.org/web/{hint-url}')
+config.bind("t", "emacs '(and (qutebrowser-launcher-window) t)'")
+config.bind("o", "emacs '(and (qutebrowser-launcher) t)'")
+config.bind("O", "emacs '(and (qutebrowser-launcher \"{url:pretty}\") t)'")
+config.bind("xx", "spawn -u orgprotocol")
+config.bind("xp", "emacs '(qutebrowser-pass \"{url}\")'")
+config.bind("xm", "spawn --detach mpv --force-window=immediate {url}")
+config.bind(";m", "hint links spawn --detach mpv --force-window=immediate {hint-url}")
+config.bind(";a", "hint links run open -t https://web.archive.org/web/{hint-url}")
 
-config.bind('<Ctrl-w>', 'fake-key <Ctrl-Backspace>', mode='insert')
-config.bind('<Ctrl-h>', 'fake-key <Backspace>', mode='insert')
-config.bind('<Ctrl-i>', 'fake-key <Tab>', mode='insert')
-config.bind('<Ctrl-n>', 'fake-key <Down>', mode='insert')
-config.bind('<Ctrl-p>', 'fake-key <Up>', mode='insert')
-config.bind('<Ctrl-a>', 'fake-key <Home>', mode='insert')
-config.bind('<Ctrl-e>', 'fake-key <End>', mode='insert')
+config.bind("<Ctrl-w>", "fake-key <Ctrl-Backspace>", mode="insert")
+config.bind("<Ctrl-h>", "fake-key <Backspace>", mode="insert")
+config.bind("<Ctrl-i>", "fake-key <Tab>", mode="insert")
+config.bind("<Ctrl-n>", "fake-key <Down>", mode="insert")
+config.bind("<Ctrl-p>", "fake-key <Up>", mode="insert")
+config.bind("<Ctrl-a>", "fake-key <Home>", mode="insert")
+config.bind("<Ctrl-e>", "fake-key <End>", mode="insert")
 
-config.bind('<Ctrl-n>', 'completion-item-focus next', mode='command')
-config.bind('<Ctrl-p>', 'completion-item-focus prev', mode='command')
-config.bind('<Ctrl-w>', 'rl-backward-kill-word', mode='command')
+config.bind("<Ctrl-n>", "completion-item-focus next", mode="command")
+config.bind("<Ctrl-p>", "completion-item-focus prev", mode="command")
+config.bind("<Ctrl-w>", "rl-backward-kill-word", mode="command")
 
 config.load_autoconfig(False)
 
 ## theme loader
 config.source("emacs_theme.py")
+
+from qutebrowser.browser.qutescheme import add_handler
+from qutebrowser.qt.core import QUrl
+
+
+@add_handler("blank")
+def qute_blank(_url: QUrl):
+    return (
+        "text/html",
+        f'<body style="background-color: {c.colors.webpage.bg}" />',
+    )
+
+
 config.source("darkmode.py")
