@@ -192,7 +192,7 @@ max-overall-upload-limit=1K
 disable-ipv6=true
 #+end_src
 
-#+RESULTS[cb2175e995d635acf1d08c01366829afac80ffe8]:
+#+RESULTS[19059da8940d8759d91a7517acece1950cd04287]:
 #+begin_src text :noweb-ref guix-file
 (".config/aria2/aria2.conf"
 ,(mixed-text-file
@@ -564,6 +564,13 @@ REVERSE? it when true. Returns the selected buffer."
         (elfeed-search-browse-url)
       (elfeed-search-show-entry entry))))
 
+(defun elfeed-bg-tabs ()
+  (interactive)
+  (qutebrowser-cmd-set "tabs.tabs_are_windows" "false" :temp)
+  (setq-local browse-url-browser-function
+              (lambda (url &optional new-window)
+                (qutebrowser-cmd-open :bg url))))
+
 (after! elfeed
   (setq elfeed-db-directory "/storage/data/elfeed")
 
@@ -816,7 +823,7 @@ services:
     client_secret: 'kSmqreRr0qwBWJgbf5Y-PjSU' # thunderbird
 #+end_src
 
-#+RESULTS[1d110c70333f0662f3ef657c241a1254076d8da3]:
+#+RESULTS[382344164ebc03915a71b5a5e0df2a5be18980fb]:
 #+begin_src text :noweb-ref guix-file
 (".config/oama/config.yaml"
 ,(mixed-text-file
@@ -963,7 +970,7 @@ use_sops() {
 }
 #+end_src
 
-#+RESULTS[41a4761751301563b5829ddcdb739da575c84771]:
+#+RESULTS[a6f87db96c3d9885d2f40c2415614d476f6281db]:
 #+begin_src text :noweb-ref guix-file
 (".config/direnv/lib/sops.sh"
 ,(mixed-text-file
@@ -1076,7 +1083,7 @@ choose_entry() {
 }
 #+end_src
 
-#+RESULTS[c0f957fd6ec042c723a189a752494909afc53e2e]:
+#+RESULTS[174af137c244dbfff41cf27befd51f237f72dbc5]:
 #+begin_src text :noweb-ref guix-file
 (".config/qutebrowser/password_fill_rc"
 ,(mixed-text-file
@@ -1133,7 +1140,7 @@ gtk-icon-theme-name="Adwaita"
 gtk-font-name="Fira Code 12"
 #+end_src
 
-#+RESULTS[52ea22c206099d9f59631a452159fdcac1d4e0a6]:
+#+RESULTS[ac210d2af2a8c8fda70d375be750483e48a8e8db]:
 #+begin_src text :noweb-ref guix-file
 (".config/gtk-3.0/settings.ini"
 ,(mixed-text-file
@@ -1184,7 +1191,7 @@ while true; do
 done
 #+end_src
 
-#+RESULTS[16d4a68d39d7eca6c13ec8546dd98e14ba708453]:
+#+RESULTS[c0afcd6a7a2ecf207687227e6e0faef058a2692f]:
 #+begin_src text :noweb-ref guix-file
 (".xinitrc"
 ,(mixed-text-file
@@ -1356,7 +1363,7 @@ listener 1883
 allow_anonymous true
 #+end_src
 
-#+RESULTS[6c69b22e57a6a059f2edeee700647503864f3a90]: cfg-mosquitto
+#+RESULTS[efaf751ac43bdfa291730641ebb057f6944f1411]: cfg-mosquitto
 #+begin_src text
 (mixed-text-file
   "cfg-file"
@@ -1649,7 +1656,7 @@ xargs flatpak install --or-update --noninteractive
  #:program '(qview %f))
 #+end_src
 
-#+RESULTS[473a0e9deb4afda552ae48522c3ed1ad2a4a78cf]:
+#+RESULTS[9ad9b363b99d582c2020504c019088f2541494f2]:
 #+begin_src text :noweb-ref guix-file
 (".config/associations"
 ,(mixed-text-file
@@ -1708,7 +1715,7 @@ lng: 13.39
 dbusserver: true
 #+end_src
 
-#+RESULTS[3b0d89f7cd9a2190e0b8f0c97833c9c47b81bf01]:
+#+RESULTS[a1027b9cfb5d62886b1faad9cd5536746e5d3ee7]:
 #+begin_src text :noweb-ref guix-file
 (".config/darkman/config.yaml"
 ,(mixed-text-file
@@ -1951,7 +1958,7 @@ mod? guix '~/devel/ext/guix/Justfile'
 mod? dotfiles '~/devel/dotfiles/guix/Justfile'
 #+end_src
 
-#+RESULTS[9e0b8f4bbfa4334959fcac62cedd3fc6f0115b4f]:
+#+RESULTS[e733d18b143dded885690bba82074360f571bfb1]:
 #+begin_src text :noweb-ref guix-file
 (".justfile"
 ,(mixed-text-file
@@ -1994,7 +2001,7 @@ mod? dotfiles '~/devel/dotfiles/guix/Justfile'
     helper = oauth
 #+end_src
 
-#+RESULTS[3c508390d04187cb80d16b03321c315e19755151]:
+#+RESULTS[95c2afbbb3a42d141846d8c6a9482785cdf3a86c]:
 #+begin_src text :noweb-ref guix-file
 (".gitconfig"
 ,(mixed-text-file
@@ -2099,7 +2106,7 @@ set statusbar-basename true
 include theme
 #+end_src
 
-#+RESULTS[8de98bd4192bf531aa3c0458ec57e9742aca84c6]:
+#+RESULTS[352b7d804af84b495386e051d9df660975edb8d3]:
 #+begin_src text :noweb-ref guix-file
 (".config/zathura/zathurarc"
 ,(mixed-text-file
@@ -2270,7 +2277,7 @@ source 🐜(pkg "blesh")🐜/share/blesh/ble.sh
 eval "$(atuin init bash)"
 #+end_src
 
-#+RESULTS[3bc21a5abbd58df0dc09573a45968149bab50439]: cfg-bash
+#+RESULTS[40dafbbdadea909f99c99c0671bb9de1f6925309]: cfg-bash
 #+begin_src text
 (mixed-text-file
   "cfg-file"
