@@ -1,5 +1,6 @@
 # -*- mode: org -*-
 #+PROPERTY: header-args :noweb-prefix no :noweb no-export
+#+PROPERTY: header-args:cfg :eval yes :cache yes :exports code :wrap "src scheme :noweb-ref guix-file" :results replace
 
 * Intro
 [[file:./literate.txt][This file]] is a literate configuration of a Guix and Emacs system. Tangling it
@@ -8,8 +9,26 @@
 Using this template you'll be able to structure a =home-environment= definition in
 a way that is convenient to you. Besides regular =noweb= features, a new source
 code block language is implemented, allowing templated configuration files (see
-[[*templated][example]] below). Emacs configuration is included in the =home-environment= as a
+[[*templated files][example]] below). Emacs configuration is included in the =home-environment= as a
 =package= (see the [[*config package][definition]]), which is built by tangling this org file.
+
+A couple settings to ease the use in emacs:
+- set tangle parameters
+- eval and wrap =cfg= blocks automatically
+** Header
+#+begin_src org
+,#+PROPERTY: header-args :noweb-prefix no :noweb yes :eval no
+,#+PROPERTY: header-args:elisp :tangle config.el
+,#+PROPERTY: header-args:cfg :eval yes :cache yes :wrap "src text :noweb-ref guix-file"
+#+end_src
+** Footer
+
+#+begin_src org
+# Local Variables:
+# eval: (add-hook 'after-save-hook (lambda () (org-babel-tangle nil nil "scheme")) 0 t)
+# eval: (add-hook 'org-babel-pre-tangle-hook #'org-babel-execute-buffer 0 t)
+# End:
+#+end_src
 
 * Template
 Main template which tangles to =home.scm=.
@@ -25,10 +44,16 @@ Main template which tangles to =home.scm=.
  (guix gexp)
  (guix git-download)
  (guix build-system copy)
- (guix packages))
+ (guix packages)
+ (ice-9 receive))
 
 (define (pkg x)
-  (if (string? x) (specification->package+output x) x))
+  (if (string? x)
+      (receive (package out)
+          (specification->package+output x)
+        (if (string= "out" out) package
+            (list package out)))
+      x))
 
 (home-environment
  (services
@@ -77,49 +102,39 @@ Main template which tangles to =home.scm=.
 #+begin_src scheme :noweb-ref guix-srv
 (service home-dbus-service-type)
 #+end_src
-** file
+** simple files
 #+begin_src org
 ,#+begin_src scheme :noweb-ref guix-file
 #+end_src
-*** plain
 #+begin_src scheme :noweb-ref guix-file
 ("plain" ,(plain-file "file" "hello, world"))
+("local" ,(local-file "." "file" #:recursive? #t))
 #+end_src
-*** local
-#+begin_src scheme :noweb-ref guix-file
-("local" ,(local-file "." #:recursive? #t))
-#+end_src
-*** templated
-Given a =cfg= source block:
+** templated files
+A =cfg= source block with =:dest= parameter will produce a src_scheme{(<:dest>
+,(mixed-text-file "cfg-file" <content>))} result, which when wrapped using =:wrap
+"src scheme :noweb-ref guix-file"=, would be weaved automatically in the main
+template.
+
 #+begin_src org
-,#+name: cfg-some
-,#+begin_src cfg
+,#+begin_src cfg :dest "tmpl"
 #+end_src
-#+name: cfg-some
-#+begin_src cfg :exports both :wrap src scheme
+#+begin_src cfg :exports both :dest "tmpl"
 this template gets converted to mixed-text-file
 ANT unicode characters mark scheme code
 some-program = 🐜 (pkg "msmtp") 🐜/bin/msmtp
 #+end_src
 
-which renders to:
-#+RESULTS: cfg-some
-#+begin_src scheme
-(mixed-text-file
+#+RESULTS[3caf69bcded9804564f98db6dc37ec85388f9459]:
+#+begin_src text :noweb-ref guix-file
+("tmpl"
+,(mixed-text-file
   "cfg-file"
 "this template gets converted to mixed-text-file\n"
 "ANT unicode characters mark scheme code\n"
-"some-program = " (pkg "msmtp") "/bin/msmtp")
+"some-program = " (pkg "msmtp") "/bin/msmtp"))
 #+end_src
-
-You can then add it to home configuration:
-#+begin_src org
-,#+begin_src scheme :noweb-ref guix-file
-#+end_src
-#+begin_src scheme :noweb-ref guix-file
-("tmpl" ,<<cfg-some()>>)
-#+end_src
-* emacs config
+* Emacs config
 ** ob-cfg.el
 A helper script that renders =cfg= source code blocks.
 #+begin_src elisp :tangle ob-cfg.el
@@ -127,18 +142,17 @@ A helper script that renders =cfg= source code blocks.
 (require 'rx)
 (defun org-babel-execute:cfg (body params)
   "Wrap BODY in a (mixed-text-file). If PARAMS contains :file, use its
-contents instead of BODY. If PARAMS contain :tangle-mode, additionally
-wrap with (chmod-computed-file)."
-  (let* ((fn (alist-get :file params))
-         (tangle-mode (alist-get :tangle-mode params))
-         (perms (and tangle-mode (org-babel-interpret-file-mode tangle-mode))))
-    (when fn
+contents instead of BODY. If PARAMS contain :chmod, additionally wrap
+with (chmod-computed-file)."
+  (let-alist params
+    (when .:file
       (with-temp-buffer
-        (insert-file-contents-literally fn nil)
+        (insert-file-contents-literally .:file nil)
         (setf body (buffer-string))))
 
     (concat
-     (if perms "(chmod-computed-file " "")
+     (if .:dest (format "(%S\n," .:dest) "")
+     (if .:chmod "(chmod-computed-file " "")
      "(mixed-text-file\n  \"cfg-file\"\n"
      ;; split string into parts 'string-part🐜scheme-part🐜'
      ;; - output each line of 'string-part' quoted.
@@ -162,7 +176,8 @@ wrap with (chmod-computed-file)."
            scheme-part)))
       (concat body "🐜🐜") t t)
      ")"
-     (if perms (format " #o%o)" perms) ""))))
+     (if .:chmod (format " #o%o)" (org-babel-interpret-file-mode .:chmod)) "")
+     (if .:dest ")" ""))))
 #+end_src
 ** config package
 #+name: self
