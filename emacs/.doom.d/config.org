@@ -1331,6 +1331,7 @@ done
 ** syncthing
 #+begin_src scheme :noweb-ref guix-file
 ("Sync" ,(symlink-to "/storage/Sync"))
+,@(resolve-relative-to "/storage/" '((".local/state/syncthing" "data/syncthing/")))
 #+end_src
 #+begin_src scheme :noweb-ref guix-srv
 (service
@@ -1339,8 +1340,6 @@ done
        (thinkpad (syncthing-device (id "NYWEUMS-WOSRVEG-TD6CQZA-IHZ66GX-HZT2PJ2-IZ244FL-N3JC7DD-3DV57AG"))))
 
    (for-home (syncthing-configuration
-              (arguments '("--data=/storage/data/syncthing"
-                           "--config=.local/state/syncthing"))
               (config-file
                (syncthing-config-file
                 (usage-reporting-accepted -1)
