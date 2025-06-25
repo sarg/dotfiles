@@ -1274,10 +1274,7 @@ done
  'home-shepherd home-shell-profile-service-type
  (list (mixed-text-file
         "home-shepherd"
-        "[[ $(tty) == /dev/tty1 ]] && exec "
-        shepherd-1.0 "/bin/shepherd"
-        " --silent"
-        " --config ~/.config/shepherd/init.scm")))
+        "[[ $(tty) == /dev/tty1 ]] && exec shepherd --silent")))
 #+end_src
 ** minidlna
 #+begin_src scheme :noweb-ref guix-srv

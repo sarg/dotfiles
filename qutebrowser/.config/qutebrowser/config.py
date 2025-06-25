@@ -89,7 +89,7 @@ config.source("emacs_theme.py")
 def qute_blank(_url: QUrl):
     return (
         "text/html",
-        f'<body style="background-color: {c.colors.webpage.bg}" />',
+        f'<html style="background-color: {c.colors.webpage.bg}" />',
     )
 
 
@@ -108,7 +108,7 @@ BANGS = {
     "!gi": "https://www.google.com/search?q={}&tbs=imgo:1&udm=2",
 }
 
-BANG_RE = re.compile(r"![^ ]+")
+BANG_RE = re.compile(r"(?:^|\s)![^ ]+(?:\s|$)")
 
 
 @add_handler("bangs")
