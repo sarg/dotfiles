@@ -64,8 +64,362 @@
 #+begin_src elisp
 (defvar guix/globals <<globals>>)
 #+end_src
+* system.scm
+** template
+#+begin_src scheme :tangle ../../guix/system.scm
+(use-modules (gnu)
+             (gnu artwork)
+             (gnu services)
+             (gnu bootloader grub)
+             (gnu system privilege)
+             (gnu packages)
+             (guix packages)
+             (guix channels)
+             (guix utils)
+             (srfi srfi-1)
+             (personal services utils)
+             (nongnu system linux-initrd)
+             (nongnu packages linux)
+             (ice-9 receive)
+             <<system-use>>)
+
+(define (pkg x)
+  (if (string? x)
+      (receive (package out)
+          (specification->package+output x)
+        (if (string= "out" out) package
+            (list package out)))
+      x))
+
+(define (auto-login-to-tty config tty user)
+  (if (string=? tty (mingetty-configuration-tty config))
+      (mingetty-configuration
+       (inherit config)
+       (auto-login user)
+       (shepherd-requirement
+        (cons 'dbus-system
+              (mingetty-configuration-shepherd-requirement
+               config))))
+      config))
+
+(operating-system
+  (kernel linux)
+  (kernel-arguments '("quiet" "loglevel=1"))
+  (initrd microcode-initrd)
+  (initrd-modules (cons "i915" %base-initrd-modules))
+  (firmware (cons* iwlwifi-firmware broadcom-bt-firmware %base-firmware))
+  (locale "en_GB.UTF-8")
+  (timezone "Europe/Berlin")
+  (host-name "thinkpad")
+  (keyboard-layout (keyboard-layout "us"))
+  (name-service-switch %mdns-host-lookup-nss)
+  (bootloader
+   (bootloader-configuration
+    (theme (grub-theme
+            (image (file-append %artwork-repository "/grub/guix-16-9.svg"))
+            (resolution '(1600 . 900))
+            (gfxmode '("1600x900" "auto"))))
+    (bootloader grub-efi-bootloader)
+    (targets '("/boot"))))
+
+  (file-systems
+   (cons* (file-system
+            (mount-point "/")
+            (device (file-system-label "Guix_image"))
+            (type "ext4"))
+          (file-system
+            (mount-point "/boot")
+            (device (file-system-label "GNU-ESP"))
+            (type "vfat"))
+          (file-system
+            (mount-point "/media/500GB")
+            (device (file-system-label "500GB"))
+            (create-mount-point? #t)
+            (mount-may-fail? #t)
+            (type "ext4"))
+          %base-file-systems))
+
+  (users (cons* (user-account
+                 (name "sarg")
+                 (comment "Sergey Trofimov")
+                 (group "users")
+                 (home-directory "/home/sarg")
+                 (supplementary-groups
+                  '("wheel" "netdev" "audio" "video" "tty" "input" "cdrom" "dialout"
+                    <<user-group>>)))
+                %base-user-accounts))
+
+  (packages
+   (append
+    (map pkg (list <<system-pkg>>))
+    (filter (lambda (p)
+              (not (member (package-name p)
+                           '("wireless-tools" "info-reader" "nano" "mg" "isc-dhcp"))))
+            %base-packages)))
+
+  (privileged-programs
+   (cons* <<privileged-program>> %default-privileged-programs))
+
+  (services
+   (cons*
+    <<system-service>>
+    (modify-services %base-services
+      <<modify-system-service>>)))
+#+end_src
+** base
+#+begin_src scheme :noweb-ref modify-system-service
+(mingetty-service-type
+ config =>
+ (auto-login-to-tty config "tty1" "sarg"))
+
+(guix-service-type
+ config =>
+ (guix-configuration
+  (inherit config)
+  ;; prevent guix gc deleting build inputs
+  (privileged? #f)
+  (substitute-urls (cons*
+                    "https://substitutes.nonguix.org"
+                    (guix-configuration-substitute-urls config)))
+  (authorized-keys (cons*
+                    <<cfg-nonguix-pub()>>
+                    (guix-configuration-authorized-keys config)))
+  (extra-options '("--gc-keep-derivations"
+                   "--gc-keep-outputs")))))
+#+end_src
+** guix
+#+name: cfg-nonguix-pub
+#+begin_src cfg :wrap src text
+(public-key (ecc (curve Ed25519) (q #C1FD53E5D4CE971933EC50C9F307AE2171A2D3B52C804642A7A35F84F3A4EA98#)))
+#+end_src
+
+#+RESULTS[2a46d730d9796a8ad98da26c7aaa74d1c3149124]: cfg-nonguix-pub
+#+begin_src text
+(mixed-text-file
+  "cfg-file"
+"(public-key (ecc (curve Ed25519) (q #C1FD53E5D4CE971933EC50C9F307AE2171A2D3B52C804642A7A35F84F3A4EA98#)))")
+#+end_src
+** networking
+#+begin_src scheme :noweb-ref system-use
+(gnu services ssh)
+(gnu services dns)
+(gnu services networking)
+(gnu services avahi)
+#+end_src
+
+#+name: cfg-resolv-conf
+#+begin_src cfg :wrap src text
+name_servers=127.0.1.1
+resolv_conf_local_only=no
+dnsmasq=true
+dnsmasq_conf=/etc/dnsmasq.servers
+dnsmasq_resolve=/etc/dnsmasq.resolve
+#+end_src
+
+#+RESULTS[5a0b9ff25f6a9de0ab6a6c76762aa00535fd8762]: cfg-resolv-conf
+#+begin_src text
+(mixed-text-file
+  "cfg-file"
+"name_servers=127.0.1.1\n"
+"resolv_conf_local_only=no\n"
+"dnsmasq=true\n"
+"dnsmasq_conf=/etc/dnsmasq.servers\n"
+"dnsmasq_resolve=/etc/dnsmasq.resolve")
+#+end_src
+
+#+begin_src scheme :noweb-ref system-service
+(service openssh-service-type
+         (openssh-configuration
+          (x11-forwarding? #t)))
+(service dnsmasq-service-type
+         (dnsmasq-configuration
+          (no-hosts? #t)
+          (servers-file "/etc/dnsmasq.servers")
+          (listen-addresses '("::1" "127.0.1.1"))
+          ;; (addresses '("/dev.local/127.0.0.1"
+          ;;              "/local/127.0.0.1"))
+          (negative-cache? #f)
+          (servers '("9.9.9.9"))
+          (extra-options '("--bind-interfaces"
+                           "--interface=lo"))))
+(simple-service
+ 'resolvconf etc-service-type
+ (list `("resolvconf.conf" ,<<cfg-resolv-conf()>>)))
+
+(service ntp-service-type)
+
+(service iwd-service-type
+         (iwd-configuration
+          (shepherd-provision '(iwd networking wireless-daemon))
+          (config
+           (iwd-settings
+            (general
+             (iwd-general-settings
+              (enable-network-configuration? #t)))
+            (network
+             (iwd-network-settings
+              (name-resolving-service 'resolvconf)))))))
+#+end_src
+** vpn
+#+begin_src scheme :noweb-ref system-use
+(gnu services vpn)
+#+end_src
+#+begin_src scheme :noweb-ref system-service
+(service wireguard-service-type
+         (wireguard-configuration
+          (auto-start? #f)
+          (addresses '("10.66.66.2/32" "fd42:42:42::2/128"))
+          (private-key (plain-file "private" (getenv "WG_CLIENT")))
+          (peers
+           (list
+            (wireguard-peer
+             (name "hetzner")
+             (endpoint "vpn.sarg.org.ru:52817")
+             (public-key "6gNRvmvi5oRGSPr8J0dBcyDyKS94zO4Y4Jbwo2u+iV0=")
+             (preshared-key (plain-file "psk" (getenv "WG_PSK")))
+             (allowed-ips '("0.0.0.0/0" "::/0")))))))
+#+end_src
+** hardware
+#+begin_src scheme :noweb-ref system-use
+(personal packages udev-rules)
+(gnu services base)
+(gnu services cups)
+(gnu services pm)
+#+end_src
+#+begin_src scheme :noweb-ref system-pkg
+"bluez" "intel-vaapi-driver" "tlp" "libratbag"
+#+end_src
+#+begin_src scheme :noweb-ref system-service
+(service fstrim-service-type)
+(service tlp-service-type
+         (tlp-configuration
+          (restore-device-state-on-startup? #t)))
+
+(simple-service
+ 'setkeycodes activation-service-type
+ #~(invoke (string-append #$(pkg "kbd") "/bin/setkeycodes")
+           "1d" "56"                  ; lctrl->lalt
+           "38" "29"                  ; lalt->lctrl
+           "3a" "42"))      ; capslock->lshift
+
+(udev-rules-service 'qmk (pkg "qmk-udev-rules"))
+(udev-rules-service 'kindle kindle-usbnet-udev-rules)
+(udev-rules-service 'pixel pixel-usbnet-udev-rules)
+(udev-rules-service 'brightness (pkg "brightnessctl"))
+(udev-rules-service 'restore-brightness backlight-udev-rules)
+(udev-rules-service 'leds iwlwifi-led-udev-rules)
+(simple-service 'ratbagd dbus-root-service-type (list (pkg "libratbag")))
+
+(service cups-service-type
+         (cups-configuration
+          (web-interface? #t)
+          (extensions (list (pkg "cups-filters")))))
+#+end_src
+** desktop
+#+begin_src scheme :noweb-ref system-use
+(gnu services guix)
+(gnu services desktop)
+(gnu services linux)
+(gnu services dbus)
+#+end_src
+#+begin_src scheme :noweb-ref system-service
+;; Add polkit rules, so that non-root users in the wheel group can
+;; perform administrative tasks (similar to "sudo").
+(service polkit-service-type)
+polkit-wheel-service
+(simple-service 'polkit-wheel-policies polkit-service-type
+                (list <<polkit-rule>>))
+
+(service avahi-service-type)
+(service dbus-root-service-type)
+(service upower-service-type)
+(service bluetooth-service-type)
+(service udisks-service-type)
+(service elogind-service-type
+         (elogind-configuration
+          (handle-lid-switch-external-power 'suspend)
+          (kill-user-processes? #t)))
+#+end_src
+#+begin_src scheme :noweb-ref privileged-program
+(privileged-program
+ (program (file-append (pkg "xsecurelock") "/libexec/xsecurelock/authproto_pam"))
+ (setuid? #t))
+#+end_src
+#+name: cfg-udisks-wheel
+#+begin_src cfg :wrap src text
+// Allow udisks2 to mount devices without authentication
+// for users in the 'wheel' group.
+polkit.addRule(function(action, subject) {
+    if ((action.id == "org.freedesktop.udisks2.filesystem-mount-system" ||
+         action.id == "org.freedesktop.udisks2.filesystem-mount") &&
+        subject.isInGroup("wheel")) {
+        return polkit.Result.YES;
+    }
+});
+#+end_src
+
+#+RESULTS[9a00997d56353bded0048b673b71540d4b9e1da0]: cfg-udisks-wheel
+#+begin_src text
+(mixed-text-file
+  "cfg-file"
+"// Allow udisks2 to mount devices without authentication\n"
+"// for users in the 'wheel' group.\n"
+"polkit.addRule(function(action, subject) {\n"
+"    if ((action.id == \"org.freedesktop.udisks2.filesystem-mount-system\" ||\n"
+"         action.id == \"org.freedesktop.udisks2.filesystem-mount\") &&\n"
+"        subject.isInGroup(\"wheel\")) {\n"
+"        return polkit.Result.YES;\n"
+"    }\n"
+"});")
+#+end_src
+
+#+begin_src scheme :noweb-ref polkit-rule
+(file-union
+   "polkit-udisks-wheel"
+   `(("share/polkit-1/rules.d/udisks-wheel.rules"
+      ,<<cfg-udisks-wheel()>>)))
+#+end_src
+** COMMENT virtualization
+#+begin_src scheme :noweb-ref system-use
+(gnu services virtualization)
+#+end_src
+#+begin_src scheme :noweb-ref user-group
+"kvm"
+#+end_src
+#+begin_src scheme :noweb-ref polkit-rule
+(pkg "spice-gtk")
+#+end_src
+#+begin_src scheme :noweb-ref system-service
+(service libvirt-service-type)
+(service virtlog-service-type)
+#+end_src
+#+begin_src scheme :noweb-ref privileged-program
+(privileged-program
+ (program (file-append (pkg "spice-gtk") "/libexec/spice-client-glib-usb-acl-helper"))
+ (setuid? #t))
+#+end_src
+** various services
+#+begin_src scheme :noweb-ref system-use
+(gnu services admin)
+(gnu services sysctl)
+#+end_src
+
+#+begin_src scheme :noweb-ref system-service
+(service pam-limits-service-type
+         ;; For Lutris / Wine esync
+         (list (pam-limits-entry "*" 'hard 'nofile 524288)))
+
+(simple-service 'sysctl-custom sysctl-service-type
+                '(("fs.inotify.max_user_watches" . "524288")))
+
+(service file-database-service-type
+         (file-database-configuration
+          (schedule #~(calendar-event #:hours '(6) #:minutes '(0)))
+          (excluded-directories
+           (append '("/home") %default-file-database-excluded-directories))))
+#+end_src
 * home.scm template
-#+begin_src scheme :noweb-ref nil :tangle ~/devel/dotfiles/guix/home.scm :exports none
+#+begin_src scheme :noweb-ref nil :tangle ../../guix/home.scm :exports none
 ;; generated from config.org
 (use-modules
  (gnu)
@@ -148,6 +502,12 @@
 ** android
 #+begin_src scheme :noweb-ref guix-pkg
 "adb" "socat" "scrcpy"
+#+end_src
+#+begin_src scheme :noweb-ref user-group
+"adbusers"
+#+end_src
+#+begin_src scheme :noweb-ref system-service
+(udev-rules-service 'android (pkg "android-udev-rules") #:groups '("adbusers"))
 #+end_src
 ** utils
 #+begin_src scheme :noweb-ref guix-pkg
