@@ -14,25 +14,27 @@
 
 ;; supports tearfree in modesetting driver
 (define-public xorg-server-next
-  (package
-    (inherit xorg-server-xwayland)
-    (name "xorg-server-next")
-    (version "22")
-    (source
-     (origin
+  (let ((commit "c34f59ee152def40343c68fbdc3ee8f71a0d9575")
+        (revision "1"))
+    (package
+     (inherit xorg-server-xwayland)
+     (name "xorg-server-next")
+     (version (git-version "22" revision commit))
+     (source
+      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://gitlab.freedesktop.org/xorg/xserver.git")
-             (commit "37b7ea8f8aaef3efa9d56fb9bc82adeccba02633")))
+             (commit commit)))
        (sha256
         (base32
-         "0sfji9lhp55wfibykv2sqckr3ax2kxssd4qd196wm7pqxbrxaf5k"))))
-    (inputs
-     (append
-      (package-inputs xorg-server-xwayland)
-      (package-inputs xorg-server)))
-    (propagated-inputs
-     (package-propagated-inputs xorg-server))))
+         "0vmncvpmxmdcs4kd3dd300k6367bkpaaip9lwvwza3jnwcrcnn6w"))))
+     (inputs
+      (append
+       (package-inputs xorg-server-xwayland)
+       (package-inputs xorg-server)))
+     (propagated-inputs
+      (package-propagated-inputs xorg-server)))))
 
 (define-public xf86-input-libinput-next
   (package
