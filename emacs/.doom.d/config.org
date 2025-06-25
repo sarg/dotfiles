@@ -455,6 +455,7 @@ polkit.addRule(function(action, subject) {
  (gnu system shadow)
  (gnu services shepherd)
  (gnu services xorg)
+ (personal services doomemacs)
  (personal services symlinks)
  (personal services owntracks)
  (personal services screen-locker)
@@ -1780,7 +1781,6 @@ allow_anonymous true
 * doom
 ** base packages
 #+begin_src scheme :noweb-ref guix-pkg
-"emacs-next"
 "emacs-vterm"
 "tree-sitter-typescript"
 "tree-sitter-javascript"
@@ -1807,62 +1807,21 @@ allow_anonymous true
 ; dirvish
 "ffmpegthumbnailer" "poppler" "mediainfo" "vips"
 #+end_src
-#+begin_src scheme :tangle ../../guix/doomcfg.scm
-(use-modules
- (gnu)
- (gnu artwork)
- (guix)
- (guix gexp)
- (guix git-download)
- (guix build-system copy))
-
-(define pkg specification->package+output)
-#+end_src
-#+begin_src scheme :noweb-ref doom-config :tangle ../../guix/doomcfg.scm
-(package
-  (name "doomemacs-config")
-  (version "0")
-  (source (local-file "../emacs/.doom.d" "src"
-                      #:recursive? #t
-                      #:select? (git-predicate "../emacs/.doom.d")))
-  (build-system copy-build-system)
-  (arguments
-    (list
-     #:install-plan ''(("." ""))
-     #:phases
-     #~(modify-phases %standard-phases
-         (add-before 'install 'tangle
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "config.org"
-               (("\\(guix[/]pkg '([^ )]+)" _ pkg)
-                (format #f "(concat ~s"
-                        (or (assoc-ref inputs pkg)
-                            (error (format #f "~a is required for emacs config but not present in inputs" pkg))))))
-
-             (invoke "emacs" "-Q" "-l" "ob-cfg.el" "--batch" "--eval"
-                     (simple-format #f "~s"
-                                    '(progn
-                                      (require 'ob-tangle)
-                                      (setq org-confirm-babel-evaluate nil)
-                                      (with-current-buffer
-                                       (find-file-noselect "config.org")
-                                       (org-babel-tangle nil nil "elisp")))))
-             (delete-file "config.org"))))))
-  (inputs (map pkg '(<<emacs-dep>>)))
-  (native-inputs (map pkg '("emacs-org" "emacs-next-minimal")))
-  (description "doom config")
-  (home-page #f)
-  (synopsis #f)
-  (license #f))
-#+end_src
-#+begin_src scheme :noweb-ref guix-file
-(".config/emacs" ,(pkg "doomemacs"))
-(".config/doom" ,<<doom-config>>)
-#+end_src
 #+begin_src scheme :noweb-ref guix-env-var
-("DOOMLOCALDIR" . "$HOME/.local/doom/")
 ("VISUAL" . "emacsclient")
 ("EDITOR" . "emacsclient")
+#+end_src
+#+begin_src scheme :noweb-ref guix-srv
+(service
+ doomemacs-service-type
+ (doomemacs-configuration
+  (emacs (pkg "emacs-next"))
+  (doomemacs (pkg "doomemacs"))
+  (config (doomemacs-config
+           #:src (local-file "../emacs/.doom.d" "src"
+                             #:recursive? #t
+                             #:select? (git-predicate "../emacs/.doom.d"))
+           #:inputs (map pkg (list <<emacs-dep>>))))))
 #+end_src
 ** init.el
 #+begin_src elisp :tangle init.el
@@ -2192,10 +2151,9 @@ dbusserver: true
 #+end_src
 #+begin_src scheme :noweb-ref guix-pkg
 "font-iosevka-curly" ; for org-modern bullets
+"emacs-ob-cfg"
 #+end_src
 #+begin_src elisp
-(load! "ob-cfg.el") ; to tangle config.org
-
 (setq
  org-directory (expand-file-name "~/Sync/org/")
  org-attach-id-dir ".attach/"

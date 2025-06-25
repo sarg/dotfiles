@@ -84,11 +84,19 @@
          (doomemacs-configuration-emacs config)
          (doomemacs-configuration-inputs config))))
      (service-extension
+      home-activation-service-type
+      (lambda (config)
+        #~(begin
+            (use-modules (guix build utils))
+            (invoke (string-append
+                     #$(doomemacs-configuration-doomemacs config)
+                     "/bin/doom") "sync" "-U"))))
+     (service-extension
       home-environment-variables-service-type
       (const '(("DOOMLOCALDIR" . "$HOME/.local/doom/"))))
      (service-extension
       home-xdg-configuration-files-service-type
       (lambda (config)
-        `(("emacs" ,doomemacs)
+        `(("emacs" ,(doomemacs-configuration-doomemacs config))
           ("doom" ,(doomemacs-configuration-config config)))))))
    (description "Doomemacs and its config.")))
