@@ -1,10 +1,25 @@
 (define-module (personal packages doomemacs)
   #:use-module (guix download)
+  #:use-module (guix gexp)
   #:use-module (guix git-download)
   #:use-module (guix build-system copy)
+  #:use-module (guix build-system emacs)
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (guix packages))
+
+(define-public emacs-ob-cfg
+  (package
+    (name "emacs-ob-cfg")
+    (version "0.1")
+    (source (local-file
+             (string-append (current-source-directory) "/ob-cfg.el")))
+    (build-system emacs-build-system)
+    (home-page #f)
+    (description "helper for guix literate config")
+    (synopsis description)
+    (license #f)))
 
 (define-public doomemacs
   (let ((commit "e6c755305358412a71a990fc2cf592c629edde1e")
