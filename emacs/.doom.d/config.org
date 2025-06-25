@@ -2583,6 +2583,20 @@ pgrep -f QtWebEngineProcess && qutebrowser ':config-source darkmode.py'
 "emacs-eat" "emacs-detached" "direnv" "atuin"
 #+end_src
 
+#+begin_src cfg :dest .config/atuin/config.toml
+auto_sync = false
+update_check = false
+#+end_src
+
+#+RESULTS[d60839754670f60b9c43bae534a4d545d033608a]:
+#+begin_src text :noweb-ref guix-file
+(".config/atuin/config.toml"
+,(mixed-text-file
+  "cfg-file"
+"auto_sync = false\n"
+"update_check = false"))
+#+end_src
+
 #+name: cfg-bash
 #+begin_src cfg :wrap src text
 [ -n "$EAT_SHELL_INTEGRATION_DIR" ] && source "$EAT_SHELL_INTEGRATION_DIR/bash"

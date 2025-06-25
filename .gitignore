@@ -6,3 +6,5 @@ xmonad/.xmonad/xmonad*
 /emacs/.doom.d/packages.el
 /emacs/.doom.d/config.el
 /emacs/.doom.d/init.el
+/guix/home.scm
+/guix/system.scm
