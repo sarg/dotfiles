@@ -1,6 +1,6 @@
 #+OPTIONS: num:nil
 #+SETUPFILE: ~/devel/ext/org-html-themes/org/theme-readtheorg-local.setup
-#+PROPERTY: header-args :noweb-prefix no :noweb yes :eval no
+#+PROPERTY: header-args :noweb-prefix no :noweb no-export :eval no
 #+PROPERTY: header-args:elisp :tangle config.el
 #+PROPERTY: header-args:scheme :tangle no :exports code
 #+PROPERTY: header-args:cfg :tangle no :eval yes :cache yes :exports code :wrap "src text :noweb-ref guix-file"
@@ -193,12 +193,13 @@
 (public-key (ecc (curve Ed25519) (q #C1FD53E5D4CE971933EC50C9F307AE2171A2D3B52C804642A7A35F84F3A4EA98#)))
 #+end_src
 
-#+RESULTS[2a46d730d9796a8ad98da26c7aaa74d1c3149124]: cfg-nonguix-pub
+#+RESULTS[35fd241b186369c3c59217a2d5f79bd1c1406e61]: cfg-nonguix-pub
 #+begin_src text
 (mixed-text-file
   "cfg-file"
 "(public-key (ecc (curve Ed25519) (q #C1FD53E5D4CE971933EC50C9F307AE2171A2D3B52C804642A7A35F84F3A4EA98#)))")
 #+end_src
+
 ** networking
 #+begin_src scheme :noweb-ref system-use
 (gnu services ssh)
@@ -216,7 +217,7 @@ dnsmasq_conf=/etc/dnsmasq.servers
 dnsmasq_resolve=/etc/dnsmasq.resolve
 #+end_src
 
-#+RESULTS[5a0b9ff25f6a9de0ab6a6c76762aa00535fd8762]: cfg-resolv-conf
+#+RESULTS[59231caa410b09bcc087d62e50b22d12e254386d]: cfg-resolv-conf
 #+begin_src text
 (mixed-text-file
   "cfg-file"
@@ -358,7 +359,7 @@ polkit.addRule(function(action, subject) {
 });
 #+end_src
 
-#+RESULTS[9a00997d56353bded0048b673b71540d4b9e1da0]: cfg-udisks-wheel
+#+RESULTS[6154ce7f960aa34daf1619b7186e33e88c2d3180]: cfg-udisks-wheel
 #+begin_src text
 (mixed-text-file
   "cfg-file"
@@ -484,20 +485,25 @@ polkit.addRule(function(action, subject) {
       x))
 
 (home-environment
-  (services
-   (cons*
-    (simple-service
-     'files home-files-service-type
-     `((".guile" ,%default-dotguile)
-       (".config/guix/channels.scm"
-        ,(plain-file
-          "channels.scm"
-          (simple-format #f "~s" '(list <<guix-channel>>))))
-       <<guix-file>>))
-    <<guix-srv>>
-    %base-home-services))
+ (services
+  (cons*
+   (simple-service
+    'env-vars
+    home-environment-variables-service-type
+    `(<<guix-env-var>>))
 
-  (packages (map pkg (list <<guix-pkg>>))))
+   (simple-service
+    'files home-files-service-type
+    `((".guile" ,%default-dotguile)
+      (".config/guix/channels.scm"
+       ,(plain-file
+         "channels.scm"
+         (simple-format #f "~s" '(list <<guix-channel>>))))
+      <<guix-file>>))
+   <<guix-srv>>
+   %base-home-services))
+
+ (packages (map pkg (list <<guix-pkg>>))))
 #+end_src
 * apps
 ** android
@@ -553,7 +559,7 @@ max-overall-upload-limit=1K
 disable-ipv6=true
 #+end_src
 
-#+RESULTS[19059da8940d8759d91a7517acece1950cd04287]:
+#+RESULTS[2467980a72374749d86501c5955d26dea201fb41]:
 #+begin_src text :noweb-ref guix-file
 (".config/aria2/aria2.conf"
 ,(mixed-text-file
@@ -701,7 +707,6 @@ EXWM has a separate [[../.doom.d/modules/app/exwm][doom app]]. Here are just the
 #+begin_src elisp :noweb-ref exwm :tangle no
 (tab-rename "code" 1)
 (progn (tab-new) (tab-rename "brow" 2))
-(progn (tab-new) (tab-rename "dash" 3))
 (tab-bar-mode 1)
 
 (exwm/bind-command
@@ -1184,7 +1189,7 @@ services:
     client_secret: 'kSmqreRr0qwBWJgbf5Y-PjSU' # thunderbird
 #+end_src
 
-#+RESULTS[382344164ebc03915a71b5a5e0df2a5be18980fb]:
+#+RESULTS[421412015e7b603918e1a2d95a62262d4fa58caf]:
 #+begin_src text :noweb-ref guix-file
 (".config/oama/config.yaml"
 ,(mixed-text-file
@@ -1331,7 +1336,7 @@ use_sops() {
 }
 #+end_src
 
-#+RESULTS[a6f87db96c3d9885d2f40c2415614d476f6281db]:
+#+RESULTS[559a8947ac750489bca3decb07c6a9b3e6d88fed]:
 #+begin_src text :noweb-ref guix-file
 (".config/direnv/lib/sops.sh"
 ,(mixed-text-file
@@ -1432,7 +1437,7 @@ use_sops() {
       (password-store-insert entry pass))))
 #+end_src
 
-*** qutebrowser integration
+*** COMMENT qutebrowser integration
 #+begin_src elisp
 (defun qute/choose-pass (url)
    (completing-read "Pass: " (password-store-list) nil t url))
@@ -1444,7 +1449,7 @@ choose_entry() {
 }
 #+end_src
 
-#+RESULTS[174af137c244dbfff41cf27befd51f237f72dbc5]:
+#+RESULTS[e409f22f891ed54a9116700ba9915ba7278ced92]:
 #+begin_src text :noweb-ref guix-file
 (".config/qutebrowser/password_fill_rc"
 ,(mixed-text-file
@@ -1501,7 +1506,7 @@ gtk-icon-theme-name="Adwaita"
 gtk-font-name="Fira Code 12"
 #+end_src
 
-#+RESULTS[ac210d2af2a8c8fda70d375be750483e48a8e8db]:
+#+RESULTS[5890d8681422e44008e0252b5c4006e5d4ac9aa0]:
 #+begin_src text :noweb-ref guix-file
 (".config/gtk-3.0/settings.ini"
 ,(mixed-text-file
@@ -1552,7 +1557,7 @@ while true; do
 done
 #+end_src
 
-#+RESULTS[c0afcd6a7a2ecf207687227e6e0faef058a2692f]:
+#+RESULTS[35f130310cab0e7c701c82f6260f1cf6fbcb25fc]:
 #+begin_src text :noweb-ref guix-file
 (".xinitrc"
 ,(mixed-text-file
@@ -1614,11 +1619,6 @@ done
 * services
 ** profile
 #+begin_src scheme :noweb-ref guix-srv
-(simple-service
- 'additional-env-vars-service
- home-environment-variables-service-type
- `(<<guix-env-var>>))
-
 (simple-service
  'extra-profile home-shell-profile-service-type
  (list (plain-file "profile" "GUIX_PROFILE=~/.guix-profile\n. $GUIX_PROFILE/etc/profile")))
@@ -1721,7 +1721,7 @@ listener 1883
 allow_anonymous true
 #+end_src
 
-#+RESULTS[efaf751ac43bdfa291730641ebb057f6944f1411]: cfg-mosquitto
+#+RESULTS[a203e0ebc1ff8e5443a5e637d44f48429602775a]: cfg-mosquitto
 #+begin_src text
 (mixed-text-file
   "cfg-file"
@@ -1972,7 +1972,7 @@ xargs flatpak install --or-update --noninteractive
  #:program '(qview %f))
 #+end_src
 
-#+RESULTS[9ad9b363b99d582c2020504c019088f2541494f2]:
+#+RESULTS[d8cd816a38eb7ea0ee8310a772e52d2c4b2c558d]:
 #+begin_src text :noweb-ref guix-file
 (".config/associations"
 ,(mixed-text-file
@@ -2031,7 +2031,7 @@ lng: 13.39
 dbusserver: true
 #+end_src
 
-#+RESULTS[a1027b9cfb5d62886b1faad9cd5536746e5d3ee7]:
+#+RESULTS[714f30d34b122acc2715a52b0a8481368d6d05ba]:
 #+begin_src text :noweb-ref guix-file
 (".config/darkman/config.yaml"
 ,(mixed-text-file
@@ -2273,7 +2273,7 @@ mod? guix '~/devel/ext/guix/Justfile'
 mod? dotfiles '~/devel/dotfiles/guix/Justfile'
 #+end_src
 
-#+RESULTS[e733d18b143dded885690bba82074360f571bfb1]:
+#+RESULTS[78a391beff7a3e9b4427a8b6d2e964b55256832a]:
 #+begin_src text :noweb-ref guix-file
 (".justfile"
 ,(mixed-text-file
@@ -2316,7 +2316,7 @@ mod? dotfiles '~/devel/dotfiles/guix/Justfile'
     helper = oauth
 #+end_src
 
-#+RESULTS[95c2afbbb3a42d141846d8c6a9482785cdf3a86c]:
+#+RESULTS[4111a2a001d67d80cd9ccc7fc9bdf8f5117e4679]:
 #+begin_src text :noweb-ref guix-file
 (".gitconfig"
 ,(mixed-text-file
@@ -2421,7 +2421,7 @@ set statusbar-basename true
 include theme
 #+end_src
 
-#+RESULTS[352b7d804af84b495386e051d9df660975edb8d3]:
+#+RESULTS[2a74b1f7dc93b5fcbd734c5323105bce51dab21d]:
 #+begin_src text :noweb-ref guix-file
 (".config/zathura/zathurarc"
 ,(mixed-text-file
@@ -2483,7 +2483,7 @@ include theme
 #+begin_src scheme :noweb-reg guix-env-var
 ("BROWSER" . "qutebrowser")
 #+end_src
-#+begin_src cfg :tangle-mode "u+x" :dest ".local/share/dark-mode.d/qutebrowser"
+#+begin_src cfg :chmod "u+x" :dest ".local/share/dark-mode.d/qutebrowser"
 #!🐜(pkg "bash-minimal")🐜/bin/sh
 cat <<EOF > ~/.config/qutebrowser/darkmode.py
 c.colors.webpage.darkmode.enabled = True
@@ -2492,7 +2492,7 @@ EOF
 pgrep -f QtWebEngineProcess && qutebrowser ':config-source darkmode.py'
 #+end_src
 
-#+RESULTS[fbdbd7d5cfcbf1ff96b52e07ded04403341f8621]:
+#+RESULTS[763eb98491bedcbabff19383e8d79504ad1d6d2f]:
 #+begin_src text :noweb-ref guix-file
 (".local/share/dark-mode.d/qutebrowser"
 ,(chmod-computed-file (mixed-text-file
@@ -2505,7 +2505,7 @@ pgrep -f QtWebEngineProcess && qutebrowser ':config-source darkmode.py'
 "pgrep -f QtWebEngineProcess && qutebrowser ':config-source darkmode.py'") #o744))
 #+end_src
 
-#+begin_src cfg :tangle-mode "u+x" :dest ".local/share/light-mode.d/qutebrowser"
+#+begin_src cfg :chmod "u+x" :dest ".local/share/light-mode.d/qutebrowser"
 #!🐜(pkg "bash-minimal")🐜/bin/sh
 cat <<EOF > ~/.config/qutebrowser/darkmode.py
 c.colors.webpage.darkmode.enabled = False
@@ -2514,7 +2514,7 @@ EOF
 pgrep -f QtWebEngineProcess && qutebrowser ':config-source darkmode.py'
 #+end_src
 
-#+RESULTS[40d25edf97d0468c05dbafe4d9b5d60d9c9d5220]:
+#+RESULTS[802f180103c2bbf76b5b27e7fd9cdbc5e13f177d]:
 #+begin_src text :noweb-ref guix-file
 (".local/share/light-mode.d/qutebrowser"
 ,(chmod-computed-file (mixed-text-file
@@ -2588,7 +2588,7 @@ auto_sync = false
 update_check = false
 #+end_src
 
-#+RESULTS[d60839754670f60b9c43bae534a4d545d033608a]:
+#+RESULTS[3781d8ff9f7ecf1434c2011ae337761989feca9d]:
 #+begin_src text :noweb-ref guix-file
 (".config/atuin/config.toml"
 ,(mixed-text-file
@@ -2606,7 +2606,7 @@ source 🐜(pkg "blesh")🐜/share/blesh/ble.sh
 eval "$(atuin init bash)"
 #+end_src
 
-#+RESULTS[40dafbbdadea909f99c99c0671bb9de1f6925309]: cfg-bash
+#+RESULTS[f61c1c224a978c626c2e6d9a264aabfc6c5ded15]: cfg-bash
 #+begin_src text
 (mixed-text-file
   "cfg-file"
@@ -2925,9 +2925,9 @@ Target state:
 ;;    (inherit user)
 ;;    (password (crypt user-pass "$6$salt"))))
 #+end_src
-* archive :noexport:
+* COMMENT archive
 ** emacs-one-frame
-#+begin_src sh :tangle no :shebang #!/bin/bash
+#+begin_src sh :shebang #!/bin/bash
 # https://taingram.org/2017/05/09/using-emacsclient-to-speed-up-editing/
 # if no args open new frame
 if [ $# -eq 0 ]; then
@@ -2944,7 +2944,7 @@ else
 fi
 #+end_src
 ** openscad
-#+begin_src elisp :tangle no
+#+begin_src elisp
 (defun openscad-preview ()
   (interactive)
   (select-window (split-window-right))
@@ -2952,7 +2952,7 @@ fi
 #+end_src
 
 ** selfcontrol
-#+begin_src elisp :tangle no
+#+begin_src elisp
 (defun sarg/ad-selfcontrol-time-restriction (orig-fun &rest args)
   (if (or (= 0 (mod
                 (calendar-day-of-week (calendar-current-date))
@@ -2984,7 +2984,7 @@ fi
 #+end_src
 
 ** fate
-#+begin_src elisp :tangle no
+#+begin_src elisp
 (use-package! fate
   :disabled
   :load-path "~/devel/ext/fate"
