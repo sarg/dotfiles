@@ -16,11 +16,12 @@ const openstackConfig = {
 	},
 };
 
-async function respond(chatId: number, text: string): Promise<void> {
-	await fetch(`https://api.telegram.org/bot${env.BOT_TOKEN}/sendMessage?chat_id=${chatId}`, {
+function respond(chatId: number, msg: string | object): Promise<Response> {
+	const isText = typeof msg === 'string';
+	return fetch(`https://api.telegram.org/bot${env.BOT_TOKEN}/sendMessage?chat_id=${chatId}`, {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ text }),
+		body: JSON.stringify(isText ? { text: msg } : msg),
 	});
 }
 
@@ -124,7 +125,7 @@ async function vpnHandler(chatId: number, args: string[]) {
 	}
 }
 
-async function setupHandler(chatId: number, origin: string, args: string[]): Promise<void> {
+async function setupHandler(chatId: number, origin: string, args: string[]): Promise<Response> {
 	const chat = chatId.toString();
 	var token = await env.NOTIFY_TOKENS.get(chat);
 	if (!token || args[0] === 'renew') {
@@ -139,9 +140,11 @@ async function setupHandler(chatId: number, origin: string, args: string[]): Pro
 
 async function notify(s: string, request: Request): Promise<Response> {
 	const chatId = await env.NOTIFY_TOKENS.get(s);
-	if (!chatId) return notFound();
+	if (!chatId) return notFound(`${s} is not a valid token`);
+	const contentType = request.headers.get('Content-Type');
+	const msg = contentType === 'application/json' ? ((await request.json()) as object) : await request.text();
 
-	return respond(parseInt(chatId), await request.text()).then(accepted);
+	return respond(parseInt(chatId), msg).then(accepted);
 }
 
 async function hook(request: Request): Promise<Response> {
@@ -173,8 +176,8 @@ async function hook(request: Request): Promise<Response> {
 	return accepted();
 }
 
-async function notFound() {
-	return new Response(null, { status: 404 });
+async function notFound(msg: string) {
+	return new Response(msg, { status: 404 });
 }
 
 async function accepted() {
@@ -199,7 +202,7 @@ export default {
 	async fetch(request): Promise<Response> {
 		const url = new URL(request.url);
 		const routes = [
-			new Route('POST', /^\/notify\/(\w+)$/, (m, r) => notify(m[0], r)),
+			new Route('POST', /^\/notify\/(\w+)$/, (m, r) => notify(m[1], r)),
 			new Route('POST', /^\/hook$/, (_, r) => hook(r)),
 		];
 
@@ -210,7 +213,7 @@ export default {
 					const m = url.pathname.match(route.r);
 					return m && route.h.call(route, m, request);
 				})
-				.find((m) => m) || notFound();
+				.find((m) => m) || notFound('no route');
 
 		return await handler;
 	},
