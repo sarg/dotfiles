@@ -2377,9 +2377,10 @@ mod? dotfiles '~/devel/dotfiles/guix/Justfile'
 #+end_src
 ** guix development
 #+begin_src scheme :noweb-ref guix-pkg
-"emacs-debbugs" "gnu-standards" "mumi-with-jaro"
+"emacs-debbugs" "gnu-standards" "mumi-with-jaro" "emacs-fj"
 #+end_src
 #+begin_src elisp :tangle packages.el
+(package! fj :built-in t)
 (package! guix :built-in t)
 #+end_src
 #+begin_src elisp
@@ -2388,6 +2389,13 @@ mod? dotfiles '~/devel/dotfiles/guix/Justfile'
   (set-popup-rule! "^\\*Guix-Patches Bugs\\*$" :ignore t)
   (set-popup-rule! "^\\*Summary nndoc" :ignore t)
   (set-popup-rule! "^\\*Article" :ignore t))
+
+(use-package! fj
+  :commands fj-list-items fj-list-pulls
+  :config
+  (setq! fj-host "https://codeberg.org"
+         fj-user "sarg"
+         fj-token (auth-source-pass-get 'secret "Api/codeberg.org/fj.el")))
 
 (use-package! guix
   :config
