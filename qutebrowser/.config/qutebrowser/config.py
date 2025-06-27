@@ -108,19 +108,20 @@ BANGS = {
     "!gi": "https://www.google.com/search?q={}&tbs=imgo:1&udm=2",
 }
 
-BANG_RE = re.compile(r"(?:^|\s)![^ ]+(?:\s|$)")
+BANG_RE = re.compile(r"(?:^|\s)(![^ ]+)(?:\s|$)")
 
 
 @add_handler("bangs")
 def qute_bangs(url: QUrl):
-    q = QUrlQuery(url).queryItemValue("q")
+    q = QUrlQuery(url).queryItemValue("q", QUrl.ComponentFormattingOption.FullyDecoded)
     bang = None
 
     def repl(m):
-        bang = BANGS.get(m.group(0), None)
-        return "" if bang else m.group(0)
+        nonlocal bang
+        bang = BANGS.get(m.group(1), None)
+        return " " if bang else m.group(0)
 
-    q = re.sub(BANG_RE, repl, q, 1)
+    q = BANG_RE.sub(repl, q, 1)
     bang = bang or BANGS["DEFAULT"]
 
     raise Redirect(QUrl(bang.replace("{}", q)))
