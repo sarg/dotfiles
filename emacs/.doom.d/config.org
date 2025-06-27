@@ -2007,16 +2007,17 @@ xargs flatpak install --or-update --noninteractive
 #+end_src
 
 ** multimedia keys
-#+begin_src text :noweb-ref emacs-dep
-"brightnessctl" "flameshot"
+#+begin_src text :noweb-ref guix-pkg
+"flameshot" ; needs to be in the profile for dbus facility
+"brightnessctl"
 #+end_src
 #+begin_src elisp :noweb-ref exwm :tangle no
 (exwm/bind-command
    "<XF86Launch1>" #'dash-menu
-   "<XF86MonBrightnessUp>" (guix/pkg 'brightnessctl "/bin/brightnessctl -e set 10%+")
-   "<XF86MonBrightnessDown>" (guix/pkg 'brightnessctl "/bin/brightnessctl -e set 10%-")
+   "<XF86MonBrightnessUp>" "brightnessctl -e set 10%+"
+   "<XF86MonBrightnessDown>" "brightnessctl -e set 10%-"
    "<XF86ScreenSaver>" "xset s activate"
-   "<f13> <f12>" (guix/pkg 'flameshot "/bin/flameshot gui"))
+   "<f13> <f12>" "flameshot gui")
 #+end_src
 ** dark mode
 #+begin_src scheme :noweb-ref guix-pkg
@@ -2187,7 +2188,7 @@ dbusserver: true
 
 (after! org-download
   (setq org-download-screenshot-method
-        (guix/pkg 'flameshot "/bin/flameshot gui --raw > %s")))
+        "flameshot gui --raw > %s"))
 
 (load! "org-defuns")
 #+end_src
