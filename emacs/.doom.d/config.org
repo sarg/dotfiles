@@ -399,6 +399,23 @@ polkit.addRule(function(action, subject) {
  (program (file-append (pkg "spice-gtk") "/libexec/spice-client-glib-usb-acl-helper"))
  (setuid? #t))
 #+end_src
+** COMMENT docker
+#+begin_src scheme :noweb-ref system-use
+(gnu service containers)
+(gnu system accounts)
+#+end_src
+#+begin_src scheme :noweb-ref user-group
+"cgroup"
+#+end_src
+#+begin_src scheme :noweb-ref system-service
+(service iptables-service-type)
+(service rootless-podman-service-type
+         (rootless-podman-configuration
+          (subgids
+           (list (subid-range (name "sarg"))))
+          (subuids
+           (list (subid-range (name "sarg"))))))
+#+end_src
 ** various services
 #+begin_src scheme :noweb-ref system-use
 (gnu services admin)
