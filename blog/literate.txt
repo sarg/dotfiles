@@ -55,6 +55,12 @@ Main template which tangles to =home.scm=.
             (list package out)))
       x))
 
+(define (chmod-computed-file f p)
+  (computed-file
+   (computed-file-name f)
+   #~(begin #$(computed-file-gexp f) (chmod #$output #$p))
+   #:options (computed-file-options f)))
+
 (home-environment
  (services
   (cons*
@@ -188,7 +194,7 @@ with (chmod-computed-file)."
 #+begin_src org
 ,#+begin_src scheme :noweb-ref emacs-config :noweb yes
 #+end_src
-#+begin_src scheme :noweb-ref emacs-config :noweb yes
+#+begin_src scheme :noweb-ref emacs-config
 (package
   (name "emacs-config")
   (version "0")
