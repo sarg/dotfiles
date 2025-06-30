@@ -2766,9 +2766,13 @@ eval "$(atuin init bash)"
  :desc "Dash" "om" #'dash-menu)
 #+end_src
 * llm
+#+begin_src elisp :tangle packages.el
+; TODO: remove custom pin once doom catches up
+(package! gptel :pin "1a83e0e12c452664bfc24e46f137e3bdc546e0ae")
+#+end_src
 #+begin_src elisp
 (after! gptel
-  (setq gptel-model 'gemini-2.0-flash
+  (setq gptel-model 'gemini-2.5-flash
         gptel-backend
         (gptel-make-gemini "Gemini"
           :key (lambda (&rest args)
