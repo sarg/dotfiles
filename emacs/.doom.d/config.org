@@ -2119,6 +2119,9 @@ dbusserver: true
 ;; C-h deletes character backwards
 (define-key key-translation-map [?\C-h] [?\C-?])
 
+(after! recentf
+  (add-to-list 'recentf-exclude "^/media/500GB/sort/"))
+
 (setq-default
  ;; russian layout on C-\
  default-input-method "russian-computer"
