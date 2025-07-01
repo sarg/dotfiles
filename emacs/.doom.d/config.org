@@ -203,6 +203,7 @@
 ** networking
 #+begin_src scheme :noweb-ref system-use
 (gnu services ssh)
+(gnu packages cups)
 (gnu services dns)
 (gnu services networking)
 (gnu services avahi)
@@ -281,6 +282,18 @@ dnsmasq_resolve=/etc/dnsmasq.resolve
              (allowed-ips '("0.0.0.0/0" "::/0")))))))
 #+end_src
 ** hardware
+#+begin_src scheme :noweb-ref cups/patched
+(package/inherit cups
+  (source
+   (origin
+     (inherit (package-source cups))
+     (modules '((guix build utils)))
+     (snippet '(begin
+                   ;; Don't enforce root ownership check. Filters and other
+                   ;; files might be owned by guix-daemon on rootless system.
+                   (substitute* "cups/file.c"
+                     (("if \\(fileinfo.st_uid") "if (0")))))))
+#+end_src
 #+begin_src scheme :noweb-ref system-use
 (personal packages udev-rules)
 (gnu services base)
@@ -313,6 +326,7 @@ dnsmasq_resolve=/etc/dnsmasq.resolve
 
 (service cups-service-type
          (cups-configuration
+          (cups <<cups/patched>>)
           (web-interface? #t)
           (extensions (list (pkg "cups-filters")))))
 #+end_src
