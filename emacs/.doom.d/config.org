@@ -951,13 +951,6 @@ REVERSE? it when true. Returns the selected buffer."
         (elfeed-search-browse-url)
       (elfeed-search-show-entry entry))))
 
-(defun elfeed-bg-tabs ()
-  (interactive)
-  (qutebrowser-cmd-set "tabs.tabs_are_windows" "false" :temp)
-  (setq-local browse-url-browser-function
-              (lambda (url &optional new-window)
-                (qutebrowser-cmd-open :bg url))))
-
 (after! elfeed
   (setq elfeed-db-directory "/storage/data/elfeed")
 
@@ -2285,7 +2278,7 @@ os.execlp('xdg-open', 'xdg-open',
 (after! magit
   (let ((sarg-repos-dir (expand-file-name "~/devel/")))
     (setq magit-repository-directories `((,sarg-repos-dir . 2))
-          magit-clone-default-directory `,sarg-repos-dir)))
+          magit-clone-default-directory (concat sarg-repos-dir "ext/"))))
 
 (after! browse-at-remote
   (setq browse-at-remote-prefer-symbolic nil))
@@ -2577,6 +2570,13 @@ pgrep -f QtWebEngineProcess && qutebrowser ':config-source darkmode.py'
   (let ((process-environment (browse-url-process-environment)))
     (start-process "qutebrowser-private" nil
            "qutebrowser" "--target" "private-window" url)))
+
+(defun qutebrowser-bg-tabs ()
+  (interactive)
+  (qutebrowser-cmd-set "tabs.tabs_are_windows" "false" :temp)
+  (setq-local browse-url-browser-function
+              (lambda (url &optional new-window)
+                (qutebrowser-cmd-open :bg url))))
 
 (setq-default
  browse-url-browser-function 'browse-url-generic
