@@ -550,7 +550,7 @@ polkit.addRule(function(action, subject) {
 ** utils
 #+begin_src scheme :noweb-ref guix-pkg
 "curl" "rsync" "man-db"
-"atool" "p7zip" "unzip" "jq"
+"atool" "p7zip" "unzip" "zip" "jq"
 "ripgrep" "moreutils" "libiconv"
 "powertop" "graphviz" "bind:utils"  ; dig
 "graphicsmagick" "libwebp" "jpegoptim"
