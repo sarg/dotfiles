@@ -1585,11 +1585,11 @@ dbus-update-activation-environment --verbose DBUS_SESSION_BUS_ADDRESS DISPLAY XA
 
 while true; do
   xset s activate # lock to show password screen
-  emacs -mm -f exwm-enable
+  emacs -mm -f exwm-wm-mode
 done
 #+end_src
 
-#+RESULTS[35f130310cab0e7c701c82f6260f1cf6fbcb25fc]:
+#+RESULTS[8145119eef72a0583f5201eb9dd695c5ecff2538]:
 #+begin_src text :noweb-ref guix-file
 (".xinitrc"
 ,(mixed-text-file
@@ -1600,7 +1600,7 @@ done
 "\n"
 "while true; do\n"
 "  xset s activate # lock to show password screen\n"
-"  emacs -mm -f exwm-enable\n"
+"  emacs -mm -f exwm-wm-mode\n"
 "done"))
 #+end_src
 
