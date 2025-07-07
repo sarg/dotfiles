@@ -2056,7 +2056,7 @@ xargs flatpak install --or-update --noninteractive
 "darkman"
 #+end_src
 #+begin_src elisp :tangle packages.el :exports none
-(package! darkman)
+(package! darkman :pin "beb2186e6eaf13ebe1ae56e460bcd1a4c0cb4f07")
 #+end_src
 #+begin_src cfg :dest ".config/darkman/config.yaml"
 lat: 52.52
@@ -2322,7 +2322,7 @@ mod? dotfiles '~/devel/dotfiles/guix/Justfile'
 #+end_src
 
 #+begin_src elisp :tangle packages.el
-(package! just-mode)
+(package! just-mode :pin "4c0df4cc4b8798f1a7e99fb78b79c4bf7eec12c1")
 #+end_src
 #+begin_src elisp
 (use-package! just-mode)
@@ -2919,7 +2919,7 @@ current buffer, killing it."
 #+end_src
 ** hnreader
 #+begin_src elisp :tangle packages.el
-(package! hnreader)
+(package! hnreader :pin "a56f67a99a855ca656da1c1985e09f44509e4bbb")
 #+end_src
 #+begin_src elisp
 (use-package! hnreader
