@@ -36,7 +36,7 @@ async function startHetzner(userData: string) {
 		public_net: {
 			enable_ipv4: true,
 			enable_ipv6: true,
-			ipv6: env.HETZNER_IPV6_ID, // vpn_ipv6
+			ipv6: parseInt(env.HETZNER_IPV6_ID), // vpn_ipv6
 		},
 		user_data: userData,
 	});
@@ -104,8 +104,13 @@ function prepareUserData(chatId: number): string {
 async function vpnHandler(chatId: number, args: string[]) {
 	switch (args[0] ?? 'ru') {
 		case 'de':
-			await startHetzner(prepareUserData(chatId));
-			await respond(chatId, 'Creating hetzner VPN');
+			var response = await startHetzner(prepareUserData(chatId));
+			if (!response.ok) {
+				console.log({ response });
+				await respond(chatId, 'Error creating VPN');
+			} else {
+				await respond(chatId, 'Creating hetzner VPN');
+			}
 			break;
 		case 'ru':
 			await startSelectel(prepareUserData(chatId));
