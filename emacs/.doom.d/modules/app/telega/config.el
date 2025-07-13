@@ -74,7 +74,7 @@
 
   (setq telega-hide-previews 't)
   ;; show previews for photo/video webpages
-  (advice-add #'telega-ins--webpage :before-while
+  (advice-add #'telega-ins--link-preview :before-while
               (lambda (msg &rest args)
                 (let ((ht (telega--tl-get msg :content :web_page :type)))
                   (and telega-hide-previews (-contains? '("video" "photo") ht)))))
@@ -86,9 +86,6 @@
   ;;
   ;; XX Username
   ;; XX message text                                                    08.04.20✓
-  (advice-add #'telega-msg--pp
-              :override
-              (apply-partially #'telega-button--insert 'telega-msg))
 
   (advice-add #'telega-chatbuf--sponsored-messages-fetch
               :override #'ignore)
