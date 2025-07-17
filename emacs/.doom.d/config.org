@@ -587,16 +587,18 @@ polkit.addRule(function(action, subject) {
 #+begin_src cfg :dest ".config/aria2/aria2.conf"
 seed-time=0
 max-overall-upload-limit=1K
+check-integrity=true
 disable-ipv6=true
 #+end_src
 
-#+RESULTS[2467980a72374749d86501c5955d26dea201fb41]:
+#+RESULTS[eaf79bcd625703fb55a5719f312342bec8984144]:
 #+begin_src text :noweb-ref guix-file
 (".config/aria2/aria2.conf"
 ,(mixed-text-file
   "cfg-file"
 "seed-time=0\n"
 "max-overall-upload-limit=1K\n"
+"check-integrity=true\n"
 "disable-ipv6=true"))
 #+end_src
 
