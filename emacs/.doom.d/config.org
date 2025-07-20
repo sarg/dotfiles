@@ -1313,6 +1313,7 @@ services:
         mu4e-drafts-folder "/gmail/drafts"
         mu4e-trash-folder "/gmail/trash"
         mu4e-refile-folder "/gmail/all"
+        +mu4e-compose-org-msg-toggle-next nil
         sendmail-program "msmtp"
         message-sendmail-f-is-evil t
         message-sendmail-extra-arguments '("--read-envelope-from")
