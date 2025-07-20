@@ -1852,9 +1852,9 @@ allow_anonymous true
   (emacs (pkg "emacs-next"))
   (doomemacs (pkg "doomemacs"))
   (config (doomemacs-config
-           #:src (local-file "../emacs/.doom.d" "src"
+           #:src (local-file (relative-file "../emacs/.doom.d") "src"
                              #:recursive? #t
-                             #:select? (git-predicate "../emacs/.doom.d"))
+                             #:select? (git-predicate (relative-file "../emacs/.doom.d")))
            #:inputs (map pkg (list <<emacs-dep>>))))))
 #+end_src
 ** init.el
