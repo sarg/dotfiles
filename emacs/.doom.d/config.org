@@ -2230,7 +2230,8 @@ dbusserver: true
 
 (load! "org-defuns")
 #+end_src
-** COMMENT capture
+** capture
+*** COMMENT qutebrowser userscript
 #+begin_src python :tangle ~/.local/share/qutebrowser/userscripts/orgprotocol :shebang #!/usr/bin/env python3
 import os
 from urllib.parse import quote
@@ -2240,6 +2241,7 @@ os.execlp('xdg-open', 'xdg-open',
               title = quote(os.environ.get('QUTE_TITLE', '')),
               body  = quote(os.environ.get('QUTE_SELECTED_TEXT', ''))))
 #+end_src
+*** template
 #+begin_src elisp
 (pushnew! org-capture-templates
           '("b" "Bookmark URL" entry
@@ -2939,9 +2941,8 @@ current buffer, killing it."
 ** TODO move away from org-contacts
 Reqs:
 - use [[https://datatracker.ietf.org/doc/html/rfc6350#section-5.4][ALTID]] for names in russian/english
-- export contacts with UID to avoid duplication
 - group KIND
-- embed photo
+- embed photo (=PHOTO:data:image/webp;base64,...=)
 - nickname
 - impp for telega/whatsapp
 https://isamert.net/2021/04/21/managing-your-contacts-in-org-mode-and-syncing-them-to-your-phone-android-ios-whatever-.html
