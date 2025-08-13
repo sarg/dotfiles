@@ -2328,9 +2328,12 @@ mod? dotfiles '~/devel/dotfiles/guix/Justfile'
 
 #+begin_src elisp :tangle packages.el
 (package! just-mode :pin "4c0df4cc4b8798f1a7e99fb78b79c4bf7eec12c1")
+(package! justl :recipe (:host github :repo "psibi/justl.el")
+  :pin "1554e9e8db0c9653a924a10e87931082d8eafd9b")
 #+end_src
 #+begin_src elisp
 (use-package! just-mode)
+(use-package! justl)
 #+end_src
 
 ** git
