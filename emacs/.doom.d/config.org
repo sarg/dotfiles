@@ -2049,6 +2049,7 @@ xargs flatpak install --or-update --noninteractive
 #+begin_src elisp :noweb-ref exwm :tangle no
 (exwm/bind-command
    "<XF86Launch1>" #'dash-menu
+   "<XF86Explorer>" #'dash-menu
    "<XF86MonBrightnessUp>" "brightnessctl -e set 10%+"
    "<XF86MonBrightnessDown>" "brightnessctl -e set 10%-"
    "<XF86ScreenSaver>" "xset s activate"
