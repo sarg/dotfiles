@@ -1874,7 +1874,7 @@ allow_anonymous true
  :checkers    syntax
  :lang        (clojure +tree-sitter) data emacs-lisp (javascript +tree-sitter +lsp) markdown
               (org +contacts +dragndrop +pandoc +present +hugo +roam2 +pretty) beancount (go +lsp +tree-sitter)
-              rest (sh +tree-sitter) plantuml (python +lsp +tree-sitter) (web +tree-sitter) yaml (json +tree-sitter)
+              (rest +jq) (sh +tree-sitter) plantuml (python +lsp +tree-sitter) (web +tree-sitter) yaml (json +tree-sitter)
  :app         calendar telega (rss +org) torrent irc exwm emms dash-menu
  :email       (mu4e +gmail +org)
  :config      (default +bindings +smartparens +gnupg))
