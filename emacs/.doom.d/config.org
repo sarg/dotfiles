@@ -2130,6 +2130,8 @@ dbusserver: true
 ;; C-h deletes character backwards
 (define-key key-translation-map [?\C-h] [?\C-?])
 
+(setq! auto-revert-use-notify t)
+
 (after! recentf
   (add-to-list 'recentf-exclude "^/media/500GB/sort/"))
 
