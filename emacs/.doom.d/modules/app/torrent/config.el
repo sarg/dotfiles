@@ -13,9 +13,15 @@
 
   (aria2-ensure-started)
   (addTorrent aria2--cc original-buffer-file-name
-              :select-file (string-join
-                            (seq-map (-compose #'number-to-string #'car) (tablist-get-marked-items))
-                            ",")
+              :select-file
+              (substring-no-properties
+               (string-join
+                (seq-map
+                 (lambda (el)
+                   (aref (cdr el) 0))
+                 (tablist-get-marked-items))
+                ","))
+
               :dir (expand-file-name dest-dir)))
 
 (use-package! torrent-mode
