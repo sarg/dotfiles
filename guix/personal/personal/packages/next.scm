@@ -14,7 +14,7 @@
 
 ;; supports tearfree in modesetting driver
 (define-public xorg-server-next
-  (let ((commit "c34f59ee152def40343c68fbdc3ee8f71a0d9575")
+  (let ((commit "d03c84b57f1455b20518781026777b938194b2a4")
         (revision "1"))
     (package
      (inherit xorg-server-xwayland)
@@ -28,7 +28,7 @@
              (commit commit)))
        (sha256
         (base32
-         "0vmncvpmxmdcs4kd3dd300k6367bkpaaip9lwvwza3jnwcrcnn6w"))))
+         "0cisns1m9lvqfji265zcaxdvs14fryagq32z5ryfpcljvkkqc7ly"))))
      (inputs
       (append
        (package-inputs xorg-server-xwayland)
