@@ -22,8 +22,8 @@
     (license #f)))
 
 (define-public doomemacs
-  (let ((commit "751ac6134b6abe204d9c514d300343b07b26da3c")
-        (revision "20250812"))
+  (let ((commit "e7a69dcdacf9332698714bf3b5c497e5f0653730")
+        (revision "20250829"))
     (package
       (name "doomemacs")
       (version (git-version "3.0.0" revision commit))
@@ -35,8 +35,7 @@
                (commit commit)))
          (file-name (git-file-name "doomemacs" version))
          (sha256
-          (base32 "0f16v3g8s8ys01qg89k72k247xim3ryknpxrpj2x4liky31rd2gm"))))
-
+          (base32 "0hzmi5ajghl7hhly2mmz9b3a10bvfbgfz62jv8f26fksqbmyixig"))))
       (build-system copy-build-system)
       (home-page "https://github.com/doomemacs/doomemacs")
       (description "Doom emacs sources")
