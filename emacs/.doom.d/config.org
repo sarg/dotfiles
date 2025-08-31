@@ -1066,17 +1066,37 @@ REVERSE? it when true. Returns the selected buffer."
 #+end_src
 *** bindings
 #+begin_src elisp :noweb-ref exwm :tangle no
+(transient-define-prefix emms-dwim-menu ()
+  "EMMS menu"
+  ["EMMS"
+   ("s" "Systrum" (lambda () (interactive)
+                    (emms-play-url "https://systrum.net/SSR2.m3u")))
+   ("l" "Likes" (lambda () (interactive)
+                  (with-current-emms-playlist
+                    (emms-playlist-current-clear)
+                    (setq! emms-random-playlist t)
+                    (emms-add-directory "/media/500GB/media/music_liked/")
+                    (emms-random))))])
+
+(defun emms-play-dwim ()
+  "Resume playing or offer to select what to play."
+  (interactive)
+  (require 'emms)
+  (if emms-player-playing-p
+      (emms-pause)
+    (emms-dwim-menu)))
+
 (exwm/bind-command
  "<XF86AudioRaiseVolume>" #'emms-volume-raise
  "<XF86AudioLowerVolume>" #'emms-volume-lower
  "<XF86AudioMute>" "pactl set-sink-mute @DEFAULT_SINK@ toggle"
  "<XF86AudioMicMute>" "pactl set-source-mute @DEFAULT_SOURCE@ toggle")
 
-(after! emms
-  (exwm/bind-command
-   "<XF86AudioPlay>" #'emms-pause
-   "<XF86AudioPrev>" #'emms-previous
-   "<XF86AudioNext>" (lambda () (interactive) (if emms-random-playlist (emms-random) (emms-next)))))
+(exwm/bind-command
+ "<XF86AudioPlay>" #'emms-play-dwim
+ "<XF86AudioPause>" #'emms-stop
+ "<XF86AudioPrev>" #'emms-previous
+ "<XF86AudioNext>" (lambda () (interactive) (funcall emms-player-next-function)))
 #+end_src
 *** spotify
 **** player
