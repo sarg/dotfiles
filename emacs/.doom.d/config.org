@@ -1092,6 +1092,8 @@ REVERSE? it when true. Returns the selected buffer."
  "<XF86AudioMute>" "pactl set-sink-mute @DEFAULT_SINK@ toggle"
  "<XF86AudioMicMute>" "pactl set-source-mute @DEFAULT_SOURCE@ toggle")
 
+(autoload #'emms-stop "emms" nil t)
+(autoload #'emms-previous "emms" nil t)
 (exwm/bind-command
  "<XF86AudioPlay>" #'emms-play-dwim
  "<XF86AudioPause>" #'emms-stop
