@@ -1269,14 +1269,11 @@ services:
 #+end_src
 *** receiving
 #+begin_src scheme :noweb-ref guix-pkg
-"isync"
-#+end_src
-#+begin_src scheme :noweb-ref guix-env-var
-("SASL_PATH" . ,(file-append (pkg "cyrus-sasl-xoauth2") "/lib/sasl2"))
+"isync" "cyrus-sasl-xoauth2" "cyrus-sasl"
 #+end_src
 #+begin_src scheme :noweb-ref guix-file
 (".mail" ,(symlink-to "/storage/data/mail"))
-(".mbsyncrc" ,(local-file "../email/.mbsyncrc" "mbsyncrc"))
+(".config/isyncrc" ,(local-file "../email/.mbsyncrc" "mbsyncrc"))
 #+end_src
 *** notification
 #+begin_src scheme :noweb-ref guix-file
@@ -1898,7 +1895,7 @@ allow_anonymous true
               (org +contacts +dragndrop +pandoc +present +hugo +roam2 +pretty) beancount (go +lsp +tree-sitter)
               (rest +jq) (sh +tree-sitter) plantuml (python +lsp +tree-sitter) (web +tree-sitter) yaml (json +tree-sitter)
  :app         calendar telega (rss +org) torrent irc exwm emms dash-menu
- :email       (mu4e +gmail +org)
+ :email       (mu4e +mbsync +gmail +org)
  :config      (default +bindings +smartparens +gnupg))
 #+end_src
 ** dashboard
