@@ -655,9 +655,7 @@ disable-ipv6=true
 (".telega" ,(symlink-to "/storage/data/telega"))
 #+end_src
 #+begin_src elisp
-(after! telega
-  (add-to-list 'browse-url-handlers
-               '("https://t.me/" . telega-browse-url)))
+(add-hook! doom-init-ui (telega 'no-popup))
 #+end_src
 ** exwm
 EXWM has a separate [[../.doom.d/modules/app/exwm][doom app]]. Here are just the settings.
