@@ -18,16 +18,16 @@
 (define-public owntracks-recorder
   (package
     (name "owntracks-recorder")
-    (version "1.0.0")
+    (version "1.0.1")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/owntracks/recorder")
-             (commit "fb3427102501cd509a8f79ef9fb9c38d343645c5")))
+             (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "096f1cm8jk71yzl3zxnsxm60jqc72ssnpxzjyd25px5045q3ch25"))))
+        (base32 "08dnaz5rpr4zhyc93hcdnx9swnqfski5qk0v8a64xpic3zqyswpy"))))
     (build-system gnu-build-system)
     (arguments
      (list
