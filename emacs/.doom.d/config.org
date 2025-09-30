@@ -103,7 +103,7 @@
       config))
 
 (operating-system
-  (kernel linux)
+  (kernel linux-6.6)
   (kernel-arguments '("quiet" "loglevel=1"))
   (initrd microcode-initrd)
   (initrd-modules (cons "i915" %base-initrd-modules))
@@ -164,7 +164,7 @@
    (cons*
     <<system-service>>
     (modify-services %base-services
-      <<modify-system-service>>)))
+      <<modify-system-service>>))))
 #+end_src
 ** base
 #+begin_src scheme :noweb-ref modify-system-service
@@ -185,7 +185,7 @@
                     <<cfg-nonguix-pub()>>
                     (guix-configuration-authorized-keys config)))
   (extra-options '("--gc-keep-derivations"
-                   "--gc-keep-outputs")))))
+                   "--gc-keep-outputs"))))
 #+end_src
 ** guix
 #+name: cfg-nonguix-pub
@@ -282,18 +282,6 @@ dnsmasq_resolve=/etc/dnsmasq.resolve
              (allowed-ips '("0.0.0.0/0" "::/0")))))))
 #+end_src
 ** hardware
-#+begin_src scheme :noweb-ref cups/patched
-(package/inherit cups
-  (source
-   (origin
-     (inherit (package-source cups))
-     (modules '((guix build utils)))
-     (snippet '(begin
-                   ;; Don't enforce root ownership check. Filters and other
-                   ;; files might be owned by guix-daemon on rootless system.
-                   (substitute* "cups/file.c"
-                     (("if \\(fileinfo.st_uid") "if (0")))))))
-#+end_src
 #+begin_src scheme :noweb-ref system-use
 (personal packages udev-rules)
 (gnu services base)
@@ -324,9 +312,12 @@ dnsmasq_resolve=/etc/dnsmasq.resolve
 (udev-rules-service 'leds iwlwifi-led-udev-rules)
 (simple-service 'ratbagd dbus-root-service-type (list (pkg "libratbag")))
 
+(service sane-service-type
+         (sane-configuration
+          (backends (list (pkg "sane-airscan")))))
+
 (service cups-service-type
          (cups-configuration
-          (cups <<cups/patched>>)
           (web-interface? #t)
           (extensions (list (pkg "cups-filters")))))
 #+end_src
@@ -573,7 +564,7 @@ polkit.addRule(function(action, subject) {
 "libreoffice" "qview" "stapler" "gimp"
 
 ;; "nomacs"
-"tinymediamanager" "simple-scan-with-airscan"
+"tinymediamanager" "simple-scan"
 #+end_src
 #+begin_src scheme :noweb-ref guix-file
 (".local/state/tinyMediaManager" ,(symlink-to "/storage/data/tinyMediaManager"))
