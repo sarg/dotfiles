@@ -627,10 +627,11 @@ disable-ipv6=true
 (package! mpv :built-in t)
 #+end_src
 #+begin_src elisp
-(defun browse-url-mpv (url &rest _) (mpv-play-url url))
-(add-to-list 'browse-url-handlers
-             (cons (rx string-start "https://" (opt "www.") "youtu" (opt ".") "be")
-                   #'browse-url-mpv))
+(after! browse-url
+  (defun browse-url-mpv (url &rest _) (mpv-play-url url))
+  (add-to-list 'browse-url-handlers
+               (cons (rx string-start "https://" (opt "www.") "youtu" (opt ".") "be")
+                     #'browse-url-mpv)))
 
 (use-package! mpv
   :init
@@ -1097,8 +1098,9 @@ REVERSE? it when true. Returns the selected buffer."
   :pin "ca80431b00738e6130b924c64dc1f2cddadcc0b8")
 #+end_src
 #+begin_src elisp
-(defun browse-url-emms (url &rest _) (emms-add-url url))
-(add-to-list 'browse-url-handlers '("open.spotify.com" . browse-url-emms))
+(after! browse-url
+  (defun browse-url-emms (url &rest _) (emms-add-url url))
+  (add-to-list 'browse-url-handlers '("open.spotify.com" . browse-url-emms)))
 
 (use-package! emms-player-spotify
   :after emms
