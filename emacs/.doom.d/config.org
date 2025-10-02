@@ -2375,13 +2375,14 @@ mod? dotfiles '~/devel/dotfiles/guix/Justfile'
 
 [sendemail]
     smtpServer = 🐜(pkg "msmtp")🐜/bin/msmtp
+    smtpServerOption = --read-envelope-from
 
 [credential]
     helper = cache --timeout 21600  # six hours
     helper = oauth
 #+end_src
 
-#+RESULTS[4111a2a001d67d80cd9ccc7fc9bdf8f5117e4679]:
+#+RESULTS[6e62910aee9319039ee459724e8b21088cf45d0a]:
 #+begin_src text :noweb-ref guix-file
 (".gitconfig"
 ,(mixed-text-file
@@ -2399,6 +2400,7 @@ mod? dotfiles '~/devel/dotfiles/guix/Justfile'
 "\n"
 "[sendemail]\n"
 "    smtpServer = "(pkg "msmtp")"/bin/msmtp\n"
+"    smtpServerOption = --read-envelope-from\n"
 "\n"
 "[credential]\n"
 "    helper = cache --timeout 21600  # six hours\n"
