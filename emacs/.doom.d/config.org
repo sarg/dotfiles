@@ -1076,9 +1076,17 @@ REVERSE? it when true. Returns the selected buffer."
       (emms-pause)
     (emms-dwim-menu)))
 
+(let ((my-vol-last-change 0))
+  (defun my-vol-change (up)
+    (let* ((time-now (car (time-convert nil 1000)))
+           (delta (- time-now my-vol-last-change)))
+      (emms-volume-pulse-change
+       (* up (if (< delta 200) 5 2)))
+      (setq my-vol-last-change time-now))))
+
 (exwm/bind-command
- "<XF86AudioRaiseVolume>" #'emms-volume-raise
- "<XF86AudioLowerVolume>" #'emms-volume-lower
+ "<XF86AudioRaiseVolume>" (lambda () (interactive) (my-vol-change 1))
+ "<XF86AudioLowerVolume>" (lambda () (interactive) (my-vol-change -1))
  "<XF86AudioMute>" "pactl set-sink-mute @DEFAULT_SINK@ toggle"
  "<XF86AudioMicMute>" "pactl set-source-mute @DEFAULT_SOURCE@ toggle")
 
