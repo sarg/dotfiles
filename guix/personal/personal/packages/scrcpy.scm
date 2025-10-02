@@ -15,7 +15,7 @@
 (define-public scrcpy
   (package
    (name "scrcpy")
-   (version "3.3.2")
+   (version "3.3.3")
    (source (origin
             (method git-fetch)
             (uri (git-reference
@@ -23,7 +23,7 @@
                   (commit (string-append "v" version))))
             (file-name (git-file-name name version))
             (sha256
-             (base32 "1s5r51a4r32ycnqiarrms9ck9j6s8ivh3qpr85h8ff15aqk2q0dg"))))
+             (base32 "1520my5d1385s91kra89bk92ksgn6343lk4zjq5gkngmpylq0h6n"))))
    (build-system meson-build-system)
    (native-inputs (list pkg-config
                         (origin
@@ -34,7 +34,7 @@
                           (file-name (string-append "scrcpy-server-" version ".jar"))
                           (sha256
                            (base32
-                            "1nfz57yi84qn3h5kgjsrhc53sa65fns6p1bmgidhyi7gcc4cmr9f")))))
+                            "1q2b6pakyqdywzi92v9c5c8fifpg9yn9gkmcsjfn8ngjlwxk4w3y")))))
    (inputs (list ffmpeg sdl2 libusb adb))
    (arguments
     (list
