@@ -44,8 +44,8 @@
        (replace "xorg-server" xorg-server-next)))))
 
 (define-public emacs-calibredb-next
-  (let ((commit "40a16be1391e526c0a96e6eda3ba6bd44778e5d8")
-        (revision "0"))
+  (let ((commit "99a234167a092bc0017d11c814f0b8c0da53a107")
+        (revision "1"))
     (package
       (inherit emacs-calibredb)
       (name "emacs-calibredb")
@@ -58,4 +58,4 @@
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "1a0a119fr4xznscjsgbjfmgn4xsp7kj4ylr5xl4s0xlqjcxjk4yr")))))))
+          (base32 "0jkhaf5h2qcqz8nvw80wj0xjazdpm2l9n0d5a41p20gnz54rhkbd")))))))
