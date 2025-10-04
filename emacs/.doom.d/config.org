@@ -2494,16 +2494,22 @@ mod? dotfiles '~/devel/dotfiles/guix/Justfile'
 #+begin_src cfg :dest ".config/zathura/zathurarc"
 set guioptions ""
 set statusbar-basename true
+set window-title-basename true
+set window-title-page true
+set selection-clipboard clipboard
 include theme
 #+end_src
 
-#+RESULTS[2a74b1f7dc93b5fcbd734c5323105bce51dab21d]:
+#+RESULTS[b9ceb7baa223b8ff5dcce3d677fb5eaae0161d43]:
 #+begin_src text :noweb-ref guix-file
 (".config/zathura/zathurarc"
 ,(mixed-text-file
   "cfg-file"
 "set guioptions \"\"\n"
 "set statusbar-basename true\n"
+"set window-title-basename true\n"
+"set window-title-page true\n"
+"set selection-clipboard clipboard\n"
 "include theme"))
 #+end_src
 
