@@ -112,7 +112,14 @@
   (timezone "Europe/Berlin")
   (host-name "thinkpad")
   (keyboard-layout (keyboard-layout "us"))
-  (name-service-switch %mdns-host-lookup-nss)
+  (name-service-switch
+    (name-service-switch
+      (hosts
+       (list %files
+             (name-service (name "mdns4_minimal")
+                           (reaction (lookup-specification
+                                      (not-found => return))))
+             (name-service (name "dns"))))))
   (bootloader
    (bootloader-configuration
     (theme (grub-theme
