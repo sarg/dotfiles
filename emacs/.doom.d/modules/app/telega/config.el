@@ -94,6 +94,7 @@
    'telega-logout
    :before-while (lambda (&rest r) (y-or-n-p "Really log out from current account?")))
 
+  (set-face-attribute 'telega-msg-heading nil :background nil)
   (set-popup-rule! (regexp-quote "*Telega Instant View*")
     :ignore t)
 
