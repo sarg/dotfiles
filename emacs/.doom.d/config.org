@@ -2521,14 +2521,12 @@ include theme
 "set selection-clipboard clipboard\n"
 "include theme"))
 #+end_src
-
-#+begin_src elisp :tangle packages.el
-(package! calibredb :built-in t)
-(package! nov :built-in t)
-#+end_src
 ** nov.el
 #+begin_src scheme :noweb-ref guix-pkg
 "emacs-nov-el"
+#+end_src
+#+begin_src elisp :tangle packages.el
+(package! nov :built-in t)
 #+end_src
 #+begin_src elisp :tangle no
 (use-package! nov
@@ -2541,6 +2539,9 @@ include theme
 ** calibre
 #+begin_src scheme :noweb-ref guix-pkg
 "emacs-calibredb" "sqlite" "calibre"
+#+end_src
+#+begin_src elisp :tangle packages.el
+(package! calibredb :built-in t)
 #+end_src
 #+begin_src elisp
 (use-package! calibredb
@@ -2560,7 +2561,13 @@ include theme
   :config
   (defalias 'calibredb-open-with-default-tool #'find-file))
 #+end_src
-
+** pdf-tools
+#+begin_src scheme :noweb-ref guix-pkg
+"emacs-pdf-tools"
+#+end_src
+#+begin_src elisp :tangle packages.el
+(package! pdf-tools :built-in t)
+#+end_src
 * browsing
 ** qutebrowser
 #+begin_src elisp :tangle packages.el
