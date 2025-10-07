@@ -14,28 +14,6 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix packages))
 
-(define-public oama
-  (package
-    (name "oama")
-    (version "0.21.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/pdobsan/oama/releases/download/"
-                    version "/oama-" version "-Linux-x86_64.tar.gz"))
-              (sha256
-               (base32 "0fllx1afbb0sdqvcm48yx1y8n7wshyqmq7g7p9k4dcg9a2rn2khn"))))
-
-    (build-system binary-build-system)
-    (supported-systems '("x86_64-linux"))
-    (arguments (list
-                #:install-plan
-                #~(list '("oama" "bin/oama"))))
-    (home-page "https://github.com/pdobsan/oama")
-    (synopsis "OAuth credential MAnager")
-    (description "Provide OAuth2 capabilities to IMAP/SMTP clients.")
-    (license license:bsd-3)))
-
 (define-public restic
   (let* ((version "0.18.0")
          (pkg (string-append "restic_" version "_linux_amd64")))

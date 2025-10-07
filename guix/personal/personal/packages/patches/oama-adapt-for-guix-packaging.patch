@@ -1,0 +1,184 @@
+From ab81217de6012f53b7280c6a4b84323a4c17a231 Mon Sep 17 00:00:00 2001
+From: Sergey Trofimov <sarg@sarg.org.ru>
+Date: Tue, 7 Oct 2025 13:25:02 +0200
+Subject: [PATCH] adapt for guix packaging
+
+---
+ lib/OAMa/CommandLine.hs | 24 ++------------
+ lib/OAMa/Environment.hs | 73 +----------------------------------------
+ oama.cabal              |  6 ++--
+ 3 files changed, 6 insertions(+), 97 deletions(-)
+
+diff --git a/lib/OAMa/CommandLine.hs b/lib/OAMa/CommandLine.hs
+index bc4ee02..2b71108 100644
+--- a/lib/OAMa/CommandLine.hs
++++ b/lib/OAMa/CommandLine.hs
+@@ -10,32 +10,12 @@ module OAMa.CommandLine (
+   versionInfo,
+ ) where
+ 
+-import Data.Time.Clock.POSIX qualified as TCP
+-import Data.Time.Format qualified as TF
+ import Data.Version (showVersion)
+ import Data.Yaml qualified as Yaml
+ import GHC.Generics
+-import GitHash
+ import Options.Applicative
+ import Paths_oama (version)
+-import Text.Printf
+-
+-gi :: GitInfo
+-gi = $$tGitInfoCwd
+-
+-_GIT_STATUS_INFO :: String
+-_GIT_STATUS_INFO =
+-  printf
+-    "%s %04d.%s%s"
+-    ( TF.formatTime
+-        TF.defaultTimeLocale
+-        "%Y-%m-%d"
+-        (TCP.posixSecondsToUTCTime (fromIntegral (giCommitTime gi)))
+-    )
+-    (giCommitCount gi)
+-    (take 8 (giHash gi))
+-    (if giDirty gi then " dirty" else "")
+-
++ 
+ data Opts = Opts
+   { optConfig :: !String,
+     optCommand :: !Command
+@@ -65,7 +45,7 @@ optsParser =
+     )
+ 
+ versionInfo :: String
+-versionInfo = showVersion version <> printf " - %s" _GIT_STATUS_INFO
++versionInfo = showVersion version
+ 
+ versionOption :: Parser (a -> a)
+ versionOption = do
+diff --git a/lib/OAMa/Environment.hs b/lib/OAMa/Environment.hs
+index 7d7779a..3e5988c 100644
+--- a/lib/OAMa/Environment.hs
++++ b/lib/OAMa/Environment.hs
+@@ -3,7 +3,6 @@
+ {-# LANGUAGE DuplicateRecordFields #-}
+ {-# LANGUAGE ImportQualifiedPost #-}
+ {-# LANGUAGE LambdaCase #-}
+-{-# LANGUAGE MultilineStrings #-}
+ {-# LANGUAGE OverloadedRecordDot #-}
+ {-# LANGUAGE OverloadedStrings #-}
+ 
+@@ -327,7 +326,7 @@ expandTilde inpath = do
+ checkInit :: IO (String, String)
+ checkInit = do
+   configDir <- Dir.getXdgDirectory Dir.XdgConfig "oama"
+-  stateDir <- Dir.getXdgDirectory Dir.XdgState "oama"
++  stateDir <- expandTilde "~/.local/state/oama"
+   Dir.createDirectoryIfMissing True configDir
+   Dir.createDirectoryIfMissing True stateDir
+   let defaultConfigFile = configDir <> "/config.yaml"
+@@ -396,73 +395,3 @@ initialConfig :: String
+ initialConfig =
+   "## oama version "
+     <> versionInfo
+-    <> """
+-
+-       ## This is a YAML configuration file, indentation matters.
+-       ## Double ## indicates comments while single # default values.
+-       ## Not all defaults are shown, for full list run `oama printenv`
+-       ## and look at the `services:` section.
+-
+-       ## Possible options for keeping refresh and access tokens:
+-       ## GPG - in a gpg encrypted file $XDG_STATE_HOME/oama/<email-address>.oauth
+-       ##       (XDG_STATE_HOME defaults to ~/.local/state)
+-       ## GPG - in a gpg encrypted file ~/.local/state/oama/<email-address>.oauth
+-       ## KEYRING - in the keyring of a password manager with Secret Service API
+-       ##
+-       ## Choose exactly one.
+-
+-       encryption:
+-           tag: KEYRING
+-
+-       # encryption:
+-       #   tag: GPG
+-       #   contents: your-KEY-ID
+-
+-       ## Builtin service providers
+-       ## - google
+-       ## - microsoft
+-       ## Required fields: client_id, client_secret
+-       ##
+-       services:
+-         google:
+-           client_id: application-CLIENT-ID
+-           client_secret: application-CLIENT-SECRET
+-         ## Alternatively get them from a password manager using a shell command.
+-         ## If both variants are present then the _cmd versions get the priority.
+-         ## For example:
+-         # client_id_cmd: |
+-         #   pass email/my-app | head -1
+-         # client_secret_cmd: |
+-         #   pass email/my-app | head -2 | tail -1
+-         #  auth_scope: https://mail.google.com/
+-
+-         microsoft:
+-            client_id: application-CLIENT-ID
+-         ## client_secret is not needed for device code flow
+-         #  auth_endpoint: https://login.microsoftonline.com/common/oauth2/v2.0/devicecode
+-         ##
+-         ## client_secret might be needed for other authorization flows
+-         #  client_secret: application-CLIENT_SECRET
+-         ## auth_endpoint: https://login.microsoftonline.com/common/oauth2/v2.0/authorize
+-         #
+-         #  auth_scope: https://outlook.office.com/IMAP.AccessAsUser.All
+-         #     https://outlook.office.com/SMTP.Send
+-         #     offline_access
+-         #  tenant: common
+-
+-         ## User configured providers
+-         ## Required fields: client_id, client_secret, auth_endpoint, auth_scope, token_endpoint
+-         ##
+-         ## For example:
+-         # yahoo:
+-         #   client_id: application-CLIENT-ID
+-         #   client_id_cmd: |
+-         #     password manager command ...
+-         #   client_secret: application-CLIENT_SECRET
+-         #   client_secret_cmd: |
+-         #     password manager command ...
+-         #   auth_endpoint: EDIT-ME!
+-         #   auth_scope: EDIT-ME!
+-         #   token_endpoint: EDIT-ME!
+-
+-       """
+diff --git a/oama.cabal b/oama.cabal
+index de53a07..3d17050 100644
+--- a/oama.cabal
++++ b/oama.cabal
+@@ -1,4 +1,4 @@
+-cabal-version:      3.14
++cabal-version:      3.6
+ name:               oama
+ version:            0.22.0
+ license:            BSD-3-Clause
+@@ -22,7 +22,7 @@ common common
+   default-language: Haskell2010
+   build-depends:
+     aeson,
+-    base >=4.17,
++    base,
+     base64-bytestring,
+     bytestring,
+     containers,
+@@ -44,7 +44,7 @@ common common
+     strings,
+     text,
+     time,
+-    twain >=2.2.0.1,
++    twain,
+     unix,
+     utf8-string,
+     warp,
+-- 
+2.51.0
+
