@@ -13,7 +13,9 @@
      "/storage/devel/ext/nonguix/" "/storage/devel/ext/guix/"
      "/storage/devel/ext/sops-guix/" "/home/sarg/devel/dotfiles/emacs/.doom.d/"
      "/gnu/store/4d2xd3rkl06lrqf58qgs479gn5sljkrc-doomemacs-3.0.0-20250331.67933f9/"))
- '(safe-local-variable-values '((eval sarg/eval-org-src-block "api"))))
+ '(safe-local-variable-values
+   '((buffer-read-only . 1)
+     (eval sarg/eval-org-src-block "api"))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

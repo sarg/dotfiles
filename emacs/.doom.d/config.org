@@ -2316,6 +2316,7 @@ os.execlp('jaro', 'jaro',
   (org-project-capture-todo-files)
   (-map (lambda (el) (expand-file-name el org-directory))
         '("main.org"
+          "calendar.org"
           "tickler.org"))))
 #+end_src
 
@@ -3026,6 +3027,67 @@ current buffer, killing it."
 [general]
 status_path = "~/.local/state/vdirsyncer"
 
+# CALDAV
+[pair desarg_calendar]
+a = "desarg_calendar_local"
+b = "desarg_calendar_remote"
+collections = ["de.strofimov@gmail.com"]
+
+# Calendars also have a color property
+metadata = ["displayname", "color"]
+
+[storage desarg_calendar_local]
+type = "filesystem"
+path = "~/.calendars/"
+fileext = ".ics"
+
+[storage desarg_calendar_remote]
+type = "google_calendar"
+# thunderbird client
+client_id = "406964657835-aq8lmia8j95dhl1a2bvharmfk3t1hgqj.apps.googleusercontent.com"
+client_secret = "kSmqreRr0qwBWJgbf5Y-PjSU"
+token_file = "~/.local/state/vdirsyncer/token"
+#+end_src
+
+#+RESULTS[45210d41095cc399de6d09721fe77a89d0970814]:
+#+begin_src text :noweb-ref guix-file
+(".config/vdirsyncer/config"
+,(mixed-text-file
+  "cfg-file"
+"[general]\n"
+"status_path = \"~/.local/state/vdirsyncer\"\n"
+"\n"
+"# CALDAV\n"
+"[pair desarg_calendar]\n"
+"a = \"desarg_calendar_local\"\n"
+"b = \"desarg_calendar_remote\"\n"
+"collections = [\"de.strofimov@gmail.com\"]\n"
+"\n"
+"# Calendars also have a color property\n"
+"metadata = [\"displayname\", \"color\"]\n"
+"\n"
+"[storage desarg_calendar_local]\n"
+"type = \"filesystem\"\n"
+"path = \"~/.calendars/\"\n"
+"fileext = \".ics\"\n"
+"\n"
+"[storage desarg_calendar_remote]\n"
+"type = \"google_calendar\"\n"
+"# thunderbird client\n"
+"client_id = \"406964657835-aq8lmia8j95dhl1a2bvharmfk3t1hgqj.apps.googleusercontent.com\"\n"
+"client_secret = \"kSmqreRr0qwBWJgbf5Y-PjSU\"\n"
+"token_file = \"~/.local/state/vdirsyncer/token\""))
+#+end_src
+
+#+begin_src elisp :tangle packages.el
+(package! khalel)
+#+end_src
+#+begin_src elisp
+(use-package! khalel)
+#+end_src
+#+begin_src scheme :noweb-ref guix-pkg
+"vdirsyncer" "khal"
+#+end_src
 * TODO todo [8/13]
 ** DONE console font
 ** DONE mingetty with xorg autostart (under sarg), put `lock.sh` first in the .xsession
