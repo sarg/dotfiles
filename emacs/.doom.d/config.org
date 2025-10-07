@@ -1313,6 +1313,8 @@ services:
 (package! consult-mu :built-in t)
 #+end_src
 #+begin_src elisp
+(add-hook! doom-init-ui (mu4e 'no-popup))
+
 (use-package! consult-mu
   :after mu4e)
 (use-package! consult-mu-contacts
