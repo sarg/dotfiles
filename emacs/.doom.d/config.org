@@ -2466,12 +2466,14 @@ mod? dotfiles '~/devel/dotfiles/guix/Justfile'
   (set-popup-rule! "^\\*Article" :ignore t))
 
 (use-package! fj
-  :commands fj-list-items fj-list-pulls
+  :commands fj-list-issues fj-list-pulls
   :config
   (setq! fj-host "https://codeberg.org"
          fj-user "sarg"
          fj-token-use-auth-source nil
-         fj-token (auth-source-pass-get 'secret "Api/codeberg.org/fj.el")))
+         fj-token (auth-source-pass-get 'secret "Api/codeberg.org/fj.el"))
+  
+  (set-popup-rule! "^\\*fj-" :ignore t))
 
 (use-package! guix
   :config
@@ -2479,6 +2481,17 @@ mod? dotfiles '~/devel/dotfiles/guix/Justfile'
          guix-current-profile "~/.guix-home/profile"
          guix-load-path (mapcar #'expand-file-name
                                 '("~/devel/dotfiles/guix/personal" "~/devel/ext/nonguix"))))
+
+(after! magit
+  (autoload #'fj-repo-+-owner-from-git "fj" nil t)
+  (transient-define-prefix magit-fj ()
+    "fj.el"
+    ["What"
+     ("i" "Issues" fj-list-issues)
+     ("p" "Pulls" fj-list-pulls)])
+
+  (transient-insert-suffix 'magit-fetch
+    '(2 0) (list "j" "fj.el" #'magit-fj :if #'fj-repo-+-owner-from-git)))
 #+end_src
 * tramp
 #+begin_src elisp
