@@ -15,7 +15,7 @@
   #:use-module (guix packages))
 
 (define-public restic
-  (let* ((version "0.18.0")
+  (let* ((version "0.18.1")
          (pkg (string-append "restic_" version "_linux_amd64")))
     (package
       (name "restic")
@@ -26,7 +26,7 @@
                       "https://github.com/restic/restic/releases/download/v"
                       version "/" pkg ".bz2"))
                 (sha256
-                 (base32 "13j3fhip4fss4y8fxk360rl2mk4nw5cap3gx9g85i45myn5xvxlq"))))
+                 (base32 "0g9n3z28p4mss4z7hd8prwcjrwcavl65gq97lbdil5b7kpqkh238"))))
       (build-system binary-build-system)
       (supported-systems '("x86_64-linux"))
       (arguments (list
