@@ -384,24 +384,3 @@ command-line programs gsutil and gcloud among others.")
     (synopsis #f)
     (description #f)
     (license license:asl2.0)))
-
-(define-public httptap
-  (package
-   (name "httptap")
-   (version "0.1.1")
-   (source
-    (origin
-     (method url-fetch)
-     (uri (string-append
-           "https://github.com/monasticacademy/httptap/releases/download/v"
-           version "/httptap_linux_x86_64.tar.gz"))
-     (sha256
-      (base32 "1vyzlg4h5g71qgbh0zsbfjq1ll3mc4a51mnz055ydhx4dnq97val"))))
-   (build-system copy-build-system)
-   (supported-systems '("x86_64-linux"))
-   (arguments
-    `(#:install-plan '(("httptap" "bin/"))))
-   (home-page "https://github.com/monasticacademy/httptap")
-   (synopsis #f)
-   (description #f)
-   (license license:expat)))
