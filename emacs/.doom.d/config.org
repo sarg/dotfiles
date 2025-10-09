@@ -2273,7 +2273,7 @@ dbusserver: true
 #+begin_src python :tangle ~/.local/share/qutebrowser/userscripts/orgprotocol :shebang #!/usr/bin/env python3
 import os
 from urllib.parse import quote
-os.execlp('xdg-open', 'xdg-open',
+os.execlp('jaro', 'jaro',
           'org-protocol://capture?template=b&url={url}&title={title}&body={body}'.format(
               url   = quote(os.environ.get('QUTE_URL', '')),
               title = quote(os.environ.get('QUTE_TITLE', '')),
@@ -2460,7 +2460,7 @@ mod? dotfiles '~/devel/dotfiles/guix/Justfile'
 #+end_src
 ** guix development
 #+begin_src scheme :noweb-ref guix-pkg
-"emacs-debbugs" "gnu-standards" "mumi-with-jaro" "emacs-fj"
+"emacs-debbugs" "gnu-standards" "emacs-fj"
 #+end_src
 #+begin_src elisp :tangle packages.el
 (package! fj :built-in t)
@@ -2828,7 +2828,7 @@ eval "$(atuin init bash)"
   :hook (after-init . openwith-mode)
   :custom
   (openwith-associations
-   '(("\\.\\(?:pdf\\|epub\\|djvu\\|mkv\\|webm\\|avi\\|mp4\\)\\'" "xdg-open" (file))))
+   '(("\\.\\(?:pdf\\|epub\\|djvu\\|mkv\\|webm\\|avi\\|mp4\\)\\'" "jaro" (file))))
 
   :config
   ;; Don't ask if file is too large when it'll be handled by openwith-mode.
