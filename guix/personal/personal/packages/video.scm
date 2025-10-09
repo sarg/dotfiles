@@ -30,7 +30,7 @@
 (define-public mpv-uosc
   (package
     (name "mpv-uosc")
-    (version "5.8.0")
+    (version "5.12.0")
     (source
      (origin
        (method url-fetch/zipbomb)
@@ -39,7 +39,7 @@
              version
              "/uosc.zip"))
        (sha256
-        (base32 "06k8anzywywshjikllliabx81fb1455wwazcfwfhanpvb33s1vfh"))))
+        (base32 "0rai7001c5v5jnl1s10kz2a8crysdiclz036n5y4ppjj2nyzcp6f"))))
     (build-system copy-build-system)
     (arguments
      (list
