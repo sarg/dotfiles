@@ -977,6 +977,10 @@ REVERSE? it when true. Returns the selected buffer."
 
 ** emms
 *** package
+#+begin_src elisp :tangle packages.el
+;TODO: remove pin when doom bumps the package
+(package! emms :pin "99ebaae9f180dd6b2e5be363e709efa1da0014d6")
+#+end_src
 #+begin_src elisp
 (defun dont-kill-buffer--hook ()
   (bury-buffer)
@@ -2214,7 +2218,7 @@ dbusserver: true
     :pin "9973bd3b91e4733a3edd1fca232208c837c05473")
 (package! corg
   :recipe (:host github :repo "isamert/corg.el")
-  :pin "79af293aa95936274d7b3a6ba13d4b66a3a6ee76")
+  :pin "54c0ed1a38a216b05eca3c7d1f00b28847cd5bb1")
 (package! org-projectile :pin "bf1c30b750020ab8dd634dd66b2c7b76c56286c5")
 (package! org-tidy :pin "0bea3a2ceaa999e0ad195ba525c5c1dcf5fba43b")
 #+end_src
@@ -2357,9 +2361,9 @@ mod? dotfiles '~/devel/dotfiles/guix/Justfile'
 #+end_src
 
 #+begin_src elisp :tangle packages.el
-(package! just-mode :pin "4c0df4cc4b8798f1a7e99fb78b79c4bf7eec12c1")
+(package! just-mode :pin "310f437296173e4659c80490fcdb7ebafbac1665")
 (package! justl :recipe (:host github :repo "psibi/justl.el")
-  :pin "1554e9e8db0c9653a924a10e87931082d8eafd9b")
+  :pin "8096ebd602f374936be2c14cbc6b2e7768c3fccf")
 #+end_src
 #+begin_src elisp
 (use-package! just-mode)
@@ -2851,7 +2855,7 @@ eval "$(atuin init bash)"
 * llm
 #+begin_src elisp :tangle packages.el
 ; TODO: remove custom pin once doom catches up
-(package! gptel :pin "1a83e0e12c452664bfc24e46f137e3bdc546e0ae")
+(package! gptel :pin "4275350d7769fb8fdd09353e3e6d991b05c7a673")
 #+end_src
 #+begin_src elisp
 (after! gptel
