@@ -41,9 +41,10 @@
 (defun dash-menu/telega (&rest preds)
   (-map-indexed
    (lambda (index chat)
-     `(,(format "t%d" (+ 1 index)) ,(telega-msg-sender-title-for-completion chat)
+     `(,(if (zerop index) "tt" (format "t%d" (+ 1 index)))
+       ,(telega-msg-sender-title-for-completion chat)
        (lambda () (interactive) (telega-chat--pop-to-buffer ',chat))))
-   (-take 9 (telega-filter-chats telega--ordered-chats `(and main unread ,@(-keep #'identity preds))))))
+   (-take 9 (telega-filter-chats (telega-chats-list) `(and main unread ,@(-keep #'identity preds))))))
 
 (defun dash-menu/dots-heading ()
   (interactive)
@@ -82,6 +83,7 @@
       (transient-parse-suffixes
        'dash-menu
        `[("tm" "" "muted" :format " %k %v")
+         ("ts" "Saved" telega-saved-messages)
          ("tc" "chat" telega-chat-with)
          ,@(dash-menu/telega
             (if (-contains? (oref (transient-prefix-object) value) "muted") nil 'unmuted))]))]

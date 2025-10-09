@@ -66,6 +66,10 @@
   (telega-emoji-use-images nil)
   (telega-emoji-custom-alist '((":s:" . "¯\\_(ツ)_/¯")))
   (telega-msg-ignore-predicates '(telega-msg-special-p))
+  (telega-video-player-command
+   '(concat "mpv"
+     (when telega-ffplay-media-timestamp
+       (format " --start=%f" telega-ffplay-media-timestamp))))
 
   :config
   (add-hook! telega-root-mode (cd telega-directory))
