@@ -1,4 +1,7 @@
 from qutebrowser.browser.qutescheme import add_handler, Redirect
+from qutebrowser.qt.core import Qt
+from qutebrowser.api import cmdutils
+from qutebrowser.utils import objreg, qtutils
 from qutebrowser.qt.core import QUrl, QUrlQuery
 import urllog
 import re
@@ -125,3 +128,15 @@ def qute_bangs(url: QUrl):
     bang = bang or BANGS["DEFAULT"]
 
     raise Redirect(QUrl(bang.replace("{}", q)))
+
+
+@cmdutils.register(instance="main-window", scope="window", name="close-or-hide")
+def command_close_tab(self) -> None:
+    "Close or hide window when is last"
+    if len(objreg.window_registry) > 1:
+        self.close()
+    else:
+        self.showMinimized()
+
+
+config.bind("d", "close-or-hide")
