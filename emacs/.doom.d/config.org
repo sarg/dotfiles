@@ -1683,7 +1683,7 @@ done
      (port 8022))))))
 #+end_src
 * services
-** profile
+** COMMENT profile
 #+begin_src scheme :noweb-ref guix-srv
 (simple-service
  'extra-profile home-shell-profile-service-type
@@ -1809,6 +1809,10 @@ allow_anonymous true
 (service home-pipewire-service-type)
 #+end_src
 * guix-emacs helper
+#+begin_src scheme :noweb-ref guix-pkg
+"emacs-guix"
+#+end_src
+
 #+begin_src elisp
 (defun use-guix-package (pkg-name)
   (interactive "MPackage: ")
