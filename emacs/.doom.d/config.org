@@ -1767,6 +1767,17 @@ done
                         "--exclude-file" (plain-file "excludes" "node_modules"))))))))
 #+end_src
 ** syncthing
+#+begin_src scheme :noweb-ref guix-pkg
+"emacs-syncthing"
+#+end_src
+#+begin_src elisp :tangle packages.el :exports none
+(package! syncthing :built-in t)
+#+end_src
+#+begin_src elisp
+(use-package! syncthing
+  :custom
+  (syncthing-default-server-token "apikey"))
+#+end_src
 #+begin_src scheme :noweb-ref guix-file
 ("Sync" ,(symlink-to "/storage/Sync"))
 ,@(resolve-relative-to "/storage/" '((".local/state/syncthing" "data/syncthing/")))
@@ -1781,7 +1792,7 @@ done
               (config-file
                (syncthing-config-file
                 (usage-reporting-accepted -1)
-                (gui-enabled? #f)
+                (gui-apikey "apikey")
                 (folders (list (syncthing-folder
                                 (label "Sync")
                                 (path "~/Sync")
