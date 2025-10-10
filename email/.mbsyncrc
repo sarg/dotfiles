@@ -35,8 +35,13 @@ Channel gmail-archive
     Far :gmail-remote:"[Gmail]/All Mail"
     Near :gmail-local:all
 
+Channel gmail-drafts
+    Far :gmail-remote:"[Gmail]/Drafts"
+    Near :gmail-local:drafts
+
 Group gmail
 Channel gmail-trash
+Channel gmail-drafts
 Channel gmail-archive
 Channel gmail-sent
 
