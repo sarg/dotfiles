@@ -1338,7 +1338,14 @@ services:
         :n "Q" #'mu4e-quit)
   (set-popup-rule! "^\\*mu4e-main\\*$" :ignore t)
   (set-popup-rule! "^\\*mu4e-headers\\*$" :ignore t)
+  (add-to-list
+   'mu4e-header-info-custom
+   `(:trashed :name "T" :shortname "T" :help "is trashed" :function
+             (lambda (msg)
+               (if (member "\\Trash" (mu4e-message-field msg :tags))
+                   "🗑" ""))))
   (setq mu4e-bookmarks '(("flag:unread and not maildir:/gmail/trash and not maildir:/gmail/sent" "unread" ?m))
+        mu4e-headers-fields '((:trashed . 1) (:human-date . 10) (:from-or-to . 25) (:subject))
         mu4e-modeline-support nil
         mu4e-sent-folder "/gmail/sent"
         mu4e-drafts-folder "/gmail/drafts"
