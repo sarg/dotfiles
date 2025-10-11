@@ -7,18 +7,19 @@
 (require 's)
 (require 'dash)
 
-(defun frf--promise-json (url)
+(defun frf--promise-json (url &rest opts)
   (promise-new
    (lambda (resolve reject)
-     (request url
-       :headers
-       `(("Content-Type" . "application/json")
-         ("Authorization" . ,(concat "Bearer " (auth-source-pass-get 'secret "Api/freefeed.net"))))
-       :parser #'json-read
-       :error (cl-function (lambda (&rest args &key error-thrown &allow-other-keys)
-                             (funcall reject  error-thrown)))
-       :success (cl-function (lambda (&key data &allow-other-keys)
-                               (funcall resolve data)))))))
+     (apply #'request url
+            :headers
+            `(("Content-Type" . "application/json")
+              ("Authorization" . ,(concat "Bearer " (auth-source-pass-get 'secret "Api/freefeed.net"))))
+            :parser #'json-read
+            :error (cl-function (lambda (&rest args &key error-thrown &allow-other-keys)
+                                  (funcall reject  error-thrown)))
+            :success (cl-function (lambda (&key data &allow-other-keys)
+                                    (funcall resolve data)))
+            opts))))
 
 (defun frf-find (id coll)
   (seq-find
@@ -84,9 +85,11 @@
                  (body (frf-reflow (s-trim .body)))
                  (title (nth 0 (s-lines body)))
                  (bodyRest (s-trim (substring body (length title)))))
-            (insert "\n* "
-                    (if (string-empty-p body) "Media" title)
-                    (format " {%s} [💕%d/✍%d] :%s:\n"
+            (insert (format "\n* %s%s {%s} [💕%d/✍%d] :%s:\n"
+                            (if .isHidden
+                                "COMMENT "
+                              (format "[[elisp:(frf-hide \"%s\")][hide]] " .id))
+                            (if (string-empty-p body) "Media" title)
                             (frf-age .createdAt now)
                             (+ (length .likes) .omittedLikes)
                             (+ (length .comments) .omittedComments)
@@ -97,14 +100,19 @@
             (when (> (length .attachments) 0)
               (unless (string-empty-p body)
                 (insert "\n"))
-              (seq-do
-               (lambda (a)
-                 (let-alist (frf-find a attachments)
-                   (insert "[[https://freefeed.net/v4/attachments/" a "/" .mediaType "?"
-                           (url-build-query-string `((redirect) (fn ,.fileName)))
-                           "][" .mediaType "]] ")))
-               .attachments)
-              (insert "\n"))
+              (insert
+               (string-join
+                (seq-map
+                 (lambda (a)
+                   (let-alist (frf-find a attachments)
+                     (let* ((http-link (format "https://freefeed.net/v4/attachments/%s/%s?redirect" a .mediaType))
+                            (org-link (if (string= "video" .mediaType)
+                                          (format "elisp:(mpv-play-url %S)" http-link)
+                                        http-link)))
+                       (format "[[%s][%s]]" org-link .mediaType))))
+                 .attachments)
+                " ")
+               "\n"))
 
             (seq-do-indexed
              (lambda (c idx)
@@ -118,23 +126,48 @@
                  (insert "\n** " (alist-get 'username author) "\n"
                          (alist-get 'body cmt))))
              .comments))))
-    (org-mode)))
+    (org-mode)
+    (setq-local browse-url-browser-function #'eww-browse-url)))
 
-
-(defun frf-timeline (name)
-  (interactive (list (read-string "Name: " nil nil "home")))
-  (let ((buf (get-buffer-create "*Freefeed*")))
+(defun frf-timeline ()
+  "Read Freefeed timeline."
+  (interactive)
+  (let ((name (if current-prefix-arg (read-string "Name: ") "home"))
+        (buf (get-buffer-create "*Freefeed*")))
     (with-current-buffer buf
-      (setq-local browse-url-browser-function #'eww-browse-url)
       (erase-buffer)
       (insert "Loading...")
       (switch-to-buffer buf))
 
     (promise-chain (frf--promise-json (format "https://freefeed.net/v4/timelines/%s" name))
-      (then (lambda (result)
-              (frf-render result buf)))
-      (promise-catch (lambda (reason)
-                       (message "catch error in promise timeline: %s" reason))))))
+      (then
+       (lambda (result)
+         (frf-render result buf)))
+      (promise-catch
+       (lambda (reason)
+         (message "catch error in promise timeline: %s" reason))))))
+
+(defun frf-hide (id)
+  "Hide selected post from the timeline"
+  (let ((buf (current-buffer)))
+    (promise-chain (frf--promise-json
+                    (format "https://freefeed.net/v4/posts/%s/hide" id)
+                    :type "POST")
+      (then
+       (lambda (result)
+         (with-current-buffer buf
+           (save-excursion
+             (goto-char (point-min))
+             (when (search-forward id nil t)
+               (beginning-of-line)
+               (forward-char 2)
+               (insert "COMMENT")
+               (let ((start (point)))
+                 (search-forward "]]")
+                 (delete-region start (point))))))))
+      (promise-catch
+       (lambda (reason)
+         (message "catch error in promise timeline: %s" reason))))))
 
 (provide 'frf)
 ;;; frf.el ends here
