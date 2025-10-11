@@ -45,6 +45,13 @@
        (lambda () (interactive) (telega-chat--pop-to-buffer ',chat))))
    (-take 9 (telega-filter-chats telega--ordered-chats `(and main unread ,@(-keep #'identity preds))))))
 
+(defun dash-menu/dots-heading ()
+  (interactive)
+  (let* ((cfg (find-file-noselect "~/devel/dotfiles/emacs/.doom.d/config.org"))
+         (sel (with-current-buffer cfg (consult-org-heading))))
+    (switch-to-buffer cfg)
+    (goto-char sel)))
+
 (transient-define-prefix dash-menu ()
   "My Menu"
   :value '("muted")
@@ -82,8 +89,13 @@
    ["Quick"
     ("qr" "repo" (lambda () (interactive)
                    (let ((current-prefix-arg '(0)))
-                     (call-interactively #'magit-status))))]])
+                     (call-interactively #'magit-status))))]
 
+
+   ["Bookmarks"
+    ("bf" "Freefeed" frf-timeline)
+    ("bh" "Hackernews" hnreader-news)
+    ("bc" "config.org" dash-menu/dots-heading)]])
 
 (add-hook! 'transient-setup-buffer-hook
   (setq exwm-input-line-mode-passthrough 't))

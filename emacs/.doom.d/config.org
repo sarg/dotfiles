@@ -3019,6 +3019,14 @@ current buffer, killing it."
   :config
   (org-link-set-parameters "eww" :follow 'eww-browse-url))
 #+end_src
+** freefeed
+#+begin_src elisp
+(load! "frf")
+#+end_src
+** google calendar
+#+begin_src cfg :dest ".config/vdirsyncer/config"
+[general]
+status_path = "~/.local/state/vdirsyncer"
 
 * TODO todo [8/13]
 ** DONE console font
