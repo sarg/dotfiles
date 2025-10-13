@@ -28,6 +28,12 @@
     (when (-any (lambda (re) (string-match re text)) re-list)
       (kill-new (match-string 1 text)))))
 
+(defun sarg/telega-online-status ()
+  (derived-mode-p 'telega-root-mode 'telega-chat-mode
+                  'telega-image-mode 'telega-webpage-mode))
+
+(setq telega-online-status-function #'my/telega-online-status)
+
 (use-package! telega
   :commands (telega)
 
@@ -42,6 +48,7 @@
   ;; :init
   ;; (setq telega-inserter-for-msg-button #'sarg/telega-ins--message)
   :custom
+  (telega-online-status-function #'sarg/telega-online-status)
   (telega-chat-show-deleted-messages-for '(not saved-messages))
   (telega-root-show-avatars nil)
   (telega-root-default-view-function #'telega-view-compact)
