@@ -542,7 +542,7 @@ polkit.addRule(function(action, subject) {
 ** utils
 #+begin_src scheme :noweb-ref guix-pkg
 "curl" "rsync" "man-db"
-"atool" "p7zip" "unzip" "zip" "jq"
+"atool" "7zip" "unzip" "zip" "jq"
 "ripgrep" "moreutils" "libiconv"
 "powertop" "graphviz" "bind:utils"  ; dig
 "graphicsmagick" "libwebp" "jpegoptim"
@@ -631,7 +631,7 @@ disable-ipv6=true
 (after! browse-url
   (defun browse-url-mpv (url &rest _) (mpv-play-url url))
   (add-to-list 'browse-url-handlers
-               (cons (rx string-start "https://" (opt "www.") "youtu" (opt ".") "be")
+               (cons (rx string-start "https://" (opt "www.") "youtu" (or ".be" "be.com/watch"))
                      #'browse-url-mpv)))
 
 (use-package! mpv
@@ -1915,9 +1915,10 @@ allow_anonymous true
  :completion  corfu vertico ;(ivy +fuzzy +prescient +childframe)
  :ui          nav-flash (modeline +light) ophints (popup +defaults) ligatures treemacs doom-dashboard
  :editor      (evil +everywhere) fold lispy snippets (format +onsave) multiple-cursors word-wrap
- :emacs       (dired +dirvish +icons) electric vc ibuffer undo
+ :emacs       (dired +dirvish +icons) electric vc ibuffer undo eww
  :term        eshell vterm
- :tools       editorconfig (eval +overlay) (lookup +docsets) magit pdf (pass +auth) make tree-sitter lsp direnv llm
+ :tools       editorconfig (eval +overlay) (lookup +docsets) magit pdf (pass +auth)
+              make tree-sitter lsp direnv llm debugger
  :checkers    syntax
  :lang        (clojure +tree-sitter) data emacs-lisp (javascript +tree-sitter +lsp) markdown
               (org +contacts +dragndrop +pandoc +present +hugo +roam2 +pretty) beancount (go +lsp +tree-sitter)
@@ -2281,7 +2282,7 @@ dbusserver: true
 (load! "org-defuns")
 #+end_src
 ** capture
-*** COMMENT qutebrowser userscript
+*** qutebrowser userscript
 #+begin_src python :tangle ~/.local/share/qutebrowser/userscripts/orgprotocol :shebang #!/usr/bin/env python3
 import os
 from urllib.parse import quote
@@ -2492,6 +2493,8 @@ mod? dotfiles '~/devel/dotfiles/guix/Justfile'
          fj-user "sarg"
          fj-token-use-auth-source nil
          fj-token (auth-source-pass-get 'secret "Api/codeberg.org/fj.el"))
+  (map! :map fj-item-view-mode-map
+        :nm "go" #'fj-browse-view)
   
   (set-popup-rule! "^\\*fj-" :ignore t))
 
