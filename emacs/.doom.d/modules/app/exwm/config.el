@@ -46,6 +46,7 @@
 
   :config
   (when (modulep! +workspaces) (load! "+workspaces"))
+  (load! "+patch")
   (load! "+xkb-layout-switch")
 
   ;; Disable dialog boxes since they are unusable in EXWM
