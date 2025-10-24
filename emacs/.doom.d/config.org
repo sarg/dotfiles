@@ -2139,7 +2139,8 @@ dbusserver: true
   (if (display-graphic-p)
       (add-hook! 'after-init-hook (darkman-mode))))
 #+end_src
-** redshift
+** COMMENT redshift
+Note: doesn't work with xorg-server-next. Setting gamma through randr is ignored.
 #+begin_src scheme :noweb-ref guix-srv
 (service
  home-redshift-service-type
