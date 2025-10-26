@@ -1001,9 +1001,15 @@ REVERSE? it when true. Returns the selected buffer."
   (setq!
    emms-player-mpv-update-metadata t
    emms-player-mpv-parameters
-   '("--quiet" "--really-quiet" "--no-audio-display" "--load-scripts=no")
+   '("--quiet" "--really-quiet" "--no-audio-display" "--load-scripts=no" "--no-config")
    emms-playlist-buffer-name "*Music*"
    emms-source-file-default-directory (expand-file-name "~/Sync/"))
+
+  (require 'emms-mpris)
+  (emms-mpris-enable)
+  ; mpv player changes track metadata when playing streams
+  (add-hook 'emms-track-updated-functions
+            (lambda (track) (emms-mpris-change-status)))
 
   (map! :map emms-playlist-mode-map
         :localleader
@@ -2173,6 +2179,15 @@ Note: doesn't work with xorg-server-next. Setting gamma through randr is ignored
   (define-key! discomfort-mode-map
     "j" #'next-line
     "k" #'previous-line))
+#+end_src
+** kdeconnect
+#+begin_src scheme :noweb-ref guix-pkg
+"kdeconnect"
+#+end_src
+
+#+begin_src sh :noweb-ref autostart :tangle no
+; force daemon start
+"kdeconnect-cli -l"
 #+end_src
 * miscellaneous
 #+begin_src elisp
