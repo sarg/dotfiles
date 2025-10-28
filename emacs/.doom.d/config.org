@@ -2031,14 +2031,18 @@ xargs flatpak install --or-update --noninteractive
 #+begin_src scheme :noweb-ref guix-pkg
 "jaro"
 #+end_src
+
+#+begin_src scheme :noweb-ref guix-file
+(".local/bin/xdg-open" ,(file-append (pkg "jaro") "/bin/jaro"))
+#+end_src
 #+begin_src cfg :dest ".config/associations"
 (bind
  #:pattern "^mailto:.*"
- #:program '(emacsclient --eval "(message-mailto \"%f\")"))
+ #:program (elisp (message-mailto "%f")))
 
 (bind
  #:pattern "^https://t.me/.*"
- #:program '(emacsclient --eval "(telega-browse-url \"%f\")"))
+ #:program (elisp (telega-browse-url "%f")))
 
 (bind
  #:pattern "^org-protocol:.*"
@@ -2061,18 +2065,18 @@ xargs flatpak install --or-update --noninteractive
  #:program '(qview %f))
 #+end_src
 
-#+RESULTS[d8cd816a38eb7ea0ee8310a772e52d2c4b2c558d]:
+#+RESULTS[fde117f2f515964f456ee47c4232635fd8747cbb]:
 #+begin_src text :noweb-ref guix-file
 (".config/associations"
 ,(mixed-text-file
   "cfg-file"
 "(bind\n"
 " #:pattern \"^mailto:.*\"\n"
-" #:program '(emacsclient --eval \"(message-mailto \\\"%f\\\")\"))\n"
+" #:program (elisp (message-mailto \"%f\")))\n"
 "\n"
 "(bind\n"
 " #:pattern \"^https://t.me/.*\"\n"
-" #:program '(emacsclient --eval \"(telega-browse-url \\\"%f\\\")\"))\n"
+" #:program (elisp (telega-browse-url \"%f\")))\n"
 "\n"
 "(bind\n"
 " #:pattern \"^org-protocol:.*\"\n"
@@ -2816,6 +2820,10 @@ eval "$(atuin init bash)"
          ([remap detached-open-session] . detached-consult-session))
   :custom ((detached-show-output-on-attach t)
            (detached-terminal-data-command system-type)))
+#+end_src
+
+#+begin_src scheme :noweb-ref guix-env-var
+("PATH" . "$HOME/.local/bin:$PATH")
 #+end_src
 
 * dired
