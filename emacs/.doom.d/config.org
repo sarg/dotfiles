@@ -1826,6 +1826,28 @@ allow_anonymous true
 (service home-batsignal-service-type)
 (service home-pipewire-service-type)
 #+end_src
+
+[[https://www.reddit.com/r/linux/comments/1em8biv/psa_pipewire_has_been_halving_your_battery_life/][fix camera draining battery]]
+#+begin_src cfg :dest ".config/wireplumber/wireplumber.conf.d/10-disable-camera.conf"
+wireplumber.profiles = {
+  main = {
+    monitor.libcamera = disabled
+  }
+}
+#+end_src
+
+#+RESULTS[97dedec3921e46170c328b8fb7144e5e3b9cd901]:
+#+begin_src text :noweb-ref guix-file
+(".config/wireplumber/wireplumber.conf.d/10-disable-camera.conf"
+,(mixed-text-file
+  "cfg-file"
+"wireplumber.profiles = {\n"
+"  main = {\n"
+"    monitor.libcamera = disabled\n"
+"  }\n"
+"}"))
+#+end_src
+
 * guix-emacs helper
 #+begin_src scheme :noweb-ref guix-pkg
 "emacs-guix"
