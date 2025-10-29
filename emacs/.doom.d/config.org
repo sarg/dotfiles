@@ -971,9 +971,11 @@ REVERSE? it when true. Returns the selected buffer."
 
 ** emms
 *** package
+#+begin_src scheme :noweb-ref guix-pkg
+"emacs-emms"
+#+end_src
 #+begin_src elisp :tangle packages.el
-;TODO: remove pin when doom bumps the package
-(package! emms :pin "99ebaae9f180dd6b2e5be363e709efa1da0014d6")
+(package! emms :built-in t)
 #+end_src
 #+begin_src elisp
 (defun dont-kill-buffer--hook ()
