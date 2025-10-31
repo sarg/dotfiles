@@ -103,7 +103,7 @@
       config))
 
 (operating-system
-  (kernel linux-6.6)
+  (kernel linux-6.17)
   (kernel-arguments '("quiet" "loglevel=1"))
   (initrd microcode-initrd)
   (initrd-modules (cons "i915" %base-initrd-modules))
