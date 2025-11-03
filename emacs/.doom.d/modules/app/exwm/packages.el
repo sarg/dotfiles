@@ -1,7 +1,6 @@
 ;; -*- no-byte-compile: t; -*-
 ;;; app/exwm/packages.el
 
-(package! app-launcher :recipe (:host github :repo "sarg/app-launcher") :pin "9fc3d5bb925059247ee52c445e787340c19f6619")
 ;; (package! exwm-mff :recipe (:host github :repo "ieure/exwm-mff"))
 
 (package! xelb :built-in 'prefer)

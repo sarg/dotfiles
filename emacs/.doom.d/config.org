@@ -55,7 +55,7 @@
  (url "https://github.com/sarg/dotfiles")
  (branch "master"))
 #+end_src
-* global vars
+* config.el preamble
 #+begin_src scheme :noweb-ref globals
 '((name . "Sergey Trofimov")
   (email . "sarg@sarg.org.ru")
@@ -63,6 +63,7 @@
 #+end_src
 #+begin_src elisp
 (defvar guix/globals <<globals>>)
+(require 's)
 #+end_src
 * system.scm
 ** template
@@ -836,7 +837,7 @@ REVERSE? it when true. Returns the selected buffer."
          (switch-to-buffer (or next first) t t))))
 
 (exwm/bind-command
- "<f13> r"     #'app-launcher-run-app
+ "<f13> r"     #'xdg-launcher-run-app
 
  "<f13> h"     #'evil-window-left
  "<f13> j"     #'evil-window-down
@@ -858,61 +859,59 @@ REVERSE? it when true. Returns the selected buffer."
                      (start-process "qutebrowser" nil "setsid" "-w" "qutebrowser"))))
 #+end_src
 *** app launcher
-#+begin_src text :noweb-ref emacs-dep
-"dex"
+#+begin_src elisp :tangle packages.el
+(package! xdg-launcher
+  :recipe (:host github :repo "StebAlien/xdg-launcher.el")
+  :pin "fb15b21d14908826161adf7cb81052417f48e567")
 #+end_src
 #+begin_src elisp
-;; the default one messes up exec path of wine programs due to wrong parsing
-(after! app-launcher
-  (defun app-launcher--action-dex (selected)
-    (call-process (guix/pkg 'dex "/bin/dex") nil nil nil (alist-get 'file selected)))
+(defvar xdg-launcher-allow-list
+  '("lutris" "libreoffice-startcenter" "flatseal" "spotify" "calibre-gui" "idea" "simple-scan"
+    "iwgtk" "android")
+  "Apps that are visible in the xdg-launcher")
 
-  (defvar app-launcher-allow-list
-    '("lutris" "libreoffice-startcenter" "flatseal" "spotify" "calibre-gui" "idea" "simple-scan"
-      "iwgtk" "android")
-    "Apps that are visible in the app-launcher")
+(defvar xdg-launcher-hide-list
+  '("flatpak" "emacs" "qview" "scrcpy" "qutebrowser" "darkman"
+    "libreoffice" "mpv" "quake3" "flameshot" "calibre")
+  "Apps to hide from the xdg-launcher")
 
-  (defvar app-launcher-hide-list
-    '("flatpak" "emacs" "qview" "scrcpy" "qutebrowser" "darkman"
-      "libreoffice" "mpv" "quake3" "flameshot" "calibre")
-    "Apps to hide from the app-launcher")
+(defun xdg-launcher-filter (apps)
+  (maphash (lambda (_ def)
+             (let ((file (alist-get 'file def)))
+               (unless (or
+                        (-any? (lambda (i) (s-contains? i file t)) xdg-launcher-allow-list)
+                        (-none? (lambda (i) (s-contains? i file t)) xdg-launcher-hide-list))
+                 (setf (alist-get 'visible def) nil))))
+           apps)
+  apps)
 
-  (defun app-launcher-filter (apps)
-    (maphash (lambda (_ def)
-               (let ((file (alist-get 'file def)))
-                 (unless (or
-                          (-any? (lambda (i) (s-contains? i file t)) app-launcher-allow-list)
-                          (-none? (lambda (i) (s-contains? i file t)) app-launcher-hide-list))
-                   (setf (alist-get 'visible def) nil))))
-             apps)
-    apps)
+(defvar xdg-launcher--M-x-set '())
+(defun xdg-launcher-to-M-x ()
+  (interactive)
 
-  (advice-add 'app-launcher-parse-files
-              :filter-return #'app-launcher-filter)
+  ;; forget previously set functions
+  (-each xdg-launcher--M-x-set #'fmakunbound)
+  (setq xdg-launcher--M-x-set '())
 
-  (defvar app-launcher--M-x-set '())
-  (defun app-launcher-to-M-x ()
-    (interactive)
+  ;; create new functions
+  (maphash
+   (lambda (name app)
+     (when (cdr (assq 'visible app))
+       (let ((xdg-symbol (intern (concat "app-" (s-dashed-words name)))))
+         (push xdg-symbol xdg-launcher--M-x-set)
+         (fset xdg-symbol
+               (lambda ()
+                 (interactive)
+                 (funcall xdg-launcher-action-function app)))
+         (put xdg-symbol 'function-documentation (cdr (assq 'comment app))))))
+   (xdg-launcher-list-apps)))
 
-    ; forget previously set functions
-    (-each app-launcher--M-x-set #'fmakunbound)
-    (setq app-launcher--M-x-set '())
+(use-package! xdg-launcher
+  :config
+  (advice-add 'xdg-launcher-parse-files
+              :filter-return #'xdg-launcher-filter)
 
-    ; create new functions
-    (maphash
-     (lambda (name app)
-       (when (cdr (assq 'visible app))
-         (let ((app-symbol (intern (concat "app-" (s-dashed-words name)))))
-           (push app-symbol app-launcher--M-x-set)
-           (fset app-symbol
-                 (lambda ()
-                   (interactive)
-                   (funcall app-launcher-action-function app)))
-           (put app-symbol 'function-documentation (cdr (assq 'comment app))))))
-     (app-launcher-list-apps)))
-
-  (app-launcher-to-M-x)
-  (setq app-launcher--action-function #'app-launcher--action-dex))
+  (xdg-launcher-to-M-x))
 #+end_src
 *** TODO fix waiting for upstream
 #+begin_src elisp :noweb-ref exwm :tangle no
@@ -1894,6 +1893,7 @@ wireplumber.profiles = {
 ** base packages
 #+begin_src scheme :noweb-ref guix-pkg
 "emacs-vterm"
+"emacs-s"
 "tree-sitter-typescript"
 "tree-sitter-javascript"
 "tree-sitter-json"
@@ -1942,7 +1942,7 @@ wireplumber.profiles = {
       doom-leader-alt-key "<f13>"
       custom-file "~/devel/dotfiles/emacs/.doom.d/custom.el")
 (doom!
- :completion  corfu vertico ;(ivy +fuzzy +prescient +childframe)
+ :completion  corfu (vertico +icons) ;(ivy +fuzzy +prescient +childframe)
  :ui          nav-flash (modeline +light) ophints (popup +defaults) ligatures treemacs doom-dashboard
  :editor      (evil +everywhere) fold lispy snippets (format +onsave) multiple-cursors word-wrap
  :emacs       (dired +dirvish +icons) electric vc ibuffer undo eww
