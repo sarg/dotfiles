@@ -7,6 +7,7 @@
 #+begin_src elisp :exports none
 ;; -*- lexical-binding: t; -*-
 ;; generated from config.org
+(require 's)
 #+end_src
 #+begin_src elisp :tangle packages.el :exports none
 ;; generated from config.org
@@ -55,7 +56,7 @@
  (url "https://github.com/sarg/dotfiles")
  (branch "master"))
 #+end_src
-* config.el preamble
+* globals 
 #+begin_src scheme :noweb-ref globals
 '((name . "Sergey Trofimov")
   (email . "sarg@sarg.org.ru")
@@ -63,7 +64,6 @@
 #+end_src
 #+begin_src elisp
 (defvar guix/globals <<globals>>)
-(require 's)
 #+end_src
 * system.scm
 ** template
@@ -593,6 +593,19 @@ disable-ipv6=true
 "max-overall-upload-limit=1K\n"
 "check-integrity=true\n"
 "disable-ipv6=true"))
+#+end_src
+
+#+begin_src elisp
+(defun sarg/aria2-notify-completion ()
+  "Notify when aria2 downloads complete."
+  (interactive)
+  (let* (timer
+         (fn (lambda ()
+               (when (or (not aria2--cc)
+                         (seq-empty-p (tellActive aria2--cc aria2--tell-keys)))
+                 (notifications-notify :title "aria2" :body "All downloads complete")
+                 (cancel-timer timer)))))
+    (setq timer (run-with-timer 0 10 fn))))
 #+end_src
 
 ** mpv
