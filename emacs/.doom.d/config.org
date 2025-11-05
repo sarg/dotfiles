@@ -874,8 +874,8 @@ REVERSE? it when true. Returns the selected buffer."
 *** app launcher
 #+begin_src elisp :tangle packages.el
 (package! xdg-launcher
-  :recipe (:host github :repo "StebAlien/xdg-launcher.el")
-  :pin "fb15b21d14908826161adf7cb81052417f48e567")
+  :recipe (:host github :repo "emacs-exwm/xdg-launcher")
+  :pin "251f8cd9f6a83d07e1f4a110142fb4810c94f24a")
 #+end_src
 #+begin_src elisp
 (defvar xdg-launcher-allow-list
