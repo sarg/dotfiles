@@ -60,7 +60,8 @@
 #+begin_src scheme :noweb-ref globals
 '((name . "Sergey Trofimov")
   (email . "sarg@sarg.org.ru")
-  (gpgKey . "3ADB423B40A20785"))
+  (gpgKey . "3ADB423B40A20785")
+  (unlock-pam-service . "login"))
 #+end_src
 #+begin_src elisp
 (defvar guix/globals <<globals>>)
@@ -73,6 +74,7 @@
              (gnu services)
              (gnu bootloader grub)
              (gnu system privilege)
+             (gnu system pam)
              (gnu packages)
              (guix packages)
              (guix channels)
@@ -159,6 +161,7 @@
                            '("wireless-tools" "info-reader" "nano" "mg" "isc-dhcp"))))
             %base-packages)))
 
+  (pam-services (cons* <<pam-service>> (base-pam-services)))
   (privileged-programs
    (cons* <<privileged-program>> %default-privileged-programs))
 
@@ -1578,6 +1581,27 @@ choose_entry() {
   :config
   (pinentry-start))
 #+end_src
+
+** COMMENT fingerprint
+#+begin_src scheme :noweb-ref system-use
+(gnu services authentication)
+#+end_src
+#+begin_src scheme :noweb-ref system-service
+(service fprintd-service-type)
+#+end_src
+#+begin_src scheme :noweb-ref pam-service
+(pam-service
+ (inherit (unix-pam-service "fingerprint"))
+ (auth (list
+        (pam-entry
+         (control "sufficient")
+         (module (file-append (pkg "pam-fprint-grosshack") "/lib/security/pam_fprintd_grosshack.so")))
+        (pam-entry
+         (control "sufficient")
+         (module "pam_unix.so")
+         (arguments '("try_first_pass" "nullok"))))))
+#+end_src
+
 * x11
 #+begin_src scheme :noweb-ref guix-pkg
 "xset" "xclip"
@@ -1635,7 +1659,9 @@ gtk-font-name="Fira Code 12"
 ("QT_QPA_PLATFORMTHEME" . "gtk3")
 #+end_src
 #+begin_src cfg :dest ".xinitrc"
-🐜(screen-locker (video-saver "/storage/data/splash.mp4"))🐜 &
+🐜(screen-locker
+     (video-saver "/storage/data/splash.mp4")
+     #:pam-service (global 'unlock-pam-service))🐜 &
 keymap.sh
 🐜(pkg "xhost")🐜/bin/xhost +si:localuser:$USER
 dbus-update-activation-environment --verbose DBUS_SESSION_BUS_ADDRESS DISPLAY XAUTHORITY
@@ -1646,12 +1672,14 @@ while true; do
 done
 #+end_src
 
-#+RESULTS[8145119eef72a0583f5201eb9dd695c5ecff2538]:
+#+RESULTS[1e5f5ac992a8b144afb98a13aa12f6e946f37cef]:
 #+begin_src text :noweb-ref guix-file
 (".xinitrc"
 ,(mixed-text-file
   "cfg-file"
-(screen-locker (video-saver "/storage/data/splash.mp4"))" &\n"
+(screen-locker
+     (video-saver "/storage/data/splash.mp4")
+     #:pam-service (global 'unlock-pam-service))" &\n"
 "keymap.sh\n"(pkg "xhost")"/bin/xhost +si:localuser:$USER\n"
 "dbus-update-activation-environment --verbose DBUS_SESSION_BUS_ADDRESS DISPLAY XAUTHORITY\n"
 "\n"
