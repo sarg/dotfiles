@@ -61,7 +61,7 @@
 '((name . "Sergey Trofimov")
   (email . "sarg@sarg.org.ru")
   (gpgKey . "3ADB423B40A20785")
-  (unlock-pam-service . "login"))
+  (unlock-pam-service . "fingerprint"))
 #+end_src
 #+begin_src elisp
 (defvar guix/globals <<globals>>)
@@ -110,11 +110,10 @@
   (kernel linux)
   (kernel-arguments '("quiet" "loglevel=1"))
   (initrd microcode-initrd)
-  (initrd-modules (cons "i915" %base-initrd-modules))
-  (firmware (cons* iwlwifi-firmware broadcom-bt-firmware %base-firmware))
+  (firmware (cons* amdgpu-firmware realtek-firmware %base-firmware))
   (locale "en_GB.UTF-8")
   (timezone "Europe/Berlin")
-  (host-name "thinkpad")
+  (host-name "elitebook")
   (keyboard-layout (keyboard-layout "us"))
   (name-service-switch
     (mdns-host-lookup-nss #:ipv6? #f))
@@ -122,8 +121,8 @@
    (bootloader-configuration
     (theme (grub-theme
             (image (file-append %artwork-repository "/grub/guix-16-9.svg"))
-            (resolution '(1600 . 900))
-            (gfxmode '("1600x900" "auto"))))
+            (resolution '(1920 . 1080))
+            (gfxmode '("1920x1080" "auto"))))
     (bootloader grub-efi-bootloader)
     (targets '("/boot"))))
 
@@ -136,12 +135,6 @@
             (mount-point "/boot")
             (device (file-system-label "GNU-ESP"))
             (type "vfat"))
-          (file-system
-            (mount-point "/media/500GB")
-            (device (file-system-label "500GB"))
-            (create-mount-point? #t)
-            (mount-may-fail? #t)
-            (type "ext4"))
           %base-file-systems))
 
   (users (cons* (user-account
@@ -295,12 +288,14 @@ dnsmasq_resolve=/etc/dnsmasq.resolve
 (gnu services pm)
 #+end_src
 #+begin_src scheme :noweb-ref system-pkg
-"bluez" "intel-vaapi-driver" "tlp" "libratbag"
+"bluez" "tlp" "libratbag"
 #+end_src
 #+begin_src scheme :noweb-ref system-service
 (service fstrim-service-type)
 (service tlp-service-type
          (tlp-configuration
+          (usb-autosuspend? #f)
+          (cpu-boost-on-ac? #t)
           (restore-device-state-on-startup? #t)))
 
 (simple-service
@@ -314,8 +309,6 @@ dnsmasq_resolve=/etc/dnsmasq.resolve
 (udev-rules-service 'kindle kindle-usbnet-udev-rules)
 (udev-rules-service 'pixel pixel-usbnet-udev-rules)
 (udev-rules-service 'brightness (pkg "brightnessctl"))
-(udev-rules-service 'restore-brightness backlight-udev-rules)
-(udev-rules-service 'leds iwlwifi-led-udev-rules)
 (simple-service 'ratbagd dbus-root-service-type (list (pkg "libratbag")))
 
 (service sane-service-type
@@ -546,7 +539,7 @@ polkit.addRule(function(action, subject) {
 #+end_src
 ** utils
 #+begin_src scheme :noweb-ref guix-pkg
-"curl" "rsync" "man-db"
+"curl" "rsync" "man-db" "htop"
 "atool" "7zip" "unzip" "zip" "jq"
 "ripgrep" "moreutils" "libiconv"
 "powertop" "graphviz" "bind:utils"  ; dig
@@ -1583,7 +1576,7 @@ choose_entry() {
   (pinentry-start))
 #+end_src
 
-** COMMENT fingerprint
+** fingerprint
 #+begin_src scheme :noweb-ref system-use
 (gnu services authentication)
 #+end_src
@@ -1794,7 +1787,7 @@ done
                    (changelog-task "/storage/Resources/dashboard/guix.atom")
                    (changelog-task "/storage/Resources/dashboard/doomemacs.atom"))))
 #+end_src
-** backup
+** COMMENT backup
 #+begin_src scheme :noweb-ref guix-srv
 (service
  restic-backup-service-type
@@ -2175,8 +2168,7 @@ xargs flatpak install --or-update --noninteractive
 #+end_src
 #+begin_src elisp :noweb-ref exwm :tangle no
 (exwm/bind-command
-   "<XF86Launch1>" #'dash-menu
-   "<XF86Explorer>" #'dash-menu
+   "<menu>" #'dash-menu
    "<XF86MonBrightnessUp>" "brightnessctl -e set 10%+"
    "<XF86MonBrightnessDown>" "brightnessctl -e set 10%-"
    "<XF86ScreenSaver>" "xset s activate"
