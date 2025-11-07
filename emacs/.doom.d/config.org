@@ -1556,7 +1556,9 @@ choose_entry() {
 #+end_src
 #+begin_src scheme :noweb-ref guix-srv
 (service secretsd-service-type
-            "exec:ssh puxel -- ./unlock-keyring")
+         (secretsd-configuration
+          (key "exec:ssh puxel -- ./unlock-keyring")
+          (dir "/storage/data/secretsd")))
 (service home-gpg-agent-service-type
  (home-gpg-agent-configuration
   (pinentry-program

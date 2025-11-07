@@ -2,33 +2,36 @@
   #:use-module (gnu services)
   #:use-module (gnu home services)
   #:use-module (gnu services shepherd)
+  #:use-module (gnu services configuration)
   #:use-module (gnu home services shepherd)
   #:use-module (guix build-system trivial)
   #:use-module (guix gexp)
   #:use-module (guix packages)
-  #:use-module (gnu packages password-utils))
+  #:use-module (gnu packages password-utils)
+  #:use-module (ice-9 match)
 
-(define (secretsd-shepherd-service key)
-  "Return a <shepherd-service> for secretsd with CONFIG."
+  #:export (secretsd-configuration))
 
-  (list (shepherd-service
-         (documentation "secretsd backend")
-         (provision '(secrets))
-         (auto-start? #f)
-         (respawn? #f)
-         (modules `(((shepherd support) #:hide (mkdir-p)) ;for '%user-log-dir'
-                    ,@%default-modules))
-         (start #~(make-forkexec-constructor
-                   (list (string-append #$secretsd "/bin/secretsd"))
-                   #:environment-variables
-                   (cons*
-                    #$@(if key
-                           (list (string-append "SECRETSD_KEY=" key))
-                           '())
+(define-configuration/no-serialization secretsd-configuration
+  (dir string "Pathname of the storage directory")
+  (key string "Key command/location"))
 
-                    (default-environment-variables))
-                   #:log-file (string-append %user-log-dir "/secretsd.log")))
-         (stop #~(make-kill-destructor)))))
+(define secretsd-shepherd-service
+  (match-lambda
+    (($ <secretsd-configuration> dir key)
+     (list (shepherd-service
+             (documentation "secretsd backend")
+             (provision '(secrets))
+             (auto-start? #f)
+             (respawn? #f)
+             (modules `(((shepherd support) #:hide (mkdir-p)) ;for '%user-log-dir'
+                        ,@%default-modules))
+             (start #~(make-forkexec-constructor
+                       (list (string-append #$secretsd "/bin/secretsd")
+                             "-k" #$key
+                             "-d" (string-append #$dir "/secrets.db"))
+                       #:log-file (string-append %user-log-dir "/secretsd.log")))
+             (stop #~(make-kill-destructor)))))))
 
 (define secretsd-dbus-service
   (package
@@ -62,5 +65,4 @@
                              secretsd-shepherd-service)
 
           (service-extension home-profile-service-type
-                             (const (list secretsd-dbus-service)))))
-   (default-value #f)))
+                             (const (list secretsd-dbus-service)))))))
