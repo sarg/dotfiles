@@ -1908,6 +1908,7 @@ wireplumber.profiles = {
 ** base packages
 #+begin_src scheme :noweb-ref guix-pkg
 "emacs-vterm"
+"emacs-tramp"
 "emacs-s"
 "tree-sitter-typescript"
 "tree-sitter-javascript"
