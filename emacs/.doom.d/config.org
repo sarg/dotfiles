@@ -65,6 +65,7 @@
 #+end_src
 #+begin_src elisp
 (defvar guix/globals <<globals>>)
+(defvar sarg/media-dir "/media/500GB/media")
 #+end_src
 * system.scm
 ** template
@@ -1093,7 +1094,7 @@ REVERSE? it when true. Returns the selected buffer."
                   (with-current-emms-playlist
                     (emms-playlist-current-clear)
                     (setq! emms-random-playlist t)
-                    (emms-add-directory "/media/500GB/media/music_liked/")
+                    (emms-add-directory (concat sarg/media-dir "/music_liked/"))
                     (emms-random))))])
 
 (defun emms-play-dwim ()
@@ -2269,7 +2270,7 @@ Note: doesn't work with xorg-server-next. Setting gamma through randr is ignored
 (setq! auto-revert-use-notify t)
 
 (after! recentf
-  (add-to-list 'recentf-exclude "^/media/500GB/sort/"))
+  (add-to-list 'recentf-exclude "500GB/sort/"))
 
 (setq-default
  ;; russian layout on C-\
@@ -2921,7 +2922,7 @@ eval "$(atuin init bash)"
            ("c" ,(f-dirname doom-core-dir)       "Doom root")
            ("e" "~/devel/dotfiles/emacs/.doom.d" "Emacs config")
            ("d" "~/Downloads/"                   "Downloads")
-           ("m" "/media/500GB/media"             "Media"))))
+           ("m" ,sarg/media-dir                  "Media"))))
 
 (use-package! sxiv
   :commands sxiv)
