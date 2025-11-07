@@ -19,10 +19,11 @@
                     "exec " feh "/bin/feh --window-id=${XSCREENSAVER_WINDOW} " file)
    #o555))
 
-(define (xsecurelock-wrapper saver)
+(define* (xsecurelock-wrapper saver #:key (pam-service "login"))
   (chmod-computed-file
    (mixed-text-file "xsecurelock"
                     "#!/bin/sh\n"
+                    " XSECURELOCK_PAM_SERVICE=" pam-service
                     " XSECURELOCK_WANT_FIRST_KEYPRESS=1"
                     " XSECURELOCK_SHOW_KEYBOARD_LAYOUT=0"
                     " XSECURELOCK_PASSWORD_PROMPT=disco"
@@ -31,13 +32,14 @@
                     " exec " xsecurelock "/bin/xsecurelock")
    #o555))
 
-(define (screen-locker saver)
+(define (screen-locker . args)
   (let* ((xss-lock (file-append xss-lock "/bin/xss-lock"))
-         (dimmer (file-append xsecurelock "/libexec/xsecurelock/dimmer")))
+         (dimmer (file-append xsecurelock "/libexec/xsecurelock/dimmer"))
+         (locker (apply xsecurelock-wrapper args)))
 
     (chmod-computed-file
      (mixed-text-file "screen-locker"
                       "#!/bin/sh\n"
                       "xset s 300 5\n"
-                      "exec " xss-lock " -n " dimmer " -l " (xsecurelock-wrapper saver))
+                      "exec " xss-lock " -n " dimmer " -l " locker)
      #o555)))
