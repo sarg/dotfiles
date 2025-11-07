@@ -107,11 +107,10 @@
   (kernel linux)
   (kernel-arguments '("quiet" "loglevel=1"))
   (initrd microcode-initrd)
-  (initrd-modules (cons "i915" %base-initrd-modules))
-  (firmware (cons* iwlwifi-firmware broadcom-bt-firmware %base-firmware))
+  (firmware (cons* amdgpu-firmware realtek-firmware %base-firmware))
   (locale "en_GB.UTF-8")
   (timezone "Europe/Berlin")
-  (host-name "thinkpad")
+  (host-name "elitebook")
   (keyboard-layout (keyboard-layout "us"))
   (name-service-switch
     (mdns-host-lookup-nss #:ipv6? #f))
@@ -119,8 +118,8 @@
    (bootloader-configuration
     (theme (grub-theme
             (image (file-append %artwork-repository "/grub/guix-16-9.svg"))
-            (resolution '(1600 . 900))
-            (gfxmode '("1600x900" "auto"))))
+            (resolution '(1920 . 1080))
+            (gfxmode '("1920x1080" "auto"))))
     (bootloader grub-efi-bootloader)
     (targets '("/boot"))))
 
@@ -133,12 +132,6 @@
             (mount-point "/boot")
             (device (file-system-label "GNU-ESP"))
             (type "vfat"))
-          (file-system
-            (mount-point "/media/500GB")
-            (device (file-system-label "500GB"))
-            (create-mount-point? #t)
-            (mount-may-fail? #t)
-            (type "ext4"))
           %base-file-systems))
 
   (users (cons* (user-account
@@ -291,7 +284,7 @@ dnsmasq_resolve=/etc/dnsmasq.resolve
 (gnu services pm)
 #+end_src
 #+begin_src scheme :noweb-ref system-pkg
-"bluez" "intel-vaapi-driver" "tlp" "libratbag"
+"bluez" "tlp" "libratbag"
 #+end_src
 #+begin_src scheme :noweb-ref system-service
 (service fstrim-service-type)
@@ -310,8 +303,8 @@ dnsmasq_resolve=/etc/dnsmasq.resolve
 (udev-rules-service 'kindle kindle-usbnet-udev-rules)
 (udev-rules-service 'pixel pixel-usbnet-udev-rules)
 (udev-rules-service 'brightness (pkg "brightnessctl"))
-(udev-rules-service 'restore-brightness backlight-udev-rules)
-(udev-rules-service 'leds iwlwifi-led-udev-rules)
+;(udev-rules-service 'restore-brightness backlight-udev-rules)
+;(udev-rules-service 'leds iwlwifi-led-udev-rules)
 (simple-service 'ratbagd dbus-root-service-type (list (pkg "libratbag")))
 
 (service sane-service-type
@@ -1765,7 +1758,7 @@ done
                    (changelog-task "/storage/Resources/dashboard/guix.atom")
                    (changelog-task "/storage/Resources/dashboard/doomemacs.atom"))))
 #+end_src
-** backup
+** COMMENT backup
 #+begin_src scheme :noweb-ref guix-srv
 (service
  restic-backup-service-type
