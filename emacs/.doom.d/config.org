@@ -569,7 +569,7 @@ polkit.addRule(function(action, subject) {
 "tinymediamanager" "simple-scan"
 #+end_src
 #+begin_src scheme :noweb-ref guix-file
-(".local/state/tinyMediaManager" ,(symlink-to "/storage/data/tinyMediaManager"))
+(".local/share/tinyMediaManager" ,(symlink-to "/storage/data/tinyMediaManager"))
 #+end_src
 
 ** aria2
@@ -2636,6 +2636,9 @@ include theme
 #+begin_src scheme :noweb-ref guix-pkg
 "emacs-calibredb" "sqlite" "calibre"
 #+end_src
+#+begin_src scheme :noweb-ref guix-file
+(".config/calibre" ,(symlink-to "/storage/data/calibre"))
+#+end_src
 #+begin_src elisp :tangle packages.el
 (package! calibredb :built-in t)
 #+end_src
@@ -2644,7 +2647,7 @@ include theme
   :commands calibredb
 
   :custom
-  (calibredb-root-dir (alist-get 'library_path (json-read-file "~/.config/calibre/global.py.json")))
+  (calibredb-root-dir (alist-get 'library_path (json-read-file "/storage/data/calibre/global.py.json")))
   (calibredb-preferred-format 'epub) ;; just open it, don't ask
 
   ;; hide extra columns
@@ -2796,6 +2799,7 @@ update_check = false
   "cfg-file"
 "auto_sync = false\n"
 "update_check = false"))
+(".local/share/atuin" ,(symlink-to "/storage/data/atuin"))
 #+end_src
 
 #+name: cfg-bash

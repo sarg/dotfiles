@@ -88,7 +88,6 @@ LD_LIBRARY_PATH=~a CLASSPATH=~a/* ~a/bin/java ~a org.tinymediamanager.TinyMediaM
                               "-Dawt.useSystemAAFontSettings=on"
                               "-Dswing.aatext=true"
                               "-Dtmm.contentfolder=$XDG_DATA_HOME/tinyMediaManager"
-                              "-Dtmm.datafolder=$XDG_STATE_HOME/tinyMediaManager"
                               "-Dtmm.noupdate=true")
                             " "))))
                (chmod tmm #o555))
