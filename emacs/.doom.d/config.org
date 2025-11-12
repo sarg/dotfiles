@@ -687,9 +687,47 @@ EXWM has a separate [[../.doom.d/modules/app/exwm][doom app]]. Here are just the
   :hook (exwm-init . ednc-mode)
 
   :config
-  ; https://github.com/hiecaq/guix-config/blob/666d15b1f79b2b9171c430c24b877879ab61fd02/readme.org#desktop-notification-daemon
+  ;; https://github.com/hiecaq/guix-config/blob/666d15b1f79b2b9171c430c24b877879ab61fd02/readme.org#desktop-notification-daemon
   (defvar my-ednc-posframe--buffer "*ednc-posframe*"
     "Buffer used for ednc notification posframe display.")
+  
+  
+  (setq max-image-size nil)
+  (defun sarg/ednc-format-notification (notification &rest args)
+    (let* ((width 500) (icon-size 64) (font-height 20)
+           (body (ednc-notification-body notification))
+           (body-filled (popup-fill-string body 50))
+           (body-lines (-take 5 (cdr body-filled)))
+           (height (max (+ 8 icon-size)
+                        (+ 8 font-height
+                           (* (length body-lines) font-height))))
+           (svg (svg-create width height))
+           (icon (ednc-notification-app-icon notification))
+           (icon-path (if (file-name-absolute-p icon) icon
+                        (locate-file icon (xdg-launcher--icon-path) xdg-launcher-icon-extensions))))
+      
+      (when icon-path
+        (svg-embed
+         svg
+         icon-path 
+         (pcase (file-name-extension icon-path)
+           ("svg" "image/svg+xml")
+           ("png" "image/png")
+           (_ (error "unsupported")))
+         nil :width icon-size :height icon-size))
+
+      (svg-text
+       svg (ednc--format-summary notification)
+       :x (+ icon-size 8) :y font-height :font-weight "bold")
+
+      (let ((current-y (* 2 font-height)))
+        (dolist (line body-lines)
+          (svg-text svg line :x (+ icon-size 8) :y current-y :font-size "80%")
+          (setq current-y (+ current-y font-height))))
+      
+      (with-temp-buffer
+        (insert-image (svg-image svg))
+        (buffer-string))))
 
   (defun my-ednc-posframe-show ()
     (interactive)
@@ -697,7 +735,9 @@ EXWM has a separate [[../.doom.d/modules/app/exwm][doom app]]. Here are just the
                (posframe-workable-p))
       (posframe-show my-ednc-posframe--buffer
                      :poshandler #'posframe-poshandler-frame-top-right-corner
-                     :border-width 1)))
+                     :left-fringe 8
+                     :internal-border-color "red"
+                     :internal-border-width 1)))
 
   (defun my-ednc-posframe-hide ()
     (interactive)
@@ -709,8 +749,8 @@ EXWM has a separate [[../.doom.d/modules/app/exwm][doom app]]. Here are just the
       (with-current-buffer (get-buffer-create my-ednc-posframe--buffer)
         (erase-buffer)
         (insert (mapconcat
-                 (lambda (n) (ednc-format-notification n :expand))
-                 notifications "")))
+                 (lambda (n) (sarg/ednc-format-notification n :expand))
+                 notifications "\n")))
       (when (posframe-workable-p)
         (if notifications
             (my-ednc-posframe-show)
@@ -723,7 +763,23 @@ EXWM has a separate [[../.doom.d/modules/app/exwm][doom app]]. Here are just the
                 ((frame-visible-p frame))
                 (notification (ednc-notifications)))
       (ednc-dismiss-notification (car notification))))
+  
+  
+  ;; https://github.com/ch11ng/exwm/issues/550#issuecomment-763949321
+  (with-eval-after-load 'posframe
+    (define-advice posframe-show (:filter-return (frame) exwm-deparent)
+      (set-frame-parameter frame 'parent-frame nil)
+      frame))
+  
+  
+  (defun sarg/ednc-icon-resolver (image-path)
+    "Return image descriptor created from file URI IMAGE-PATH."
+    (when image-path
+      (xdg-launcher--get-icon
+       (xdg-launcher--icon-path)
+       (string-remove-prefix "file://" image-path))))
 
+  (advice-add #'ednc--path-to-image :override #'sarg/ednc-icon-resolver)
   (advice-add #'keyboard-quit :before #'my-ednc--dismiss-first-notification)
   (add-hook 'ednc-notification-presentation-functions #'my-ednc-posframe--update))
 #+end_src
@@ -1861,7 +1917,10 @@ allow_anonymous true
 ** desktop
 #+begin_src scheme :noweb-ref guix-srv
 (service home-dbus-service-type)
-(service home-batsignal-service-type)
+(service home-batsignal-service-type
+         (home-batsignal-configuration
+          (icon (file-append (pkg "adwaita-icon-theme")
+                             "/share/icons/Adwaita/symbolic/status/battery-caution-symbolic.svg"))))
 (service home-pipewire-service-type)
 #+end_src
 
@@ -1934,6 +1993,7 @@ wireplumber.profiles = {
 "emacs-s"
 "tree-sitter-typescript"
 "tree-sitter-javascript"
+"tree-sitter-jsdoc"
 "tree-sitter-json"
 "tree-sitter-html"
 "tree-sitter-go"
