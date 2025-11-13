@@ -10,6 +10,15 @@
 ;;  ((not channel-post-p)
 ;;   (telega-ins "<" (telega-user-title sender 'full-name) "> ")))
 
+(defun sarg/diogenis-cmd (text)
+  (unless (telega-server-live-p)
+    (error "Telega not running"))
+
+  (telega--sendMessage
+   (telega-user--by-username "DiogenisBot")
+   (list :@type "inputMessageText"
+         :text (telega-string-fmt-text text))))
+
 (defun sarg/telega-get-code ()
   "Extract confirmation code from latest message of telegram user BenderBot."
   (interactive)

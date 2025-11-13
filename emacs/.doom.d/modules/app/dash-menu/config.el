@@ -89,15 +89,7 @@
             (if (-contains? (oref (transient-prefix-object) value) "muted") nil 'unmuted))]))]
 
    ["Quick"
-    ("qr" "repo" (lambda () (interactive)
-                   (let ((current-prefix-arg '(0)))
-                     (call-interactively #'magit-status))))]
-
-
-   ["Bookmarks"
-    ("bf" "Freefeed" frf-timeline)
-    ("bh" "Hackernews" hnreader-news)
-    ("bc" "config.org" dash-menu/dots-heading)]])
+    ("<menu>" "bookmarks" consult-bookmark)]])
 
 (add-hook! 'transient-setup-buffer-hook
   (setq exwm-input-line-mode-passthrough 't))
