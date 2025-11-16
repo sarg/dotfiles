@@ -33,9 +33,10 @@
 
 (defun frf--find (id coll)
   "Find element by ID in an alist COLL."
-  (seq-find
-   (lambda (e) (string= (alist-get 'id e) id))
-   coll))
+  (when id
+    (seq-find
+     (lambda (e) (string= (alist-get 'id e) id))
+     coll)))
 
 (defun frf--reflow (str)
   "Reflow string STR to fill paragraphs."
@@ -137,7 +138,7 @@
              (lambda (c idx)
                (let* ((cmt (frf--find c comments))
                       (createdBy (alist-get 'createdBy cmt))
-                      (author (frf--find createdBy users)))
+                      (author (or (frf--find createdBy users) '((username . "<unknown>")))))
                  (when (and (> .omittedCommentsOffset 0) (= idx .omittedCommentsOffset))
                    (insert (format "\n** [[elisp:(frf--load-comments \"%s\" %d %d)][%d more comments with %d likes]]"
                                    .id .omittedCommentsOffset .omittedComments
