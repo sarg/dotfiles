@@ -2753,8 +2753,7 @@ include theme
 ** qutebrowser
 #+begin_src elisp :tangle packages.el
 (package! qutebrowser :recipe
-  (:host github :repo "lrustand/qutebrowser.el" :files (:defaults "*.py"))
-  :pin "137f066dac06e1abdbf3285561ce2e1f3059b491")
+  (:host github :repo "sarg/qutebrowser.el" :files (:defaults "*.py")))
 #+end_src
 #+begin_src scheme :noweb-ref guix-pkg
 "qutebrowser"
@@ -2818,6 +2817,16 @@ pgrep -f QtWebEngineProcess && qutebrowser ':config-source darkmode.py'
   (let ((process-environment (browse-url-process-environment)))
     (start-process "qutebrowser-private" nil
            "qutebrowser" "--target" "private-window" url)))
+
+(defun sarg/magit-clone-or-open (url)
+  (let ((target-dir
+         (expand-file-name (magit-clone--url-to-name url)
+                           magit-clone-default-directory)))
+    (if (magit-git-repo-p target-dir)
+        (magit-status target-dir)
+      (magit-clone-regular url magit-clone-default-directory nil))
+
+    t))
 
 (defun qutebrowser-bg-tabs ()
   (interactive)
