@@ -3,6 +3,7 @@ from qutebrowser.qt.core import Qt
 from qutebrowser.api import cmdutils
 from qutebrowser.utils import objreg, qtutils
 from qutebrowser.qt.core import QUrl, QUrlQuery
+from qutebrowser.config import config as cfg
 import urllog
 import re
 import os
@@ -103,6 +104,7 @@ config.source("darkmode.py")
 c.url.searchengines = {"DEFAULT": "qute://bangs?q={}"}
 BANGS = {
     "DEFAULT": "https://duckduckgo.com/lite?q={}",
+    "!toys": "https://toys.whereis.social/?search={}&channel=",
     "!arch": "https://wiki.archlinux.org/index.php?search={}",
     "!yt": "https://www.youtube.com/results?search_query={}",
     "!imdb": "https://www.imdb.com/find/?s=all&q={}",
@@ -112,7 +114,7 @@ BANGS = {
     "!gi": "https://www.google.com/search?q={}&tbs=imgo:1&udm=2",
 }
 
-BANG_RE = re.compile(r"(?:^|\s)(![^ ]+)(?:\s|$)")
+BANG_RE = re.compile(r"(^|\s)(![^ ]+)(\s|$)")
 
 
 @add_handler("bangs")
@@ -122,8 +124,12 @@ def qute_bangs(url: QUrl):
 
     def repl(m):
         nonlocal bang
-        bang = BANGS.get(m.group(1), None)
-        return " " if bang else m.group(0)
+        bang = BANGS.get(m.group(2), None)
+        match = m.group(0)
+        if not bang:
+            return match
+
+        return (m.group(1) + m.group(3)).replace(" ", "", 1)
 
     q = BANG_RE.sub(repl, q, 1)
     bang = bang or BANGS["DEFAULT"]
@@ -137,6 +143,7 @@ def command_close_tab(self) -> None:
     if len(objreg.window_registry) > 1:
         self.close()
     else:
+        self.tabbed_browser.load_url(QUrl(cfg.val.url.default_page), newtab=False)
         self.showMinimized()
 
 

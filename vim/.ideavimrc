@@ -1,4 +1,5 @@
 set gdefault
+set ideajoin
 set multiple-cursors
 set surround
 set ignorecase

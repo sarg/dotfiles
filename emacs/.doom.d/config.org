@@ -65,7 +65,7 @@
 #+end_src
 #+begin_src elisp
 (defvar guix/globals <<globals>>)
-(defvar sarg/media-dir "/media/500GB/media")
+(defvar sarg/media-dir "/storage/media")
 #+end_src
 * system.scm
 ** template
@@ -593,16 +593,40 @@ disable-ipv6=true
 #+end_src
 
 #+begin_src elisp
-(defun sarg/aria2-notify-completion ()
+(defvar-local aria2-notify-completion-timer nil
+  "Timer object for `aria2-notify-completion-mode` to check aria2 status.")
+
+(defun aria2-notify-completion-check ()
+  (when (or (not aria2--cc)
+            (and
+             (seq-empty-p (tellActive aria2--cc aria2--tell-keys))
+             (seq-empty-p (tellWaiting aria2--cc nil nil aria2--tell-keys))))
+    
+    (setq mode-line-process '(:propertize ":🏁" face gnus-summary-high-read))
+    (notifications-notify :title "aria2" :body "All downloads complete")
+    (cancel-timer aria2-notify-completion-timer)))
+
+(define-minor-mode aria2-notify-completion-mode
   "Notify when aria2 downloads complete."
-  (interactive)
-  (let* (timer
-         (fn (lambda ()
-               (when (or (not aria2--cc)
-                         (seq-empty-p (tellActive aria2--cc aria2--tell-keys)))
-                 (notifications-notify :title "aria2" :body "All downloads complete")
-                 (cancel-timer timer)))))
-    (setq timer (run-with-timer 0 10 fn))))
+  :global nil
+  :group 'aria2
+  :ligher "🏁"
+  
+  (cond
+   ((not (and (eq major-mode 'aria2-mode)
+              aria2--cc))
+    (error "Choose aria2 buffer first."))
+   
+   (aria2-notify-completion-mode
+    (setq mode-line-process '(:propertize ":⚐" face gnus-summary-high-read))
+    (setq aria2-notify-completion-timer
+          (run-with-timer 0 10 #'aria2-notify-completion-check)))
+
+   (t
+    (when aria2-notify-completion-timer
+      (cancel-timer aria2-notify-completion-timer)
+      (setq mode-line-process nil)
+      (setq aria2-notify-completion-timer nil)))))
 #+end_src
 
 ** mpv
@@ -978,6 +1002,23 @@ REVERSE? it when true. Returns the selected buffer."
               :filter-return #'xdg-launcher-filter)
 
   (xdg-launcher-to-M-x))
+#+end_src
+*** consult
+#+begin_src elisp
+(after! consult
+  (defvar consult--source-exwm
+    (list :name     "X11"
+          :narrow   ?x
+          :category 'buffer
+          :face     'consult-buffer
+          :history  'buffer-name-history
+          :state    #'consult--buffer-state
+          :items
+          (lambda ()
+            (consult--buffer-query :mode 'exwm-mode :as #'consult--buffer-pair))))
+
+  (setq! consult-preview-key (list :debounce 0.5 'any))
+  (add-to-list 'consult-buffer-sources 'consult--source-exwm))
 #+end_src
 *** TODO fix waiting for upstream
 #+begin_src elisp :noweb-ref exwm :tangle no
@@ -1660,6 +1701,7 @@ choose_entry() {
 "font-fira-code"
 "font-google-noto-emoji" ; 💪🕹
 "font-hack"
+"font-jetbrains-mono"
 "font-terminus"
 #+end_src
 #+begin_src cfg :dest ".config/gtk-3.0/settings.ini"
@@ -2109,9 +2151,9 @@ wireplumber.profiles = {
 (use-package! catppuccin-theme)
 (defvar doom-theme-dark 'catppuccin)
 (setq doom-theme 'greymatters
-      doom-font (font-spec :family "Hack" :size 18)
-      doom-serif-font (font-spec :family "Hack")
-      doom-symbol-font (font-spec :family "Hack"))
+      doom-font (font-spec :family "JetBrains Mono" :size 18)
+      doom-serif-font (font-spec :family "JetBrains Mono")
+      doom-symbol-font (font-spec :family "JetBrains Mono"))
 #+end_src
 
 Note: use =consult-theme= to quickly preview themes.
@@ -2232,7 +2274,7 @@ xargs flatpak install --or-update --noninteractive
    "<XF86MonBrightnessUp>" "brightnessctl -e set 10%+"
    "<XF86MonBrightnessDown>" "brightnessctl -e set 10%-"
    "<XF86ScreenSaver>" "xset s activate"
-   "<f13> <f12>" "flameshot gui")
+   "<f13> <f12>" "flameshot gui -c -s")
 #+end_src
 ** dark mode
 #+begin_src scheme :noweb-ref guix-pkg
@@ -2608,7 +2650,7 @@ mod? dotfiles '~/devel/dotfiles/guix/Justfile'
        `(,@args
          "-o" "force-push=true"
          ,@(if desc (list "-o" (concat "title=" (car desc))) '())
-         ,@(if (and desc (cdr desc)) (list "-o" (concat "description=" (string-join (cdr desc) "<br>")) '()))))))
+         ,@(if (and desc (cdr desc)) (list "-o" (concat "description=" (string-join (cdr desc) "\r")) '()))))))
 
   (transient-insert-suffix 'magit-push
     '(1 0) (list "a" #'magit-push-current-agit)))
@@ -2753,7 +2795,8 @@ include theme
 ** qutebrowser
 #+begin_src elisp :tangle packages.el
 (package! qutebrowser :recipe
-  (:host github :repo "sarg/qutebrowser.el" :files (:defaults "*.py")))
+  (:host github :repo "lrustand/qutebrowser.el" :files (:defaults "*.py"))
+  :pin "ecf3efa6b0707d78644fca515b5df8df2635015f")
 #+end_src
 #+begin_src scheme :noweb-ref guix-pkg
 "qutebrowser"
@@ -2933,6 +2976,8 @@ eval "$(atuin init bash)"
   (setq! eshell-prefer-lisp-functions 't)
   (set-eshell-alias!
    "doom" "$doom-core-dir/../bin/doom $@*"
+   "gu" "just -g guix $@*"
+   "g" "just -g dotfiles"
    "guix" "*guix $@*")
   (add-to-list 'eshell-modules-list 'eshell-smart)
   (map! :map eshell-mode-map

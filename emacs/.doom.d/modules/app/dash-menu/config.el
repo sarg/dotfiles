@@ -89,7 +89,7 @@
             (if (-contains? (oref (transient-prefix-object) value) "muted") nil 'unmuted))]))]
 
    ["Quick"
-    ("<menu>" "bookmarks" consult-bookmark)]])
+    ("<menu>" "consult" consult-buffer)]])
 
 (add-hook! 'transient-setup-buffer-hook
   (setq exwm-input-line-mode-passthrough 't))
