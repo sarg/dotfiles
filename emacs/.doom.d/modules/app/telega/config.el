@@ -10,14 +10,32 @@
 ;;  ((not channel-post-p)
 ;;   (telega-ins "<" (telega-user-title sender 'full-name) "> ")))
 
-(defun sarg/diogenis-cmd (text)
+(defun sarg/telega-msg-expect (sender text)
+  (promise-new
+   (lambda (resolve _reject)
+     (let (msg-handler)
+       (setq msg-handler
+             (lambda (msg)
+               (when-let* ((chat (telega-msg-chat msg))
+                           (chat-id (plist-get chat :id))
+                           (msg-sender-id (plist-get (telega-msg-sender msg) :id))
+                           (exp-sender-id (plist-get sender :id))
+                           (msg-text (telega-msg-content-text msg))
+                           ((eql msg-sender-id exp-sender-id))
+                           ((eql chat-id exp-sender-id))
+                           ((string= text msg-text)))
+
+                 (remove-hook 'telega-chat-pre-message-hook msg-handler)
+                 (funcall resolve 't))))
+       (add-hook 'telega-chat-pre-message-hook msg-handler)))))
+
+(defun sarg/telega-msg-send (to text)
   (unless (telega-server-live-p)
     (error "Telega not running"))
 
-  (telega--sendMessage
-   (telega-user--by-username "DiogenisBot")
-   (list :@type "inputMessageText"
-         :text (telega-string-fmt-text text))))
+  (telega--sendMessage to 
+                       (list :@type "inputMessageText"
+                             :text (telega-string-fmt-text text))))
 
 (defun sarg/telega-get-code ()
   "Extract confirmation code from latest message of telegram user BenderBot."

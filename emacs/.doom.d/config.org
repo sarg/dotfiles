@@ -280,6 +280,28 @@ dnsmasq_resolve=/etc/dnsmasq.resolve
              (preshared-key (plain-file "psk" (getenv "WG_PSK")))
              (allowed-ips '("0.0.0.0/0" "::/0")))))))
 #+end_src
+#+begin_src scheme :noweb-ref guix-pkg
+"emacs-async-await"
+#+end_src
+#+begin_src elisp
+(async-defun sarg/vpn-start ()
+  "Start VPN."
+  (interactive)
+  (let ((bot (telega-user--by-username "DiogenisBot")))
+    (sarg/telega-msg-send bot "/vpn de")
+    (await (sarg/telega-msg-expect bot "VPN started"))
+    (eshell-command "sudo herd start wireguard-wg0")
+    (notifications-notify :title "Hey" :body "VPN started")))
+
+(async-defun sarg/vpn-stop ()
+  "Stop VPN."
+  (interactive)
+  (let ((bot (telega-user--by-username "DiogenisBot")))
+    (eshell-command-result "sudo herd stop wireguard-wg0")
+    (sarg/telega-msg-send bot "/vpn stop")
+    (await (sarg/telega-msg-expect bot "Stopped hetzner VPN"))
+    (notifications-notify :title "Hey" :body "VPN stopped")))
+#+end_src
 ** hardware
 #+begin_src scheme :noweb-ref system-use
 (personal packages udev-rules)
