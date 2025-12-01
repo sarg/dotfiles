@@ -655,6 +655,20 @@ disable-ipv6=true
 #+begin_src scheme :noweb-ref guix-pkg
 "emacs-mpv" "mpv" "yt-dlp"
 #+end_src
+#+begin_src cfg :dest ".config/yt-dlp/config"
+--remote-components=ejs:github
+--js-runtimes quickjs:🐜(pkg "quickjs")🐜/bin/qjs
+#+end_src
+
+#+RESULTS[5567d3eb3a571b5f7b406c767eba4cb78be0939d]:
+#+begin_src text :noweb-ref guix-file
+(".config/yt-dlp/config"
+,(mixed-text-file
+  "cfg-file"
+"--remote-components=ejs:github\n"
+"--js-runtimes quickjs:"(pkg "quickjs")"/bin/qjs"))
+#+end_src
+
 #+begin_src scheme :noweb-ref guix-srv
 (service
  home-mpv-service-type
