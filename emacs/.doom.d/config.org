@@ -2065,6 +2065,7 @@ wireplumber.profiles = {
 "tree-sitter-bash"
 "tree-sitter-python"
 "tree-sitter-clojure"
+"tree-sitter-rust"
 
 ; modules dependencies
 "shfmt" "shellcheck" "fd" "editorconfig-core-c"
@@ -2113,7 +2114,7 @@ wireplumber.profiles = {
               make tree-sitter lsp direnv llm debugger
  :checkers    syntax
  :lang        (clojure +tree-sitter) data emacs-lisp (javascript +tree-sitter +lsp) markdown
-              (org +contacts +dragndrop +pandoc +present +hugo +roam2 +pretty) beancount (go +lsp +tree-sitter)
+              (org +contacts +dragndrop +pandoc +present +hugo +roam2 +pretty) beancount (go +lsp +tree-sitter) (rust +lsp +tree-sitter)
               (rest +jq) (sh +tree-sitter) plantuml (python +lsp +tree-sitter) (web +tree-sitter) yaml (json +tree-sitter)
  :app         calendar telega (rss +org) torrent irc exwm emms dash-menu
  :email       (mu4e +mbsync +gmail +org)
