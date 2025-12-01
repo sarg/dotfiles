@@ -92,6 +92,7 @@
   (telega-sticker-size '(8 . 48))
   (telega-emoji-use-images nil)
   (telega-emoji-custom-alist '((":s:" . "¯\\_(ツ)_/¯")))
+  (telega-symbol-verified (propertize "☑" 'face 'telega-blue))
   (telega-msg-ignore-predicates '(telega-msg-special-p))
   (telega-video-player-command
    '(concat "mpv"

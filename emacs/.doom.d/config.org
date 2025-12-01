@@ -983,8 +983,8 @@ REVERSE? it when true. Returns the selected buffer."
   "Apps that are visible in the xdg-launcher")
 
 (defvar xdg-launcher-hide-list
-  '("flatpak" "emacs" "qview" "scrcpy" "qutebrowser" "darkman"
-    "libreoffice" "mpv" "quake3" "flameshot" "calibre")
+  '("flatpak" "emacs" "qview" "scrcpy" "qutebrowser" "darkman" "kdeconnect"
+    "libreoffice" "mpv" "quake3" "flameshot" "calibre" "htop")
   "Apps to hide from the xdg-launcher")
 
 (defun xdg-launcher-filter (apps)
@@ -2984,8 +2984,8 @@ eval "$(atuin init bash)"
 (simple-service
  'extensions home-bash-service-type
  (home-bash-extension
-  (aliases '(("g" . "just -g dotfiles")
-             ("gu" . "just -g guix")))
+  (aliases '(("g" . "just -g dotfiles $@*")
+             ("gu" . "just -g guix $@*")))
   (bashrc (list <<cfg-bash()>>))))
 #+end_src
 
@@ -3099,10 +3099,6 @@ eval "$(atuin init bash)"
  :desc "Dash" "om" #'dash-menu)
 #+end_src
 * llm
-#+begin_src elisp :tangle packages.el
-; TODO: remove custom pin once doom catches up
-(package! gptel :pin "4275350d7769fb8fdd09353e3e6d991b05c7a673")
-#+end_src
 #+begin_src elisp
 (after! gptel
   (setq gptel-model 'gemini-2.5-flash
