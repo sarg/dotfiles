@@ -17,7 +17,8 @@
 (require 'auth-source)
 
 (defun frf--promise-json (url &rest opts)
-  "Return a promise that resolves with JSON from URL. Pass OPTS directly to (request)."
+  "Return a promise that resolves with JSON from URL.
+Pass OPTS directly to (request)."
   (promise-new
    (lambda (resolve reject)
      (apply #'request url
@@ -59,17 +60,18 @@
                          (seq-take count))
      for cmt across comments
      do (let-alist cmt
-          (let ((author (frf--find .createdBy users)))
-            (insert "\n** " (alist-get 'username author) "\n"
-                    (s-trim .body) "\n"))))
+          (insert "\n** "
+                  (if (> .likes 0) (format "[💕%d] " .likes) "")
+                  (alist-get 'username (frf--find .createdBy users)) "\n"
+                  (s-trim .body) "\n")))
     (goto-char m)))
 
-(defun frf--load-comments (id from count)
-  "Load and render comments for post with ID."
+(defun frf--load-comments (id &rest args)
+  "Load comments for post with ID. Pass them and the ARGS to the render function."
   (promise-chain
       (frf--promise-json (format "https://freefeed.net/v4/posts/%s?maxComments=all&maxLikes=" id))
     (then (lambda (result)
-            (frf--render-comments result from count)))))
+            (apply #'frf--render-comments result args)))))
 
 (defun frf--age (ts now)
   "Return human-readable age string for timestamp TS relative to NOW."
@@ -138,19 +140,22 @@
              (lambda (c idx)
                (let* ((cmt (frf--find c comments))
                       (createdBy (alist-get 'createdBy cmt))
+                      (likes (alist-get 'likes cmt))
                       (author (or (frf--find createdBy users) '((username . "<unknown>")))))
                  (when (and (> .omittedCommentsOffset 0) (= idx .omittedCommentsOffset))
                    (insert (format "\n** [[elisp:(frf--load-comments \"%s\" %d %d)][%d more comments with %d likes]]"
                                    .id .omittedCommentsOffset .omittedComments
                                    .omittedComments .omittedCommentLikes)))
-                 (insert "\n** " (alist-get 'username author) "\n"
+                 (insert "\n** "
+                         (if (> likes 0) (format "[💕%d] " likes) "")
+                         (alist-get 'username author) "\n"
                          (alist-get 'body cmt))))
              .comments))))
     (org-mode)
     (setq-local browse-url-browser-function #'eww-browse-url)))
 
 (defun frf-timeline (&optional feed)
-  "Read Freefeed timeline."
+  "Read Freefeed's FEED timeline."
   (interactive)
   (let* ((name (or feed
                    (when current-prefix-arg (read-string "Name: "))
@@ -171,13 +176,13 @@
          (message "catch error in promise timeline: %s" reason))))))
 
 (defun frf-hide (id)
-  "Hide post with ID from the timeline"
+  "Hide post with ID from the timeline."
   (let ((buf (current-buffer)))
     (promise-chain (frf--promise-json
                     (format "https://freefeed.net/v4/posts/%s/hide" id)
                     :type "POST")
       (then
-       (lambda (result)
+       (lambda (_)
          (with-current-buffer buf
            (save-excursion
              (goto-char (point-min))
