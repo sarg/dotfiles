@@ -10,7 +10,7 @@
 ;;  ((not channel-post-p)
 ;;   (telega-ins "<" (telega-user-title sender 'full-name) "> ")))
 
-(defun sarg/telega-msg-expect (sender text)
+(defun sarg/telega-msg-expect (sender text-pred)
   (promise-new
    (lambda (resolve _reject)
      (let (msg-handler)
@@ -23,10 +23,10 @@
                            (msg-text (telega-msg-content-text msg))
                            ((eql msg-sender-id exp-sender-id))
                            ((eql chat-id exp-sender-id))
-                           ((string= text msg-text)))
+                           ((funcall text-pred msg-text)))
 
                  (remove-hook 'telega-chat-pre-message-hook msg-handler)
-                 (funcall resolve 't))))
+                 (funcall resolve msg-text))))
        (add-hook 'telega-chat-pre-message-hook msg-handler)))))
 
 (defun sarg/telega-msg-send (to text)

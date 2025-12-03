@@ -287,20 +287,25 @@ dnsmasq_resolve=/etc/dnsmasq.resolve
 (async-defun sarg/vpn-start ()
   "Start VPN."
   (interactive)
-  (let ((bot (telega-user--by-username "DiogenisBot")))
+  (let ((bot (telega-user--by-username "DiogenisBot"))
+        msg)
+    (message "Starting VPN")
     (sarg/telega-msg-send bot "/vpn de")
-    (await (sarg/telega-msg-expect bot "VPN started"))
+    (setq msg (await (sarg/telega-msg-expect
+                      bot (lambda (txt) (s-starts-with? "VPN started" txt)))))
     (eshell-command "sudo herd start wireguard-wg0")
-    (notifications-notify :title "Hey" :body "VPN started")))
+    (notifications-notify :title "Hey" :body msg)))
 
 (async-defun sarg/vpn-stop ()
   "Stop VPN."
   (interactive)
-  (let ((bot (telega-user--by-username "DiogenisBot")))
+  (let ((bot (telega-user--by-username "DiogenisBot"))
+        msg)
     (eshell-command-result "sudo herd stop wireguard-wg0")
     (sarg/telega-msg-send bot "/vpn stop")
-    (await (sarg/telega-msg-expect bot "Stopped hetzner VPN"))
-    (notifications-notify :title "Hey" :body "VPN stopped")))
+    (setq msg (await (sarg/telega-msg-expect
+                      bot (lambda (txt) (s-matches? "Stopped.+VPN" txt)))))
+    (notifications-notify :title "Hey" :body msg)))
 #+end_src
 ** hardware
 #+begin_src scheme :noweb-ref system-use
