@@ -4,6 +4,9 @@ guix-lock := if lock != "0" { "guix time-machine -C channels.lock --" } else { "
 default:
     @just --list
 
+pbuild *args='':
+    guix build -L $PWD/personal {{args}}
+
 pull *args='':
     guix pull {{args}}
 

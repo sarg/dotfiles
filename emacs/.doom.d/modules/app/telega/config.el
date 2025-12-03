@@ -89,6 +89,7 @@
   (telega-chat-use-date-breaks nil)
   (telega-chat-input-markups '("markdown2" nil))
   (telega-animation-play-inline nil)
+  (telega-video-play-incrementally nil)
   (telega-sticker-size '(8 . 48))
   (telega-emoji-use-images nil)
   (telega-emoji-custom-alist '((":s:" . "¯\\_(ツ)_/¯")))

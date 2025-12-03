@@ -3014,7 +3014,7 @@ eval "$(atuin init bash)"
   (set-eshell-alias!
    "doom" "$doom-core-dir/../bin/doom $@*"
    "gu" "just -g guix $@*"
-   "g" "just -g dotfiles"
+   "g" "just -g dotfiles $@*"
    "guix" "*guix $@*")
   (add-to-list 'eshell-modules-list 'eshell-smart)
   (map! :map eshell-mode-map
