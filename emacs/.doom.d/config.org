@@ -2752,6 +2752,33 @@ mod? dotfiles '~/devel/dotfiles/guix/Justfile'
   (transient-insert-suffix 'magit-fetch
     '(2 0) (list "j" "fj.el" #'magit-fj :if #'fj-repo-+-owner-from-git)))
 #+end_src
+** rust
+#+begin_src scheme :noweb-ref emacs-dep
+"lldb" "codelldb"
+#+end_src
+#+begin_src elisp
+(after! dape
+  ; lsp-mode runs cargo with incomplete PATH otherwise
+  (advice-add 'shell-command-to-string :around #'envrc-propagate-environment)
+
+  ; lsp-mode with dape support
+  (defun dap-debug (cfg)
+    (dape (dape--config-eval 'rust `(:program ,(plist-get cfg :program)))))
+  
+  (let ((tmp (make-temp-file "config")))
+    (with-temp-file tmp
+      (insert "(provide 'dap-gdb)"))
+    (require 'dap-gdb tmp))
+
+  (add-to-list 'dape-configs
+               '(rust modes (rust-mode rust-ts-mode) command-args
+                 ("--port" :autoport "--settings" "{\"sourceLanguages\":[\"rust\"]}"
+                  "--liblldb" (guix/pkg 'lldb "/lib/liblldb.so"))
+                 ensure dape-ensure-command command-cwd dape-command-cwd command
+                 (guix/pkg 'codelldb "/extension/adapter/codelldb")
+                 port :autoport :type "lldb" :request "launch" :cwd "." :args []
+                 :stopOnEntry nil)))
+#+end_src
 * tramp
 #+begin_src elisp
 (after! tramp
