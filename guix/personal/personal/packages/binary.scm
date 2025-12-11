@@ -383,3 +383,34 @@ command-line programs gsutil and gcloud among others.")
     (synopsis #f)
     (description #f)
     (license license:asl2.0)))
+
+(define-public codelldb
+  (package
+   (name "codelldb")
+   (version "1.12.0")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append
+                  "https://github.com/vadimcn/codelldb/releases/download/v" version "/codelldb-linux-x64.vsix"))
+            (sha256
+             (base32 "0w15rp0k3spxhjjw4bmzhbfjlbwmcn74h2mic5cwmbsvx8m6k5a7"))))
+   (build-system binary-build-system)
+   (arguments
+    `(#:strip-binaries? #f
+      #:patchelf-plan `(("extension/adapter/codelldb" ("glibc" "gcc:lib"))
+                        ("extension/bin/codelldb-launch" ("glibc" "gcc:lib")))
+      #:phases (modify-phases %standard-phases
+                 (replace 'unpack
+                   (lambda* (#:key inputs source #:allow-other-keys)
+                     (invoke "unzip" source)))
+                 (add-after 'unpack 'clean
+                        (lambda _
+                          (delete-file-recursively "extension/lldb"))))))
+   (native-inputs (list unzip))
+   (inputs `(("gcc:lib" ,gcc "lib")
+             ("glibc" ,glibc)))
+   (supported-systems '("x86_64-linux"))
+   (home-page "https://github.com/vadimcn/codelldb")
+   (synopsis "A VSCode debugger extension for native code, powered by LLDB.")
+   (description "VSCode extension for debugging")
+   (license license:expat)))
