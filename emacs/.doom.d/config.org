@@ -3130,12 +3130,22 @@ eval "$(atuin init bash)"
 * llm
 #+begin_src elisp
 (after! gptel
-  (setq gptel-model 'gemini-2.5-flash
-        gptel-backend
-        (gptel-make-gemini "Gemini"
-          :key (lambda (&rest args)
-                 (gptel-api-key-from-auth-source "google.com" "gemini"))
-          :stream t)))
+  (let ((openrouter
+         (gptel-make-openai "OpenRouter"
+           :host "openrouter.ai"
+           :endpoint "/api/v1/chat/completions"
+           :stream t
+           :key (lambda (&rest args) (gptel-api-key-from-auth-source "Api" "openrouter.ai"))
+           :models '(tngtech/deepseek-r1t2-chimera:free
+                     moonshotai/kimi-k2:free)))
+        (gemini
+         (gptel-make-gemini "Gemini"
+           :key (lambda (&rest args)
+                  (gptel-api-key-from-auth-source "google.com" "gemini"))
+           :stream t)))
+
+    (setq gptel-model 'tngtech/deepseek-r1t2-chimera:free
+          gptel-backend openrouter)))
 #+end_src
 * COMMENT emacs screencast recording
 #+begin_src elisp :tangle packages.el
