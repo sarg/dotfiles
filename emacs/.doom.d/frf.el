@@ -16,6 +16,12 @@
 (require 'json)
 (require 'auth-source)
 
+(defvar-local frf-feed "home"
+  "Feed name.")
+
+(defvar-local frf-offset 0
+  "Offset to read messages.")
+
 (defun frf--promise-json (url &rest opts)
   "Return a promise that resolves with JSON from URL.
 Pass OPTS directly to (request)."
@@ -151,23 +157,30 @@ Pass OPTS directly to (request)."
                          (alist-get 'username author) "\n"
                          (alist-get 'body cmt))))
              .comments))))
+
+    (insert "\n* ")
+    (when (> frf-offset 0)
+      (insert (format "[[elisp:(frf-timeline frf-feed %d)][Newer]] " (- frf-offset 30))))
+    (insert (format "[[elisp:(frf-timeline frf-feed %d)][Older]]" (+ frf-offset 30)))
     (org-mode)
     (setq-local browse-url-browser-function #'eww-browse-url)))
 
-(defun frf-timeline (&optional feed)
-  "Read Freefeed's FEED timeline."
+(defun frf-timeline (&optional feed offset)
+  "Read Freefeed's FEED timeline from OFFSET."
   (interactive)
   (let* ((name (or feed
                    (when current-prefix-arg (read-string "Name: "))
                    "home"))
          (buf (get-buffer-create (format "*Freefeed: %s*" name))))
     (with-current-buffer buf
-      (setq-local revert-buffer-function (lambda (&rest _args) (frf-timeline name)))
+      (setq-local frf-offset (or offset 0)
+                  frf-feed name
+                  revert-buffer-function (lambda (&rest _args) (frf-timeline name frf-offset)))
       (erase-buffer)
       (insert "Loading...")
       (switch-to-buffer buf))
 
-    (promise-chain (frf--promise-json (format "https://freefeed.net/v4/timelines/%s" name))
+    (promise-chain (frf--promise-json (format "https://freefeed.net/v4/timelines/%s?offset=%d" frf-feed frf-offset))
       (then
        (lambda (result)
          (frf--render result buf)))
