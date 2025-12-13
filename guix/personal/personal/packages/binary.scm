@@ -172,14 +172,14 @@ failed operations.")
 (define-public github-cli
   (package
     (name "github-cli")
-    (version "2.72.0")
+    (version "2.83.2")
     (source
      (origin
        (method url-fetch/tarbomb)
        (uri (string-append "https://github.com/cli/cli/releases/download/v" version
                            "/gh_" version "_linux_amd64.tar.gz"))
        (sha256
-        (base32 "0f3zqwab3mplzgxsfx96s67g6n76aijv00hkaccn3kvm21wsklzz"))))
+        (base32 "0ph1jaq4axa6j78xdyfq8vcnyqmslxj4pv4w88hhxgag450pcvna"))))
     (build-system binary-build-system)
     (arguments
      (list
@@ -199,14 +199,14 @@ working with git and your code.")
   (package
    (name "atuin")
    ;; Use revision helper?
-   (version "18.6.0")
+   (version "18.10.0")
    (source
     (origin
      (method url-fetch)
-     (uri (string-append "https://github.com/atuinsh/atuin/releases/download/"
+     (uri (string-append "https://github.com/atuinsh/atuin/releases/download/v"
                          version
                          "/atuin-x86_64-unknown-linux-gnu.tar.gz"))
-     (sha256 (base32 "0fdrw97hnxy62mpparbxax6r0x0kclv6md61mkr4h2iz1q94ysgs"))))
+     (sha256 (base32 "160q7d9iig2177g787l2z1nl7wwgg9xqczg3nwk6xfx7vi563z91"))))
    (supported-systems '("x86_64-linux"))
    (build-system binary-build-system)
    (inputs `(("gcc:lib" ,gcc "lib")
