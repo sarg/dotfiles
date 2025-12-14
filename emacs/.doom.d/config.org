@@ -2999,6 +2999,7 @@ pgrep -f QtWebEngineProcess && qutebrowser ':config-source darkmode.py'
 #+end_src
 * shell
 #+begin_src elisp :tangle packages.el
+(package! eshell-atuin :pin "1ac4895529546839985c7f57c9858644f7be1e6a")
 (package! eat :built-in t)
 (package! detached :built-in t)
 #+end_src
@@ -3058,6 +3059,13 @@ eval "$(atuin init bash)"
 (setq process-adaptive-read-buffering nil)
 (setq read-process-output-max (* 4 1024 1024))
 
+(use-package! eshell-atuin
+  :after eshell
+  :config
+  (map! :map eshell-mode-map
+        :ni "C-r" #'eshell-atuin-history)
+  (eshell-atuin-mode))
+
 (after! eshell
   (setq! eshell-prefer-lisp-functions 't)
   (set-eshell-alias!
@@ -3065,9 +3073,7 @@ eval "$(atuin init bash)"
    "gu" "just -g guix $@*"
    "g" "just -g dotfiles $@*"
    "guix" "*guix $@*")
-  (add-to-list 'eshell-modules-list 'eshell-smart)
-  (map! :map eshell-mode-map
-        :ni "C-r" #'consult-history))
+  (add-to-list 'eshell-modules-list 'eshell-smart))
 
 (use-package! eat
   :hook ((eshell-load . eat-eshell-mode)
