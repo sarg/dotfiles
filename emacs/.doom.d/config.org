@@ -284,28 +284,35 @@ dnsmasq_resolve=/etc/dnsmasq.resolve
 "emacs-async-await"
 #+end_src
 #+begin_src elisp
-(async-defun sarg/vpn-start ()
-  "Start VPN."
-  (interactive)
-  (let ((bot (telega-user--by-username "DiogenisBot"))
-        msg)
+(defun sarg/vpn-start (country)
+  "Start VPN in COUNTRY."
+  (interactive (list (completing-read "Country: " '("de" "ru") nil t "de")))
+  (let ((bot (telega-user--by-username "DiogenisBot")))
     (message "Starting VPN")
-    (sarg/telega-msg-send bot "/vpn de")
-    (setq msg (await (sarg/telega-msg-expect
-                      bot (lambda (txt) (s-starts-with? "VPN started" txt)))))
-    (eshell-command "sudo herd start wireguard-wg0")
-    (notifications-notify :title "Hey" :body msg)))
+    (sarg/telega-msg-send bot (concat "/vpn " country))
+    (promise-chain
+        (sarg/telega-msg-expect bot (lambda (txt) (s-starts-with? "VPN started" txt)))
+      (then (lambda (msg)
+              (eshell-command "sudo herd start wireguard-wg0")
+    
+              (when (= 1 (call-process "ip" nil nil nil "a" "show" "dev" "wg0"))
+                (notifications-notify :title "Hey" :body "wireguard not running"))
+              (notifications-notify :title "Hey" :body msg))))))
 
-(async-defun sarg/vpn-stop ()
+
+(defun sarg/vpn-stop ()
   "Stop VPN."
   (interactive)
-  (let ((bot (telega-user--by-username "DiogenisBot"))
-        msg)
-    (eshell-command-result "sudo herd stop wireguard-wg0")
+  
+  (let ((bot (telega-user--by-username "DiogenisBot")))
+    (unless (= 1 (call-process "pgrep" nil nil nil "aria2c"))
+      (user-error "Aria2 is still running"))
+    (eshell-command "sudo herd stop wireguard-wg0")
     (sarg/telega-msg-send bot "/vpn stop")
-    (setq msg (await (sarg/telega-msg-expect
-                      bot (lambda (txt) (s-matches? "Stopped.+VPN" txt)))))
-    (notifications-notify :title "Hey" :body msg)))
+    (promise-chain
+        (sarg/telega-msg-expect bot (lambda (txt) (s-matches? "Stopped.+VPN" txt)))
+      (then (lambda (msg)
+              (notifications-notify :title "Hey" :body msg))))))
 #+end_src
 ** hardware
 #+begin_src scheme :noweb-ref system-use
