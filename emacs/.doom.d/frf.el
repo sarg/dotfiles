@@ -102,6 +102,7 @@ Pass OPTS directly to (request)."
     (read-only-mode -1)
     (erase-buffer)
     (insert "#+STARTUP: overview indent\n")
+    (insert "Feed: " frf-feed)
     (cl-loop
      with users = (alist-get 'users data)
      with now = (current-time)
@@ -160,17 +161,15 @@ Pass OPTS directly to (request)."
 
     (insert "\n* ")
     (when (> frf-offset 0)
-      (insert (format "[[elisp:(frf-timeline frf-feed %d)][Newer]] " (- frf-offset 30))))
-    (insert (format "[[elisp:(frf-timeline frf-feed %d)][Older]]" (+ frf-offset 30)))
+      (insert (format "[[elisp:(frf-timeline \"%s\" %d)][Newer]] " frf-feed (- frf-offset 30))))
+    (insert (format "[[elisp:(frf-timeline \"%s\" %d)][Older]]" frf-feed (+ frf-offset 30)))
     (org-mode)
     (setq-local browse-url-browser-function #'eww-browse-url)))
 
 (defun frf-timeline (&optional feed offset)
   "Read Freefeed's FEED timeline from OFFSET."
   (interactive)
-  (let* ((name (or feed
-                   (when current-prefix-arg (read-string "Name: "))
-                   "home"))
+  (let* ((name (or feed (read-string "Name: " "home")))
          (buf (get-buffer-create (format "*Freefeed: %s*" name))))
     (with-current-buffer buf
       (setq-local frf-offset (or offset 0)
@@ -180,7 +179,10 @@ Pass OPTS directly to (request)."
       (insert "Loading...")
       (switch-to-buffer buf))
 
-    (promise-chain (frf--promise-json (format "https://freefeed.net/v4/timelines/%s?offset=%d" frf-feed frf-offset))
+    (promise-chain (frf--promise-json
+                    (format
+                     (if (s-starts-with? "?" name) "%s/search?qs=%s&offset=%d" "%s/timelines/%s?offset=%d")
+                     "https://freefeed.net/v4" (s-chop-prefix "?" name) frf-offset))
       (then
        (lambda (result)
          (frf--render result buf)))
