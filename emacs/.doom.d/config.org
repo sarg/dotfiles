@@ -1000,7 +1000,7 @@ REVERSE? it when true. Returns the selected buffer."
 #+begin_src elisp :tangle packages.el
 (package! xdg-launcher
   :recipe (:host github :repo "emacs-exwm/xdg-launcher")
-  :pin "251f8cd9f6a83d07e1f4a110142fb4810c94f24a")
+  :pin "1592f8ee3dc26180112411e7f983cafba88024fa")
 #+end_src
 #+begin_src elisp
 (defvar xdg-launcher-allow-list
@@ -2621,9 +2621,9 @@ mod? dotfiles '~/devel/dotfiles/guix/Justfile'
 #+end_src
 
 #+begin_src elisp :tangle packages.el
-(package! just-mode :pin "310f437296173e4659c80490fcdb7ebafbac1665")
+(package! just-mode :pin "b6173c7bf4d8d28e0dbd80fa41b9c75626885b4e")
 (package! justl :recipe (:host github :repo "psibi/justl.el")
-  :pin "8096ebd602f374936be2c14cbc6b2e7768c3fccf")
+  :pin "3b11dd8ac7ebeaca5da6c80223254a9f0494b275")
 #+end_src
 #+begin_src elisp
 (use-package! just-mode)
