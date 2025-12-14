@@ -3265,6 +3265,80 @@ current buffer, killing it."
 ;;   :config
 ;;   (setq gpx-show-map-function  #'gpx-show-map-osm))
 #+end_src
+** emacs-dmenu
+#+begin_src elisp
+(cl-defun dmenu/select-line-from-file (file &key prompt lines)
+  "completing-read a line from FILE."
+  (condition-case err
+      (completing-read (concat (or prompt "") " ")
+                       (with-temp-buffer
+                         (insert-file-contents file)
+                         (string-lines (buffer-string)))
+                       nil t)
+    (quit nil)))
+#+end_src
+#+begin_src cfg :dest ".local/bin/dmenu" :chmod "u+x"
+#!/bin/sh
+prompt=nil
+lines=nil
+while getopts ":p:l:" opt; do
+    case $opt in
+    p)
+        prompt="\"$OPTARG\""
+        ;;
+    l)
+        lines="$OPTARG"
+        ;;
+    ,*)
+        echo "Usage: $0 -p prompt -l lines"
+        exit 1
+        ;;
+    esac
+done
+
+tmp=$(mktemp)
+cat >$tmp
+result=$(emacsclient -e '(dmenu/select-line-from-file "'$tmp'" :prompt '"$prompt"' :lines '$lines')')
+if [ "nil" = "$result" ]; then
+    exit 1
+else
+    echo "$result" | jq -r .
+fi
+#+end_src
+
+#+RESULTS[fadf9bfa5c2fda62edca1dd6764e69bbb5b3fd4f]:
+#+begin_src text :noweb-ref guix-file
+(".local/bin/dmenu"
+,(chmod-computed-file (mixed-text-file
+  "cfg-file"
+"#!/bin/sh\n"
+"prompt=nil\n"
+"lines=nil\n"
+"while getopts \":p:l:\" opt; do\n"
+"    case $opt in\n"
+"    p)\n"
+"        prompt=\"\\\"$OPTARG\\\"\"\n"
+"        ;;\n"
+"    l)\n"
+"        lines=\"$OPTARG\"\n"
+"        ;;\n"
+"    *)\n"
+"        echo \"Usage: $0 -p prompt -l lines\"\n"
+"        exit 1\n"
+"        ;;\n"
+"    esac\n"
+"done\n"
+"\n"
+"tmp=$(mktemp)\n"
+"cat >$tmp\n"
+"result=$(emacsclient -e '(dmenu/select-line-from-file \"'$tmp'\" :prompt '\"$prompt\"' :lines '$lines')')\n"
+"if [ \"nil\" = \"$result\" ]; then\n"
+"    exit 1\n"
+"else\n"
+"    echo \"$result\" | jq -r .\n"
+"fi") #o744))
+#+end_src
+
 ** qute-dired
 #+begin_src elisp
 (defun qute/choose-file ()
