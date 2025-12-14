@@ -627,7 +627,7 @@ disable-ipv6=true
 #+end_src
 
 #+begin_src elisp
-(defvar-local aria2-notify-completion-timer nil
+(defvar aria2-notify-completion-timer nil
   "Timer object for `aria2-notify-completion-mode` to check aria2 status.")
 
 (defun aria2-notify-completion-check ()
@@ -3048,8 +3048,8 @@ eval "$(atuin init bash)"
 (simple-service
  'extensions home-bash-service-type
  (home-bash-extension
-  (aliases '(("g" . "just -g dotfiles $@*")
-             ("gu" . "just -g guix $@*")))
+  (aliases '(("g" . "just -g dotfiles")
+             ("gu" . "just -g guix")))
   (bashrc (list <<cfg-bash()>>))))
 #+end_src
 
