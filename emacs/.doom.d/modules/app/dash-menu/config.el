@@ -88,6 +88,12 @@
          ,@(dash-menu/telega
             (if (-contains? (oref (transient-prefix-object) value) "muted") nil 'unmuted))]))]
 
+   ["Sys"
+    ("ew" "wifi" iwd-manager)
+    ("eb" "blue" bluetooth-list-devices)
+    ("ev" "vol"
+     (lambda () (interactive) (start-process "pwmenu" nil "pwmenu" "-l" "dmenu")))]
+
    ["Quick"
     ("<menu>" "consult" consult-buffer)]])
 

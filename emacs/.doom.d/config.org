@@ -597,8 +597,8 @@ polkit.addRule(function(action, subject) {
 "ripgrep" "moreutils" "libiconv"
 "powertop" "graphviz" "bind:utils"  ; dig
 "graphicsmagick" "libwebp" "jpegoptim"
-"iwgtk" "lshw" "strace" "nftables" "file" "lsof"
-"pavucontrol"
+"lshw" "strace" "nftables" "file" "lsof"
+"pwmenu"
 #+end_src
 
 ** games
@@ -3286,21 +3286,22 @@ current buffer, killing it."
 #+end_src
 ** emacs-dmenu
 #+begin_src elisp
-(cl-defun dmenu/select-line-from-file (file &key prompt lines)
+(cl-defun dmenu/select-line-from-file (file &key prompt lines require-match)
   "completing-read a line from FILE."
   (condition-case err
       (completing-read (concat (or prompt "") " ")
                        (with-temp-buffer
                          (insert-file-contents file)
                          (string-lines (buffer-string)))
-                       nil t)
+                       nil require-match)
     (quit nil)))
 #+end_src
 #+begin_src cfg :dest ".local/bin/dmenu" :chmod "u+x"
 #!/bin/sh
 prompt=nil
 lines=nil
-while getopts ":p:l:" opt; do
+require=nil
+while getopts ":p:l:r" opt; do
     case $opt in
     p)
         prompt="\"$OPTARG\""
@@ -3308,8 +3309,11 @@ while getopts ":p:l:" opt; do
     l)
         lines="$OPTARG"
         ;;
+    r)
+        require="t"
+        ;;
     ,*)
-        echo "Usage: $0 -p prompt -l lines"
+        echo "Usage: $0 -p prompt -l lines -r"
         exit 1
         ;;
     esac
@@ -3317,7 +3321,7 @@ done
 
 tmp=$(mktemp)
 cat >$tmp
-result=$(emacsclient -e '(dmenu/select-line-from-file "'$tmp'" :prompt '"$prompt"' :lines '$lines')')
+result=$(emacsclient -e '(dmenu/select-line-from-file "'$tmp'" :prompt '"$prompt"' :lines '$lines' :require-match '$require')')
 if [ "nil" = "$result" ]; then
     exit 1
 else
@@ -3325,7 +3329,7 @@ else
 fi
 #+end_src
 
-#+RESULTS[fadf9bfa5c2fda62edca1dd6764e69bbb5b3fd4f]:
+#+RESULTS[44a1610aa48104365212d18b75f0aefdfb097b73]:
 #+begin_src text :noweb-ref guix-file
 (".local/bin/dmenu"
 ,(chmod-computed-file (mixed-text-file
@@ -3333,7 +3337,8 @@ fi
 "#!/bin/sh\n"
 "prompt=nil\n"
 "lines=nil\n"
-"while getopts \":p:l:\" opt; do\n"
+"require=nil\n"
+"while getopts \":p:l:r\" opt; do\n"
 "    case $opt in\n"
 "    p)\n"
 "        prompt=\"\\\"$OPTARG\\\"\"\n"
@@ -3341,8 +3346,11 @@ fi
 "    l)\n"
 "        lines=\"$OPTARG\"\n"
 "        ;;\n"
+"    r)\n"
+"        require=\"t\"\n"
+"        ;;\n"
 "    *)\n"
-"        echo \"Usage: $0 -p prompt -l lines\"\n"
+"        echo \"Usage: $0 -p prompt -l lines -r\"\n"
 "        exit 1\n"
 "        ;;\n"
 "    esac\n"
@@ -3350,7 +3358,7 @@ fi
 "\n"
 "tmp=$(mktemp)\n"
 "cat >$tmp\n"
-"result=$(emacsclient -e '(dmenu/select-line-from-file \"'$tmp'\" :prompt '\"$prompt\"' :lines '$lines')')\n"
+"result=$(emacsclient -e '(dmenu/select-line-from-file \"'$tmp'\" :prompt '\"$prompt\"' :lines '$lines' :require-match '$require')')\n"
 "if [ \"nil\" = \"$result\" ]; then\n"
 "    exit 1\n"
 "else\n"
