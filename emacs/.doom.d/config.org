@@ -2165,7 +2165,7 @@ wireplumber.profiles = {
  :editor      (evil +everywhere) fold lispy snippets (format +onsave) multiple-cursors word-wrap
  :emacs       (dired +dirvish +icons) electric vc ibuffer undo eww
  :term        eshell vterm
- :tools       editorconfig (eval +overlay) (lookup +docsets) magit pdf (pass +auth)
+ :tools       editorconfig (eval +overlay) (lookup +docsets) magit (pass +auth)
               make tree-sitter lsp direnv llm debugger
  :checkers    syntax
  :lang        (clojure +tree-sitter) data emacs-lisp (javascript +tree-sitter +lsp) markdown
@@ -2846,21 +2846,6 @@ include theme
 "set selection-clipboard clipboard\n"
 "include theme"))
 #+end_src
-** nov.el
-#+begin_src scheme :noweb-ref guix-pkg
-"emacs-nov-el"
-#+end_src
-#+begin_src elisp :tangle packages.el
-(package! nov :built-in t)
-#+end_src
-#+begin_src elisp :tangle no
-(use-package! nov
-  :mode ("\\.epub\\'" . nov-mode)
-
-  :custom
-  (nov-variable-pitch nil)
-  (nov-text-width t))
-#+end_src
 ** calibre
 #+begin_src scheme :noweb-ref guix-pkg
 "emacs-calibredb" "sqlite" "calibre"
@@ -2889,12 +2874,9 @@ include theme
   :config
   (defalias 'calibredb-open-with-default-tool #'find-file))
 #+end_src
-** pdf-tools
+** emacs-reader
 #+begin_src scheme :noweb-ref guix-pkg
-"emacs-pdf-tools"
-#+end_src
-#+begin_src elisp :tangle packages.el
-(package! pdf-tools :built-in t)
+"emacs-reader"
 #+end_src
 * browsing
 ** qutebrowser
@@ -3158,7 +3140,7 @@ eval "$(atuin init bash)"
   :hook (after-init . openwith-mode)
   :custom
   (openwith-associations
-   '(("\\.\\(?:pdf\\|epub\\|djvu\\|mkv\\|webm\\|avi\\|mp4\\)\\'" "jaro" (file))))
+   '(("\\.\\(?:djvu\\|mkv\\|webm\\|avi\\|mp4\\)\\'" "jaro" (file))))
 
   :config
   ;; Don't ask if file is too large when it'll be handled by openwith-mode.
