@@ -261,6 +261,25 @@ dnsmasq_resolve=/etc/dnsmasq.resolve
              (iwd-network-settings
               (name-resolving-service 'resolvconf)))))))
 #+end_src
+#+begin_src elisp :tangle packages.el
+(package! iwd-manager
+  :recipe (:host github :repo "sarg/wifi-manager" :files ("iwd-manager.el"))
+  :pin "945e43eb89eae9adb18ed87d44eb9a89bd4fbc76")
+#+end_src
+#+begin_src elisp
+(use-package! iwd-manager
+  :commands iwd-manager
+  :config
+  (evil-collection-inhibit-insert-state 'iwd-manager-mode-map)
+  (evil-set-initial-state 'iwd-manager-mode-map 'normal)
+  (evil-collection-define-key 'normal 'iwd-manager-mode-map
+    "s" 'iwd-manager-scan
+    "r" 'revert-buffer
+    "c" 'iwd-manager-connect
+    "D" 'iwd-manager-delete-network
+    (kbd "RET") 'iwd-manager-connect))
+#+end_src
+
 ** vpn
 #+begin_src scheme :noweb-ref system-use
 (gnu services vpn)
