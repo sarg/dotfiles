@@ -10,6 +10,9 @@ l *args:
 refresh *args='':
     guix refresh {{args}}
 
+shell *args='':
+    guix shell {{args}}
+
 build *args='':
     guix build {{args}}
 

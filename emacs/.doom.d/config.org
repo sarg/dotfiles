@@ -644,44 +644,6 @@ disable-ipv6=true
 "check-integrity=true\n"
 "disable-ipv6=true"))
 #+end_src
-
-#+begin_src elisp
-(defvar aria2-notify-completion-timer nil
-  "Timer object for `aria2-notify-completion-mode` to check aria2 status.")
-
-(defun aria2-notify-completion-check ()
-  (when (or (not aria2--cc)
-            (and
-             (seq-empty-p (tellActive aria2--cc aria2--tell-keys))
-             (seq-empty-p (tellWaiting aria2--cc nil nil aria2--tell-keys))))
-    
-    (setq mode-line-process '(:propertize ":🏁" face gnus-summary-high-read))
-    (notifications-notify :title "aria2" :body "All downloads complete")
-    (cancel-timer aria2-notify-completion-timer)))
-
-(define-minor-mode aria2-notify-completion-mode
-  "Notify when aria2 downloads complete."
-  :global nil
-  :group 'aria2
-  :ligher "🏁"
-  
-  (cond
-   ((not (and (eq major-mode 'aria2-mode)
-              aria2--cc))
-    (error "Choose aria2 buffer first."))
-   
-   (aria2-notify-completion-mode
-    (setq mode-line-process '(:propertize ":⚐" face gnus-summary-high-read))
-    (setq aria2-notify-completion-timer
-          (run-with-timer 0 10 #'aria2-notify-completion-check)))
-
-   (t
-    (when aria2-notify-completion-timer
-      (cancel-timer aria2-notify-completion-timer)
-      (setq mode-line-process nil)
-      (setq aria2-notify-completion-timer nil)))))
-#+end_src
-
 ** mpv
 #+begin_src scheme :noweb-ref guix-pkg
 "emacs-mpv" "mpv" "yt-dlp"
@@ -1172,6 +1134,8 @@ REVERSE? it when true. Returns the selected buffer."
         (call-interactively 'emms-add-playlist))
     (emms)))
 
+(defun browse-url-emms (url &rest _) (emms-add-url url))
+
 (after! emms
   (setq!
    emms-player-mpv-update-metadata t
@@ -1179,6 +1143,9 @@ REVERSE? it when true. Returns the selected buffer."
    '("--quiet" "--really-quiet" "--no-audio-display" "--load-scripts=no" "--no-config")
    emms-playlist-buffer-name "*Music*"
    emms-source-file-default-directory (expand-file-name "~/Sync/"))
+  
+  (after! browse-url
+    (add-to-list 'browse-url-handlers '("bandcamp.com" . browse-url-emms)))
 
   (require 'emms-mpris)
   (emms-mpris-enable)

@@ -90,7 +90,7 @@
             (use-modules (guix build utils))
             (invoke (string-append
                      #$(doomemacs-configuration-doomemacs config)
-                     "/bin/doom") "sync" "-U"))))
+                     "/bin/doom") "sync"))))
      (service-extension
       home-environment-variables-service-type
       (const '(("DOOMLOCALDIR" . "$HOME/.local/doom/"))))

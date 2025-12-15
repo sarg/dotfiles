@@ -67,8 +67,8 @@ config.bind("O", "emacs '(and (qutebrowser-launcher \"{url:pretty}\") t)'")
 config.bind("xx", "spawn -u orgprotocol")
 config.bind("xc", "emacs '(sarg/magit-clone-or-open \"{url}\")'")
 config.bind("xp", "emacs '(qutebrowser-pass \"{url}\")'")
-config.bind("xm", "spawn --detach mpv --force-window=immediate {url}")
-config.bind(";m", "hint links spawn --detach mpv --force-window=immediate {hint-url}")
+config.bind("xe", "emacs '(browse-url \"{url}\")'")  # spotify / youtube
+config.bind(";e", "hint links run emacs '(browse-url \"{hint-url}\")'")
 config.bind(";a", "hint links run open -t https://web.archive.org/web/{hint-url}")
 
 config.bind("<Ctrl-w>", "fake-key <Ctrl-Backspace>", mode="insert")

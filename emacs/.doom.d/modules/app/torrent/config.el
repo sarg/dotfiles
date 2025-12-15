@@ -24,6 +24,42 @@
 
               :dir (expand-file-name dest-dir)))
 
+
+(defvar aria2-notify-completion-timer nil
+  "Timer object for `aria2-notify-completion-mode` to check aria2 status.")
+
+(defun aria2-notify-completion-check ()
+  (when (or (not aria2--cc)
+            (and
+             (seq-empty-p (tellActive aria2--cc aria2--tell-keys))
+             (seq-empty-p (tellWaiting aria2--cc nil nil aria2--tell-keys))))
+    
+    (setq mode-line-process '(:propertize ":🏁" face gnus-summary-high-read))
+    (notifications-notify :title "aria2" :body "All downloads complete")
+    (cancel-timer aria2-notify-completion-timer)))
+
+(define-minor-mode aria2-notify-completion-mode
+  "Notify when aria2 downloads complete."
+  :global nil
+  :group 'aria2
+  :ligher "🏁"
+  
+  (cond
+   ((not (and (eq major-mode 'aria2-mode)
+              aria2--cc))
+    (error "Choose aria2 buffer first."))
+   
+   (aria2-notify-completion-mode
+    (setq mode-line-process '(:propertize ":⚐" face gnus-summary-high-read))
+    (setq aria2-notify-completion-timer
+          (run-with-timer 0 10 #'aria2-notify-completion-check)))
+
+   (t
+    (when aria2-notify-completion-timer
+      (cancel-timer aria2-notify-completion-timer)
+      (setq mode-line-process nil)
+      (setq aria2-notify-completion-timer nil)))))
+
 (use-package! torrent-mode
   :mode ("\\.torrent\\'" . 'torrent-mode)
 
