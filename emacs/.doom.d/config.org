@@ -2952,12 +2952,15 @@ pgrep -f QtWebEngineProcess && qutebrowser ':config-source darkmode.py'
   :config
   (add-to-list 'qutebrowser-theme-export-face-mappings '(webpage.bg . default)))
 #+end_src
-** yeetube
+** TODO yeetube
 #+begin_src elisp :tangle packages.el
-(package! yeetube :built-in t)
+(package! yeetube
+  :recipe (:host codeberg :repo "thanosapollo/emacs-yeetube")
+  :pin "7a5cccd56d1737cc295c55c7f0564c513c8c8f02")
 #+end_src
+TODO: bump guix package
 #+begin_src scheme :noweb-ref guix-pkg
-"emacs-yeetube"
+;"emacs-yeetube"
 #+END_src
 #+begin_src elisp
 (use-package! yeetube
