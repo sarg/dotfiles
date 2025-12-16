@@ -1,13 +1,22 @@
 (define-module (personal packages binary)
   #:use-module (guix gexp)
+  #:use-module (guix git-download)
   #:use-module (guix download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages java)
   #:use-module (gnu packages gcc)
+  #:use-module (gnu packages gnome)
+  #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages curl)
+  #:use-module (gnu packages gl)
+  #:use-module (gnu packages glib)
+  #:use-module (gnu packages sdl)
   #:use-module (gnu packages python)
   #:use-module (gnu packages video)
+  #:use-module (gnu packages xorg)
+  #:use-module (gnu packages vulkan)
   #:use-module (gnu packages compression)
   #:use-module (nonguix build-system binary)
   #:use-module (guix build-system copy)
@@ -414,3 +423,66 @@ command-line programs gsutil and gcloud among others.")
    (synopsis "A VSCode debugger extension for native code, powered by LLDB.")
    (description "VSCode extension for debugging")
    (license license:expat)))
+
+(define-public ddnet
+  (package
+    (name "ddnet")
+    (version "19.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://ddnet.org/downloads/DDNet-" version "-linux_x86_64.tar.xz"))
+       (sha256
+        (base32 "1bhqzgf646nr54hc9abhq4d87d3bsr1113n6f9fy9kic9kcpwin8"))))
+    (build-system binary-build-system)
+    (arguments
+     (list #:strip-binaries? #f
+           #:validate-runpath? #f
+           #:install-plan ''(("DDNet" "bin/")
+                             ("DDNet-Server" "bin/")
+                             ("data/" "share/ddnet/"))
+           #:patchelf-plan ''(("DDNet"
+                               ("vulkan-loader" "libnotify" "mesa" "freetype" "curl" "glib" "sdl2"))
+                              ("DDNet-Server" ("curl")))
+
+           #:phases
+           #~(modify-phases %standard-phases
+               (add-after 'install 'install-maps
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   (let* ((share (string-append #$output "/share/ddnet"))
+                          (maps (assoc-ref inputs "ddnet-maps")))
+                     (delete-file (string-append share "/autoexec_server.cfg"))
+                     (for-each (lambda (f)
+                                 (symlink (string-append maps f)
+                                          (string-append share f)))
+                               '("/types" "/autoexec_server.cfg" "/reset.cfg" "/storage.cfg")))))
+               (add-after 'install-maps 'create-desktop-entry
+                 (lambda _
+                   (let* ((share (string-append #$output "/share"))
+                          (data (string-append share "/ddnet")))
+                     (make-desktop-entry-file
+                      (string-append share "/applications/ddnet.desktop")
+                      #:name "DDNet"
+                      #:path data
+                      #:icon (string-append data "/deadtee.png")
+                      #:exec (string-append #$output "/bin/DDNet")
+                      #:keywords '("game" "multiplayer")
+                      #:categories '("Game" "ArcadeGame"))))))))
+    (native-inputs
+     (list
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/ddnet/ddnet-maps")
+               (commit "48e8ae016b1892f771819368e31b94d68aaadce3")))
+        (file-name "ddnet-maps")
+        (sha256
+         (base32 "132vq839ajb0pcnaqrg9djvcynkd8iab93fa88irkq4l7j0s22c2")))))
+    (inputs (list vulkan-loader libnotify mesa freetype curl glib sdl2))
+    (supported-systems '("x86_64-linux"))
+    (home-page "https://ddnet.org/")
+    (synopsis "DDraceNetwork (DDNet), a cooperative platformer game")
+    (description "DDraceNetwork (DDNet) is an actively maintained version of DDRace, a Teeworlds
+modification with a unique cooperative gameplay.")
+    (license license:zlib)))
