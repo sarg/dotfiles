@@ -605,10 +605,11 @@ polkit.addRule(function(action, subject) {
 #+begin_src scheme :noweb-ref guix-pkg
 ;; "lierolibre" "chroma" "meandmyshadow" "gcompris-qt"
 ;; "tipp10" "quakespasm" "sgt-puzzles" "xonotic"
-"quake3e"
+"quake3e" "ddnet"
 #+end_src
 #+begin_src scheme :noweb-ref guix-file
-(".q3a" ,(symlink-to "/storage/apps/quake3"))
+(".q3a" ,(symlink-to "/storage/data/quake3"))
+(".local/share/ddnet" ,(symlink-to "/storage/data/ddnet"))
 #+end_src
 ** media
 #+begin_src scheme :noweb-ref guix-pkg
