@@ -101,17 +101,18 @@ def qute_blank(_url: QUrl):
 config.source("darkmode.py")
 
 ## bangs
-c.url.searchengines = {"DEFAULT": "qute://bangs?q={}"}
-BANGS = {
-    "DEFAULT": "https://duckduckgo.com/lite?q={}",
-    "!toys": "https://toys.whereis.social/?search={}&channel=",
-    "!arch": "https://wiki.archlinux.org/index.php?search={}",
-    "!yt": "https://www.youtube.com/results?search_query={}",
-    "!imdb": "https://www.imdb.com/find/?s=all&q={}",
-    "!g": "https://www.google.com/search?hl=en&udm=14&q={}",
-    "!gh": "https://github.com/search?utf8=✓&type=Code&q={}",
-    "!gm": "https://www.google.com/maps?hl=en&q={}",
-    "!gi": "https://www.google.com/search?q={}&tbs=imgo:1&udm=2",
+c.url.searchengines = {
+    "DEFAULT": "qute://bangs?q={}",
+    "ddg": "https://duckduckgo.com/lite?q={}",
+    "rutr": "https://rutracker.org/forum/tracker.php?nm={}&s=2&o=10&f[]=-1",
+    "toys": "https://toys.whereis.social/?search={}&channel=",
+    "arch": "https://wiki.archlinux.org/index.php?search={}",
+    "yt": "https://www.youtube.com/results?search_query={}",
+    "imdb": "https://www.imdb.com/find/?s=all&q={}",
+    "g": "https://www.google.com/search?hl=en&udm=14&q={}",
+    "gh": "https://github.com/search?utf8=✓&type=Code&q={}",
+    "gm": "https://www.google.com/maps?hl=en&q={}",
+    "gi": "https://www.google.com/search?q={}&tbs=imgo:1&udm=2",
 }
 
 BANG_RE = re.compile(r"(^|\s)(![^ ]+)(\s|$)")
@@ -124,7 +125,7 @@ def qute_bangs(url: QUrl):
 
     def repl(m):
         nonlocal bang
-        bang = BANGS.get(m.group(2), None)
+        bang = cfg.val.url.searchengines.get(m.group(2)[1:], None)
         match = m.group(0)
         if not bang:
             return match
@@ -132,7 +133,7 @@ def qute_bangs(url: QUrl):
         return (m.group(1) + m.group(3)).replace(" ", "", 1)
 
     q = BANG_RE.sub(repl, q, 1)
-    bang = bang or BANGS["DEFAULT"]
+    bang = bang or cfg.val.url.searchengines["ddg"]
 
     raise Redirect(QUrl(bang.replace("{}", q)))
 
