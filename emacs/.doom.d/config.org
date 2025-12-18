@@ -3165,6 +3165,7 @@ eval "$(atuin init bash)"
  :desc "Dash" "om" #'dash-menu)
 #+end_src
 * llm
+** gptel
 #+begin_src elisp
 (after! gptel
   (let ((openrouter
@@ -3184,6 +3185,17 @@ eval "$(atuin init bash)"
     (setq gptel-model 'tngtech/deepseek-r1t2-chimera:free
           gptel-backend openrouter)))
 #+end_src
+** aidermacs
+#+begin_src elisp :tangle packages.el
+(package! aidermacs :pin "6d0c41d1cfd24821fb32933edf8c0c2a9bb8c847")
+#+end_src
+#+begin_src elisp
+(use-package aidermacs
+  :bind (("C-c a" . aidermacs-transient-menu))
+  :custom
+  (aidermacs-default-model "openrouter/mistralai/devstral-2512:free"))
+#+end_src
+
 * COMMENT emacs screencast recording
 #+begin_src elisp :tangle packages.el
 (package! command-log-mode :pin "af600e6b4129c8115f464af576505ea8e789db27")
