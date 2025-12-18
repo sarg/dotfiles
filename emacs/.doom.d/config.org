@@ -614,7 +614,7 @@ polkit.addRule(function(action, subject) {
 ** media
 #+begin_src scheme :noweb-ref guix-pkg
 ;; "zeal" "qalculate-gtk" "simplescreenrecorder"
-"libreoffice" "qview" "stapler" "gimp"
+"libreoffice" "qview" "gimp"
 
 ;; "nomacs"
 "tinymediamanager" "simple-scan"
@@ -650,15 +650,17 @@ disable-ipv6=true
 "emacs-mpv" "mpv" "yt-dlp"
 #+end_src
 #+begin_src cfg :dest ".config/yt-dlp/config"
+--format-sort=vcodec:!av01
 --remote-components=ejs:github
 --js-runtimes quickjs:🐜(pkg "quickjs")🐜/bin/qjs
 #+end_src
 
-#+RESULTS[5567d3eb3a571b5f7b406c767eba4cb78be0939d]:
+#+RESULTS[895275df1dce3a89dc24567eff97060594519216]:
 #+begin_src text :noweb-ref guix-file
 (".config/yt-dlp/config"
 ,(mixed-text-file
   "cfg-file"
+"--format-sort=vcodec:!av01\n"
 "--remote-components=ejs:github\n"
 "--js-runtimes quickjs:"(pkg "quickjs")"/bin/qjs"))
 #+end_src
@@ -1847,7 +1849,7 @@ done
 #+end_src
 #+begin_src scheme :noweb-ref guix-file
 (".icons/default"
-    ,(file-append (pkg "bibata-cursor-theme") "/share/icons/Bibata-Modern-Ice"))
+    ,(file-append (pkg "hackneyed-x11-cursors") "/share/icons/Hackneyed"))
 #+end_src
 * ssh
 #+begin_src scheme :noweb-ref guix-pkg
@@ -2968,8 +2970,6 @@ TODO: bump guix package
 #+begin_src elisp
 (use-package! yeetube
   :commands yeetube-search
-  :custom
-  (yeetube-mpv-additional-flags '("--ytdl-raw-options=format-sort=vcodec:!av01"))
   :config
   (map! :map yeetube-mode-map
         :n "RET" #'yeetube-play
