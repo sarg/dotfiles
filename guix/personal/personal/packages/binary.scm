@@ -64,6 +64,8 @@
    (build-system binary-build-system)
    (inputs (list libmediainfo openjdk))
    (supported-systems '("x86_64-linux"))
+   (properties `((release-monitoring-url . "https://archive.tinymediamanager.org/")
+                 (release-file-regexp . "v([0-9.]*)/$")))
    (arguments
     (list
      #:phases
@@ -124,7 +126,7 @@ LD_LIBRARY_PATH=~a CLASSPATH=~a/* ~a/bin/java ~a org.tinymediamanager.TinyMediaM
 (define-public temporal-io-server
   (package
     (name "temporal-io-server")
-    (version "1.27.2")
+    (version "1.29.1")
     (source
      (origin
        (method url-fetch)
@@ -132,15 +134,15 @@ LD_LIBRARY_PATH=~a CLASSPATH=~a/* ~a/bin/java ~a org.tinymediamanager.TinyMediaM
              "https://github.com/temporalio/temporal/releases/download/v"
              version "/temporal_" version "_linux_amd64.tar.gz"))
        (sha256
-        (base32 "0r7xqila3vr6gwy3d9bwp3rzvw67fa7wxc794b2gq498pp8vqzpv"))))
+        (base32 "0y1yppr21wcdynx5ivkyj7522kv4j721rhn1pc5yam3h7300bpx5"))))
+    (properties '((upstream-name . "temporal")))
     (build-system copy-build-system)
     (arguments
      (list
-
-     #:phases
-     #~(modify-phases %standard-phases
-         (add-after 'unpack 'get-back
-           (lambda _ (chdir ".."))))
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'get-back
+            (lambda _ (chdir ".."))))
 
       #:install-plan
       #~'(("." "bin/" #:include-regexp ("temporal-.*")))))
@@ -157,14 +159,15 @@ failed operations.")
 (define-public temporal-cli
   (package
     (name "temporal-cli")
-    (version "1.3.0")
+    (version "1.5.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "https://github.com/temporalio/cli/releases/download/v"
              version "/temporal_cli_" version "_linux_amd64.tar.gz"))
-       (sha256 "0knpzhylx8c3nilflxw5949mg4b5zddbbnkm817hids8p5prf0ya")))
+       (sha256 "0bc5nic778yjdihlx0zqfpl2nzgbi3sa6cwpxbafyxmhn045xjfx")))
+    (properties '((upstream-name . "temporal_cli")))
     (build-system copy-build-system)
     (arguments
      (list #:install-plan #~'(("temporal" "bin/"))))
@@ -184,11 +187,12 @@ failed operations.")
     (version "2.83.2")
     (source
      (origin
-       (method url-fetch/tarbomb)
+       (method url-fetch)
        (uri (string-append "https://github.com/cli/cli/releases/download/v" version
                            "/gh_" version "_linux_amd64.tar.gz"))
        (sha256
         (base32 "0ph1jaq4axa6j78xdyfq8vcnyqmslxj4pv4w88hhxgag450pcvna"))))
+    (properties '((upstream-name . "gh")))
     (build-system binary-build-system)
     (arguments
      (list
@@ -499,6 +503,7 @@ modification with a unique cooperative gameplay.")
              "/ty-x86_64-unknown-linux-gnu.tar.gz"))
        (sha256
         (base32 "0n2q6rik1bkiqkxwnzz9ra35nj9r8fp97pzlcwfqxx3v144i4ala"))))
+    (properties '((upstream-name . "ty")))
     (build-system binary-build-system)
     (supported-systems '("x86_64-linux"))
     (arguments
