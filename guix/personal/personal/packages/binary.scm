@@ -486,3 +486,27 @@ command-line programs gsutil and gcloud among others.")
     (description "DDraceNetwork (DDNet) is an actively maintained version of DDRace, a Teeworlds
 modification with a unique cooperative gameplay.")
     (license license:zlib)))
+
+(define-public python-ty
+  (package
+    (name "python-ty")
+    (version "0.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/astral-sh/ty/releases/download/" version
+             "/ty-x86_64-unknown-linux-gnu.tar.gz"))
+       (sha256
+        (base32 "0n2q6rik1bkiqkxwnzz9ra35nj9r8fp97pzlcwfqxx3v144i4ala"))))
+    (build-system binary-build-system)
+    (supported-systems '("x86_64-linux"))
+    (arguments
+     `(#:install-plan '(("ty" "bin/"))
+       #:validate-runpath? #f
+       #:patchelf-plan '(("ty" ("gcc:lib")))))
+    (inputs `(("gcc:lib" ,gcc "lib")))
+    (home-page "https://github.com/astral-sh/ty")
+    (synopsis "A Python dependency management tool")
+    (description "Ty is a Python dependency management tool that provides a simple and efficient way to manage Python dependencies.")
+    (license license:expat)))
