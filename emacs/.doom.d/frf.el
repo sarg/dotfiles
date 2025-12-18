@@ -10,6 +10,7 @@
 
 (require 'promise)
 (require 'request)
+(require 'browse-url)
 (require 's)
 (require 'dash)
 (require 'cl-lib)
@@ -164,7 +165,10 @@ Pass OPTS directly to (request)."
       (insert (format "[[elisp:(frf-timeline \"%s\" %d)][Newer]] " frf-feed (- frf-offset 30))))
     (insert (format "[[elisp:(frf-timeline \"%s\" %d)][Older]]" frf-feed (+ frf-offset 30)))
     (org-mode)
-    (setq-local browse-url-browser-function #'eww-browse-url)))
+    (add-to-list 'browse-url-handlers
+                 (cons "media.freefeed.net/attachments/" #'eww-browse-url))
+    (add-to-list 'browse-url-handlers
+                 (cons "freefeed.net/v4/attachments/" #'eww-browse-url))))
 
 (defun frf-timeline (&optional feed offset)
   "Read Freefeed's FEED timeline from OFFSET."
