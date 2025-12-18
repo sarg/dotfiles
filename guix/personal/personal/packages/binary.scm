@@ -211,7 +211,6 @@ working with git and your code.")
 (define-public atuin
   (package
    (name "atuin")
-   ;; Use revision helper?
    (version "18.10.0")
    (source
     (origin
@@ -241,13 +240,13 @@ history in an SQLite database.")
 (define-public git-bug
   (package
     (name "git-bug")
-    (version "0.9.0")
+    (version "0.10.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "https://github.com/git-bug/git-bug/releases/download/v" version "/git-bug_linux_amd64"))
-       (sha256 "138n8wrr6z633gfw699mg9hzvvh126rh9gda1rx866l8bxjn12ck")))
+       (sha256 "18al1pnryq5x748pna0saav5privh8q50pc2dqdyyvsj3ssgi8iv")))
     (build-system binary-build-system)
     (arguments
      (list

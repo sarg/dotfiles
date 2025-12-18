@@ -22,20 +22,16 @@
 (define-public quake3e
   (package
     (name "quake3e")
-    (properties '((commit . "ebdd00e2d6ce0fecddfc423a8c18d0a19ccea7ee")
-                  (revision . "0")))
-    (version (git-version "2025.10.02"
-                          (assoc-ref properties 'revision)
-                          (assoc-ref properties 'commit)))
+    (version "2025.12.18")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/ec-/Quake3e")
-             (commit (assoc-ref properties 'commit))))
+             (commit "6adadd446e36a0ae32e161c186fed7a82f1807c7")))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "07pg7rfia87laydnd905p3xy2rmhdqyxfph2yi8k39f8hnx7id17"))
+        (base32 "106zs3dbvg58zflnk9jmfqqz8pxjn834l6x6kx42n4lzf1rpy77h"))
        (modules '((guix build utils)))
        (snippet
         ;; Delete the bundled copy of these libraries.
