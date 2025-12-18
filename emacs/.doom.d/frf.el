@@ -182,7 +182,9 @@ Pass OPTS directly to (request)."
     (promise-chain (frf--promise-json
                     (format
                      (if (s-starts-with? "?" name) "%s/search?qs=%s&offset=%d" "%s/timelines/%s?offset=%d")
-                     "https://freefeed.net/v4" (s-chop-prefix "?" name) frf-offset))
+                     "https://freefeed.net/v4"
+                     (url-hexify-string (s-chop-prefix "?" name))
+                     frf-offset))
       (then
        (lambda (result)
          (frf--render result buf)))

@@ -1803,13 +1803,14 @@ keymap.sh
 🐜(pkg "xhost")🐜/bin/xhost +si:localuser:$USER
 dbus-update-activation-environment --verbose DBUS_SESSION_BUS_ADDRESS DISPLAY XAUTHORITY
 
+ulimit -n 8192 # potentially prevents "too many open files" errors in emacs
 while true; do
   xset s activate # lock to show password screen
   emacs -mm -f exwm-wm-mode
 done
 #+end_src
 
-#+RESULTS[1e5f5ac992a8b144afb98a13aa12f6e946f37cef]:
+#+RESULTS[4c2ad8cf4d428c937f3dd897eab4377e4ece5de0]:
 #+begin_src text :noweb-ref guix-file
 (".xinitrc"
 ,(mixed-text-file
@@ -1820,6 +1821,7 @@ done
 "keymap.sh\n"(pkg "xhost")"/bin/xhost +si:localuser:$USER\n"
 "dbus-update-activation-environment --verbose DBUS_SESSION_BUS_ADDRESS DISPLAY XAUTHORITY\n"
 "\n"
+"ulimit -n 8192 # potentially prevents \"too many open files\" errors in emacs\n"
 "while true; do\n"
 "  xset s activate # lock to show password screen\n"
 "  emacs -mm -f exwm-wm-mode\n"
@@ -2128,7 +2130,7 @@ wireplumber.profiles = {
       doom-leader-alt-key "<f13>"
       custom-file "~/devel/dotfiles/emacs/.doom.d/custom.el")
 (doom!
- :completion  corfu (vertico +icons) ;(ivy +fuzzy +prescient +childframe)
+ :completion  (corfu +icons +orderless) (vertico +icons) ;(ivy +fuzzy +prescient +childframe)
  :ui          nav-flash (modeline +light) ophints (popup +defaults) ligatures treemacs doom-dashboard
  :editor      (evil +everywhere) fold lispy snippets (format +onsave) multiple-cursors word-wrap
  :emacs       (dired +dirvish +icons) electric vc ibuffer undo eww
@@ -2957,7 +2959,7 @@ pgrep -f QtWebEngineProcess && qutebrowser ':config-source darkmode.py'
 #+begin_src elisp :tangle packages.el
 (package! yeetube
   :recipe (:host codeberg :repo "thanosapollo/emacs-yeetube")
-  :pin "7a5cccd56d1737cc295c55c7f0564c513c8c8f02")
+  :pin "e179f00b065188b5c50af7e307fc262a6efea7ff")
 #+end_src
 TODO: bump guix package
 #+begin_src scheme :noweb-ref guix-pkg
@@ -2966,8 +2968,13 @@ TODO: bump guix package
 #+begin_src elisp
 (use-package! yeetube
   :commands yeetube-search
+  :custom
+  (yeetube-mpv-additional-flags '("--ytdl-raw-options=format-sort=vcodec:!av01"))
   :config
-  (map! :map yeetube-mode-map :ni "RET" #'yeetube-play))
+  (map! :map yeetube-mode-map
+        :n "RET" #'yeetube-play
+        :n "go" (lambda () (interactive)
+                  (browse-url-generic (yeetube-get-url)))))
 #+end_src
 * shell
 #+begin_src elisp :tangle packages.el
@@ -3079,6 +3086,24 @@ eval "$(atuin init bash)"
 #+begin_src scheme :noweb-ref guix-pkg
 "emacs-dired-hacks" "emacs-dired-du"
 "emacs-openwith" "emacs-sxiv"
+#+end_src
+
+#+begin_src elisp
+(defun dired-do-materialize-symlink ()
+  "Replace selected symlinks with copies of their target files."
+  (interactive)
+  (dolist (file (dired-get-marked-files))
+    (let ((target (file-symlink-p file)))
+      (cond
+       ((not target)
+        (message "Not a symlink: %s" file))
+       ((not (file-exists-p target))
+        (message "Target does not exist: %s" target))
+       ((yes-or-no-p (format "Replace %s with copy of %s? " file target))
+        (delete-file file)
+        (copy-file target file t)
+        (set-file-modes file (logior (file-modes file) #o200))))))
+  (revert-buffer))
 #+end_src
 
 #+begin_src elisp
