@@ -22,13 +22,17 @@
 (define-public quake3e
   (package
     (name "quake3e")
-    (version "2025.10.02")
+    (properties '((commit . "ebdd00e2d6ce0fecddfc423a8c18d0a19ccea7ee")
+                  (revision . "0")))
+    (version (git-version "2025.10.02"
+                          (assoc-ref properties 'revision)
+                          (assoc-ref properties 'commit)))
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/ec-/Quake3e")
-             (commit "ebdd00e2d6ce0fecddfc423a8c18d0a19ccea7ee")))
+             (commit (assoc-ref properties 'commit))))
        (file-name (git-file-name name version))
        (sha256
         (base32 "07pg7rfia87laydnd905p3xy2rmhdqyxfph2yi8k39f8hnx7id17"))

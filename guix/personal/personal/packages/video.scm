@@ -51,25 +51,24 @@
     (license license:gpl3+)))
 
 (define-public mpv-thumbfast
-  (let ((commit "9deb0733c4e36938cf90e42ddfb7a19a8b2f4641")
-        (revision "2"))
-    (package
-      (name "mpv-thumbfast")
-      (version (git-version "0.1" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/po5/thumbfast")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "0q537fjj9ndq7pzg2rv4h5qas8s3812k21bpw064bcvb204vbwba"))))
-      (build-system copy-build-system)
-      (arguments
-       (list #:install-plan
-             #~'(("thumbfast.lua" "share/mpv/scripts/"))))
-      (home-page "https://github.com/po5/thumbfast")
-      (synopsis "High-performance on-the-fly thumbnailer script for mpv")
-      (description "High-performance on-the-fly thumbnailer script for mpv.")
-      (license license:mpl2.0))))
+  (package
+    (name "mpv-thumbfast")
+    (properties '((commit . "9deb0733c4e36938cf90e42ddfb7a19a8b2f4641")))
+    (version (git-version "0.1" "2" (assoc-ref properties 'commit)))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/po5/thumbfast")
+             (commit (assoc-ref properties 'commit))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0q537fjj9ndq7pzg2rv4h5qas8s3812k21bpw064bcvb204vbwba"))))
+    (build-system copy-build-system)
+    (arguments
+     (list #:install-plan
+           #~'(("thumbfast.lua" "share/mpv/scripts/"))))
+    (home-page "https://github.com/po5/thumbfast")
+    (synopsis "High-performance on-the-fly thumbnailer script for mpv")
+    (description "High-performance on-the-fly thumbnailer script for mpv.")
+    (license license:mpl2.0)))

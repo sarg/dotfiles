@@ -8,3 +8,4 @@ xmonad/.xmonad/xmonad*
 /emacs/.doom.d/init.el
 /guix/home.scm
 /guix/system.scm
+.aider*

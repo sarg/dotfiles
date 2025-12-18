@@ -47,31 +47,30 @@
     (license license:asl2.0)))
 
 (define-public emacs-gpx
-  (let ((commit "b7cfc0f7ec53808f48c070f9c811934a7afcc580")
-        (revision "1"))
-    (package
-      (name "emacs-gpx")
-      (version (git-version "0.1.0" revision commit))
-      (home-page "https://github.com/mkcms/gpx-mode")
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url home-page)
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "1zndib63yj88g9hqnnjya5x9bgfc8qw75phfqbhbpgi99ip25lxx"))))
-      (build-system emacs-build-system)
-      (arguments '(#:include '("\\.el$" "\\.py$")))
-      (propagated-inputs
-       (list python-gpx-cmd-tools python-matplotlib python-folium))
-      (synopsis "Helm action to switch directory in Emacs REPLs")
-      (description "Helm \"Switch-to-REPL\" offers the
+  (package
+    (name "emacs-gpx")
+    (properties '((commit . "b7cfc0f7ec53808f48c070f9c811934a7afcc580")))
+    (version (git-version "0.1.0" "1" (assoc-ref properties 'commit)))
+    (home-page "https://github.com/mkcms/gpx-mode")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit (assoc-ref properties 'commit))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1zndib63yj88g9hqnnjya5x9bgfc8qw75phfqbhbpgi99ip25lxx"))))
+    (build-system emacs-build-system)
+    (arguments '(#:include '("\\.el$" "\\.py$")))
+    (propagated-inputs
+     (list python-gpx-cmd-tools python-matplotlib python-folium))
+    (synopsis "Helm action to switch directory in Emacs REPLs")
+    (description "Helm \"Switch-to-REPL\" offers the
 @code{helm-switch-to-repl} action, a generalized and extensible version of
 @code{helm-ff-switch-to-shell}.  It can be added to @code{helm-find-files} and
 other @code{helm-type-file} sources such as @code{helm-locate}.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public python-gpxcsv
   (package

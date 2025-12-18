@@ -202,7 +202,7 @@ failed operations.")
             (#$(string-append dir "/share") "share")))))
     (home-page "https://github.com/cli/cli")
     (supported-systems '("x86_64-linux"))
-    (synopsis "GitHub’s official command line tool")
+    (synopsis "GitHub's official command line tool")
     (description "gh is GitHub on the command line. It brings pull requests,
 issues, and other GitHub concepts to the terminal next to where you are already
 working with git and your code.")

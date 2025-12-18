@@ -35,42 +35,41 @@
   #:use-module (gnu packages pdf))
 
 (define-public emacs-reader
-  (let ((commit "6e4e32720d314e3a64091a346dad000bf9c69b93")
-        (revision "0"))
-    (package
-     (name "emacs-reader")
-     (version (git-version "0.3.2" revision commit))
-     (source
-      (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://codeberg.org/divyaranjan/emacs-reader")
-             (commit commit)))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "1dmp1c6719rd8ynsbmfsfpq55pj9p22z51cn676flf80hl29f4d0"))))
-     (build-system emacs-build-system)
-     (arguments
-      (list
-       #:tests? #f                      ;no tests
-       #:phases
-       #~(modify-phases %standard-phases
-                        (add-after 'expand-load-path 'build-module
-                                   (lambda* (#:key inputs #:allow-other-keys)
-                                     (invoke "make" "USE_PKGCONFIG=no}"))) ; We don't need pkg-config
-                        (add-after 'install 'install-module
-                                   (lambda* (#:key outputs #:allow-other-keys)
-                                     (let* ((out (assoc-ref outputs "out"))
-                                            (target-dir (string-append out
-                                                                       "/share/emacs/site-lisp/" #$name "-" #$version)))
-                                       (install-file "render-core.so" target-dir)))))))
+  (package
+    (name "emacs-reader")
+    (properties '((commit . "6e4e32720d314e3a64091a346dad000bf9c69b93")))
+    (version (git-version "0.3.2" "0" (assoc-ref properties 'commit)))
+    (source
+     (origin
+      (method git-fetch)
+      (uri (git-reference
+            (url "https://codeberg.org/divyaranjan/emacs-reader")
+            (commit (assoc-ref properties 'commit))))
+      (file-name (git-file-name name version))
+      (sha256
+       (base32 "1dmp1c6719rd8ynsbmfsfpq55pj9p22z51cn676flf80hl29f4d0"))))
+    (build-system emacs-build-system)
+    (arguments
+     (list
+      #:tests? #f                      ;no tests
+      #:phases
+      #~(modify-phases %standard-phases
+                       (add-after 'expand-load-path 'build-module
+                                  (lambda* (#:key inputs #:allow-other-keys)
+                                    (invoke "make" "USE_PKGCONFIG=no}"))) ; We don't need pkg-config
+                       (add-after 'install 'install-module
+                                  (lambda* (#:key outputs #:allow-other-keys)
+                                    (let* ((out (assoc-ref outputs "out"))
+                                           (target-dir (string-append out
+                                                                      "/share/emacs/site-lisp/" #$name "-" #$version)))
+                                      (install-file "render-core.so" target-dir)))))))
 
-     (native-inputs (list mupdf gcc))
-     (home-page "https://codeberg.org/divyaranjan/emacs-reader")
-     (synopsis
-      "An all-in-one document reader for all formats in Emacs, backed by MuPDF.")
-     (description
-      "An all-in-one document reader for GNU Emacs, supporting all major document formats.
+    (native-inputs (list mupdf gcc))
+    (home-page "https://codeberg.org/divyaranjan/emacs-reader")
+    (synopsis
+     "An all-in-one document reader for all formats in Emacs, backed by MuPDF.")
+    (description
+     "An all-in-one document reader for GNU Emacs, supporting all major document formats.
 This package intends to take from doc-view, nov.el, and pdf-tools and make them better.
 And as such, it is effectively a drop-in replacement for them.")
-     (license license:gpl3+))))
+    (license license:gpl3+)))
