@@ -598,7 +598,6 @@ polkit.addRule(function(action, subject) {
 "powertop" "graphviz" "bind:utils"  ; dig
 "graphicsmagick" "libwebp" "jpegoptim"
 "lshw" "strace" "nftables" "file" "lsof"
-"pwmenu"
 #+end_src
 
 ** games
@@ -1211,6 +1210,9 @@ REVERSE? it when true. Returns the selected buffer."
   (delq 'emms-playing-time-string global-mode-string))
 #+end_src
 *** bindings
+#+begin_src scheme :noweb-ref emacs-dep
+"wireplumber"
+#+end_src
 #+begin_src elisp :noweb-ref exwm :tangle no
 (autoload #'emms-stop "emms" nil t)
 (autoload #'emms-pause "emms" nil t)
@@ -1223,9 +1225,25 @@ REVERSE? it when true. Returns the selected buffer."
        (* up (if (< delta 200) 5 2)))
       (setq my-vol-last-change time-now))))
 
+(let ((wpctl (guix/pkg 'wireplumber "/bin/wpctl")))
+  (transient-define-prefix dash-menu/audio-mic ()
+    "Mic volume menu"
+    ["Mic"
+     :pad-keys t
+     :description (lambda () "Get vol"
+                    (let* ((mic-vol (s-chop-prefix "Volume: " (car (process-lines wpctl "get-volume" "@DEFAULT_SOURCE@")))))
+                      (format "Mic: %s" mic-vol)))
+     ("m" "mute" (lambda () (interactive) (call-process wpctl nil nil nil "set-mute" "@DEFAULT_SOURCE@" "toggle")))
+     ("<prior>" "volume up"
+      (lambda () (interactive) (call-process wpctl nil nil nil "set-volume" "@DEFAULT_SOURCE@" "5%+"))
+      :transient t)
+     ("<next>" "volume down"
+      (lambda () (interactive) (call-process wpctl nil nil nil "set-volume" "@DEFAULT_SOURCE@" "5%-"))
+      :transient t)]))
+
 (transient-define-prefix dash-menu/audio ()
   "Audio menu"
-  [["Play"
+  [["Playlist"
     ("s" "Systrum" (lambda () (interactive)
                      (emms-play-url "https://systrum.net/SSR2.m3u")))
     ("l" "Likes" (lambda () (interactive)
@@ -1235,13 +1253,17 @@ REVERSE? it when true. Returns the selected buffer."
                      (emms-add-directory (concat sarg/media-dir "/music_liked/"))
                      (emms-random))))]
    ["EMMS"
-    ("<delete>" "pause" emms-pause :format "Del %d")
-    ("<right>" "next" (lambda () (interactive) (funcall emms-player-next-function)) :transient t :format "  → %d")
-    ("<left>" "prev" emms-previous :transient t :format "  ← %d")]
+    :pad-keys t
+    ("<delete>" "pause" emms-pause)
+    ("S-<delete>" "stop" emms-stop)
+    ("<right>" "next" (lambda () (interactive) (funcall emms-player-next-function)) :transient t)
+    ("<left>" "prev" emms-previous :transient t)]
 
    ["Sound"
-    ("<prior>" "volume up" (lambda () (interactive) (my-vol-change 1)) :transient t :format "PgUp %d")
-    ("<next>" "volume down" (lambda () (interactive) (my-vol-change -1)) :transient t :format "PgDn %d")]])
+    :pad-keys t
+    ("m" "mic" dash-menu/audio-mic :transient transient--do-exit)
+    ("<prior>" "volume up" (lambda () (interactive) (my-vol-change 1)) :transient t)
+    ("<next>" "volume down" (lambda () (interactive) (my-vol-change -1)) :transient t)]])
 
 (defun emms-play-dwim ()
   "Resume playing or offer to select what to play."

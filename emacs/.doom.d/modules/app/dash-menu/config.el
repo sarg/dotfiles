@@ -90,9 +90,7 @@
 
    ["Sys"
     ("ew" "wifi" iwd-manager)
-    ("eb" "blue" bluetooth-list-devices)
-    ("ev" "vol"
-     (lambda () (interactive) (start-process "pwmenu" nil "pwmenu" "-l" "dmenu")))]
+    ("eb" "blue" bluetooth-list-devices)]
 
    ["Quick"
     ("<menu>" "consult" consult-buffer)]])
