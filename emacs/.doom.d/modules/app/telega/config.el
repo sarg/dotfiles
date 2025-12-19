@@ -127,8 +127,10 @@
   ;; XX Username
   ;; XX message text                                                    08.04.20✓
 
-  (advice-add #'telega-chatbuf--sponsored-messages-fetch
-              :override #'ignore)
+  (advice-add #'telega-chatbuf--sponsored-messages-fetch :override #'ignore)
+
+  ;; silence the "TODO: telega--suggested-actions" message
+  (advice-add #'telega--on-updateSuggestedActions :override #'ignore)
 
   (advice-add
    'telega-logout
