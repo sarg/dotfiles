@@ -511,6 +511,31 @@ modification with a unique cooperative gameplay.")
        #:patchelf-plan '(("ty" ("gcc:lib")))))
     (inputs `(("gcc:lib" ,gcc "lib")))
     (home-page "https://github.com/astral-sh/ty")
-    (synopsis "A Python dependency management tool")
-    (description "Ty is a Python dependency management tool that provides a simple and efficient way to manage Python dependencies.")
+    (synopsis "python language server")
+    (description "ty is an extremely fast Python type checker and language server, written in Rust.")
     (license license:expat)))
+
+(define-public goose
+  (package
+    (name "goose")
+    (version "1.17.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/block/goose/releases/download/v"
+                           version "/goose-x86_64-unknown-linux-gnu.tar.bz2"))
+       (sha256
+        (base32 "1hqrb6yx3wkwfwaydpsmka9zixgf2vhkjrlf9rwy34mc2c9a8z4h"))))
+    (build-system binary-build-system)
+    (supported-systems '("x86_64-linux"))
+    (arguments
+     `(#:validate-runpath? #f
+       #:install-plan '(("goose" "bin/"))
+       #:patchelf-plan '(("goose" ("glibc" "gcc:lib" "libxcb")))))
+    (inputs `(("gcc:lib" ,gcc "lib")
+              ("glibc" ,glibc)
+              ("libxcb" ,libxcb)))
+    (home-page "https://github.com/block/goose")
+    (synopsis "CLI AI coding agent")
+    (description "Goose is an extensible AI agent that goes beyond code suggestions - install, execute, edit, and test with any LLM")
+    (license license:asl2.0)))

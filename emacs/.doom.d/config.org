@@ -3314,23 +3314,23 @@ current buffer, killing it."
 #+end_src
 ** gpx-mode
 #+begin_src scheme :noweb-ref guix-pkg
-;; "emacs-gpx"
-"emacs-osm"
+"emacs-gpx" "emacs-osm"
 #+end_src
 #+begin_src elisp
 (use-package! osm
   :commands osm
-
   :init
-  (set-popup-rule! "^\\*osm" :ignore t)
+  (set-popup-rule! "^\\*osm" :ignore t))
 
+(use-package! gpx
+  :after osm
   :config
-  (defun gpx-show-map-osm (file track segment)
-    (osm-gpx-show file)))
-
-;; (use-package! gpx
-;;   :config
-;;   (setq gpx-show-map-function  #'gpx-show-map-osm))
+  (defun gpx-show-map-gpxsee (file track segment)
+          (split-window-right)
+          (windmove-right)
+          (async-start-process "gpxsee" "gpxsee" nil file))
+  (setq gpx-show-map-function
+        (defun gpx-show-map-osm (file track segment) (osm-gpx-show file))))
 #+end_src
 ** emacs-dmenu
 #+begin_src elisp
