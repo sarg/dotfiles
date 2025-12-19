@@ -2113,22 +2113,22 @@ wireplumber.profiles = {
 "tree-sitter-css"
 "tree-sitter-bash"
 "tree-sitter-python"
-"tree-sitter-clojure"
 "tree-sitter-rust"
 
-; modules dependencies
+;;  modules dependencies
 "shfmt" "shellcheck" "fd" "editorconfig-core-c"
 "gopls" "go"
 
-; python
+;; python
 "python"
+"python-ty"
 "python-isort"
 "python-pyflakes"
 "python-pytest"
 "python-black"
 "python-nose"
 
-; dirvish
+;; dirvish
 "ffmpegthumbnailer" "poppler" "mediainfo" "vips"
 #+end_src
 #+begin_src scheme :noweb-ref guix-env-var
@@ -2799,7 +2799,43 @@ mod? dotfiles '~/devel/dotfiles/guix/Justfile'
                  port :autoport :type "lldb" :request "launch" :cwd "." :args []
                  :stopOnEntry nil)))
 #+end_src
+** clojure
+install grammars as expected by clojure-ts-mode
+#+begin_src scheme :noweb-ref guix-pkg
+((@@ (gnu packages tree-sitter) tree-sitter-grammar)
+ "regex" "regex"
+ "098pkjicnw3a8bypb7f2xqwhqjlfvicibcmgx5nsb0icdyvagm8q"
+ "0.24.3"
+ #:repository-url "https://github.com/tree-sitter/tree-sitter-regex")
+
+((@@ (gnu packages tree-sitter) tree-sitter-grammar)
+ "clojure" "Clojure"
+ "1jhwsif4rm8dc853ad3i9zrgnrps9krpb65lhgcwl8r4zxlspj7q"
+ "unstable-20250526"
+ #:commit "69070d2e4563f8f58c7f57b0c8e093a08d7a5814"
+ #:repository-url "https://github.com/sogaiu/tree-sitter-clojure")
+
+(package
+  (inherit (pkg "tree-sitter-markdown"))
+  (name "tree-sitter-markdown_inline")
+  (arguments
+   (list #:phases
+         #~(modify-phases %standard-phases
+             (add-after 'install 'copy-grammar
+               (lambda _
+                 (symlink (string-append #$output "/lib/tree-sitter/libtree-sitter-markdown_inline.so")
+                          (string-append #$output "/lib/tree-sitter/libtree-sitter-markdown-inline.so")))))
+         #:grammar-directories '("tree-sitter-markdown" "tree-sitter-markdown-inline"))))
+#+end_src
 * tramp
+#+begin_src elisp :tangle packages.el
+(package! tramp-hlo :pin "2890d37c08f53164205579e4c3c45c3695aeaa2c")
+#+end_src
+#+begin_src elisp
+(use-package! tramp-hlo
+  :config (tramp-hlo-setup))
+#+end_src
+
 #+begin_src elisp
 (after! tramp
   (pushnew! tramp-remote-path 'tramp-own-remote-path))
