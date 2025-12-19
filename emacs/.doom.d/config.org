@@ -1241,9 +1241,16 @@ REVERSE? it when true. Returns the selected buffer."
       (lambda () (interactive) (call-process wpctl nil nil nil "set-volume" "@DEFAULT_SOURCE@" "5%-"))
       :transient t)]))
 
+(transient-define-prefix dash-menu/spotify ()
+  "Spotify search"
+  [("a" "album" counsel-spotify-search-album)
+   ("p" "playlist" counsel-spotify-search-playlist)
+   ("A" "artist" counsel-spotify-search-artist)])
+
 (transient-define-prefix dash-menu/audio ()
   "Audio menu"
   [["Playlist"
+    ("a" "Spotify" dash-menu/spotify)
     ("s" "Systrum" (lambda () (interactive)
                      (emms-play-url "https://systrum.net/SSR2.m3u")))
     ("l" "Likes" (lambda () (interactive)
