@@ -1821,7 +1821,7 @@ gtk-font-name="Fira Code 12"
 #+end_src
 #+begin_src cfg :dest ".xinitrc"
 🐜(screen-locker
-     (video-saver "/storage/data/splash.mp4")
+     (video-saver "/storage/data/backgrounds/snow.mp4")
      #:pam-service (global 'unlock-pam-service))🐜 &
 keymap.sh
 🐜(pkg "xhost")🐜/bin/xhost +si:localuser:$USER
@@ -1834,13 +1834,13 @@ while true; do
 done
 #+end_src
 
-#+RESULTS[4c2ad8cf4d428c937f3dd897eab4377e4ece5de0]:
+#+RESULTS[a8df06f9eaf000a88d5a54acf733e471aaaa8de2]:
 #+begin_src text :noweb-ref guix-file
 (".xinitrc"
 ,(mixed-text-file
   "cfg-file"
 (screen-locker
-     (video-saver "/storage/data/splash.mp4")
+     (video-saver "/storage/data/backgrounds/snow.mp4")
      #:pam-service (global 'unlock-pam-service))" &\n"
 "keymap.sh\n"(pkg "xhost")"/bin/xhost +si:localuser:$USER\n"
 "dbus-update-activation-environment --verbose DBUS_SESSION_BUS_ADDRESS DISPLAY XAUTHORITY\n"
