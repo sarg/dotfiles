@@ -8,6 +8,8 @@
   #:use-module (guix build-system emacs)
   #:use-module (guix build-system python)
   #:use-module (guix build-system pyproject)
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages python-build)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages xml)
   #:use-module (guix download))
@@ -23,6 +25,9 @@
        (sha256
         (base32 "1bh1dkrbmcqb46r7j4fazzq7j6zfr2f04frm6h4bhhpcjx5lhb57"))))
     (build-system pyproject-build-system)
+    (arguments
+     (list #:test-backend #~'unittest))
+    (native-inputs (list python-setuptools))
     (home-page "https://github.com/tkrajina/gpxpy")
     (synopsis "GPX file parser and GPS track manipulation library")
     (description "GPX file parser and GPS track manipulation library")
@@ -40,6 +45,7 @@
         (base32 "173cksbjid9bpa95s39p2g6qvm0i8jdyxmdr1757brs1kcy2zp0d"))))
     (build-system pyproject-build-system)
     (arguments '(#:tests? #f))
+    (native-inputs (list python-setuptools))
     (propagated-inputs (list python-gpxpy))
     (home-page "https://github.com/tkrajina/gpx-cmd-tools")
     (synopsis "Set of GPX command-line utilities")
@@ -49,22 +55,45 @@
 (define-public emacs-gpx
   (package
     (name "emacs-gpx")
-    (properties '((commit . "b7cfc0f7ec53808f48c070f9c811934a7afcc580")))
-    (version (git-version "0.1.0" "1" (assoc-ref properties 'commit)))
+    (version "0.2.0")
     (home-page "https://github.com/mkcms/gpx-mode")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url home-page)
-             (commit (assoc-ref properties 'commit))))
+             (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1zndib63yj88g9hqnnjya5x9bgfc8qw75phfqbhbpgi99ip25lxx"))))
+        (base32 "1w0651cln7pnvb3fj8x98djnmg14b2lh17qn7lpxqr1s41d53i4c"))))
     (build-system emacs-build-system)
-    (arguments '(#:include '("\\.el$" "\\.py$")))
-    (propagated-inputs
-     (list python-gpx-cmd-tools python-matplotlib python-folium))
+    (arguments
+     (list #:include #~(list "\\.el$" "\\.py$")
+           #:tests? #f
+           #:phases
+           #~(modify-phases %standard-phases
+               (add-after 'unpack 'configure-path
+                 (lambda* (#:key inputs outputs #:allow-other-keys)
+                   (let ((out (assoc-ref outputs "out")))
+                     (emacs-substitute-variables "gpx.el"
+                       ("gpx-gpxinfo-executable"
+                        (search-input-file inputs "/bin/gpxinfo"))))))
+               (add-after 'install 'wrap-scripts
+                 (lambda* (#:key inputs outputs #:allow-other-keys)
+                   (for-each
+                    (lambda (f)
+                      (substitute* f
+                        (("import sys\n" all)
+                         (apply string-append
+                                all
+                                (map (lambda (path)
+                                       (string-append "sys.path.append('" path "')\n"))
+                                     (string-split (getenv "GUIX_PYTHONPATH") #\:))))))
+                    (find-files (elpa-directory #$output) "\\.py")))))))
+    (inputs (list python
+                  python-gpx-cmd-tools
+                  python-matplotlib
+                  python-folium))
     (synopsis "Helm action to switch directory in Emacs REPLs")
     (description "Helm \"Switch-to-REPL\" offers the
 @code{helm-switch-to-repl} action, a generalized and extensible version of
