@@ -12,3 +12,5 @@ configurations:
       - mailbox: INBOX
         onNewMail: 'emacsclient -e "(mu4e-update-mail-and-index 1)"'
         onNewMailPost: SKIP
+        onChangedMail: 'emacsclient -e "(mu4e-update-mail-and-index 1)"'
+        onChangedMailPost: SKIP

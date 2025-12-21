@@ -18,6 +18,12 @@
 
   (exwm-input--update-global-prefix-keys))
 
+(defun exwm/clean-killed-buffers ()
+  "Remove killed buffers from exwm--id-buffer-alist."
+  (interactive)
+  (setq exwm--id-buffer-alist
+        (seq-filter (lambda (e) (buffer-live-p (cdr e))) exwm--id-buffer-alist)))
+
 (defun exwm/init ()
   (when (modulep! +lemonbar)
     (exwm/lemonbar-mode))

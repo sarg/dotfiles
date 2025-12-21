@@ -148,7 +148,7 @@
     :select t)
 
   (after! dired
-    (load "telega-dired-dwim.el"))
+    (require 'telega-dired-dwim))
 
   (when (modulep! :editor evil)
     (map!

@@ -157,7 +157,7 @@ Pass OPTS directly to (request)."
                  (insert "\n** "
                          (if (> likes 0) (format "[💕%d] " likes) "")
                          (alist-get 'username author) "\n"
-                         (alist-get 'body cmt))))
+                         (frf--reflow (alist-get 'body cmt)))))
              .comments))))
 
     (insert "\n* ")

@@ -194,12 +194,6 @@ failed operations.")
         (base32 "0ph1jaq4axa6j78xdyfq8vcnyqmslxj4pv4w88hhxgag450pcvna"))))
     (properties '((upstream-name . "gh")))
     (build-system binary-build-system)
-    (arguments
-     (list
-      #:install-plan
-      (let ((dir (string-append "gh_" version "_linux_amd64")))
-        #~'((#$(string-append dir "/bin") "bin")
-            (#$(string-append dir "/share") "share")))))
     (home-page "https://github.com/cli/cli")
     (supported-systems '("x86_64-linux"))
     (synopsis "GitHub's official command line tool")
@@ -226,7 +220,7 @@ working with git and your code.")
    (arguments
     `(#:strip-binaries? #f
       #:install-plan '(("atuin-x86_64-unknown-linux-gnu/atuin" "bin/"))
-      #:patchelf-plan `(("atuin-x86_64-unknown-linux-gnu/atuin" ("glibc" "gcc:lib")))
+      #:patchelf-plan '(("atuin-x86_64-unknown-linux-gnu/atuin" ("glibc" "gcc:lib")))
       #:phases (modify-phases %standard-phases
                  (replace 'unpack
                    (lambda* (#:key inputs source #:allow-other-keys)
