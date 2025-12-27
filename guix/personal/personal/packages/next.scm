@@ -16,9 +16,9 @@
 (define-public xorg-server-next
   (package
     (inherit xorg-server-xwayland)
-    (name "xorg-server-next")
-    (properties '((commit . "ed92eae84d4a9e0985e1ac883089d4d68a679bb0")))
-    (version (git-version "22" "2" (assoc-ref properties 'commit)))
+    (name "xorg-server")
+    (properties '((commit . "f83807647e171def9244a7f1d8d9af8e8e79f847")))
+    (version (git-version "22" "3" (assoc-ref properties 'commit)))
     (source
      (origin
       (method git-fetch)
@@ -27,7 +27,7 @@
             (commit (assoc-ref properties 'commit))))
       (sha256
        (base32
-        "07jy4q4cncw6wqw2j96an9jvkywm3c3ih10fp607l4y35r314gsv"))))
+        "0wj3dmwlprsrij6c8194bydbxxfcr2larfb6909zgdagjdpm8qpb"))))
     (inputs
      (append
       (package-inputs xorg-server-xwayland)

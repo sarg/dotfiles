@@ -25,12 +25,13 @@
   (package
     (name "doomemacs")
     (version "20251226")
+    (properties '((commit . "21682009b155c0b67ec47100e09cad3b298aa52f")))
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/doomemacs/doomemacs")
-             (commit "21682009b155c0b67ec47100e09cad3b298aa52f")))
+             (commit (assoc-ref properties 'commit))))
        (file-name (git-file-name "doomemacs" version))
        (sha256
         (base32 "0qziki7idb6pv24y3xw512symkdpir1nmri89ikpc9y9iklxncpz"))))

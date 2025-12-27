@@ -48,9 +48,15 @@ Optionally include a VERSION string to fetch a specific version."
           (git-reference? (origin-uri origin))))
     (_ #f)))
 
+(define (has-commit-property? package)
+  "Return true if PACKAGE has a commit property."
+  (and (assoc-ref (package-properties package) 'commit)
+       #t))
+
 (define %generic-git-commit-updater
   (upstream-updater
    (name 'git-commit)
    (description "Updater for packages hosted on Git repositories")
-   (pred git-package?)
+   (pred (lambda (pkg) (and (git-package? pkg)
+                            (has-commit-property? pkg))))
    (import import-git-commit)))

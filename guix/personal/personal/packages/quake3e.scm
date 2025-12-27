@@ -23,12 +23,13 @@
   (package
     (name "quake3e")
     (version "2025.12.18")
+    (properties '((commit . "6adadd446e36a0ae32e161c186fed7a82f1807c7")))
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/ec-/Quake3e")
-             (commit "6adadd446e36a0ae32e161c186fed7a82f1807c7")))
+             (commit (assoc-ref properties 'commit))))
        (file-name (git-file-name name version))
        (sha256
         (base32 "106zs3dbvg58zflnk9jmfqqz8pxjn834l6x6kx42n4lzf1rpy77h"))
