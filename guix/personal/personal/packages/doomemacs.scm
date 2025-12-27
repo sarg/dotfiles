@@ -24,16 +24,16 @@
 (define-public doomemacs
   (package
     (name "doomemacs")
-    (version "20251219")
+    (version "20251226")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/doomemacs/doomemacs")
-             (commit "762f47805ac2a6411e11747f86f7c19a03da326e")))
+             (commit "21682009b155c0b67ec47100e09cad3b298aa52f")))
        (file-name (git-file-name "doomemacs" version))
        (sha256
-        (base32 "05aiz58wmi5w5mpzdya58g1wk429i4wc3y8szrp0qwknc1f1w3fk"))))
+        (base32 "0qziki7idb6pv24y3xw512symkdpir1nmri89ikpc9y9iklxncpz"))))
     (build-system copy-build-system)
     (home-page "https://github.com/doomemacs/doomemacs")
     (description "Doom emacs sources")
