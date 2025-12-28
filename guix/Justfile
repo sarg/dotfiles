@@ -7,8 +7,14 @@ default:
 l *args:
     @just -f {{source_file()}} {{args}} -L ~/devel/dotfiles/guix/personal
 
+bump *args='':
+    guix refresh -m bump-manifest.scm -L ~/devel/dotfiles/guix/personal {{args}}
+
 refresh *args='':
     guix refresh {{args}}
+
+style *args='':
+    guix style {{args}}
 
 shell *args='':
     guix shell {{args}}

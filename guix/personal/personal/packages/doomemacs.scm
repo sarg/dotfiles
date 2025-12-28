@@ -24,8 +24,8 @@
 (define-public doomemacs
   (package
     (name "doomemacs")
-    (version "20251226")
     (properties '((commit . "21682009b155c0b67ec47100e09cad3b298aa52f")))
+    (version (git-version "3.0.0" "0" (assoc-ref properties 'commit)))
     (source
      (origin
        (method git-fetch)
