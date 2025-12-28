@@ -540,6 +540,7 @@ polkit.addRule(function(action, subject) {
  (personal services backup)
  (personal packages binary)
  (personal packages next)
+ (personal packages xlibre)
  (ice-9 receive)
  (srfi srfi-1)
  (srfi srfi-11)
@@ -1880,8 +1881,8 @@ done
    (start #~(make-forkexec-constructor
              (list #$(xorg-start-command-xinit
                       (xorg-configuration
-                       (server xorg-server-next)
-                       (modules (list xf86-input-libinput-next)))))
+                       (server xlibre-server)
+                       (modules (list xlibre-xf86-input-libinput)))))
              #:create-session? #f))
    (stop #~(make-kill-destructor)))))
 #+end_src
@@ -2400,13 +2401,13 @@ dbusserver: true
   (if (display-graphic-p)
       (add-hook! 'after-init-hook (darkman-mode))))
 #+end_src
-** COMMENT redshift
-Note: doesn't work with xorg-server-next. Setting gamma through randr is ignored.
+** redshift
 #+begin_src scheme :noweb-ref guix-srv
 (service
  home-redshift-service-type
  (home-redshift-configuration
   (location-provider 'manual)
+  (extra-content "fade=0")
   (latitude 52.52)
   (longitude 13.39)))
 #+end_src
