@@ -69,6 +69,7 @@
 
 (define-public xlibre-server
   (package
+    (inherit xorg-server)
     (name "xlibre-server")
     (version "25.1.0")
     (source
@@ -81,6 +82,9 @@
        (sha256
         (base32 "0is0akylbq3iam3a0fxwa7xxm44h5bygy1crrnk54z9k7vam5njk"))))
     (build-system meson-build-system)
+    (propagated-inputs
+     (modify-inputs (package-propagated-inputs xorg-server)
+       (append libxfont2)))
     (arguments
      (list
       ;; tests don't run in chroot because of Popen call (os/utils.c) which drops privileges
@@ -89,56 +93,11 @@
       #:tests? #f
       #:configure-flags #~(list "-Dxcsecurity=true"
                                 "-Dxkb_output_dir=/tmp"
-                                "-Dxephyr=true")))
-    (propagated-inputs
-     ;; The following libraries are required by xorg-server.pc.
-     (list libpciaccess libxcvt mesa libxfont2 pixman xorgproto))
-    (inputs (list eudev
-                  dbus
-                  libdmx
-                  libepoxy
-                  libgcrypt
-                  libseat
-                  libxau
-                  libxaw
-                  libxdmcp
-                  libxfixes
-                  libxfont2
-                  libxkbfile
-                  libxrender
-                  libxres
-                  libxshmfence
-                  libxt
-                  libxv
-                  xkbcomp
-                  xkeyboard-config
-                  xtrans
-                  zlib
-                  ;; Inputs for Xephyr
-                  xcb-util
-                  xcb-util-image
-                  xcb-util-keysyms
-                  xcb-util-renderutil
-                  xcb-util-wm))
-    (native-inputs (list pkg-config python-wrapper
-                         ;; for tests
-                         xrandr xvinfo xdpyinfo))
-    (home-page "https://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description
-     "This package provides the Xorg X server itself.
-The X server accepts requests from client programs to create windows, which
-are (normally rectangular) 'virtual screens' that the client program can
-draw into.
-
-Windows are then composed on the actual screen by the X server (or by a
-separate composite manager) as directed by the window manager, which usually
-communicates with the user via graphical controls such as buttons and
-draggable titlebars and borders.")
-    (license license:x11)))
+                                "-Dxephyr=true")))))
 
 (define-public xlibre-xf86-input-libinput
   (package
+    (inherit xf86-input-libinput)
     (name "xlibre-xf86-input-libinput")
     (version "25.0.0")
     (source
@@ -157,12 +116,5 @@ draggable titlebars and borders.")
        (list (string-append "-Dsdkdir=" %output "/include/xorg")
              (string-append "-Dxorg-conf-dir=" %output "/share/X11/xorg.conf.d")
              (string-append "-Dxorg-module-dir=" %output "/lib/xorg/modules/input"))))
-    (native-inputs (list pkg-config))
-    (inputs (list libinput-minimal xlibre-server))
-    (home-page "https://github.com/X11Libre/xf86-input-libinput")
-    (synopsis "Input driver for X server based on libinput")
-    (description
-     "xf86-input-libinput is an input driver for the Xorg X server based
-on libinput.  It is a thin wrapper around libinput, so while it does
-provide all features that libinput supports it does little beyond.")
-    (license license:x11)))
+    (inputs (modify-inputs (package-inputs xf86-input-libinput)
+              (replace "xorg-server" xlibre-server)))))
