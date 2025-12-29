@@ -2742,10 +2742,7 @@ __pycache__/
 (after! magit
   ;; agit flow
   (transient-define-suffix magit-push-current-agit (source target args)
-    :if (lambda () (when-let* ((branch (magit-get-current-branch))
-                               (remote (magit-get "branch" branch "remote"))
-                               (agit (magit-get "remote" remote "agit")))
-                     (string= "true" agit)))
+    :if (lambda () (magit-get-boolean "remote" (magit-get-remote) "agit"))
     :description (lambda () (concat (magit-push--upstream-description) " (agit)"))
     (interactive
      (let ((source (or (magit-get-current-branch)
@@ -2756,18 +2753,33 @@ __pycache__/
 
     (let* ((origin (magit-get "branch" source "remote"))
            (desc (magit-get "branch" source "description"))
-           (desc (and desc (split-string desc "\n" 't (rx space)))))
-
-      (unless (string= "true" (magit-get "remote" origin "agit"))
-        (user-error "AGit not enabled for remote %s" origin))
-
+           (parts (and desc (s-split-up-to "\n\n\n" 1)))
+           (title (and parts (car parts)))
+           (body (and parts (cadr parts))))
+      
       (magit-push-refspecs
        origin
        (concat source ":refs/for/" (cdr (magit-split-branch-name target)) "/" source)
        `(,@args
          "-o" "force-push=true"
-         ,@(if desc (list "-o" (concat "title=" (car desc))) '())
-         ,@(if (and desc (cdr desc)) (list "-o" (concat "description=" (string-join (cdr desc) "\r")) '()))))))
+         ,@(if title (list "-o" (concat "title=" title)) '())
+         ,@(if body (list "-o" (concat "description={base64}" (base64-encode-string body :no-line-break)) '()))))))
+
+  (defsubst magit--branch-description-template ()
+    (magit-get "remote" (magit-get-remote) "descriptionTemplate"))
+  
+  (transient-define-suffix magit-branch-description-template (branch)
+    :if (lambda () (and (not (magit-get "branch" (magit-get-current-branch) "description"))
+                        (magit--branch-description-template)))
+    :description (lambda () (concat "set branch description from " (magit--branch-description-template)))
+    (interactive (list (oref transient-current-prefix scope)))
+
+    (magit-call-git "config" (concat "branch." branch ".description")
+                    (f-read (magit--branch-description-template)))
+    (magit-branch.<branch>.description branch))
+
+  (transient-insert-suffix 'magit-branch
+    '(0 0) (list "t" #'magit-branch-description-template))
 
   (transient-insert-suffix 'magit-push
     '(1 0) (list "a" #'magit-push-current-agit)))
