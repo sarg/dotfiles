@@ -24,7 +24,7 @@
 (define-public doomemacs
   (package
     (name "doomemacs")
-    (properties '((commit . "21682009b155c0b67ec47100e09cad3b298aa52f")))
+    (properties '((commit . "71522eafdf24b580ef0ca73bf805e94dcbd7e5f3")))
     (version (git-version "3.0.0" "0" (assoc-ref properties 'commit)))
     (source
      (origin
@@ -34,7 +34,7 @@
              (commit (assoc-ref properties 'commit))))
        (file-name (git-file-name "doomemacs" version))
        (sha256
-        (base32 "0qziki7idb6pv24y3xw512symkdpir1nmri89ikpc9y9iklxncpz"))))
+        (base32 "1z9v7drqh7q98h3w6vbfxc3nzig228wflgzpwjn1lap7kzylbahj"))))
     (build-system copy-build-system)
     (home-page "https://github.com/doomemacs/doomemacs")
     (description "Doom emacs sources")
