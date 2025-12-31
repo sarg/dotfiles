@@ -1331,7 +1331,9 @@ REVERSE? it when true. Returns the selected buffer."
 #+end_src
 **** search
 #+begin_src elisp :tangle packages.el
-(package! counsel-spotify :pin "2743ad52a9def53534fd505397fbe1ac49e53015")
+(package! counsel-spotify
+  :recipe (:host github :repo "sarg/counsel-spotify")
+  :pin "bbb8331cf83e27c447a13e72fdb813824f625df9")
 #+end_src
 #+begin_src elisp
 (use-package! counsel-spotify
@@ -1353,6 +1355,36 @@ REVERSE? it when true. Returns the selected buffer."
                        ":"
                        (auth-source-pass-get "client-secret" "Sites/spotify.com"))
                       t))))
+#+end_src
+*** scrobble
+Enable scrobbling of URL tracks: https://lists.gnu.org/archive/html/emms-help/2025-12/msg00011.html
+#+begin_src elisp
+(after! emms
+  (require 'emms-listenbrainz-scrobbler)
+
+  (defun emms-scrobbler-good-track (track)
+    (and (member (emms-track-get track 'type) '(file url))
+         (emms-track-get track 'info-artist)
+         (emms-track-get track 'info-title)))
+
+  (defun emms-listenbrainz-scrobbler-start-hook ()
+    (setq emms-listenbrainz-scrobbler-track-play-start-timestamp
+	  (time-convert nil 'integer))
+    (when-let* ((current-track (emms-playlist-current-selected-track))
+                ((emms-scrobbler-good-track current-track)))
+      (emms-listenbrainz-scrobbler-make-async-submission-call current-track t)))
+
+  (defun emms-listenbrainz-scrobbler-stop-hook ()
+    (let ((current-track (emms-playlist-current-selected-track)))
+      (let ((track-length (emms-track-get current-track 'info-playing-time)))
+        (when (and track-length
+                   (emms-scrobbler-good-track current-track)
+	           (> track-length 30)
+	           (> emms-playing-time (min 240 (/ track-length 2))))
+	  (emms-listenbrainz-scrobbler-make-async-submission-call
+	   current-track)))))
+
+  (emms-listenbrainz-scrobbler-enable))
 #+end_src
 *** ytdlp
 #+begin_src elisp
