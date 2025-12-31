@@ -89,10 +89,15 @@ Pass OPTS directly to (request)."
          (ds (float-time (time-subtract now tt)))
          (dm (/ ds 60))
          (dh (/ dm 60))
-         (dd (/ dh 24)))
+         (dd (round (/ dh 24)))
+         (dmon (/ dd 30))
+         (dy (/ dd 365))
+         (dym (/ (mod dd 365) 30)))
 
     (cond
-     ((> dd 30) ">1m")
+     ((and (> dy 1) (> dym 0)) (format "%dy%dm" dy dym))
+     ((> dy 1) (format "%dy" dy))
+     ((> dmon 1) (format "%dm" dmon))
      ((> dd 1) (format "%dd" dd))
      ((> dh 1) (format "%dh" dh))
      (t "now"))))
