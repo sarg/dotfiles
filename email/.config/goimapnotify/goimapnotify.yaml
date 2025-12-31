@@ -14,3 +14,5 @@ configurations:
         onNewMailPost: SKIP
         onChangedMail: 'emacsclient -e "(mu4e-update-mail-and-index 1)"'
         onChangedMailPost: SKIP
+        onDeletedMail: 'emacsclient -e "(mu4e-update-mail-and-index 1)"'
+        onDeletedMailPost: SKIP

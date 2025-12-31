@@ -678,6 +678,7 @@ disable-ipv6=true
    #:x11-name "mpv"
    #:osd-bar? #f
    #:border? #f
+   #:audio-file-auto 'fuzzy
    #:ytdl-format "best[height<=?900]"
    #:osd-fonts-dir (file-append (pkg "mpv-uosc") "/share/mpv/fonts")
    #:script-opts '(("network" . "yes")) ; thumbfast
@@ -729,7 +730,6 @@ EXWM has a separate [[../.doom.d/modules/app/exwm][doom app]]. Here are just the
 #+begin_src scheme :noweb-ref guix-pkg
 "emacs-exwm"
 "emacs-exwm-ss"
-"emacs-ednc"
 #+end_src
 #+begin_src elisp
 (defun exwm-autostart-apps ()
@@ -745,6 +745,9 @@ EXWM has a separate [[../.doom.d/modules/app/exwm][doom app]]. Here are just the
   (add-hook! exwm-init #'exwm-autostart-apps))
 #+end_src
 *** notifications
+#+begin_src elisp :tangle packages.el
+(package! ednc :pin "638d73e7c3fe4ffe86199e33fb85fbaa4cf1ab7f")
+#+end_src
 #+begin_src elisp
 (use-package! ednc
   :hook (exwm-init . ednc-mode)
