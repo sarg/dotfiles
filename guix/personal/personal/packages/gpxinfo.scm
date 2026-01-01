@@ -14,25 +14,6 @@
   #:use-module (gnu packages xml)
   #:use-module (guix download))
 
-(define-public python-gpxpy
-  (package
-    (name "python-gpxpy")
-    (version "1.6.2")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "gpxpy" version))
-       (sha256
-        (base32 "1bh1dkrbmcqb46r7j4fazzq7j6zfr2f04frm6h4bhhpcjx5lhb57"))))
-    (build-system pyproject-build-system)
-    (arguments
-     (list #:test-backend #~'unittest))
-    (native-inputs (list python-setuptools))
-    (home-page "https://github.com/tkrajina/gpxpy")
-    (synopsis "GPX file parser and GPS track manipulation library")
-    (description "GPX file parser and GPS track manipulation library")
-    (license license:asl2.0)))
-
 (define-public python-gpx-cmd-tools
   (package
     (name "python-gpx-cmd-tools")

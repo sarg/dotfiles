@@ -3005,7 +3005,7 @@ include theme
 #+begin_src elisp :tangle packages.el
 (package! qutebrowser :recipe
   (:host github :repo "lrustand/qutebrowser.el" :files (:defaults "*.py"))
-  :pin "ecf3efa6b0707d78644fca515b5df8df2635015f")
+  :pin "8c8df55e2a0d5a97935ea0e88a2f1ef0e676b03e")
 #+end_src
 #+begin_src scheme :noweb-ref guix-pkg
 "qutebrowser"
