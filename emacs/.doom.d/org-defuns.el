@@ -23,16 +23,16 @@
   "Eval elisp block NAME. To be used in org files in Local variables section."
 
   (save-excursion
-    (org-babel-goto-named-src-block name)
-    (let* ((block-info (org-babel-get-src-block-info))
-           (lang (nth 0 block-info))
-           (body (nth 1 block-info)))
-      (if (or (string= lang "emacs-lisp")
-              (string= lang "elisp"))
-          (cl-loop with next = 0
-                   with maxlen = (length body)
-                   for (sexp . next) = (read-from-string body next)
-                   do (eval sexp)
-                   while (< next maxlen))
+    (when-let* ((point (org-babel-find-named-block name))
+                ((goto-char point))
+                (block-info (org-babel-get-src-block-info))
+                (lang (nth 0 block-info))
+                (body (nth 1 block-info)))
+      (unless (member lang '("elisp" "emacs-lisp"))
+        (error "%s is not an emacs-lisp src block, but %s" name lang))
 
-        (error "%s is not an emacs-lisp src block" name)))))
+      (cl-loop with next = 0
+               with maxlen = (length body)
+               for (sexp . next) = (read-from-string body next)
+               do (eval sexp)
+               while (< next maxlen)))))

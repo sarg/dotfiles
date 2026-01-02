@@ -264,7 +264,7 @@ dnsmasq_resolve=/etc/dnsmasq.resolve
 #+begin_src elisp :tangle packages.el
 (package! iwd-manager
   :recipe (:host github :repo "sarg/wifi-manager" :files ("iwd-manager.el"))
-  :pin "945e43eb89eae9adb18ed87d44eb9a89bd4fbc76")
+  :pin "ec2b209e408eef08d19fa135253aa22a0317815a")
 #+end_src
 #+begin_src elisp
 (use-package! iwd-manager
@@ -2788,7 +2788,7 @@ __pycache__/
 
     (let* ((origin (magit-get "branch" source "remote"))
            (desc (magit-get "branch" source "description"))
-           (parts (and desc (s-split-up-to "\n\n\n" 1)))
+           (parts (and desc (s-split-up-to "\n\n" desc 1)))
            (title (and parts (car parts)))
            (body (and parts (cadr parts))))
       
@@ -2921,7 +2921,7 @@ install grammars as expected by clojure-ts-mode
 #+end_src
 * tramp
 #+begin_src elisp :tangle packages.el
-(package! tramp-hlo :pin "2890d37c08f53164205579e4c3c45c3695aeaa2c")
+(package! tramp-hlo :pin "d0bff82d832f386a3aeb1b63a3d7d130b95c3984")
 #+end_src
 #+begin_src elisp
 (use-package! tramp-hlo
@@ -3005,7 +3005,7 @@ include theme
 #+begin_src elisp :tangle packages.el
 (package! qutebrowser :recipe
   (:host github :repo "lrustand/qutebrowser.el" :files (:defaults "*.py"))
-  :pin "8c8df55e2a0d5a97935ea0e88a2f1ef0e676b03e")
+  :pin "00d9a306d25fb5a87ff4dd600af3023449e7f172")
 #+end_src
 #+begin_src scheme :noweb-ref guix-pkg
 "qutebrowser"
