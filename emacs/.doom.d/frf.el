@@ -12,6 +12,7 @@
 (require 'request)
 (require 'browse-url)
 (require 's)
+(require 'org)
 (require 'dash)
 (require 'cl-lib)
 (require 'json)
@@ -23,15 +24,16 @@
 (defvar-local frf-offset 0
   "Offset to read messages.")
 
-(defun frf--promise-json (url &rest opts)
-  "Return a promise that resolves with JSON from URL.
+(defun frf--promise-json (path &rest opts)
+  "Return a promise that resolves with JSON from Freefeed's API endpoint at PATH.
 Pass OPTS directly to (request)."
   (promise-new
    (lambda (resolve reject)
-     (apply #'request url
+     (apply #'request (concat "https://freefeed.net/v4" path)
             :headers
             `(("Content-Type" . "application/json")
               ("Authorization" . ,(concat "Bearer " (auth-source-pass-get 'secret "Api/freefeed.net"))))
+            :encoding 'utf-8
             :parser #'json-read
             :error (cl-function (lambda (&rest args &key error-thrown &allow-other-keys)
                                   (funcall reject  error-thrown)))
@@ -76,7 +78,7 @@ Pass OPTS directly to (request)."
 (defun frf--load-comments (id &rest args)
   "Load comments for post with ID. Pass them and the ARGS to the render function."
   (promise-chain
-      (frf--promise-json (format "https://freefeed.net/v4/posts/%s?maxComments=all&maxLikes=" id))
+      (frf--promise-json (format "/posts/%s?maxComments=all&maxLikes=" id))
     (then (lambda (result)
             (apply #'frf--render-comments result args)))))
 
@@ -101,6 +103,20 @@ Pass OPTS directly to (request)."
      ((> dd 1) (format "%dd" dd))
      ((> dh 1) (format "%dh" dh))
      (t "now"))))
+
+(defun frf-send-comment ()
+  "Send current comment."
+  (interactive)
+
+  (let* ((body (substring-no-properties (org-get-entry)))
+         (postId (org-entry-get (point) "postId" t))
+         (req `((comment . ((body . ,body) (postId . ,postId))))))
+    (promise-chain
+        (frf--promise-json "/comments" :type "POST" :data (json-encode req))
+      (then
+       (lambda (_) (message "Comment sent")))
+      (promise-catch
+       (lambda (reason) (message "Failed: %s" reason))))))
 
 (defun frf--render (data buf)
   "Render timeline DATA into buffer BUF."
@@ -130,6 +146,9 @@ Pass OPTS directly to (request)."
                             (+ (length .comments) .omittedComments)
                             (alist-get 'username user)))
 
+            (insert ":PROPERTIES:\n"
+                    ":postId: " .id "\n"
+                    ":END:\n")
             (insert bodyRest)
 
             (when (> (length .attachments) 0)
@@ -184,14 +203,14 @@ Pass OPTS directly to (request)."
       (setq-local frf-offset (or offset 0)
                   frf-feed name
                   revert-buffer-function (lambda (&rest _args) (frf-timeline name frf-offset)))
+      (keymap-local-set "C-c C-m" #'frf-send-comment)
       (erase-buffer)
       (insert "Loading...")
       (switch-to-buffer buf))
 
     (promise-chain (frf--promise-json
                     (format
-                     (if (s-starts-with? "?" name) "%s/search?qs=%s&offset=%d" "%s/timelines/%s?offset=%d")
-                     "https://freefeed.net/v4"
+                     (if (s-starts-with? "?" name) "/search?qs=%s&offset=%d" "/timelines/%s?offset=%d")
                      (url-hexify-string (s-chop-prefix "?" name))
                      frf-offset))
       (then
@@ -204,9 +223,8 @@ Pass OPTS directly to (request)."
 (defun frf-hide (id)
   "Hide post with ID from the timeline."
   (let ((buf (current-buffer)))
-    (promise-chain (frf--promise-json
-                    (format "https://freefeed.net/v4/posts/%s/hide" id)
-                    :type "POST")
+    (promise-chain
+        (frf--promise-json (format "/posts/%s/hide" id) :type "POST")
       (then
        (lambda (_)
          (with-current-buffer buf
