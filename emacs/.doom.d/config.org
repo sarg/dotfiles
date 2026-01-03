@@ -262,9 +262,7 @@ dnsmasq_resolve=/etc/dnsmasq.resolve
               (name-resolving-service 'resolvconf)))))))
 #+end_src
 #+begin_src elisp :tangle packages.el
-(package! iwd-manager
-  :recipe (:host github :repo "sarg/wifi-manager" :files ("iwd-manager.el"))
-  :pin "ec2b209e408eef08d19fa135253aa22a0317815a")
+(package! iwd-manager :pin "22b424e6e6fa0eb4353394c64f31657ded09fe2b")
 #+end_src
 #+begin_src elisp
 (use-package! iwd-manager
@@ -276,6 +274,7 @@ dnsmasq_resolve=/etc/dnsmasq.resolve
     "s" 'iwd-manager-scan
     "r" 'revert-buffer
     "c" 'iwd-manager-connect
+    "d" 'iwd-manager-disconnect
     "D" 'iwd-manager-delete-network
     (kbd "RET") 'iwd-manager-connect))
 #+end_src
