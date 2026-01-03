@@ -870,8 +870,8 @@ EXWM has a separate [[../.doom.d/modules/app/exwm][doom app]]. Here are just the
 (tab-bar-mode 1)
 
 (exwm/bind-command
- "<f13> 1" (lambda () (interactive) (tab-bar-switch-to-tab "code"))
- "<f13> 2" (lambda () (interactive) (tab-bar-switch-to-tab "brow")))
+ "<f13> 1" (cmd! (tab-bar-switch-to-tab "code"))
+ "<f13> 2" (cmd! (tab-bar-switch-to-tab "brow")))
 
 (custom-set-faces!
   '(tab-bar-tab :weight bold)
@@ -975,7 +975,7 @@ REVERSE? it when true. Returns the selected buffer."
  "<f13> k"     #'evil-window-up
  "<f13> l"     #'evil-window-right
 
- "<f13> E"    `(lambda () (interactive)
+ "<f13> E"    (cmd!
                  (tab-switch "brow")
                  (cond
                   ((string= "qutebrowser" exwm-class-name)
@@ -984,10 +984,10 @@ REVERSE? it when true. Returns the selected buffer."
                   ((not (get-process "qutebrowser"))
                    (start-process "qutebrowser" nil "setsid" "-w" "qutebrowser"))))
 
- "<f13> e"    `(lambda () (interactive)
-                 (tab-switch "brow")
-                 (or (exwm/switch-to-next-buffer "qutebrowser")
-                     (start-process "qutebrowser" nil "setsid" "-w" "qutebrowser"))))
+ "<f13> e"    (cmd!
+               (tab-switch "brow")
+               (or (exwm/switch-to-next-buffer "qutebrowser")
+                   (start-process "qutebrowser" nil "setsid" "-w" "qutebrowser"))))
 #+end_src
 *** app launcher
 #+begin_src elisp :tangle packages.el
@@ -1292,8 +1292,8 @@ REVERSE? it when true. Returns the selected buffer."
     (emms-dwim-menu)))
 
 (exwm/bind-command
- "<XF86AudioRaiseVolume>" (lambda () (interactive) (my-vol-change 1))
- "<XF86AudioLowerVolume>" (lambda () (interactive) (my-vol-change -1))
+ "<XF86AudioRaiseVolume>" (cmd! (my-vol-change 1))
+ "<XF86AudioLowerVolume>" (cmd! (my-vol-change -1))
  "<XF86AudioMute>" "pactl set-sink-mute @DEFAULT_SINK@ toggle"
  "<XF86AudioMicMute>" "pactl set-source-mute @DEFAULT_SOURCE@ toggle")
 
@@ -1302,7 +1302,7 @@ REVERSE? it when true. Returns the selected buffer."
  "<XF86AudioPlay>" #'emms-play-dwim
  "<XF86AudioPause>" #'emms-stop
  "<XF86AudioPrev>" #'emms-previous
- "<XF86AudioNext>" (lambda () (interactive) (funcall emms-player-next-function)))
+ "<XF86AudioNext>" (cmd! (funcall emms-player-next-function)))
 #+end_src
 *** spotify
 **** player
@@ -3109,8 +3109,7 @@ pgrep -f QtWebEngineProcess && qutebrowser ':config-source darkmode.py'
   :config
   (map! :map yeetube-mode-map
         :n "RET" #'yeetube-play
-        :n "go" (lambda () (interactive)
-                  (browse-url-generic (yeetube-get-url)))))
+        :n "go" (cmd! (browse-url-generic (yeetube-get-url)))))
 #+end_src
 * shell
 #+begin_src elisp :tangle packages.el
