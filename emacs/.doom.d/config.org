@@ -1525,10 +1525,11 @@ services:
  (list
   (shepherd-service
    (provision '(goimapnotify))
-   (requirement '(x11-display gpg-agent))
+   (requirement '(x11-display gpg-agent online))
    (modules `(((shepherd support) #:hide (mkdir-p)) ;for '%user-log-dir'
               ,@(@ (gnu services shepherd) %default-modules)))
    (auto-start? #f)
+   (respawn? #f)
    (start #~(make-forkexec-constructor
              (list #$(file-append (@ (gnu packages mail) goimapnotify) "/bin/goimapnotify"))
              #:log-file (string-append %user-log-dir "/goimapnotify.log")))
@@ -1967,6 +1968,42 @@ done
  (list (mixed-text-file
         "home-shepherd"
         "[[ $(tty) == /dev/tty1 ]] && exec shepherd --silent")))
+#+end_src
+** online
+#+begin_src scheme :noweb-ref guix-srv
+(simple-service
+ 'online
+ home-shepherd-service-type
+ (list
+  (shepherd-service
+    (documentation "noop service indicating online status")
+    (provision '(online))
+    (auto-start? #f))
+
+  (shepherd-service
+    (documentation "updates <online> service state")
+    (provision '(online-checker))
+    (modules '((shepherd service timer)))
+    (start #~(make-timer-constructor
+              (calendar-event #:seconds '(0))
+              (lambda _
+                (let* ((is-online
+                        (with-output-to-file *null-device*
+                          (lambda _
+                            (zero?
+                             (cdr
+                              (waitpid
+                               (spawn "ping" '("ping" "-q" "-c" "1" "-W" "1" "9.9.9.9")))))))))
+                  (if is-online
+                      (for-each-service
+                       (lambda (service)
+                         (when (and (member 'online (service-requirement service))
+                                    (not (process? (service-running-value service))))
+                           (start-service service))))
+                      (and=> (lookup-running 'online) stop-service))))))
+    (stop #~(compose
+             (lambda _ (and=> (lookup-running 'online) stop-service))
+             (make-timer-destructor))))))
 #+end_src
 ** minidlna
 #+begin_src scheme :noweb-ref guix-srv
