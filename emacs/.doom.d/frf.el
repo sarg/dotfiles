@@ -70,8 +70,12 @@ Pass OPTS directly to (request)."
      for cmt across comments
      do (let-alist cmt
           (insert "\n** "
-                  (if (> .likes 0) (format "[💕%d] " .likes) "")
+                  (if (> .likes 0) (format "[%s%d] " (if (eq t .hasOwnLike) "🫶" "💕") .likes) "")
                   (alist-get 'username (frf--find .createdBy users)) "\n"
+                  ":PROPERTIES:\n"
+                  ":commentId: " .id "\n"
+                  (if (eq t .hasOwnLike) ":liked: t\n" "")
+                  ":END:\n"
                   (s-trim .body) "\n")))
     (goto-char m)))
 
@@ -103,6 +107,24 @@ Pass OPTS directly to (request)."
      ((> dd 1) (format "%dd" dd))
      ((> dh 1) (format "%dh" dh))
      (t "now"))))
+
+(defun frf-like ()
+  "Like thing at point."
+  (interactive)
+
+  (let ((commentId (org-entry-get (point) "commentId"))
+        (postId (org-entry-get (point) "postId" t)))
+    (promise-chain
+        (frf--promise-json
+         (if commentId
+             (concat "/comments/" commentId
+                     (if (org-entry-get (point) "liked") "/unlike" "/like"))
+           (concat "/posts/" postId "/like"))
+         :type "POST" :data "{}")
+      (then
+       (lambda (_) (message "Liked")))
+      (promise-catch
+       (lambda (reason) (message "Failed: %s" reason))))))
 
 (defun frf-send-comment ()
   "Send current comment."
@@ -173,14 +195,19 @@ Pass OPTS directly to (request)."
                (let* ((cmt (frf--find c comments))
                       (createdBy (alist-get 'createdBy cmt))
                       (likes (alist-get 'likes cmt))
+                      (ownLike (eq t (alist-get 'hasOwnLike cmt)))
                       (author (or (frf--find createdBy users) '((username . "<unknown>")))))
                  (when (and (> .omittedCommentsOffset 0) (= idx .omittedCommentsOffset))
                    (insert (format "\n** [[elisp:(frf--load-comments \"%s\" %d %d)][%d more comments with %d likes]]"
                                    .id .omittedCommentsOffset .omittedComments
                                    .omittedComments .omittedCommentLikes)))
                  (insert "\n** "
-                         (if (> likes 0) (format "[💕%d] " likes) "")
+                         (if (> likes 0) (format "[%s%d] " (if ownLike "🫶" "💕") likes) "")
                          (alist-get 'username author) "\n"
+                         ":PROPERTIES:\n"
+                         ":commentId: " (alist-get 'id cmt) "\n"
+                         (if ownLike ":liked: t\n" "")
+                         ":END:\n"
                          (frf--reflow (alist-get 'body cmt)))))
              .comments))))
 
@@ -204,6 +231,7 @@ Pass OPTS directly to (request)."
                   frf-feed name
                   revert-buffer-function (lambda (&rest _args) (frf-timeline name frf-offset)))
       (keymap-local-set "C-c C-m" #'frf-send-comment)
+      (keymap-local-set "C-c C-l" #'frf-like)
       (erase-buffer)
       (insert "Loading...")
       (switch-to-buffer buf))
