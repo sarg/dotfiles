@@ -112,13 +112,13 @@ Pass OPTS directly to (request)."
   "Like thing at point."
   (interactive)
 
-  (let ((commentId (org-entry-get (point) "commentId"))
-        (postId (org-entry-get (point) "postId" t)))
+  (let ((commentId (org-entry-get nil "commentId"))
+        (postId (org-entry-get nil "postId" t)))
     (promise-chain
         (frf--promise-json
          (if commentId
              (concat "/comments/" commentId
-                     (if (org-entry-get (point) "liked") "/unlike" "/like"))
+                     (if (org-entry-get nil "liked") "/unlike" "/like"))
            (concat "/posts/" postId "/like"))
          :type "POST" :data "{}")
       (then
@@ -131,7 +131,7 @@ Pass OPTS directly to (request)."
   (interactive)
 
   (let* ((body (substring-no-properties (org-get-entry)))
-         (postId (org-entry-get (point) "postId" t))
+         (postId (org-entry-get nil "postId" t))
          (req `((comment . ((body . ,body) (postId . ,postId))))))
     (promise-chain
         (frf--promise-json "/comments" :type "POST" :data (json-encode req))
@@ -159,9 +159,7 @@ Pass OPTS directly to (request)."
                  (title (nth 0 (s-lines body)))
                  (bodyRest (s-trim (substring body (length title)))))
             (insert (format "\n* %s%s {%s} [💕%d/✍%d] :%s:\n"
-                            (if .isHidden
-                                "COMMENT "
-                              (format "[[elisp:(frf-hide \"%s\")][hide]] " .id))
+                            (if .isHidden "DONE " "")
                             (if (string-empty-p body) "Media" title)
                             (frf--age .createdAt now)
                             (+ (length .likes) .omittedLikes)
@@ -216,6 +214,11 @@ Pass OPTS directly to (request)."
       (insert (format "[[elisp:(frf-timeline \"%s\" %d)][Newer]] " frf-feed (- frf-offset 30))))
     (insert (format "[[elisp:(frf-timeline \"%s\" %d)][Older]]" frf-feed (+ frf-offset 30)))
     (org-mode)
+    (add-hook 'org-after-todo-state-change-hook
+              (lambda ()
+                (when (equal org-state "DONE")
+                  (frf-hide (org-entry-get nil "postId"))))
+              nil t)
     (add-to-list 'browse-url-handlers
                  (cons "media.freefeed.net/attachments/" #'eww-browse-url))
     (add-to-list 'browse-url-handlers
@@ -253,21 +256,16 @@ Pass OPTS directly to (request)."
   (let ((buf (current-buffer)))
     (promise-chain
         (frf--promise-json (format "/posts/%s/hide" id) :type "POST")
-      (then
-       (lambda (_)
+      (then (lambda (_) (message "post hidden")))
+      (promise-catch
+       (lambda (reason)
          (with-current-buffer buf
            (save-excursion
              (goto-char (point-min))
              (when (search-forward id nil t)
-               (beginning-of-line)
-               (forward-char 2)
-               (insert "COMMENT")
-               (let ((start (point)))
-                 (search-forward "]]")
-                 (delete-region start (point))))))))
-      (promise-catch
-       (lambda (reason)
-         (message "catch error in promise timeline: %s" reason))))))
+               (org-todo ""))))
+
+         (message "hide failed: %s" reason))))))
 
 (provide 'frf)
 ;;; frf.el ends here
