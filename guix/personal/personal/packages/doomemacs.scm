@@ -4,10 +4,11 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system copy)
   #:use-module (guix build-system emacs)
+  #:use-module (guix packages)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix utils)
   #:use-module (gnu packages)
-  #:use-module (guix packages))
+  #:use-module (gnu packages emacs-xyz))
 
 (define-public emacs-ob-cfg
   (package
@@ -30,12 +31,36 @@
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/doomemacs/doomemacs")
-             (commit (assoc-ref properties 'commit))))
+              (url "https://github.com/doomemacs/doomemacs")
+              (commit (assoc-ref properties 'commit))))
        (file-name (git-file-name "doomemacs" version))
        (sha256
         (base32 "1bf6xh57vyrdsxp4wqqrry3ycbhq8bqa9gh51qakb3pps4wamkji"))))
     (build-system copy-build-system)
+    (arguments
+     (list
+      #:modules `(((guix build emacs-build-system) #:prefix emacs:)
+                  (guix build copy-build-system)
+                  (guix build utils))
+      #:imported-modules `(,@%emacs-build-system-modules
+                           ,@%copy-build-system-modules)
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'fix-straight
+            (lambda _
+              (substitute* "lisp/lib/packages.el"
+                (("\\(doom-path straight-base-dir \".*\"\\)")
+                 (format #f "~s" (emacs:elpa-directory #$(this-package-input "emacs-straight"))))
+
+                (("\\(doom--ensure-core-packages")
+                 "(ignore"))
+              (for-each
+               (lambda (name)
+                 (substitute* name
+                   (("\\(package! [^ )]+" a)
+                    (string-append a " :built-in 'prefer"))))
+               (find-files "." "packages.el$")))))))
+    (propagated-inputs (list emacs-straight))
     (home-page "https://github.com/doomemacs/doomemacs")
     (description "Doom emacs sources")
     (synopsis "Doom emacs")

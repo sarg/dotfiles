@@ -13,6 +13,9 @@ bump *args='':
 refresh *args='':
     guix refresh {{args}}
 
+import *args='':
+    guix import {{args}}
+
 style *args='':
     guix style {{args}}
 
