@@ -565,6 +565,14 @@ polkit.addRule(function(action, subject) {
         (cons head out)))
   (fold-right flatten1 '() lst))
 
+(define home-emacs (pkg "emacs-next"))
+
+(define (build-with-home-emacs p)
+  (package/inherit p
+    (arguments
+     (substitute-keyword-arguments (package-arguments p)
+       ((#:emacs emacs #f) home-emacs)))))
+
 (define* (pin p #:key commit hash uri)
   (let ((base (pkg p)))
     (package
@@ -2334,7 +2342,6 @@ wireplumber.profiles = {
 "emacs-shrink-path"
 "emacs-slim-mode"
 "emacs-smartparens"
-"emacs-straight"
 "emacs-stylus-mode"
 "emacs-sws-mode"
 "emacs-toc-org"
@@ -2410,8 +2417,12 @@ wireplumber.profiles = {
 (service
  doomemacs-service-type
  (doomemacs-configuration
-  (emacs (pkg "emacs-next"))
-  (doomemacs (pkg "doomemacs"))
+  (emacs home-emacs)
+  (doomemacs
+   (let* ((straight (pkg "emacs-straight"))
+          (straight-next (build-with-home-emacs straight))
+          (r (package-input-rewriting `((,straight . ,straight-next)))))
+     (r (pkg "doomemacs"))))
   (config (doomemacs-config
            #:src (local-file (relative-file "../emacs/.doom.d") "src"
                              #:recursive? #t
@@ -3110,11 +3121,7 @@ install grammars as expected by clojure-ts-mode
 #+begin_src scheme :noweb-ref guix-pkg
 ; build with emacs-next to avoid version mismatch warning
 (let* ((emacs-tramp (pkg "emacs-tramp"))
-       (emacs-tramp-next
-        (package/inherit emacs-tramp
-          (arguments
-           (substitute-keyword-arguments (package-arguments emacs-tramp)
-             ((#:emacs emacs) (pkg "emacs-next"))))))
+       (emacs-tramp-next (build-with-home-emacs emacs-tramp))
        (r (package-input-rewriting `((,emacs-tramp . ,emacs-tramp-next)))))
   (list emacs-tramp-next
         (r (pkg "emacs-tramp-hlo"))))

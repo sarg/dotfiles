@@ -80,8 +80,11 @@
      (service-extension
       home-profile-service-type
       (lambda (config)
-        (cons*
-         (doomemacs-configuration-emacs config)
+        (append
+         (list (doomemacs-configuration-emacs config))
+         (map cadr
+              (package-propagated-inputs
+               (doomemacs-configuration-doomemacs config)))
          (doomemacs-configuration-inputs config))))
      (service-extension
       home-activation-service-type
