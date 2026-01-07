@@ -39,8 +39,8 @@
 (define-public emacs-reader
   (package
     (name "emacs-reader")
-    (properties '((commit . "691ebf7db90ed5b2d748b4c4fe04d5a528690f19")))
-    (version (git-version "0.3.2" "2" (assoc-ref properties 'commit)))
+    (properties '((commit . "40784458ca8ddcc9ded7d350ff71c8d49995e724")))
+    (version (git-version "0.3.2" "3" (assoc-ref properties 'commit)))
     (source
      (origin
       (method git-fetch)
@@ -49,7 +49,7 @@
             (commit (assoc-ref properties 'commit))))
       (file-name (git-file-name name version))
       (sha256
-       (base32 "10x1d824p5fqdmc3m7y1lnvqpfdffkzvksrxxpq7ff98j82q02p6"))))
+       (base32 "0qg1a4cqjhcyvi93gvh93am9y2y77jnnnpmmhcf4i0nshy56yy7q"))))
     (build-system emacs-build-system)
     (arguments
      (list
@@ -1433,19 +1433,28 @@ Supports connecting to PSK networks.")
 (define-public emacs-emms-player-spotify
   (package
     (name "emacs-emms-player-spotify")
-    (version "20250411.619")
+    (version "20260107.916")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/sarg/emms-spotify")
-             (commit "ca80431b00738e6130b924c64dc1f2cddadcc0b8")))
+             (commit "628720b2c44eb6da2317b42edac48a90d655038b")))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0vv739axlp3hfvmh10ap0n70i4qd6jls9fb5ppczdxjcr5h9bgd7"))))
+        (base32 "0gp5jnp90djx935j0kkyjsaql60lpqb49aark95zp9nnq23lbicb"))))
     (build-system emacs-build-system)
-    (propagated-inputs (list emacs-compat emacs-emms emacs-s))
-    (arguments '(#:tests? #f))
+    (propagated-inputs (list emacs-compat emacs-emms emacs-s
+                             emacs-request emacs-consult))
+    (arguments
+     (list
+      #:tests? #f
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'contrib
+            (lambda _
+              (copy-file "contrib/consult-spotify-emms.el"
+                         "consult-spotify-emms.el"))))))
     (home-page "https://github.com/sarg/emms-spotify")
     (synopsis "Spotify player for EMMS")
     (description
@@ -2630,7 +2639,7 @@ category that is selected depending on a some piece of Emacs context.")
 (define-public emacs-qutebrowser
   (package
     (name "emacs-qutebrowser")
-    (version "20260101")
+    (version "20260101.840")
     (source
      (origin
        (method git-fetch)
@@ -2653,7 +2662,7 @@ integration between Qutebrowser and EXWM")
 (define-public emacs-xdg-launcher
   (package
     (name "emacs-xdg-launcher")
-    (version "20251129")
+    (version "20251129.2038")
     (source
      (origin
        (method git-fetch)
@@ -2802,3 +2811,27 @@ version of evil is based on the last change I could find to evil-select-paren,
 but the newest version of evil is probably preferable.  For more information see
 the README in the github repo.")
     (license #f)))
+
+(define-public emacs-visual-shorthands
+  (package
+    (name "emacs-visual-shorthands")
+    (version "20260104.2221")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/gggion/visual-shorthands.el")
+             (commit "0511154773533ec2e3c25efa5515ea548ee7e9e1")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1x7abjfmb492bv9y1s0pkc55dl57gbx9sbrdbv37k839s8nj9lpk"))))
+    (build-system emacs-build-system)
+    (arguments '(#:tests? #f))
+    (home-page "https://github.com/gggion/visual-shorthands.el")
+    (synopsis "Visual abbreviations for symbol prefixes")
+    (description
+     "Replace long prefixes with short ones visually using overlays.  Example:
+\"application-config-manager--\" -> \"acm:\" Basic usage:
+(visual-shorthands-add-mapping \"application-config-manager--\" \"acm:\")
+(visual-shorthands-mode 1) Abbreviates PREFIXES only, not whole symbols.")
+    (license license:gpl3+)))
