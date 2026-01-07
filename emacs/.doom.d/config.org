@@ -325,7 +325,10 @@ dnsmasq_resolve=/etc/dnsmasq.resolve
     (eshell-command "sudo herd stop wireguard-wg0")
     (sarg/telega-msg-send bot "/vpn stop")
     (promise-chain
-        (sarg/telega-msg-expect bot (lambda (txt) (s-matches? "Stopped.+VPN" txt)))
+        (sarg/telega-msg-expect bot (lambda (txt)
+                                      (or
+                                       (s-matches? "Stopped.+VPN" txt)
+                                       (string= "Nothing to stop" txt))))
       (then (lambda (msg)
               (notifications-notify :title "Hey" :body msg))))))
 #+end_src
@@ -1267,16 +1270,10 @@ REVERSE? it when true. Returns the selected buffer."
       (lambda () (interactive) (call-process wpctl nil nil nil "set-volume" "@DEFAULT_SOURCE@" "5%-"))
       :transient t)]))
 
-(transient-define-prefix dash-menu/spotify ()
-  "Spotify search"
-  [("a" "album" counsel-spotify-search-album)
-   ("p" "playlist" counsel-spotify-search-playlist)
-   ("A" "artist" counsel-spotify-search-artist)])
-
 (transient-define-prefix dash-menu/audio ()
   "Audio menu"
   [["Playlist"
-    ("a" "Spotify" dash-menu/spotify)
+    ("a" "Spotify" consult-spotify-emms)
     ("s" "Systrum" (lambda () (interactive)
                      (emms-play-url "https://systrum.net/SSR2.m3u")))
     ("l" "Likes" (lambda () (interactive)
@@ -1340,7 +1337,16 @@ REVERSE? it when true. Returns the selected buffer."
   (setq emms-player-spotify-debug t)
   (add-to-list 'emms-player-list emms-player-spotify))
 #+end_src
-**** TODO search
+**** search
+#+begin_src elisp
+(use-package! consult-spotify-emms
+  :commands consult-spotify-emms
+  :custom
+  (consult-spotify-emms-client-id
+   (lambda () (auth-source-pass-get "client-id" "Sites/spotify.com")))
+  (consult-spotify-emms-client-secret
+   (lambda () (auth-source-pass-get "client-secret" "Sites/spotify.com"))))
+#+end_src
 *** scrobble
 Enable scrobbling of URL tracks: https://lists.gnu.org/archive/html/emms-help/2025-12/msg00011.html
 #+begin_src elisp
@@ -3117,6 +3123,18 @@ install grammars as expected by clojure-ts-mode
                           (string-append #$output "/lib/tree-sitter/libtree-sitter-markdown-inline.so")))))
          #:grammar-directories '("tree-sitter-markdown" "tree-sitter-markdown-inline"))))
 #+end_src
+** elisp
+#+begin_src scheme :noweb-ref guix-pkg
+"emacs-visual-shorthands"
+#+end_src
+#+begin_src elisp
+(use-package! visual-shorthands
+  :commands visual-shorthands-mode
+  
+  :init
+  (face-spec-set 'elisp-shorthand-font-lock-face
+                 '((t :inherit nil :foreground nil))))
+#+end_src
 * tramp
 #+begin_src scheme :noweb-ref guix-pkg
 ; build with emacs-next to avoid version mismatch warning
@@ -3790,7 +3808,6 @@ Target state:
 *** =~/.gnupg= is a symlink to =/storage/data/gnupg=
 *** =gpg-agent.conf= and =gpg.conf= are managed by =guix home=
 ** DONE +duplicate env entries because of ~doom env~+ (just delete the file)
-** TODO counsel-spotify pollutes namespace because of :reader in EIEIO objects (name, artist ...)
 ** TODO emacs keybindings revamp
 - winner to be replaced with custom window management
 - evil bindings in EMMS buffers (q to close, SPC to enter)
