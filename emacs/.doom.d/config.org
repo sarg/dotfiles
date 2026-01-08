@@ -578,20 +578,22 @@ polkit.addRule(function(action, subject) {
 
 (define* (pin p #:key commit hash uri)
   (let ((base (pkg p)))
-    (package
-      (inherit base)
-      (version (string-append "pin." (string-take commit 7)))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-                (url (or uri
-                         (git-reference-url
-                          (origin-uri (package-source base)))))
-                (commit commit)))
-         (file-name (git-file-name (package-name base) version))
-         (sha256 (base32 hash)))))))
+    (cons base
+          (package
+            (inherit base)
+            (version (string-append "pin." (string-take commit 7)))
+            (source
+             (origin
+               (method git-fetch)
+               (uri (git-reference
+                      (url (or uri
+                               (git-reference-url
+                                (origin-uri (package-source base)))))
+                      (commit commit)))
+               (file-name (git-file-name (package-name base) version))
+               (sha256 (base32 hash))))))))
 
+(define all-packages (map pkg (flatten (list <<guix-pkg>>))))
 (home-environment
   (services
    (cons*
@@ -611,7 +613,7 @@ polkit.addRule(function(action, subject) {
     <<guix-srv>>
     %base-home-services))
 
-  (packages (map pkg (flatten (list <<guix-pkg>>)))))
+  (packages all-packages))
 #+end_src
 * apps
 ** android
@@ -2154,7 +2156,7 @@ wireplumber.profiles = {
 #+end_src
 * doom
 ** base packages
-#+begin_src scheme :noweb-ref guix-pkg
+#+begin_src scheme :noweb-ref doom-pins
 (pin "emacs-elisp-demos"
      #:commit "1a108d1c5011f9ced58be2ca98bea1fbd4130a2f"
      #:hash "1rw7v8xks6rpjk10kw0lkb3f158jsqk6167f3dpmxm3q4000k8nz")
@@ -2174,29 +2176,29 @@ wireplumber.profiles = {
      #:uri "https://github.com/doomelpa/evil-org-mode"
      #:commit "06518c65ff4f7aea2ea51149d701549dcbccce5d"
      #:hash "11r3aim8qvyddp9d7sphcd0hl3vwxl81z83aifzgx89jb5ivfn6y")
-
-(let* ((emacs-nerd-icons (pkg "emacs-nerd-icons"))
-       (emacs-nerd-icons-next
-        (pin emacs-nerd-icons
-             #:commit "772987a28d6408f840331c52c91d04b623a87048"
-             #:hash "0n3kjz3ir43ghs0pq86plcz5mpf3m0qn19ahi0705pv56hgvr0h8"))
-       (r (package-input-rewriting `((,emacs-nerd-icons . ,emacs-nerd-icons-next)))))
-
-  (list emacs-nerd-icons-next
-        (map (compose r pkg)
-             '("emacs-treemacs-nerd-icons"
-               "emacs-nerd-icons-completion"
-               "emacs-nerd-icons-corfu"))))
+(pin "emacs-nerd-icons"
+     #:commit "772987a28d6408f840331c52c91d04b623a87048"
+     #:hash "0n3kjz3ir43ghs0pq86plcz5mpf3m0qn19ahi0705pv56hgvr0h8")
+(let ((straight (pkg "emacs-straight")))
+  (cons straight (build-with-home-emacs straight)))
+#+end_src
+#+begin_src scheme :noweb-ref guix-pkg
+home-emacs
+(let ((pins (list <<doom-pins>>)))
+  (append
+   (map cdr pins)
+   (map (compose (package-input-rewriting pins) pkg)
+        '("emacs-treemacs-nerd-icons"
+          "emacs-nerd-icons-completion"
+          "emacs-nerd-icons-corfu"))))
 
 "emacs-adaptive-wrap"
 "emacs-anzu"
 "emacs-apheleia"
-"emacs-auto-minor-mode"
 "emacs-auto-yasnippet"
 "emacs-avy"
 "emacs-bash-completion"
 "emacs-beancount"
-"emacs-better-jumper"
 "emacs-bind-key"
 "emacs-browse-at-remote"
 "emacs-buttercup"
@@ -2207,7 +2209,6 @@ wireplumber.profiles = {
 "emacs-clj-refactor"
 "emacs-clojure-mode"
 "emacs-clojure-ts-mode"
-"emacs-compat"
 "emacs-cond-let"
 "emacs-consult"
 "emacs-consult-dash"
@@ -2268,7 +2269,6 @@ wireplumber.profiles = {
 "emacs-flycheck-package"
 "emacs-flycheck-plantuml"
 "emacs-flycheck-popup-tip"
-"emacs-gcmh"
 "emacs-git-modes"
 "emacs-git-timemachine"
 "emacs-go-gen-test"
@@ -2280,7 +2280,6 @@ wireplumber.profiles = {
 "emacs-gptel-quick"
 "emacs-haml-mode"
 "emacs-helpful"
-"emacs-hide-mode-line"
 "emacs-highlight-quoted"
 "emacs-htmlize"
 "emacs-ibuffer-projectile"
@@ -2330,8 +2329,6 @@ wireplumber.profiles = {
 "emacs-pipenv"
 "emacs-plantuml-mode"
 "emacs-powerthesaurus"
-"emacs-project"
-"emacs-projectile"
 "emacs-pug-mode"
 "emacs-py-isort"
 "emacs-pyimport"
@@ -2340,14 +2337,12 @@ wireplumber.profiles = {
 "emacs-quickrun"
 "emacs-rainbow-mode"
 "emacs-request"
-"emacs-restart-emacs"
 "emacs-restclient"
 "emacs-rust-mode"
 "emacs-rustic"
 "emacs-sass-mode"
 "emacs-shrink-path"
 "emacs-slim-mode"
-"emacs-smartparens"
 "emacs-stylus-mode"
 "emacs-sws-mode"
 "emacs-toc-org"
@@ -2367,7 +2362,6 @@ wireplumber.profiles = {
 "emacs-vundo"
 "emacs-web-mode"
 "emacs-wgrep"
-"emacs-which-key"
 "emacs-yaml-mode"
 "emacs-yasnippet"
 "emacs-yasnippet-capf"
@@ -2422,18 +2416,16 @@ wireplumber.profiles = {
 #+begin_src scheme :noweb-ref guix-srv
 (service
  doomemacs-service-type
- (doomemacs-configuration
-  (emacs home-emacs)
-  (doomemacs
-   (let* ((straight (pkg "emacs-straight"))
-          (straight-next (build-with-home-emacs straight))
-          (r (package-input-rewriting `((,straight . ,straight-next)))))
-     (r (pkg "doomemacs"))))
-  (config (doomemacs-config
-           #:src (local-file (relative-file "../emacs/.doom.d") "src"
-                             #:recursive? #t
-                             #:select? (git-predicate (relative-file "../emacs/.doom.d")))
-           #:inputs (map pkg (list <<emacs-dep>>))))))
+ (let ((pins (list <<doom-pins>>)))
+   (doomemacs-configuration
+    (emacs home-emacs)
+    (doomemacs ((package-input-rewriting pins) (pkg "doomemacs")))
+    (config (doomemacs-config
+             #:src (local-file (relative-file "../emacs/.doom.d") "src"
+                               #:recursive? #t
+                               #:select? (git-predicate (relative-file "../emacs/.doom.d")))
+             #:inputs (map pkg (list <<emacs-dep>>))))
+    (inputs all-packages))))
 #+end_src
 ** init.el
 #+begin_src elisp :tangle init.el
@@ -3469,7 +3461,7 @@ eval "$(atuin init bash)"
   :hook (after-init . openwith-mode)
   :custom
   (openwith-associations
-   '(("\\.\\(?:djvu\\|mkv\\|webm\\|avi\\|mp4\\)\\'" "jaro" (file))))
+   '(("\\.\\(?:mkv\\|webm\\|avi\\|mp4\\)\\'" "jaro" (file))))
 
   :config
   ;; Don't ask if file is too large when it'll be handled by openwith-mode.

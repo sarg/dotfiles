@@ -8,7 +8,9 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix utils)
   #:use-module (gnu packages)
-  #:use-module (gnu packages emacs-xyz))
+  #:use-module (gnu packages emacs-build)
+  #:use-module (gnu packages emacs-xyz)
+  #:use-module (personal packages emacs-xyz))
 
 (define-public emacs-ob-cfg
   (package
@@ -60,7 +62,21 @@
                    (("\\(package! [^ )]+" a)
                     (string-append a " :built-in 'prefer"))))
                (find-files "." "packages.el$")))))))
-    (propagated-inputs (list emacs-straight))
+    (propagated-inputs (list
+                        emacs-straight
+                        emacs-auto-minor-mode
+                        emacs-gcmh
+                        emacs-compat
+                        emacs-nerd-icons
+                        emacs-hide-mode-line
+                        emacs-restart-emacs
+                        emacs-better-jumper
+                        emacs-smartparens
+                        emacs-projectile
+                        emacs-project
+                        emacs-general
+                        emacs-which-key))
+
     (home-page "https://github.com/doomemacs/doomemacs")
     (description "Doom emacs sources")
     (synopsis "Doom emacs")
