@@ -104,7 +104,7 @@
                 (parameterize ((%emacs emacs))
                   (emacs-byte-compile-directory out))))))))
     (inputs (cons doom inputs))
-    (native-inputs (list git doom))
+    (native-inputs (list git))
     (description "doom profile")
     (home-page #f)
     (synopsis #f)
@@ -139,9 +139,7 @@
      (list
       (service-extension
        home-profile-service-type
-       (lambda (config)
-         (append
-          (map cadr (package-propagated-inputs (doomemacs-configuration-doomemacs config))))))
+       (lambda (config) (list (doomemacs-configuration-doomemacs config))))
       (service-extension
        home-activation-service-type
        (match-lambda
