@@ -27,8 +27,8 @@
 (define-public doomemacs
   (package
     (name "doomemacs")
-    (properties '((commit . "38d94da67dc84897a4318714dcc48494c016d8c4")))
-    (version (git-version "3.0.0" "1" (assoc-ref properties 'commit)))
+    (properties '((commit . "3e15fb36d7f94f0a218bda977be4d3f5da983a71")))
+    (version (git-version "3.0.0" "2" (assoc-ref properties 'commit)))
     (source
      (origin
        (method git-fetch)
@@ -37,7 +37,7 @@
               (commit (assoc-ref properties 'commit))))
        (file-name (git-file-name "doomemacs" version))
        (sha256
-        (base32 "1bf6xh57vyrdsxp4wqqrry3ycbhq8bqa9gh51qakb3pps4wamkji"))))
+        (base32 "0fd5vma846cjby87ysm33fdkfnnp73xnyj931x0xq554zpvfvgs0"))))
     (build-system copy-build-system)
     (arguments
      (list
