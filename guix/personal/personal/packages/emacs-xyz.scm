@@ -1,24 +1,3 @@
-;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2024 Divya R. Pattanaik <divya@subvertising.org>
-;;; https://codeberg.org/divyaranjan/divya-lambda/src/branch/master/divya-lambda/packages/emacs-xyz.scm
-;;;
-;;; This file is not part of GNU Guix
-;;;
-;;; This program is free software: you can redistribute it and/or modify
-;;; it under the terms of the GNU General Public License as published by
-;;; the Free Software Foundation, either version 3 of the License, or
-;;; (at your option) any later version.
-
-;;; This program is distributed in the hope that it will be useful,
-;;; but WITHOUT ANY WARRANTY; without even the implied warranty of
-;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-;;; GNU General Public License for more details.
-
-;;; You should have received a copy of the GNU General Public License
-;;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
-;;;
-;;; Emacs packages for Guix
-
 (define-module (personal packages emacs-xyz)
   #:use-module (guix packages)
   #:use-module (guix utils)
@@ -36,11 +15,12 @@
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages pdf))
 
+;;; https://codeberg.org/divyaranjan/divya-lambda/src/branch/master/divya-lambda/packages/emacs-xyz.scm
 (define-public emacs-reader
   (package
     (name "emacs-reader")
-    (properties '((commit . "40784458ca8ddcc9ded7d350ff71c8d49995e724")))
-    (version (git-version "0.3.2" "3" (assoc-ref properties 'commit)))
+    (properties '((commit . "bace2aabf5d38aa05a25b4423975ae061fbc653c")))
+    (version (git-version "0.3.2" "4" (assoc-ref properties 'commit)))
     (source
      (origin
       (method git-fetch)
@@ -49,7 +29,7 @@
             (commit (assoc-ref properties 'commit))))
       (file-name (git-file-name name version))
       (sha256
-       (base32 "0qg1a4cqjhcyvi93gvh93am9y2y77jnnnpmmhcf4i0nshy56yy7q"))))
+       (base32 "1y92fbk5d3cy3cjc5087hjmgg7ybnqgckkl3nkc30yy4c0ynvcpp"))))
     (build-system emacs-build-system)
     (arguments
      (list
