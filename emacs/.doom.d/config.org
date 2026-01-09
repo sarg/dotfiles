@@ -2348,9 +2348,7 @@ home-emacs
 "emacs-toc-org"
 "emacs-transient"
 "emacs-treemacs"
-"emacs-treemacs-evil"
-"emacs-treemacs-magit"
-"emacs-treemacs-projectile"
+"emacs-treemacs-extra"
 "emacs-treesit-fold"
 "emacs-undo-fu"
 "emacs-undo-fu-session"
@@ -2368,7 +2366,7 @@ home-emacs
 #+end_src
 
 #+begin_src elisp :tangle packages.el :exports none
-; hmm
+; provided by emacs-treemacs-extra
 (package! treemacs-evil :built-in t)
 (package! treemacs-magit :built-in t)
 (package! treemacs-projectile :built-in t)
