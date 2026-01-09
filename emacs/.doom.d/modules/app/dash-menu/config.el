@@ -58,6 +58,7 @@
   :value '("muted")
   :refresh-suffixes 't
   [["RSS"
+    :class transient-column
     :setup-children
     (lambda (_)
       (transient-parse-suffixes
@@ -68,6 +69,7 @@
          ,@(dash-menu/elfeed-bookmarks)]))]
 
    ["Mail"
+    :class transient-column
     :setup-children
     (lambda (_)
       (transient-parse-suffixes
@@ -78,6 +80,7 @@
          ,@(dash-menu/mu4e-bookmarks)]))]
 
    ["Telega"
+    :class transient-column
     :setup-children
     (lambda (_)
       (transient-parse-suffixes

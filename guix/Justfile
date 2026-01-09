@@ -37,8 +37,8 @@ system *args='':
 home *args='':
     {{ guix-lock }} home reconfigure home.scm {{args}}
 
-gc:
+gc sys='no':
     guix home delete-generations
-    sudo guix system delete-generations
+    if [[ '{{sys}}' != 'no' ]]; then sudo guix system delete-generations; fi
     guix pull --delete-generations
     guix gc

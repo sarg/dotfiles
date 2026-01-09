@@ -110,14 +110,6 @@
     (synopsis #f)
     (license #f)))
 
-(define package+output?
-  (match-lambda
-    ((? package? pkg) #t)
-    (((? package? pkg) output) #t)))
-
-(define list-of-package+output?
-  (list-of package+output?))
-
 (define-configuration/no-serialization doomemacs-configuration
   (emacs
    file-like
@@ -129,7 +121,7 @@
    file-like
    "Doom config package.")
   (inputs
-   (list-of-package+output '())
+   (list-of-packages '())
    "Additional packages to install."))
 
 (define doomemacs-service-type

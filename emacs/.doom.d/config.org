@@ -1236,8 +1236,6 @@ REVERSE? it when true. Returns the selected buffer."
 
   ;; don't show mode-line globally, to be shown only in the popup buffer
   (emms-mode-line-mode 1)
-  (setq emms-mode-line-mode-line-function #'emms-mode-line-playlist-current)
-  (delq 'emms-mode-line-string global-mode-string)
   (delq 'emms-playing-time-string global-mode-string))
 #+end_src
 *** bindings
@@ -1288,7 +1286,9 @@ REVERSE? it when true. Returns the selected buffer."
     :pad-keys t
     ("<delete>" "pause" emms-pause)
     ("S-<delete>" "stop" emms-stop)
-    ("<right>" "next" (lambda () (interactive) (funcall emms-player-next-function)) :transient t)
+    ("<right>" "next" (lambda () (interactive)
+                        (if emms-random-playlist (emms-random) (emms-next)))
+     :transient t)
     ("<left>" "prev" emms-previous :transient t)]
 
    ["Sound"
@@ -1794,10 +1794,11 @@ choose_entry() {
 "xset" "xclip"
 "hicolor-icon-theme" "adwaita-icon-theme"
 "greybird-gtk-theme"
+"font-jetbrains-mono"
+"font-inconsolata"
 "font-fira-code"
 "font-google-noto-emoji" ; 💪🕹
 "font-hack"
-"font-jetbrains-mono"
 "font-terminus"
 #+end_src
 #+begin_src cfg :dest ".config/gtk-3.0/settings.ini"
@@ -2157,18 +2158,28 @@ wireplumber.profiles = {
 * doom
 ** base packages
 #+begin_src scheme :noweb-ref doom-pins
+;; https://codeberg.org/guix/guix/pulls/5492
+(pin "emacs-evil-collection"
+     #:commit "163792a823bcdb2dae7ac1bba4018adfac35dca2"
+     #:hash "1vfhs1f4s0ygys9cs2iixv9f7rjf69gmvban68j92ndv6bvq31qg")
 (pin "emacs-elisp-demos"
      #:commit "1a108d1c5011f9ced58be2ca98bea1fbd4130a2f"
      #:hash "1rw7v8xks6rpjk10kw0lkb3f158jsqk6167f3dpmxm3q4000k8nz")
+(pin "emacs-org-contacts"
+     #:commit "41f10b9ab07f267613d77e98ef7a33b1772292b0"
+     #:hash "1aqvq1wca7csi7mrgy1gvy1lgq6ybi9ap030zwk697hvz8i0d59g")
+
+;; https://codeberg.org/guix/guix/pulls/5419
 (pin "emacs-general"
      #:commit "a48768f85a655fe77b5f45c2880b420da1b1b9c3"
      #:hash "19k82p8pwyh3krq8i6l6calwy9wddqklj1klkdyawgh5ar230vb2")
 (pin "emacs-evil-mc"
      #:commit "7e363dd6b0a39751e13eb76f2e9b7b13c7054a43"
      #:hash "0gzy2mqcdxhkg0hmxqzbjy5ihfal1s21wxd04mrikqri54sck4z5")
-(pin "emacs-org-contacts"
-     #:commit "41f10b9ab07f267613d77e98ef7a33b1772292b0"
-     #:hash "1aqvq1wca7csi7mrgy1gvy1lgq6ybi9ap030zwk697hvz8i0d59g")
+(pin "emacs-nerd-icons"
+     #:commit "772987a28d6408f840331c52c91d04b623a87048"
+     #:hash "0n3kjz3ir43ghs0pq86plcz5mpf3m0qn19ahi0705pv56hgvr0h8")
+
 (pin "emacs-marginalia"
      #:commit "d38041df2c2d175040bbdb1df6e4cc75a75ca4f8"
      #:hash "180v5y24rjrbh4dk66x3xhx3vb52yj520d61bkxrx790555a0y8g")
@@ -2176,9 +2187,6 @@ wireplumber.profiles = {
      #:uri "https://github.com/doomelpa/evil-org-mode"
      #:commit "06518c65ff4f7aea2ea51149d701549dcbccce5d"
      #:hash "11r3aim8qvyddp9d7sphcd0hl3vwxl81z83aifzgx89jb5ivfn6y")
-(pin "emacs-nerd-icons"
-     #:commit "772987a28d6408f840331c52c91d04b623a87048"
-     #:hash "0n3kjz3ir43ghs0pq86plcz5mpf3m0qn19ahi0705pv56hgvr0h8")
 (let ((straight (pkg "emacs-straight")))
   (cons straight (build-with-home-emacs straight)))
 #+end_src
@@ -2244,7 +2252,6 @@ home-emacs
 "emacs-evil"
 "emacs-evil-anzu"
 "emacs-evil-args"
-"emacs-evil-collection"
 "emacs-evil-easymotion"
 "emacs-evil-embrace"
 "emacs-evil-escape"
@@ -2370,7 +2377,7 @@ home-emacs
 (package! treemacs-evil :built-in t)
 (package! treemacs-magit :built-in t)
 (package! treemacs-projectile :built-in t)
-; don't use and don't want to package these
+; don't use and/or don't want to package these
 (disable-packages! fish-completion
                    neil
                    ob-clojure-literate
@@ -2651,7 +2658,7 @@ dbusserver: true
     (mapc #'disable-theme custom-enabled-themes))
 
   (if (display-graphic-p)
-      (add-hook! 'after-init-hook (darkman-mode))))
+    (add-hook! 'after-init-hook :depth -95 #'darkman-mode)))
 #+end_src
 ** redshift
 #+begin_src scheme :noweb-ref guix-srv
@@ -3774,7 +3781,12 @@ token_file = "~/.local/state/vdirsyncer/token"
 #+begin_src elisp
 (use-package! khalel)
 #+end_src
-* TODO todo [8/13]
+** speed-type
+#+begin_src scheme :noweb-ref guix-pkg
+"emacs-speed-type"
+#+end_src
+
+* TODO todo [9/12]
 ** DONE console font
 ** DONE mingetty with xorg autostart (under sarg), put `lock.sh` first in the .xsession
 ** DONE user syncthing
@@ -3802,7 +3814,8 @@ Target state:
 - winner to be replaced with custom window management
 - evil bindings in EMMS buffers (q to close, SPC to enter)
 - repeat Super+<digit> to switch (saved) window configurations
-** TODO how to make home services depend on online status?
+** DONE how to make home services depend on online status?
+see [[*online][online]]
 ** TODO set password in system-image
 #+begin_src scheme :noweb-ref nil
 ;; (define user-pass
