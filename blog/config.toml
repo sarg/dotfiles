@@ -3,7 +3,7 @@ languageCode = "en-us"
 title = "Random forest"
 theme = "xmin"
 publishDir = "./dist"
-disableKinds = ["sitemap", "taxonomy", "term"]
+disableKinds = ["sitemap", "taxonomy", "term", "section"]
 
 [params.author]
 name = "Sergey Trofimov"

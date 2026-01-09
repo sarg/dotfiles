@@ -3,6 +3,12 @@ body {
   margin: auto;
   padding: 1em;
   line-height: 1.5em;
+  font-family: Optima, Candara, Calibri, Arial, sans-serif;
+}
+
+code {
+  font-family: "Lucida Console", Monaco, monospace;
+  font-size: 85%;
 }
 
 a:link { text-decoration: none; }
