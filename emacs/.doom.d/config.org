@@ -1144,6 +1144,9 @@ REVERSE? it when true. Returns the selected buffer."
 
 ** emms
 *** package
+#+begin_src scheme :noweb-ref emacs-dep
+"emacs-emms"
+#+end_src
 #+begin_src elisp
 (defun dont-kill-buffer--hook ()
   (bury-buffer)
@@ -1168,58 +1171,25 @@ REVERSE? it when true. Returns the selected buffer."
 
 (defun browse-url-emms (url &rest _) (emms-add-url url))
 
-(after! emms
-  (setq!
-   emms-player-mpv-update-metadata t
-   emms-player-mpv-parameters
-   '("--quiet" "--really-quiet" "--no-audio-display" "--load-scripts=no" "--no-config")
-   emms-playlist-buffer-name "*Music*"
-   emms-source-file-default-directory (expand-file-name "~/Sync/"))
-  
-  (after! browse-url
-    (add-to-list 'browse-url-handlers '("bandcamp.com" . browse-url-emms))
-    (add-to-list 'browse-url-handlers '("bandcamp.com/album" . emms-add-ytdlp-playlist)))
+(after! browse-url
+  (add-to-list 'browse-url-handlers '("bandcamp.com" . browse-url-emms))
+  (add-to-list 'browse-url-handlers '("bandcamp.com/album" . emms-add-ytdlp-playlist)))
 
-  (require 'emms-mpris)
-  (emms-mpris-enable)
-  ; mpv player changes track metadata when playing streams
-  (add-hook 'emms-track-updated-functions
-            (lambda (track) (emms-mpris-change-status)))
+(use-package! emms
+  :defer t
+  :commands (emms emms-add-url emms-stop emms-pause emms-previous)
+  :init
+  (setq emms-directory (file-name-concat doom-profile-data-dir "emms")
+        emms-cache-file (file-name-concat doom-profile-cache-dir "emms"))
 
-  (map! :map emms-playlist-mode-map
-        :localleader
-        "r" #'emms-toggle-random-playlist)
+  :custom
+  (emms-player-mpv-update-metadata t)
+  (emms-player-mpv-parameters
+   '("--quiet" "--really-quiet" "--no-audio-display" "--load-scripts=no" "--no-config"))
+  (emms-playlist-buffer-name "*Music*")
+  (emms-source-file-default-directory (expand-file-name "~/Sync/"))
 
-  (when (modulep! :app emms +history)
-    (add-hook! emms-playlist-mode #'dont-kill-buffer-mode)
-    (setq emms-history-file "/storage/data/emacs/emms_history")
-    (emms-history-load))
-
-  (setq emms-player-list (list emms-player-mpv)))
-#+end_src
-*** buffer and modeline
-#+begin_src elisp
-(after! emms
-  (defun emms/modeline-status-icon ()
-    (let ((clickable
-           (lambda (text action)
-             (propertize text 'keymap (make-mode-line-mouse-map 'mouse-1 action)))))
-      (apply clickable
-             (cond
-              ((and emms-player-playing-p emms-player-paused-p)
-               (list "" #'emms-pause))
-              ((and emms-player-playing-p (emms-player-get 'emms-player-spotify 'ad-blocked))
-               (list "" #'ignore))
-              (emms-player-playing-p
-               (list "" #'emms-pause))
-              (t (list "" #'ignore))))))
-
-  (defun emms/modeline-function ()
-    (concat (emms/modeline-status-icon)
-            (emms-mode-line-playlist-current)))
-
-  (setq! emms-mode-line-mode-line-function #'emms/modeline-function)
-
+  :config
   (set-popup-rule!
     (lambda (buffer action)
       (buffer-local-value 'emms-playlist-buffer-p (get-buffer buffer)))
@@ -1232,20 +1202,50 @@ REVERSE? it when true. Returns the selected buffer."
                 emms-playing-time-string)
     :height 15)
 
-  (add-hook 'emms-player-paused-hook #'emms-mode-line-alter)
+  (emms-all)
+  (emms-mpris-enable)
 
-  ;; don't show mode-line globally, to be shown only in the popup buffer
-  (emms-mode-line-mode 1)
+  ;; mpv player changes track metadata when playing streams
+  (add-hook 'emms-track-updated-functions
+            (lambda (track) (emms-mpris-change-status)))
+
+  (map! :map emms-playlist-mode-map
+        :localleader
+        "r" #'emms-toggle-random-playlist)
+
+  (setq emms-player-list (list emms-player-mpv))
+  
+  (setq! emms-mode-line-mode-line-function #'emms/modeline-function)
+  (add-hook 'emms-player-paused-hook #'emms-mode-line-alter)
   (delq 'emms-playing-time-string global-mode-string))
+#+end_src
+*** modeline functions 
+#+begin_src elisp
+(defun emms/modeline-status-icon ()
+  (let ((clickable
+         (lambda (text action)
+           (propertize text 'keymap (make-mode-line-mouse-map 'mouse-1 action)))))
+    (apply clickable
+           (cond
+            ((and emms-player-playing-p emms-player-paused-p)
+             (list "" #'emms-pause))
+            ((and emms-player-playing-p (emms-player-get 'emms-player-spotify 'ad-blocked))
+             (list "" #'ignore))
+            (emms-player-playing-p
+             (list "" #'emms-pause))
+            (t (list "" #'ignore))))))
+
+(defun emms/modeline-function ()
+  (concat (emms/modeline-status-icon)
+          (emms-mode-line-playlist-current)))
+
+
 #+end_src
 *** bindings
 #+begin_src scheme :noweb-ref emacs-dep
 "wireplumber"
 #+end_src
 #+begin_src elisp :noweb-ref exwm :tangle no
-(autoload #'emms-stop "emms" nil t)
-(autoload #'emms-pause "emms" nil t)
-(autoload #'emms-previous "emms" nil t)
 (let ((my-vol-last-change 0))
   (defun my-vol-change (up)
     (let* ((time-now (car (time-convert nil 1000)))
@@ -2241,7 +2241,6 @@ home-emacs
 "emacs-embark"
 "emacs-embark-consult"
 "emacs-emmet-mode"
-"emacs-emms"
 "emacs-envrc"
 "emacs-eros"
 "emacs-esh-help"
@@ -2450,7 +2449,7 @@ home-emacs
  :lang        (clojure +tree-sitter) data emacs-lisp (javascript +tree-sitter +lsp) markdown
               (org +contacts +dragndrop +pandoc +hugo +roam2 +pretty) beancount (go +lsp +tree-sitter) (rust +lsp +tree-sitter)
               (rest +jq) (sh +tree-sitter) plantuml (python +lsp +tree-sitter) (web +tree-sitter) yaml (json +tree-sitter)
- :app         telega (rss +org) torrent irc exwm emms dash-menu
+ :app         telega (rss +org) torrent irc exwm dash-menu
  :email       (mu4e +mbsync +gmail +org)
  :config      (default +bindings +smartparens +gnupg))
 #+end_src

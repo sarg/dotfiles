@@ -1258,16 +1258,16 @@ Supports connecting to PSK networks.")
 (define-public emacs-emms-player-spotify
   (package
     (name "emacs-emms-player-spotify")
-    (version "20260107.916")
+    (version "20260109.1935")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/sarg/emms-spotify")
-             (commit "628720b2c44eb6da2317b42edac48a90d655038b")))
+             (commit "91fe535d3420fa57c24ef164bf4b47085ed3cd6a")))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0gp5jnp90djx935j0kkyjsaql60lpqb49aark95zp9nnq23lbicb"))))
+        (base32 "0xhb4n7b57jb0m3jq2svqdm3hfraisqlq0i0lli18d5hx4p1jy6j"))))
     (build-system emacs-build-system)
     (propagated-inputs (list emacs-compat emacs-emms emacs-s
                              emacs-request emacs-consult))
