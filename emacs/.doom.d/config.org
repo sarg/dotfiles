@@ -2455,12 +2455,22 @@ home-emacs
  :config      (default +bindings +smartparens +gnupg))
 #+end_src
 ** dashboard
-#+begin_src text :noweb-ref emacs-dep
-"guix-icons"
+#+begin_src scheme :noweb-ref emacs-dep
+(list "guix-artwork"
+      (let ((commit "08259679a0faef63e3ba169df5b937d836bd9262"))
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                 (url "https://codeberg.org/guix/artwork.git")
+                 (commit commit)))
+          (file-name (string-append "guix-artwork-" (string-take commit 7)
+                                    "-checkout"))
+          (sha256
+           (base32
+            "0anryix0y8w9brksiaz39r8c10vdd0fp4h96b9f3m4aw0xpv8xlf")))))
 #+end_src
 #+begin_src elisp
-(setq fancy-splash-image
-      (guix/pkg 'guix-icons "/share/icons/hicolor/scalable/apps/guix-icon.svg"))
+(setq fancy-splash-image (guix/pkg 'guix-artwork "/logo/head-only/Guix-head-stencil.svg"))
 (setq +doom-dashboard-functions
       '(doom-dashboard-widget-banner
         doom-dashboard-widget-shortmenu))
