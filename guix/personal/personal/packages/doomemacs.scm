@@ -35,35 +35,11 @@
        (uri (git-reference
               (url "https://github.com/doomemacs/doomemacs")
               (commit (assoc-ref properties 'commit))))
-       (file-name (git-file-name "doomemacs" version))
+       (file-name (git-file-name name version))
        (sha256
         (base32 "0fd5vma846cjby87ysm33fdkfnnp73xnyj931x0xq554zpvfvgs0"))))
     (build-system copy-build-system)
-    (arguments
-     (list
-      #:modules `(((guix build emacs-build-system) #:prefix emacs:)
-                  (guix build copy-build-system)
-                  (guix build utils))
-      #:imported-modules `(,@%emacs-build-system-modules
-                           ,@%copy-build-system-modules)
-      #:phases
-      #~(modify-phases %standard-phases
-          (add-after 'unpack 'fix-straight
-            (lambda _
-              (substitute* "lisp/lib/packages.el"
-                (("\\(doom-path straight-base-dir \".*\"\\)")
-                 (format #f "~s" (emacs:elpa-directory #$(this-package-input "emacs-straight"))))
-
-                (("\\(doom--ensure-core-packages")
-                 "(ignore"))
-              (for-each
-               (lambda (name)
-                 (substitute* name
-                   (("\\(package! [^ )]+" a)
-                    (string-append a " :built-in 'prefer"))))
-               (find-files "." "packages.el$")))))))
     (propagated-inputs (list
-                        emacs-straight
                         emacs-auto-minor-mode
                         emacs-gcmh
                         emacs-compat
@@ -76,7 +52,6 @@
                         emacs-project
                         emacs-general
                         emacs-which-key))
-
     (home-page "https://github.com/doomemacs/doomemacs")
     (description "Doom emacs sources")
     (synopsis "Doom emacs")

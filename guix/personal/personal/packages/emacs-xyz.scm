@@ -23,28 +23,28 @@
     (version (git-version "0.3.2" "4" (assoc-ref properties 'commit)))
     (source
      (origin
-      (method git-fetch)
-      (uri (git-reference
-            (url "https://codeberg.org/divyaranjan/emacs-reader")
-            (commit (assoc-ref properties 'commit))))
-      (file-name (git-file-name name version))
-      (sha256
-       (base32 "1y92fbk5d3cy3cjc5087hjmgg7ybnqgckkl3nkc30yy4c0ynvcpp"))))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://codeberg.org/divyaranjan/emacs-reader")
+              (commit (assoc-ref properties 'commit))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1y92fbk5d3cy3cjc5087hjmgg7ybnqgckkl3nkc30yy4c0ynvcpp"))))
     (build-system emacs-build-system)
     (arguments
      (list
       #:tests? #f                      ;no tests
       #:phases
       #~(modify-phases %standard-phases
-                       (add-after 'expand-load-path 'build-module
-                                  (lambda* (#:key inputs #:allow-other-keys)
-                                    (invoke "make" "USE_PKGCONFIG=no}"))) ; We don't need pkg-config
-                       (add-after 'install 'install-module
-                                  (lambda* (#:key outputs #:allow-other-keys)
-                                    (let* ((out (assoc-ref outputs "out"))
-                                           (target-dir (string-append out
-                                                                      "/share/emacs/site-lisp/" #$name "-" #$version)))
-                                      (install-file "render-core.so" target-dir)))))))
+          (add-after 'expand-load-path 'build-module
+            (lambda* (#:key inputs #:allow-other-keys)
+              (invoke "make" "USE_PKGCONFIG=no}"))) ; We don't need pkg-config
+          (add-after 'install 'install-module
+            (lambda* (#:key outputs #:allow-other-keys)
+              (let* ((out (assoc-ref outputs "out"))
+                     (target-dir (string-append out
+                                                "/share/emacs/site-lisp/" #$name "-" #$version)))
+                (install-file "render-core.so" target-dir)))))))
 
     (native-inputs (list mupdf gcc))
     (home-page "https://codeberg.org/divyaranjan/emacs-reader")
@@ -65,8 +65,8 @@ And as such, it is effectively a drop-in replacement for them.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/joewreschnig/auto-minor-mode")
-             (commit "17cfa1b54800fdef2975c0c0531dad34846a5065")))
+              (url "https://github.com/joewreschnig/auto-minor-mode")
+              (commit "17cfa1b54800fdef2975c0c0531dad34846a5065")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "1jgq9b262pjr6npza3k0p2glb6mpp0dfpslgx3i2p8a5ipwhwaqa"))))
@@ -99,8 +99,8 @@ these keywords for other packages.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/gilbertw1/better-jumper")
-             (commit "b1bf7a3c8cb820d942a0305e0e6412ef369f819c")))
+              (url "https://github.com/gilbertw1/better-jumper")
+              (commit "b1bf7a3c8cb820d942a0305e0e6412ef369f819c")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "0cq99w9lpd9sg7hb6i9r6qirq626xcgzyjbk438h8qrjgm3xigh4"))))
@@ -123,8 +123,8 @@ integration with evil.  To enable globally: (require better-jumper)
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/LuigiPiucco/nerd-icons-corfu")
-             (commit "f821e953b1a3dc9b381bc53486aabf366bf11cb1")))
+              (url "https://github.com/LuigiPiucco/nerd-icons-corfu")
+              (commit "f821e953b1a3dc9b381bc53486aabf366bf11cb1")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "036p45wqwrqhn5xv5sn3gsm2mb79gj6fk24zpkfa7wrv45qqgb21"))))
@@ -148,8 +148,8 @@ configurable, but should be text icons provided by the icons fonts in
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/elken/yasnippet-capf")
-             (commit "f53c42a996b86fc95b96bdc2deeb58581f48c666")))
+              (url "https://github.com/elken/yasnippet-capf")
+              (commit "f53c42a996b86fc95b96bdc2deeb58581f48c666")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "1hwsra5w150dfswkvw3jryhkg538nm3ig74xzfplzbg0n6v7qs19"))))
@@ -173,8 +173,8 @@ done by name rather than key, set `yasnippet-capf-lookup-by'.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/oantolin/embark")
-             (commit "7b3b2fa239c34c2e304eab4367a4f5924c047e2b")))
+              (url "https://github.com/oantolin/embark")
+              (commit "7b3b2fa239c34c2e304eab4367a4f5924c047e2b")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "1hn4x5smylqviaqw35j9wccffsvfxp0q5jlnw0ynxny5c7pnp66l"))))
@@ -213,8 +213,8 @@ on and prefer to trigger the consult previews manually use this instead:
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/rainstormstudio/nerd-icons-completion")
-             (commit "d09ea987ed3d2cc64137234f27851594050e2b64")))
+              (url "https://github.com/rainstormstudio/nerd-icons-completion")
+              (commit "d09ea987ed3d2cc64137234f27851594050e2b64")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "022yfkfvcywgjplvsj5xajmc24q1c7yx0l5mvnzagjfdg4iajidv"))))
@@ -236,8 +236,8 @@ on and prefer to trigger the consult previews manually use this instead:
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/rolandwalker/nav-flash")
-             (commit "5d4b48567862f6be0ca973d6b1dca90e4815cb9b")))
+              (url "https://github.com/rolandwalker/nav-flash")
+              (commit "5d4b48567862f6be0ca973d6b1dca90e4815cb9b")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "0l6zamrh3n3416pgr2jhqabldl180zg0n4651g42jn8xcbwg4w6c"))))
@@ -297,8 +297,8 @@ representing official policies, either expressed or implied, of Roland Walker.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/rainstormstudio/treemacs-nerd-icons")
-             (commit "0c5ddcb978da639f01ddb023febc40fc755171e5")))
+              (url "https://github.com/rainstormstudio/treemacs-nerd-icons")
+              (commit "0c5ddcb978da639f01ddb023febc40fc755171e5")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "0kmgxzskfkv6rz0s60p6pvwsp68c040060i9nnxx1fx5q2zjgzjd"))))
@@ -318,8 +318,8 @@ representing official policies, either expressed or implied, of Roland Walker.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/PythonNut/evil-easymotion")
-             (commit "f96c2ed38ddc07908db7c3c11bcd6285a3e8c2e9")))
+              (url "https://github.com/PythonNut/evil-easymotion")
+              (commit "f96c2ed38ddc07908db7c3c11bcd6285a3e8c2e9")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "0xsva9bnlfwfmccm38qh3yvn4jr9za5rxqn4pwxbmhnx4rk47cch"))))
@@ -356,8 +356,8 @@ detailed in the github README.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/cute-jumper/evil-embrace.el")
-             (commit "3081d37811b6a3dfaaf01d578c7ab7a746c6064d")))
+              (url "https://github.com/cute-jumper/evil-embrace.el")
+              (commit "3081d37811b6a3dfaaf01d578c7ab7a746c6064d")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "13rqkdhhzvnw3s49zm3v9xska8j8l1mr85czcfaf5vrm99lx8rl3"))))
@@ -418,8 +418,8 @@ process can't be achieved solely by `evil-surround'):
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/hlissner/evil-snipe")
-             (commit "16317d7e54313490a0fe8642ed9a1a72498e7ad2")))
+              (url "https://github.com/hlissner/evil-snipe")
+              (commit "16317d7e54313490a0fe8642ed9a1a72498e7ad2")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "0rg677wdybgjqz8kfr8v7xrcqw53qm1kxcsdsqqq8z0wklb0s29d"))))
@@ -445,8 +445,8 @@ See included README.md for more information.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/ninrod/exato")
-             (commit "aee7af7b7a0e7551478f453d1de7d5b9cb2e06c4")))
+              (url "https://github.com/ninrod/exato")
+              (commit "aee7af7b7a0e7551478f453d1de7d5b9cb2e06c4")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "0m98bwj8dy90ifck8rsda6zfgbjrv5z0166pp7qzvwls9rqa695m"))))
@@ -473,8 +473,8 @@ exato-key: (use-package exato :ensure t :init (setq exato-key \"h\")).")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/matsievskiysv/vimish-fold")
-             (commit "f71f374d28a83e5f15612fa64aac1b2e78be2dcd")))
+              (url "https://github.com/matsievskiysv/vimish-fold")
+              (commit "f71f374d28a83e5f15612fa64aac1b2e78be2dcd")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "0jsfp9kz1ydxck8ds5rghw1aqpmlz0k3l39glzcs8gq0jvb0q8fl"))))
@@ -503,8 +503,8 @@ you can use `avy to fold text with minimal number of key strokes!")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/alexmurray/evil-vimish-fold")
-             (commit "b6e0e6b91b8cd047e80debef1a536d9d49eef31a")))
+              (url "https://github.com/alexmurray/evil-vimish-fold")
+              (commit "b6e0e6b91b8cd047e80debef1a536d9d49eef31a")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "14qhfhk3d4c7v4jhr909dbxy8222flpqwk73bwg0pqwpkcifyv7n"))))
@@ -528,8 +528,8 @@ commands via `vimish-fold`.  Also supports navigation between folds using \"zj\"
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/rmuslimov/browse-at-remote")
-             (commit "cf0269f3db9e968c819b1d85b33d791c20c2e495")))
+              (url "https://github.com/rmuslimov/browse-at-remote")
+              (commit "cf0269f3db9e968c819b1d85b33d791c20c2e495")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "0ps67qpcbmr2csgjy9cs0934vv108da1gbs0n219l8visvjjcb34"))))
@@ -575,8 +575,8 @@ commands through the shell.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/Olivia5k/makefile-executor.el")
-             (commit "d1d98eaf522a767561f6c7cbd8d2526be58b3ec5")))
+              (url "https://github.com/Olivia5k/makefile-executor.el")
+              (commit "d1d98eaf522a767561f6c7cbd8d2526be58b3ec5")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "0wm0i2m124dglwq0szp6pdh2r0dln0xpgscw2immi9cchcmgcy4f"))))
@@ -610,8 +610,8 @@ makefile-mode-hook makefile-executor-mode).")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/ragnard/gptel-magit")
-             (commit "f27c01821b67ed99ddf705c2b995f78b71394d8b")))
+              (url "https://github.com/ragnard/gptel-magit")
+              (commit "f27c01821b67ed99ddf705c2b995f78b71394d8b")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "1jsq6jjka0visrm0fdvxd05p78d3n4gkl4i0pc1g825swcfqd182"))))
@@ -633,8 +633,8 @@ Currently, it adds functionality for generating commit messages.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/flycheck/flycheck-popup-tip")
-             (commit "ef86aad907f27ca076859d8d9416f4f7727619c6")))
+              (url "https://github.com/flycheck/flycheck-popup-tip")
+              (commit "ef86aad907f27ca076859d8d9416f4f7727619c6")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "1bi6f9nm4bylsbjv4qnkar35s6xzdf2cc2cxi3g691p9527apdz6"))))
@@ -661,8 +661,8 @@ flycheck-popup-tip-mode)).")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/clojure-emacs/clojure-ts-mode")
-             (commit "96fdffcbe9e1b8ebf9ad14e23b06f62cc3422e22")))
+              (url "https://github.com/clojure-emacs/clojure-ts-mode")
+              (commit "96fdffcbe9e1b8ebf9ad14e23b06f62cc3422e22")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "1j78j9ig2x3g8qgsdrs38r3v0rva48c074d7kyag1aa0p7s37kr0"))))
@@ -691,8 +691,8 @@ interaction with subprocesses via @code{nREPL}.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/ericdallo/jet.el")
-             (commit "c9a92675efd802f37df5e3eab7858dbbeced6ea4")))
+              (url "https://github.com/ericdallo/jet.el")
+              (commit "c9a92675efd802f37df5e3eab7858dbbeced6ea4")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "0vza4qwbvj8cz5jsjpz5ysvbk782zsgimxfqyz3h4pygwaxisxqj"))))
@@ -716,8 +716,8 @@ are available to be used as quick commands or to keybind.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/Fanael/highlight-quoted")
-             (commit "24103478158cd19fbcfb4339a3f1fa1f054f1469")))
+              (url "https://github.com/Fanael/highlight-quoted")
+              (commit "24103478158cd19fbcfb4339a3f1fa1f054f1469")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "1gq8inxfni9zgz2brqm4nlswgr8b0spq15wr532xfrgr456g10ks"))))
@@ -737,8 +737,8 @@ are available to be used as quick commands or to keybind.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/tonini/overseer.el")
-             (commit "7fdcf1a6fba6b1569a09c1666b4e51bcde266ed9")))
+              (url "https://github.com/tonini/overseer.el")
+              (commit "7fdcf1a6fba6b1569a09c1666b4e51bcde266ed9")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "1f0nm253n0k2rcx0zydj8c4nn5gmvhabzraajxdqycb2ak77nbif"))))
@@ -758,8 +758,8 @@ are available to be used as quick commands or to keybind.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/ardumont/markdown-toc")
-             (commit "29e5c0f33ed026a5f993e4211f52debd7c02b3ba")))
+              (url "https://github.com/ardumont/markdown-toc")
+              (commit "29e5c0f33ed026a5f993e4211f52debd7c02b3ba")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "12p9i6sah599lzpki4276g0lla137klnq796n11wkr0cas1rgbyg"))))
@@ -791,8 +791,8 @@ markdown-toc RET.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/jkitchin/ox-clip")
-             (commit "a549cc8e1747beb6b7e567ffac27e31ba45cb8e8")))
+              (url "https://github.com/jkitchin/ox-clip")
+              (commit "a549cc8e1747beb6b7e567ffac27e31ba45cb8e8")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "1i94p0nzhx1h181z6whkc3gbja85qk97xvmhx3p03a7b1pjswrhn"))))
@@ -826,8 +826,8 @@ overrides the settings in `org-format-latex-options'.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/manute/gorepl-mode")
-             (commit "6a73bf352e8d893f89cad36c958c4db2b5e35e07")))
+              (url "https://github.com/manute/gorepl-mode")
+              (commit "6a73bf352e8d893f89cad36c958c4db2b5e35e07")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "0ydiq55ylm8ph2r5nlv9p7a5bnnxk3c9731l7mbzdhd43f734dld"))))
@@ -849,8 +849,8 @@ built on top of Gore (https://github.com/motemen/gore).")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/brantou/emacs-go-tag")
-             (commit "33f2059551d5298ca228d90f525b99d1a8d70364")))
+              (url "https://github.com/brantou/emacs-go-tag")
+              (commit "33f2059551d5298ca228d90f525b99d1a8d70364")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "1nmxw99xqhr9sg5lafqjs7x033br8xz9106zc96gxf07v6zgbxy2"))))
@@ -872,8 +872,8 @@ is inspired by @code{GoAddTags} of vim-go and go-add-tags.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/s-kostyaev/go-gen-test")
-             (commit "af00a9abbaba2068502327ecdef574fd894a884b")))
+              (url "https://github.com/s-kostyaev/go-gen-test")
+              (commit "af00a9abbaba2068502327ecdef574fd894a884b")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "0q81zkyrl1njwxq29rx7gq9m9w3jags6akxzl7jd9yrnl4k2l27p"))))
@@ -896,8 +896,8 @@ install `gotests for use it.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/weijiangan/flycheck-golangci-lint")
-             (commit "f7e36e19d6af39d098b94a2e7524dbd7b585ce67")))
+              (url "https://github.com/weijiangan/flycheck-golangci-lint")
+              (commit "f7e36e19d6af39d098b94a2e7524dbd7b585ce67")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "1h77vyrx0cswwmqww0ac75vfw9v8ylxfr715rfh3c30920gb2ip8"))))
@@ -919,8 +919,8 @@ flycheck-mode-hook #'flycheck-golangci-lint-setup)).")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/emacsorphanage/restclient")
-             (commit "1800a4e367c250051617d0b8c16a7cbd7f47da69")))
+              (url "https://github.com/emacsorphanage/restclient")
+              (commit "1800a4e367c250051617d0b8c16a7cbd7f47da69")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "02yphcli11j0p6144rwh7l5whx4ahxm3y15nz0b7r3y04fm25w6g"))))
@@ -944,8 +944,8 @@ results using jq expressions.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/alexmurray/flycheck-plantuml")
-             (commit "183be89e1dbba0b38237dd198dff600e0790309d")))
+              (url "https://github.com/alexmurray/flycheck-plantuml")
+              (commit "183be89e1dbba0b38237dd198dff600e0790309d")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "1fbdbpwrlkvbgv693ndr3zamkf3gp28v94jg911fsav8bk08f6pq"))))
@@ -968,8 +968,8 @@ syntax of your plantuml files on the fly ;; Setup (with-eval-after-load flycheck
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/Wilfred/pip-requirements.el")
-             (commit "31e0dc62abb2d88fa765e0ea88b919d756cc0e4f")))
+              (url "https://github.com/Wilfred/pip-requirements.el")
+              (commit "31e0dc62abb2d88fa765e0ea88b919d756cc0e4f")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "08q225h8kahh632qkzpb1ih3jqg5imlzgrrh8ynkyxrr710madkl"))))
@@ -993,8 +993,8 @@ https://github.com/wuub/requirementstxt.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/pwalsh/pipenv.el")
-             (commit "3af159749824c03f59176aff7f66ddd6a5785a10")))
+              (url "https://github.com/pwalsh/pipenv.el")
+              (commit "3af159749824c03f59176aff7f66ddd6a5785a10")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "1ak9dvjqhdm12i7yamgbqjmc4zmvy2f0gd1nia1q9dy3n6576ryq"))))
@@ -1014,8 +1014,8 @@ https://github.com/wuub/requirementstxt.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/wbolster/emacs-python-pytest")
-             (commit "ed2ecee09d1cccb4245842860d91940cb2fda769")))
+              (url "https://github.com/wbolster/emacs-python-pytest")
+              (commit "ed2ecee09d1cccb4245842860d91940cb2fda769")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "1787bks1zi47qglib42vnlqa7m4899n5vh1ics0013ldd89jqrr1"))))
@@ -1036,8 +1036,8 @@ https://github.com/wuub/requirementstxt.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/nex3/haml-mode")
-             (commit "3bb4a96535eb5c81dbe6a43bfa8d67a778d449c0")))
+              (url "https://github.com/nex3/haml-mode")
+              (commit "3bb4a96535eb5c81dbe6a43bfa8d67a778d449c0")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "1svnggkqi7kk2pspgqb6ciqkiypg09gvph9q48mili17xfx44ll7"))))
@@ -1060,8 +1060,8 @@ file: (require haml-mode).")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/slim-template/emacs-slim")
-             (commit "0b1b3803290f749cb85084adc75013254b513d41")))
+              (url "https://github.com/slim-template/emacs-slim")
+              (commit "0b1b3803290f749cb85084adc75013254b513d41")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "1gzxfbz22mxp5adfyasaspjq8k3fwrpcbgywwvyh4h3c72j9x1a7"))))
@@ -1084,8 +1084,8 @@ file: (require slim-mode).")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/nex3/sass-mode")
-             (commit "247a0d4b509f10b28e4687cd8763492bca03599b")))
+              (url "https://github.com/nex3/sass-mode")
+              (commit "247a0d4b509f10b28e4687cd8763492bca03599b")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "1nhk12lhvkwdk8s8fx33p6rssi0gcfx2zkanq23rz6k28v5zi5yp"))))
@@ -1110,8 +1110,8 @@ http://github.com/nex3/haml-mode.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/brianc/jade-mode")
-             (commit "1ad7c51f3c6a6ae64550d9510c5e4e8470014375")))
+              (url "https://github.com/brianc/jade-mode")
+              (commit "1ad7c51f3c6a6ae64550d9510c5e4e8470014375")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "1n26jlvf0z7h5yq3w2pzznj43g5xknq1icg68pc0ysqdfm4nq51m"))))
@@ -1133,8 +1133,8 @@ http://github.com/nex3/haml-mode.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/brianc/jade-mode")
-             (commit "1ad7c51f3c6a6ae64550d9510c5e4e8470014375")))
+              (url "https://github.com/brianc/jade-mode")
+              (commit "1ad7c51f3c6a6ae64550d9510c5e4e8470014375")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "1n26jlvf0z7h5yq3w2pzznj43g5xknq1icg68pc0ysqdfm4nq51m"))))
@@ -1155,8 +1155,8 @@ http://github.com/nex3/haml-mode.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/sarg/torrent-mode.el")
-             (commit "5dbb59c60c0c2db24d3d138eb003c66c3578b7b4")))
+              (url "https://github.com/sarg/torrent-mode.el")
+              (commit "5dbb59c60c0c2db24d3d138eb003c66c3578b7b4")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "0r6hi18mjlip002lqfbch7fnkkzn5g1h2p3y9c6qmw79kd32qlf8"))))
@@ -1176,8 +1176,8 @@ http://github.com/nex3/haml-mode.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/ukaszg/aria2")
-             (commit "1f2cbe624f3a4e0109b5dc123bb4bbed496b15a7")))
+              (url "https://github.com/ukaszg/aria2")
+              (commit "1f2cbe624f3a4e0109b5dc123bb4bbed496b15a7")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "166l6x802zz32zh6xlblfssd2rpvkkg8lf5apz76dbr4h0m2zw1k"))))
@@ -1197,8 +1197,8 @@ http://github.com/nex3/haml-mode.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/eqyiel/circe-notifications")
-             (commit "291149ac12877bbd062da993479d3533a26862b0")))
+              (url "https://github.com/eqyiel/circe-notifications")
+              (commit "291149ac12877bbd062da993479d3533a26862b0")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "18mva5nn919c86sgk6kdh437vdnlh9bk7fg10xqcpics1yv3viaw"))))
@@ -1218,8 +1218,8 @@ http://github.com/nex3/haml-mode.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/sarg/wifi-manager")
-             (commit "22b424e6e6fa0eb4353394c64f31657ded09fe2b")))
+              (url "https://github.com/sarg/wifi-manager")
+              (commit "22b424e6e6fa0eb4353394c64f31657ded09fe2b")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "12m89lyz0rydx13ndkahg1phkp2afg1wrif52hfs0kn4p7b8yjbx"))))
@@ -1243,8 +1243,8 @@ Supports connecting to PSK networks.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/sarg/emms-spotify")
-             (commit "91fe535d3420fa57c24ef164bf4b47085ed3cd6a")))
+              (url "https://github.com/sarg/emms-spotify")
+              (commit "91fe535d3420fa57c24ef164bf4b47085ed3cd6a")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "0xhb4n7b57jb0m3jq2svqdm3hfraisqlq0i0lli18d5hx4p1jy6j"))))
@@ -1280,8 +1280,8 @@ control the player, it will work only on platforms where dbus is available.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/martenlienen/dictcc.el")
-             (commit "30b505759e5a97c2aaa8b0e8ea5e187fdf625c65")))
+              (url "https://github.com/martenlienen/dictcc.el")
+              (commit "30b505759e5a97c2aaa8b0e8ea5e187fdf625c65")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "0wwmmfyzdqaixsg75jlhwjy09cld0gvvdmnnl0951ivzsm0g0dy0"))))
@@ -1302,8 +1302,8 @@ insert it at point.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/SavchenkoValeriy/emacs-powerthesaurus")
-             (commit "4b97797cf789aaba411c61a85fe23474ebc5bedc")))
+              (url "https://github.com/SavchenkoValeriy/emacs-powerthesaurus")
+              (commit "4b97797cf789aaba411c61a85fe23474ebc5bedc")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "19bd8rwjwprxp54vy1a53m2gv138ybda5ybxvm6q7msqhxmphf3g"))))
@@ -1326,8 +1326,8 @@ buffer (depending on the current selection).")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/mswift42/greymatters-theme")
-             (commit "a7220a8c6cf18ccae2b76946b6f01188a7c9d5d1")))
+              (url "https://github.com/mswift42/greymatters-theme")
+              (commit "a7220a8c6cf18ccae2b76946b6f01188a7c9d5d1")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "14c09m9p6556rrf0qfad4zsv7qxa5flamzg6fa83cxh0qfg7wjbp"))))
@@ -1414,8 +1414,8 @@ workspaces manually.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/colonelpanic8/org-project-capture")
-             (commit "bf1c30b750020ab8dd634dd66b2c7b76c56286c5")))
+              (url "https://github.com/colonelpanic8/org-project-capture")
+              (commit "bf1c30b750020ab8dd634dd66b2c7b76c56286c5")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "1wvw5y5s37p9j0m2ljp7n1s1casbhiyrcnfpvdghvdd0fk8wcybp"))))
@@ -1443,8 +1443,8 @@ directory.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/jxq0/org-tidy")
-             (commit "0bea3a2ceaa999e0ad195ba525c5c1dcf5fba43b")))
+              (url "https://github.com/jxq0/org-tidy")
+              (commit "0bea3a2ceaa999e0ad195ba525c5c1dcf5fba43b")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "1rwq53j31vixyhsi7khb1xc0fcqdmqyp7ycq5hinligfxk87sr4s"))))
@@ -1465,8 +1465,8 @@ directory.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/rudolfochrist/german-holidays")
-             (commit "a8462dffccaf2b665f2032e646b5370e993a386a")))
+              (url "https://github.com/rudolfochrist/german-holidays")
+              (commit "a8462dffccaf2b665f2032e646b5370e993a386a")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "1rf8p42pl7jmmdiibfcamlbr3kg6kslffv8vbpwn20xm2ii13rxz"))))
@@ -1493,8 +1493,8 @@ https://github.com/abo-abo/netherlands-holidays.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/leon-barrett/just-mode.el")
-             (commit "b6173c7bf4d8d28e0dbd80fa41b9c75626885b4e")))
+              (url "https://github.com/leon-barrett/just-mode.el")
+              (commit "b6173c7bf4d8d28e0dbd80fa41b9c75626885b4e")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "1czf779akdcx72ma7x9v70kjbic73312fi1czbzvlvxr01pjpyj0"))))
@@ -1515,8 +1515,8 @@ https://github.com/abo-abo/netherlands-holidays.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/psibi/justl.el")
-             (commit "3b11dd8ac7ebeaca5da6c80223254a9f0494b275")))
+              (url "https://github.com/psibi/justl.el")
+              (commit "3b11dd8ac7ebeaca5da6c80223254a9f0494b275")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "1i5m8iqyw7pkc2cjkk6z0px6lqm0w0ad9r1f9i8dhi8v8v7lk70r"))))
@@ -1550,8 +1550,8 @@ requires the `vterm package to be installed.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/SqrtMinusOne/eshell-atuin")
-             (commit "1ac4895529546839985c7f57c9858644f7be1e6a")))
+              (url "https://github.com/SqrtMinusOne/eshell-atuin")
+              (commit "1ac4895529546839985c7f57c9858644f7be1e6a")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "0zf62qdmqw7y7s1dg3d35abr9jaymyqfbrv4bplkrry2wwk0m4gx"))))
@@ -1578,8 +1578,8 @@ See also the package README at
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/MatthewZMD/aidermacs")
-             (commit "6d0c41d1cfd24821fb32933edf8c0c2a9bb8c847")))
+              (url "https://github.com/MatthewZMD/aidermacs")
+              (commit "6d0c41d1cfd24821fb32933edf8c0c2a9bb8c847")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "0mwh2ikw3kkbphm2f8grgygmib51azwisp5s7nljb17aq7ncdk3h"))))
@@ -1609,8 +1609,8 @@ Originally forked from Kang Tu <tninja@@gmail.com>'s Aider.el.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/xenodium/acp.el")
-             (commit "7b67facc657a7388a53ea8bba5d6e7eba20fa3e0")))
+              (url "https://github.com/xenodium/acp.el")
+              (commit "7b67facc657a7388a53ea8bba5d6e7eba20fa3e0")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "0znm5qihx2qy3hgw0idg8j7bnhz8k3yaadff3y6696qckdh0qlnr"))))
@@ -1634,8 +1634,8 @@ https://github.com/sponsors/xenodium ✨.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/xenodium/agent-shell")
-             (commit "9a7913a7c7b9b8e076b38e7133122dc608e7667e")))
+              (url "https://github.com/xenodium/agent-shell")
+              (commit "9a7913a7c7b9b8e076b38e7133122dc608e7667e")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "1bwxwn8jyzff5ls54iijm18xnahf9sjdn7hw0smfwbr2cldryc5y"))))
@@ -1662,8 +1662,8 @@ https://github.com/sponsors/xenodium ✨.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/thanhvg/emacs-hnreader")
-             (commit "a56f67a99a855ca656da1c1985e09f44509e4bbb")))
+              (url "https://github.com/thanhvg/emacs-hnreader")
+              (commit "a56f67a99a855ca656da1c1985e09f44509e4bbb")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "1abqjrzq75ijhn3sfmy0wy6acp8x7nj5gihqy34mickz4v5wqbil"))))
@@ -1700,8 +1700,8 @@ update css class grab for entry title.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://gitlab.com/hperrey/khalel")
-             (commit "f7cdb3246d193a518b3a4ca7381ffb6ed8087fcf")))
+              (url "https://gitlab.com/hperrey/khalel")
+              (commit "f7cdb3246d193a518b3a4ca7381ffb6ed8087fcf")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "06h5272kmg0ykf0zqdy2qwhlzszqsw176l1brk04bg8xyc3a4384"))))
@@ -1731,8 +1731,8 @@ adding the import org file to your org agenda to show current events there.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/cute-jumper/embrace.el")
-             (commit "c7e748603151d7d91c237fd2d9cdf56e9f3b1ea8")))
+              (url "https://github.com/cute-jumper/embrace.el")
+              (commit "c7e748603151d7d91c237fd2d9cdf56e9f3b1ea8")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "1c6fbkw1hl9bhdy62g782js8i9kgjr0pr132mpga12jd4cwf8mmz"))))
@@ -1883,8 +1883,8 @@ https://github.com/Fuco1/smartparens.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/magnars/expand-region.el")
-             (commit "351279272330cae6cecea941b0033a8dd8bcc4e8")))
+              (url "https://github.com/magnars/expand-region.el")
+              (commit "351279272330cae6cecea941b0033a8dd8bcc4e8")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "1d6lvds7wfp9xsx5mh4x4sgync295r0bw0akmv136j5ks56xigf1"))))
@@ -1957,8 +1957,8 @@ expanding/contracting with fast keys after initial expand.  Thanks!")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/cask/epl")
-             (commit "78ab7a85c08222cd15582a298a364774e3282ce6")))
+              (url "https://github.com/cask/epl")
+              (commit "78ab7a85c08222cd15582a298a364774e3282ce6")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "0ksilx9gzdazngxfni5i632jpb1nprcxplsbhgqirs2xdl53q8v8"))))
@@ -2010,8 +2010,8 @@ installs a package file. `epl-package-install installs a package.
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/diasjorge/emacs-load-env-vars")
-             (commit "3808520efaf9492033f6e11a9bffd68eabf02a0f")))
+              (url "https://github.com/diasjorge/emacs-load-env-vars")
+              (commit "3808520efaf9492033f6e11a9bffd68eabf02a0f")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "0yw1ihns914k8va5mhphch1zix09x22cpgrbw968mh8hviknyvzr"))))
@@ -2034,8 +2034,8 @@ are ignored KEY: VALUE.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/tekai/gntp.el")
-             (commit "767571135e2c0985944017dc59b0be79af222ef5")))
+              (url "https://github.com/tekai/gntp.el")
+              (commit "767571135e2c0985944017dc59b0be79af222ef5")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "1nvyjjjydrimpxy4cpg90si7sr8lmldbhlcm2mx8npklp9pn5y3a"))))
@@ -2057,8 +2057,8 @@ lets you send but not receive notifications.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/tkf/emacs-request")
-             (commit "c22e3c23a6dd90f64be536e176ea0ed6113a5ba6")))
+              (url "https://github.com/tkf/emacs-request")
+              (commit "c22e3c23a6dd90f64be536e176ea0ed6113a5ba6")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "15affk5cp6va3d8wf8567l45nri4ayiwk52p7i40h7nafjq4wp04"))))
@@ -2081,8 +2081,8 @@ lets you send but not receive notifications.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/xuchunyang/bencoding.el")
-             (commit "1e16ccfd5c6560a83ae2926afe4a5076a541d3d6")))
+              (url "https://github.com/xuchunyang/bencoding.el")
+              (commit "1e16ccfd5c6560a83ae2926afe4a5076a541d3d6")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "0dgwh3z1ni619kxpdxv8r2k0jhgj5h6ssxp6l8s26mhpmy1bkm6c"))))
@@ -2102,8 +2102,8 @@ lets you send but not receive notifications.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/SavchenkoValeriy/jeison")
-             (commit "19a51770f24eaa7b538c7be6a8a5c25d154b641f")))
+              (url "https://github.com/SavchenkoValeriy/jeison")
+              (commit "19a51770f24eaa7b538c7be6a8a5c25d154b641f")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "1ipmh2zg1pffpkk00wr2d8s3g51bnv3kmnci8g79i7vnm3i4my85"))))
@@ -2125,8 +2125,8 @@ objects.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/alphapapa/burly.el")
-             (commit "d5b7133b5b629dd6bca29bb16660a9e472e82e25")))
+              (url "https://github.com/alphapapa/burly.el")
+              (commit "d5b7133b5b629dd6bca29bb16660a9e472e82e25")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "18qq5zsmb9gg701158dwx7qkh2l5m4m029lmgmydchi9xb2g9as9"))))
@@ -2163,8 +2163,8 @@ comes from \"buffer URL.\").")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/jerrypnz/major-mode-hydra.el")
-             (commit "2494d71e24b61c1f5ef2dc17885e2f65bf98b3b2")))
+              (url "https://github.com/jerrypnz/major-mode-hydra.el")
+              (commit "2494d71e24b61c1f5ef2dc17885e2f65bf98b3b2")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "0rqjjfl2x77w1jw9i75w0ghax050df0acsmscxy0rsz6fa1x90az"))))
@@ -2188,8 +2188,8 @@ column for each group of heads.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/tarsius/llama")
-             (commit "2a89ba755b0459914a44b1ffa793e57f759a5b85")))
+              (url "https://github.com/tarsius/llama")
+              (commit "2a89ba755b0459914a44b1ffa793e57f759a5b85")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "1fcribk74shqz757b8i4cybpia7j3x886lxfa5vlzxc3wwlf3x37"))))
@@ -2237,8 +2237,8 @@ arguments.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/colonelpanic8/org-project-capture")
-             (commit "bf1c30b750020ab8dd634dd66b2c7b76c56286c5")))
+              (url "https://github.com/colonelpanic8/org-project-capture")
+              (commit "bf1c30b750020ab8dd634dd66b2c7b76c56286c5")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "1wvw5y5s37p9j0m2ljp7n1s1casbhiyrcnfpvdghvdd0fk8wcybp"))))
@@ -2246,7 +2246,7 @@ arguments.")
     (propagated-inputs (list emacs-dash emacs-s emacs-org-category-capture))
     (arguments
      '(#:tests? #f #:include '("^org-project-capture.el$"
-                   "^org-project-capture-backend.el$")
+                               "^org-project-capture-backend.el$")
        #:exclude '()))
     (home-page "https://github.com/colonelpanic8/org-project-capture")
     (synopsis "Repository todo capture and management for org-mode")
@@ -2264,8 +2264,8 @@ directory.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/colonelpanic8/org-project-capture")
-             (commit "bf1c30b750020ab8dd634dd66b2c7b76c56286c5")))
+              (url "https://github.com/colonelpanic8/org-project-capture")
+              (commit "bf1c30b750020ab8dd634dd66b2c7b76c56286c5")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "1wvw5y5s37p9j0m2ljp7n1s1casbhiyrcnfpvdghvdd0fk8wcybp"))))
@@ -2289,8 +2289,8 @@ category that is selected depending on a some piece of Emacs context.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/lrustand/qutebrowser.el")
-             (commit "00d9a306d25fb5a87ff4dd600af3023449e7f172")))
+              (url "https://github.com/lrustand/qutebrowser.el")
+              (commit "00d9a306d25fb5a87ff4dd600af3023449e7f172")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "0j9fiz7spcmvbqzlngfxy4p3d9rzqmiv8zazqgm296019hmfhmwm"))))
@@ -2312,8 +2312,8 @@ integration between Qutebrowser and EXWM")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/emacs-exwm/xdg-launcher")
-             (commit "1592f8ee3dc26180112411e7f983cafba88024fa")))
+              (url "https://github.com/emacs-exwm/xdg-launcher")
+              (commit "1592f8ee3dc26180112411e7f983cafba88024fa")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "1mpw9cc01hb75yl8gzn8kbx5wbaz1l0gh75cpjv42i2d021bc59z"))))
@@ -2334,8 +2334,8 @@ framework like ~icomplete-vertical-mode~, ~fido-vertical-mode~, ~vertico~, etc. 
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/shankar2k/cyclekey")
-             (commit "e5635b1fe9d133afeada146656359d6000607bdf")))
+              (url "https://github.com/shankar2k/cyclekey")
+              (commit "e5635b1fe9d133afeada146656359d6000607bdf")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "1zmh41gqpyb1p4jxwiy39f1pdziq4z57cnamxvl0gj2m7bj5q0c3"))))
@@ -2355,8 +2355,8 @@ diacritics and accents for the character at point")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/isamert/corg.el")
-             (commit (string-append "v" version))))
+              (url "https://github.com/isamert/corg.el")
+              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
         (base32 "0hkg13kpwj4hljvyhs369j99jkp206x7j670w8znfrdjrv75jqmq"))))
@@ -2432,8 +2432,8 @@ Org-mode source block and dynamic block headers.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/willghatch/evil-textobj-anyblock")
-             (commit "29280cd71a05429364cdceef2ff595ae8afade4d")))
+              (url "https://github.com/willghatch/evil-textobj-anyblock")
+              (commit "29280cd71a05429364cdceef2ff595ae8afade4d")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "1009nmwkdk97hl6pnhlay234gx3krpgapqxj9nqfr7cwl3z89pc0"))))
@@ -2465,8 +2465,8 @@ the README in the github repo.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/gggion/visual-shorthands.el")
-             (commit "0511154773533ec2e3c25efa5515ea548ee7e9e1")))
+              (url "https://github.com/gggion/visual-shorthands.el")
+              (commit "0511154773533ec2e3c25efa5515ea548ee7e9e1")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "1x7abjfmb492bv9y1s0pkc55dl57gbx9sbrdbv37k839s8nj9lpk"))))
@@ -2489,8 +2489,8 @@ the README in the github repo.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/syl20bnr/vi-tilde-fringe")
-             (commit "f1597a8d54535bb1d84b442577b2024e6f910308")))
+              (url "https://github.com/syl20bnr/vi-tilde-fringe")
+              (commit "f1597a8d54535bb1d84b442577b2024e6f910308")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "0wdm8k49zl6i6wnh7vjkswdh5m9lix56jv37xvc90inipwgs402z"))))
@@ -2515,8 +2515,8 @@ the face of the symbol drawn in the fringe.  By default the symbol is a tilde
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/rgrinberg/evil-quick-diff")
-             (commit "69c883720b30a892c63bc89f49d4f0e8b8028908")))
+              (url "https://github.com/rgrinberg/evil-quick-diff")
+              (commit "69c883720b30a892c63bc89f49d4f0e8b8028908")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "15cww264lhddxh0d2ca5qd5nq5pda8hs4nj8mcpb5xlnmkayav50"))))

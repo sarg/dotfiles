@@ -27,7 +27,10 @@
                               (guix build emacs-build-system)))
 
       (with-build-variables
-          (map (lambda (i) (list (package-name i) (gexp-input i))) inputs)
+          (map (match-lambda
+                 ((a b) (list a (gexp-input b)))
+                 ((? package? p)  (list (package-name p) (gexp-input p))))
+               inputs)
           '("out")
 
         #~(begin
@@ -84,20 +87,34 @@
                       "--load" (string-append (assoc-ref inputs "doomemacs") "/early-init")
                       "--eval" (simple-format #f "~s"
                                  '(letf! (defun doom-initialize-core-packages (&optional force-p)
-                                           (require 'straight)
-                                           (straight--load-build-cache))
+                                           (message "Inhibiting core packages initialization"))
 
+                                         ;; this thing generates autoloads
+                                         ;; in guix they're collected by site-start.el
                                          (cl-delete "90-loaddefs-packages.auto.el"
                                                     doom-profile-generators
                                                     :key 'car :test 'string=)
 
                                          (doom-modules-initialize)
+                                         (setq doom-packages (doom-package-list))
+                                         (with-temp-buffer
+                                          (dolist (package doom-packages)
+                                                  (cl-destructuring-bind
+                                                   (name &key modules disable ignore &allow-other-keys) package
+
+                                                   (when disable
+                                                     (cl-pushnew name doom-disabled-packages))
+                                                   (unless (or disable ignore (equal modules '((:doom))))
+                                                     (insert "\"emacs-" (symbol-name name) "\"\n"))))
+                                          (write-region nil nil "pkgs.list"))
+
                                          (doom-profile-generate))))))
           (replace 'install
             (lambda* (#:key inputs outputs #:allow-other-keys)
               (let* ((emacs (search-input-file inputs "/bin/emacs"))
                      (out (assoc-ref outputs "out")))
                 (setenv "SHELL" "sh")
+                (install-file "pkgs.list" out)
                 (install-file
                  (string-append "etc/@/" (car (scandir "etc/@" (cut string-suffix? ".el" <>))))
                  out)
