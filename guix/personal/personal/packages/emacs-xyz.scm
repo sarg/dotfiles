@@ -2480,3 +2480,50 @@ the README in the github repo.")
 (visual-shorthands-add-mapping \"application-config-manager--\" \"acm:\")
 (visual-shorthands-mode 1) Abbreviates PREFIXES only, not whole symbols.")
     (license license:gpl3+)))
+
+(define-public emacs-vi-tilde-fringe
+  (package
+    (name "emacs-vi-tilde-fringe")
+    (version "20141028.242")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/syl20bnr/vi-tilde-fringe")
+             (commit "f1597a8d54535bb1d84b442577b2024e6f910308")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0wdm8k49zl6i6wnh7vjkswdh5m9lix56jv37xvc90inipwgs402z"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/syl20bnr/vi-tilde-fringe")
+    (synopsis "Displays tildes in the fringe on empty lines a la Vi")
+    (description
+     "Usage ----- To toggle the mode locally: M-x vi-tilde-fringe-mode To toggle the
+mode globally: M-x global-vi-tilde-fringe-mode To turn it on automatically only
+for programming modes: (add-hook prog-mode-hook vi-tilde-fringe-mode)
+Customization ------------- Open the customization group buffer: M-x
+customize-group RET vi-tilde-fringe RET There you can change the bitmap array or
+the face of the symbol drawn in the fringe.  By default the symbol is a tilde
+:-) and its face simply inherits from `default'.")
+    (license #f)))
+
+(define-public emacs-evil-quick-diff
+  (package
+    (name "emacs-evil-quick-diff")
+    (version "20141028.242")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/rgrinberg/evil-quick-diff")
+             (commit "69c883720b30a892c63bc89f49d4f0e8b8028908")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "15cww264lhddxh0d2ca5qd5nq5pda8hs4nj8mcpb5xlnmkayav50"))))
+    (arguments '(#:tests? #f))
+    (build-system emacs-build-system)
+    (propagated-inputs (list emacs-evil))
+    (home-page "https://github.com/rgrinberg/evil-quick-diff")
+    (synopsis "#f")
+    (description "#f")
+    (license #f)))
