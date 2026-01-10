@@ -1797,6 +1797,7 @@ choose_entry() {
 "font-jetbrains-mono"
 "font-inconsolata"
 "font-fira-code"
+"font-nerd-fonts-symbols"
 "font-google-noto-emoji" ; 💪🕹
 "font-hack"
 "font-terminus"
