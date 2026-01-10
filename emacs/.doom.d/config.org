@@ -2188,8 +2188,6 @@ wireplumber.profiles = {
      #:uri "https://github.com/doomelpa/evil-org-mode"
      #:commit "06518c65ff4f7aea2ea51149d701549dcbccce5d"
      #:hash "11r3aim8qvyddp9d7sphcd0hl3vwxl81z83aifzgx89jb5ivfn6y")
-(let ((straight (pkg "emacs-straight")))
-  (cons straight (build-with-home-emacs straight)))
 #+end_src
 #+begin_src scheme :noweb-ref guix-pkg
 home-emacs
@@ -3537,7 +3535,12 @@ eval "$(atuin init bash)"
 #+end_src
 ** agent-shell
 #+begin_src scheme :noweb-ref guix-pkg
-"emacs-shell-maker" "emacs-acp" "emacs-agent-shell"
+"emacs-acp"
+((package-input-rewriting
+  (list (pin "emacs-shell-maker"
+             #:commit "v0.84.7"
+             #:hash "0x10qjhcym4nnv5zh4nwy7d46lp158q06w2iwgi265nl1bz9s7yq")))
+  (pkg "emacs-agent-shell"))
 #+end_src
 * COMMENT emacs screencast recording
 #+begin_src elisp :tangle packages.el
