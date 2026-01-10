@@ -20,6 +20,7 @@
   #:use-module (gnu packages compression)
   #:use-module (nonguix build-system binary)
   #:use-module (guix build-system copy)
+  #:use-module (guix build-system font)
   #:use-module (guix build-system gnu)
   #:use-module (guix packages))
 
@@ -533,3 +534,21 @@ modification with a unique cooperative gameplay.")
     (synopsis "CLI AI coding agent")
     (description "Goose is an extensible AI agent that goes beyond code suggestions - install, execute, edit, and test with any LLM")
     (license license:asl2.0)))
+
+(define-public font-nerd-fonts-symbols
+  (package
+    (name "font-nerd-fonts-symbols")
+    (version "3.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/ryanoasis/nerd-fonts/"
+                           "releases/download/v" version
+                           "/NerdFontsSymbolsOnly.zip"))
+       (sha256
+        (base32 "0iscas5bvb8bgk5pcls95nfwjl7yi23q05mili43dzl0p427jqcf"))))
+    (build-system font-build-system)
+    (home-page "https://www.nerdfonts.com/")
+    (synopsis "Nerd Font including only the symbols")
+    (description "Nerd Font that includes only the icons.")
+    (license license:silofl1.1)))
