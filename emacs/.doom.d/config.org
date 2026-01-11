@@ -2705,10 +2705,27 @@ dbusserver: true
 #+begin_src scheme :noweb-ref guix-pkg
 "kdeconnect"
 #+end_src
-
-#+begin_src sh :noweb-ref autostart :tangle no
-; force daemon start
-"kdeconnect-cli -l"
+#+begin_src scheme :noweb-ref guix-srv
+(simple-service
+ 'kdeconnect
+ home-shepherd-service-type
+ (list
+  (shepherd-service
+   (provision '(kdeconnect))
+   (requirement '(dbus x11-display))
+   (modules `(((shepherd support) #:hide (mkdir-p)) ;for '%user-log-dir'
+              (srfi srfi-1) (srfi srfi-26)
+              ,@(@ (gnu services shepherd) %default-modules)))
+   ;; not make-forkexec-constructor as it doesn't observe DISPLAY changes
+   (start #~(lambda _
+              (fork+exec-command
+               (list #$(file-append (pkg "kdeconnect") "/bin/kdeconnectd"))
+               #:environment-variables
+               (cons (string-append "DISPLAY=" (getenv "DISPLAY"))
+                     (remove (cut string-prefix? "DISPLAY=" <>)
+                             (default-environment-variables))))
+              #:log-file (string-append %user-log-dir "/kdeconnectd.log")))
+   (stop #~(make-kill-destructor)))))
 #+end_src
 * miscellaneous
 #+begin_src elisp
