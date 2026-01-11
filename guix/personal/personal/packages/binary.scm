@@ -7,6 +7,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages java)
   #:use-module (gnu packages gcc)
+  #:use-module (gnu packages node)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages curl)
@@ -552,3 +553,30 @@ modification with a unique cooperative gameplay.")
     (synopsis "Nerd Font including only the symbols")
     (description "Nerd Font that includes only the icons.")
     (license license:silofl1.1)))
+
+(define-public google-gemini-cli
+  (package
+    (name "google-gemini-cli")
+    (version "0.23.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/google-gemini/gemini-cli/releases/download/v" version "/gemini.js"))
+       (sha256
+        (base32 "1qc3cf24a58ha1p9g3v52kqyql0ca39yd76d5icrqml2fcy9v5gm"))))
+    (build-system binary-build-system)
+    (arguments (list
+                #:install-plan
+                #~(list '("gemini.js" "bin/gemini"))
+                #:phases
+                #~(modify-phases %standard-phases
+                    (add-before 'install 'chmod
+                      (lambda _
+                        (chmod "gemini.js" #o555))))))
+    (properties
+     '((release-monitoring-url . "https://github.com/google-gemini/gemini-cli/releases")))
+    (inputs (list node))
+    (home-page "https://geminicli.com/")
+    (synopsis "Gemini AI agent")
+    (description "Duh, it's an AI agent")
+    (license license:asl2.0)))
