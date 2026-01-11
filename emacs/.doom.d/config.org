@@ -8,6 +8,7 @@
 ;; -*- lexical-binding: t; -*-
 ;; generated from config.org
 (require 's)
+(require 'f)
 #+end_src
 #+begin_src elisp :tangle packages.el :exports none
 ;; generated from config.org
@@ -742,7 +743,6 @@ disable-ipv6=true
                      #'browse-url-mpv)))
 
 (use-package! mpv
-  :init
   :commands mpv-play-url
   :custom
   (mpv-default-options '("--force-window=immediate")))
@@ -755,7 +755,8 @@ disable-ipv6=true
 (".telega" ,(symlink-to "/storage/data/telega"))
 #+end_src
 #+begin_src elisp
-(add-hook! doom-init-ui (telega 'no-popup))
+(after! telega
+  (telega 'no-popup))
 #+end_src
 ** exwm
 EXWM has a separate [[../.doom.d/modules/app/exwm][doom app]]. Here are just the settings.
@@ -1070,6 +1071,7 @@ REVERSE? it when true. Returns the selected buffer."
    (xdg-launcher-list-apps)))
 
 (use-package! xdg-launcher
+  :defer-incrementally t
   :config
   (advice-add 'xdg-launcher-parse-files
               :filter-return #'xdg-launcher-filter)
@@ -1123,6 +1125,7 @@ REVERSE? it when true. Returns the selected buffer."
 #+end_src
 ** elfeed
 #+begin_src elisp
+(doom-load-packages-incrementally '(elfeed))
 (defun elfeed-open-special ()
   "Open videos directly."
   (interactive)
@@ -1529,12 +1532,10 @@ services:
 "mu" "emacs-consult-mu"
 #+end_src
 #+begin_src elisp
-(add-hook! doom-init-ui (mu4e 'no-popup))
+(doom-load-packages-incrementally '(mu4e))
 
 (use-package! consult-mu
-  :after mu4e)
-(use-package! consult-mu-contacts
-  :after consult-mu)
+  :commands consult-mu)
 
 (after! mu4e
   (defun mu4e~headers-quit-buffer ()
@@ -1586,7 +1587,8 @@ services:
                                           (nth 0
                                                (mu4e-message-field msg :to)))
                                          t)))))
-                '("sarg@sarg.org.ru" "de.strofimov@gmail.com"))))
+                '("sarg@sarg.org.ru" "de.strofimov@gmail.com")))
+  (mu4e 'no-popup))
 #+end_src
 * storage symlinks
 #+begin_src scheme :noweb-ref guix-file
@@ -2044,6 +2046,7 @@ done
 #+end_src
 #+begin_src elisp
 (use-package! syncthing
+  :commands syncthing
   :custom
   (syncthing-default-server-token "apikey"))
 #+end_src
@@ -2316,7 +2319,6 @@ home-emacs
 "emacs-org-contrib"
 "emacs-org-download"
 "emacs-org-modern"
-"emacs-org-msg"
 "emacs-org-roam"
 "emacs-orgit"
 "emacs-overseer"
@@ -2333,7 +2335,6 @@ home-emacs
 "emacs-pip-requirements"
 "emacs-pipenv"
 "emacs-plantuml-mode"
-"emacs-powerthesaurus"
 "emacs-pug-mode"
 "emacs-py-isort"
 "emacs-pyimport"
@@ -2343,6 +2344,7 @@ home-emacs
 "emacs-rainbow-mode"
 "emacs-request"
 "emacs-restclient"
+"emacs-restclient-jq"
 "emacs-rust-mode"
 "emacs-rustic"
 "emacs-sass-mode"
@@ -2437,7 +2439,7 @@ home-emacs
       doom-leader-alt-key "<f13>"
       custom-file "~/devel/dotfiles/emacs/.doom.d/custom.el")
 (doom!
- :completion  (corfu +icons +orderless) (vertico +icons) ;(ivy +fuzzy +prescient +childframe)
+ :completion  (corfu +icons +orderless) (vertico +icons)
  :ui          nav-flash (modeline +light) ophints (popup +defaults) ligatures treemacs doom-dashboard
  :editor      (evil +everywhere) fold lispy snippets (format +onsave) multiple-cursors word-wrap
  :emacs       (dired +dirvish +icons) electric vc ibuffer undo eww
@@ -2449,7 +2451,7 @@ home-emacs
               (org +contacts +dragndrop +pandoc +hugo +roam2 +pretty) beancount (go +lsp +tree-sitter) (rust +lsp +tree-sitter)
               (rest +jq) (sh +tree-sitter) plantuml (python +lsp +tree-sitter) (web +tree-sitter) yaml (json +tree-sitter)
  :app         telega (rss +org) torrent irc exwm dash-menu
- :email       (mu4e +mbsync +gmail +org)
+ :email       (mu4e +mbsync +gmail)
  :config      (default +bindings +smartparens +gnupg))
 #+end_src
 ** dashboard
@@ -2683,7 +2685,8 @@ dbusserver: true
 "emacs-bluetooth"
 #+end_src
 #+begin_src elisp
-(use-package! bluetooth)
+(use-package! bluetooth
+  :commands bluetooth-list-devices)
 #+end_src
 ** udisks
 #+begin_src scheme :noweb-ref guix-pkg
@@ -2691,6 +2694,7 @@ dbusserver: true
 #+end_src
 #+begin_src elisp
 (use-package! discomfort
+  :commands discomfort
   :config
   (add-to-list 'evil-emacs-state-modes 'discomfort-mode)
   (define-key! discomfort-mode-map
@@ -2736,6 +2740,7 @@ dbusserver: true
 #+end_src
 #+begin_src elisp
 (use-package! bufler
+  :commands bufler
   :init
   (set-popup-rule! "^\\*Bufler\\*$" :ignore t)
 
@@ -2780,8 +2785,10 @@ dbusserver: true
  org-src-window-setup 'current-window
  org-fold-catch-invisible-edits 'show-and-error)
 
-(use-package! org-checklist)
+(use-package! org-checklist
+  :after org)
 (use-package! org-projectile
+  :after org
   :config
   (setq org-project-capture-default-backend
         (make-instance 'org-project-capture-projectile-backend))
@@ -2795,6 +2802,7 @@ dbusserver: true
   :hook (org-mode . org-tidy-mode))
 
 (use-package! org-contacts
+  :defer t
   :custom
   (org-contacts-files (list (expand-file-name "contacts.org" org-directory))))
 
@@ -2820,10 +2828,11 @@ os.execlp('jaro', 'jaro',
 #+end_src
 *** template
 #+begin_src elisp
-(pushnew! org-capture-templates
-          '("b" "Bookmark URL" entry
-            (file+headline +org-capture-todo-file "Inbox")
-            "* %?%a\n%i" :prepend t))
+(after! org-project-capture
+  (pushnew! org-capture-templates
+            '("b" "Bookmark URL" entry
+              (file+headline +org-capture-todo-file "Inbox")
+              "* %?%a\n%i" :prepend t)))
 #+end_src
 ** agenda
 #+begin_src scheme :noweb-ref guix-pkg
@@ -2834,14 +2843,15 @@ os.execlp('jaro', 'jaro',
   :custom
   (calendar-holidays holiday-german-BE-holidays))
 
-(setq
- org-agenda-files
- (-concat
-  (org-project-capture-todo-files)
-  (-map (lambda (el) (expand-file-name el org-directory))
-        '("main.org"
-          "calendar.org"
-          "tickler.org"))))
+(after! org-project-capture
+  (setq
+   org-agenda-files
+   (-concat
+    (org-project-capture-todo-files)
+    (-map (lambda (el) (expand-file-name el org-directory))
+          '("main.org"
+            "calendar.org"
+            "tickler.org")))))
 #+end_src
 
 ** roam
@@ -2915,7 +2925,8 @@ mod? dotfiles '~/devel/dotfiles/guix/Justfile'
 
 #+begin_src elisp
 (use-package! just-mode)
-(use-package! justl)
+(use-package! justl
+  :commands justl)
 #+end_src
 
 ** git
@@ -3056,6 +3067,7 @@ __pycache__/
   (set-popup-rule! "^\\*fj-" :ignore t))
 
 (use-package! guix
+  :commands guix
   :config
   (setq! guix-repl-use-server nil
          guix-current-profile "~/.guix-home/profile"
@@ -3403,6 +3415,7 @@ eval "$(atuin init bash)"
          (eshell-load . eat-eshell-visual-command-mode)))
 
 (use-package! detached
+  :defer-incrementally t
   :config
   (detached-init)
   :bind (;; Replace `async-shell-command' with `detached-shell-command'
@@ -3460,6 +3473,7 @@ eval "$(atuin init bash)"
 (use-package! sxiv
   :commands sxiv)
 (use-package! dired-du
+  :after dired
   :custom
   ;; human readable
   (dired-du-size-format 't))
@@ -3528,7 +3542,8 @@ eval "$(atuin init bash)"
 "emacs-aidermacs"
 #+end_src
 #+begin_src elisp
-(use-package aidermacs
+(use-package! aidermacs
+  :commands aidermacs-transient-menu
   :bind (("C-c a" . aidermacs-transient-menu))
   :custom
   (aidermacs-default-model "openrouter/mistralai/devstral-2512:free"))
@@ -3575,6 +3590,7 @@ eval "$(atuin init bash)"
 #+end_src
 #+begin_src elisp
 (use-package! cyclekey
+  :defer-incrementally t
   :bind ("M-o" . cyclekey-cycle)
 
   :config
@@ -3729,7 +3745,7 @@ fi
 #+end_src
 ** freefeed
 #+begin_src elisp
-(load! "frf")
+(autoload #'frf-timeline (file-name-concat (dir!) "frf") "Freefeed" t)
 #+end_src
 ** google calendar
 #+begin_src cfg :dest ".config/vdirsyncer/config"
@@ -3792,7 +3808,8 @@ token_file = "~/.local/state/vdirsyncer/token"
 "vdirsyncer" "khal" "emacs-khalel"
 #+end_src
 #+begin_src elisp
-(use-package! khalel)
+(use-package! khalel
+  :defer t)
 #+end_src
 ** speed-type
 #+begin_src scheme :noweb-ref guix-pkg

@@ -1,42 +1,28 @@
 ;;; app/dash-menu/config.el -*- lexical-binding: t; -*-
 
-(require 'mu4e)
-(require 'mu4e-query-items)
-(require 'mu4e-search)
 (require 'dash)
-(require 'telega-match)
 (require 'transient)
-(require 'elfeed)
 
-(defvar dash-menu/elfeed-bookmarks
-  '((:name "youtube" :query "+unread +youtube" :key ?y)
-    (:name "text" :query "+unread -youtube" :key ?t)))
+(defvar dash-menu/elfeed-bookmarks nil)
 
-(defun dash-menu/elfeed-query-count (query)
+(after! elfeed
+  (setq dash-menu/elfeed-bookmarks
+        (mapcar
+         (lambda (p)
+           (plist-put p :filter
+                      (byte-compile
+                       (elfeed-search-compile-filter
+                        (elfeed-search-parse-filter (plist-get p :query))))))
+         '((:name "youtube" :key ?y :query "+unread +youtube")
+           (:name "text" :key ?t :query "+unread -youtube")))))
+
+(defun dash-menu/elfeed-query-count (filter)
   "Return the number of feeds returned by the QUERY."
-  (let* ((count 0)
-         (filter (elfeed-search-parse-filter query))
-         (func (byte-compile (elfeed-search-compile-filter filter))))
+  (let* ((count 0))
     (with-elfeed-db-visit (entry feed)
-      (when (funcall func entry feed count)
+      (when (funcall filter entry feed count)
         (setf count (1+ count))))
     count))
-
-(defmacro dash-menu/mu4e-bookmarks ()
-  '(-map
-    (-lambda ((&keys :key :unread :query :name))
-      (list (concat "m" (char-to-string key))
-            (format "%s (%d)" name unread)
-            (lambda () (interactive) (mu4e-search-bookmark query))))
-    (mu4e-query-items 'bookmarks)))
-
-(defmacro dash-menu/elfeed-bookmarks ()
-  '(-map
-    (-lambda ((&keys :key :query :name))
-      (list (concat "r" (char-to-string key))
-            (format "%s (%d)" name (dash-menu/elfeed-query-count query))
-            (lambda () (interactive) (elfeed-link-open query))))
-    dash-menu/elfeed-bookmarks))
 
 (defun dash-menu/telega (&rest preds)
   (-map-indexed
@@ -66,8 +52,14 @@
        `[("ru" "update" (lambda () (interactive)
                           (elfeed-update)
                           (elfeed)))
-         ,@(dash-menu/elfeed-bookmarks)]))]
 
+         ,@(-map
+            (-lambda ((&keys :key :query :name :filter))
+              (list (concat "r" (char-to-string key))
+                    (format "%s (%d)" name (dash-menu/elfeed-query-count filter))
+                    (lambda () (interactive) (elfeed-link-open query))))
+            dash-menu/elfeed-bookmarks)]))]
+   
    ["Mail"
     :class transient-column
     :setup-children
@@ -77,7 +69,14 @@
        `[("mu" "update" (lambda () (interactive) (mu4e-update-mail-and-index t)))
          ("ms" "search" consult-mu)
          ("mo" "open maildir" mu4e-search-maildir)
-         ,@(dash-menu/mu4e-bookmarks)]))]
+         ,@(if (featurep 'mu4e)
+               (-map
+                (-lambda ((&keys :key :unread :query :name))
+                  (list (concat "m" (char-to-string key))
+                        (format "%s (%d)" name unread)
+                        (lambda () (interactive) (mu4e-search-bookmark query))))
+                (mu4e-query-items 'bookmarks))
+             '())]))]
 
    ["Telega"
     :class transient-column
@@ -88,8 +87,10 @@
        `[("tm" "" "muted" :format " %k %v")
          ("ts" "Saved" telega-saved-messages)
          ("tc" "chat" telega-chat-with)
-         ,@(dash-menu/telega
-            (if (-contains? (oref (transient-prefix-object) value) "muted") nil 'unmuted))]))]
+         ,@(if (featurep 'telega)
+               (dash-menu/telega
+                (if (-contains? (oref (transient-prefix-object) value) "muted") nil 'unmuted))
+             '())]))]
 
    ["Sys"
     ("ew" "wifi" iwd-manager)

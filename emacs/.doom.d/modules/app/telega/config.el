@@ -62,7 +62,8 @@
 (setq telega-online-status-function #'my/telega-online-status)
 
 (use-package! telega
-  :commands (telega)
+  :defer-incrementally t
+  :commands (telega telega-chat-with telega-saved-messages)
 
   ;; This fixes the issue with closing buffer when it is visible in other window.
   ;; The logic is as follows:
