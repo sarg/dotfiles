@@ -179,11 +179,12 @@ Pass OPTS directly to (request)."
                 (seq-map
                  (lambda (a)
                    (let-alist (frf--find a attachments)
-                     (let* ((http-link (format "https://freefeed.net/v4/attachments/%s/%s?redirect" a .mediaType))
+                     (let* ((http-link (format "https://freefeed.net/v4/attachments/%s/original?redirect" a))
                             (org-link (if (string= "video" .mediaType)
                                           (format "elisp:(mpv-play-url %S)" http-link)
                                         http-link)))
-                       (format "[[%s][%s]]" org-link .mediaType))))
+                       (format "[[%s][%s]]" org-link
+                               (if (string= "general" .mediaType) .fileName .mediaType)))))
                  .attachments)
                 " ")
                "\n"))
