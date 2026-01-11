@@ -19,8 +19,8 @@
 (define-public emacs-reader
   (package
     (name "emacs-reader")
-    (properties '((commit . "bace2aabf5d38aa05a25b4423975ae061fbc653c")))
-    (version (git-version "0.3.2" "4" (assoc-ref properties 'commit)))
+    (properties '((commit . "9bca34a57097de9ebcafe004538d157bfd68617d")))
+    (version (git-version "0.3.2" "5" (assoc-ref properties 'commit)))
     (source
      (origin
        (method git-fetch)
@@ -29,7 +29,7 @@
               (commit (assoc-ref properties 'commit))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1y92fbk5d3cy3cjc5087hjmgg7ybnqgckkl3nkc30yy4c0ynvcpp"))))
+        (base32 "0sfdgdrss8cnj07kpcm744dpysc54dry9rzqpjb4whi3dk86gdlb"))))
     (build-system emacs-build-system)
     (arguments
      (list
