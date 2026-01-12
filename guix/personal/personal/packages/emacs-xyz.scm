@@ -2527,3 +2527,48 @@ the face of the symbol drawn in the fringe.  By default the symbol is a tilde
     (synopsis "#f")
     (description "#f")
     (license #f)))
+
+(define-public emacs-reddigg
+  (package
+    (name "emacs-reddigg")
+    (version "20240730.2339")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/thanhvg/emacs-reddigg.git")
+               (commit "4d22e06a6e2523fe6d83c0280847d3bde19fabb5")))
+        (sha256
+          (base32
+            "05i5nh2hr4janlhj4vqjnkabfq2y6py1vs5s1x9wpb8aaknhiww6"))))
+    (build-system emacs-build-system)
+    (arguments '(#:tests? #f))
+    (propagated-inputs (list emacs-promise emacs-ht))
+    (home-page "https://github.com/thanhvg/emacs-reddigg")
+    (synopsis "A reader for redditt")
+    (description "Documentation at https://melpa.org/#/reddigg")
+    (license #f)))
+
+(define-public emacs-kdeconnect
+  (package
+    (name "emacs-kdeconnect")
+    (version "20231029.2250")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/carldotac/kdeconnect.el")
+             (commit "2548bae3b79df23d3fb765391399410e2b935eb9")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1qfy9hav2gzp4p1ahf0lvxig047wk9z9jnnka198w8ii78il1r8l"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/carldotac/kdeconnect.el")
+    (synopsis "An interface for KDE Connect")
+    (description
+     "This package provides helper functions to use the command line version of KDE
+Connect, a bridge between Android devices and computers, without leaving the
+comfort of Emacs.  It requires KDE Connect on your computer(s) and Android
+device(s).  KDE Connect currently requires Linux on the desktop, but does not
+require KDE.")
+    (license #f)))

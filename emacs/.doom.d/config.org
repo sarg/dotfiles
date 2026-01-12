@@ -2131,15 +2131,14 @@ wireplumber.profiles = {
 #+end_src
 * guix-emacs helper
 #+begin_src elisp
-(defun use-guix-package (pkg-name)
-  (interactive "MPackage: ")
+(defun guix-package-use (pkg-name)
+  (interactive (list (guix-read-package-name)))
 
-  (add-to-list
-   'load-path
+  (guix-emacs--load-file-no-error
    (concat
     (guix-eval-read
      (prin1-to-string
-      `(begin (use-modules (guix) (guix profiles) (gnu packages))
+      `(begin (use-modules (guix) (guix profiles) (gnu packages) (ice-9 receive))
         (with-store
          store
          (receive (derivation _)
@@ -2149,18 +2148,21 @@ wireplumber.profiles = {
                    store)
                   (build-derivations store (list derivation))
                   (derivation->output-path derivation))))))
-    "/share/emacs/site-lisp"))
-  (guix-emacs-autoload-packages))
+    "/share/emacs/site-lisp/subdirs.el"))
+  (guix-emacs-autoload-packages 'no-reload))
 
 (defun guix-package-info-insert-emacs-install-button (id name)
   "Insert install button for ENTRY if it is an emacs package."
-  (when-let* ((is-emacs (string-prefix-p "emacs-" name)))
+  (when (string-prefix-p "emacs-" name)
     (bui-insert-action-button
      "Use"
      (lambda (btn)
-       (let ((name (car (split-string (button-get btn 'package-name) "@"))))
-         (message "Use %s" name)
-         (use-guix-package name)))
+       (thread-first
+         btn
+         (button-get 'package-name)
+         (split-string "@")
+         (car)
+         (use-guix-package)))
      "Use it without installing"
      'package-name name)))
 
@@ -2713,7 +2715,7 @@ dbusserver: true
 #+end_src
 ** kdeconnect
 #+begin_src scheme :noweb-ref guix-pkg
-"kdeconnect"
+"kdeconnect" "emacs-kdeconnect"
 #+end_src
 #+begin_src scheme :noweb-ref guix-srv
 (simple-service
@@ -3024,6 +3026,7 @@ __pycache__/
 "*.py[cod]"))
 #+end_src
 
+*** agit
 #+begin_src elisp
 (after! magit
   ;; agit flow
@@ -3070,6 +3073,13 @@ __pycache__/
   (transient-insert-suffix 'magit-push
     '(1 0) (list "a" #'magit-push-current-agit)))
 #+end_src
+
+*** magit
+#+begin_src elisp
+(after! magit
+  (setq magit-diff-visit-prefer-worktree t))
+#+end_src
+
 ** guix development
 #+begin_src scheme :noweb-ref guix-pkg
 "emacs-debbugs" "gnu-standards" "emacs-fj" "emacs-guix"
@@ -3364,6 +3374,20 @@ pgrep -f QtWebEngineProcess && qutebrowser ':config-source darkmode.py'
   (map! :map yeetube-mode-map
         :n "RET" #'yeetube-play
         :n "go" (cmd! (browse-url-generic (yeetube-get-url)))))
+#+end_src
+** hnreader
+#+begin_src scheme :noweb-ref guix-pkg
+"emacs-hnreader"
+#+end_src
+#+begin_src elisp
+(use-package! hnreader
+  :commands hnreader-news
+  :config
+  (org-link-set-parameters "eww" :follow 'eww-browse-url))
+#+end_src
+** freefeed
+#+begin_src elisp
+(autoload #'frf-timeline (file-name-concat (dir!) "frf") "Freefeed" t)
 #+end_src
 * shell
 #+begin_src scheme :noweb-ref guix-pkg
@@ -3744,7 +3768,10 @@ fi
 "    echo \"$result\" | jq -r .\n"
 "fi") #o744))
 #+end_src
-
+** reddigg
+#+begin_src scheme :noweb-ref guix-pkg
+"emacs-reddigg"
+#+end_src
 ** qute-dired
 #+begin_src elisp
 (defun qute/choose-file ()
@@ -3763,20 +3790,6 @@ fi
     (bind-key "C-c C-c" #'qute/choose-file 'dired-mode-map)))
 
 (add-hook! 'server-visit-hook #'qute/dired-hook)
-#+end_src
-** hnreader
-#+begin_src scheme :noweb-ref guix-pkg
-"emacs-hnreader"
-#+end_src
-#+begin_src elisp
-(use-package! hnreader
-  :commands hnreader-news
-  :config
-  (org-link-set-parameters "eww" :follow 'eww-browse-url))
-#+end_src
-** freefeed
-#+begin_src elisp
-(autoload #'frf-timeline (file-name-concat (dir!) "frf") "Freefeed" t)
 #+end_src
 ** google calendar
 #+begin_src cfg :dest ".config/vdirsyncer/config"

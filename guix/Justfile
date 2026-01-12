@@ -1,3 +1,5 @@
+set positional-arguments
+
 lock := "0"
 guix-lock := if lock != "0" { "guix time-machine -C channels.lock --" } else { "guix" }
 
@@ -11,22 +13,25 @@ bump *args='':
     guix refresh -m bump-manifest.scm -L ~/devel/dotfiles/guix/personal {{args}}
 
 refresh *args='':
-    guix refresh {{args}}
+    guix $0 {{args}}
 
 import *args='':
-    guix import {{args}}
+    guix $0 {{args}}
 
 style *args='':
-    guix style {{args}}
+    guix $0 {{args}}
 
 shell *args='':
-    guix shell {{args}}
+    guix $0 {{args}}
+
+size *args='':
+    guix $0 {{args}}
 
 build *args='':
-    guix build {{args}}
+    guix $0 {{args}}
 
 pull *args='':
-    guix pull {{args}}
+    guix $0 {{args}}
 
 update-channels:
     guix describe --format=channels > channels.lock
