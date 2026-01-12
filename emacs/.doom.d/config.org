@@ -1793,7 +1793,7 @@ choose_entry() {
 
 * x11
 #+begin_src scheme :noweb-ref guix-pkg
-"xset" "xclip"
+"xset" "xclip" "xrdb"
 "hicolor-icon-theme" "adwaita-icon-theme"
 "greybird-gtk-theme"
 "font-jetbrains-mono"
@@ -1852,7 +1852,8 @@ gtk-font-name="Fira Code 12"
 #+end_src
 #+begin_src cfg :dest ".xinitrc"
 🐜(screen-locker
-     (video-saver "/storage/data/backgrounds/snow.mp4")
+     "saver_xscreensaver"
+     ;(video-saver "/storage/data/backgrounds/snow.mp4")
      #:pam-service (global 'unlock-pam-service))🐜 &
 keymap.sh
 🐜(pkg "xhost")🐜/bin/xhost +si:localuser:$USER
@@ -1865,13 +1866,14 @@ while true; do
 done
 #+end_src
 
-#+RESULTS[a8df06f9eaf000a88d5a54acf733e471aaaa8de2]:
+#+RESULTS[a154ad1497589cba40398eedc880491005bd04e6]:
 #+begin_src text :noweb-ref guix-file
 (".xinitrc"
 ,(mixed-text-file
   "cfg-file"
 (screen-locker
-     (video-saver "/storage/data/backgrounds/snow.mp4")
+     "saver_xscreensaver"
+     ;(video-saver "/storage/data/backgrounds/snow.mp4")
      #:pam-service (global 'unlock-pam-service))" &\n"
 "keymap.sh\n"(pkg "xhost")"/bin/xhost +si:localuser:$USER\n"
 "dbus-update-activation-environment --verbose DBUS_SESSION_BUS_ADDRESS DISPLAY XAUTHORITY\n"
@@ -2128,19 +2130,23 @@ wireplumber.profiles = {
 (defun use-guix-package (pkg-name)
   (interactive "MPackage: ")
 
-  (let* ((pkg-path
-          (thread-last
-            pkg-name
-            (format "(guix-command-output %S %S)" "build")
-            (guix-eval-read)
-            (s-trim)))
-
-         (lisp-dir (car (directory-files
-                         (concat pkg-path "/share/emacs/site-lisp")
-                         'full (rx (not ?.))))))
-
-    (add-to-list 'load-path lisp-dir)
-    (require (intern (substring pkg-name 6)))))
+  (add-to-list
+   'load-path
+   (concat
+    (guix-eval-read
+     (prin1-to-string
+      `(begin (use-modules (guix) (guix profiles) (gnu packages))
+        (with-store
+         store
+         (receive (derivation _)
+                  ((lower-object
+                    (profile (content (packages->manifest
+                                       (list (specification->package ,pkg-name))))))
+                   store)
+                  (build-derivations store (list derivation))
+                  (derivation->output-path derivation))))))
+    "/share/emacs/site-lisp"))
+  (guix-emacs-autoload-packages))
 
 (defun guix-package-info-insert-emacs-install-button (id name)
   "Insert install button for ENTRY if it is an emacs package."
