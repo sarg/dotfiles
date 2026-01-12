@@ -5,10 +5,8 @@ function applyFilters() {
         .forEach(el => el.hidden = Object.values(filter).find(f => !f(el)));
 }
 
-document.querySelectorAll("ul.tags > li").forEach(el => el.onclick = function(event) {
+function clickTag(event) {
     var active = event.srcElement.classList.toggle('active');
-
-    var tagName = event.srcElement.innerText;
     var tag = event.srcElement.getAttribute('tag');
     if (active) {
         var rx = new RegExp('\\b' + tag + '\\b');
@@ -19,7 +17,11 @@ document.querySelectorAll("ul.tags > li").forEach(el => el.onclick = function(ev
 
     history.pushState({}, "", '#' + Object.keys(filter).join(","));
     applyFilters();
-});
+}
+
+for (const el of tags.children) {
+    el.onclick = clickTag;
+}
 
 window.top.location.hash.substr(1).split(",")
-    .forEach(t => document.querySelectorAll("[tag='" + t + "']").forEach(el => el.click()));
+    .forEach(t => tags.querySelector("[tag='" + t + "']").click());
