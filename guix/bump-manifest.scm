@@ -7,8 +7,10 @@
              (personal packages binary))
 
 (packages->manifest
- (list doomemacs
-       quake3e
-       scrcpy scrcpy-server
+ (list scrcpy scrcpy-server
        xlibre-server
-       atuin python-ty tinymediamanager github-cli))
+       atuin
+       python-ty
+       tinymediamanager
+       github-cli
+       google-gemini-cli))

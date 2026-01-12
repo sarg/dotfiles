@@ -1629,16 +1629,16 @@ https://github.com/sponsors/xenodium ✨.")
 (define-public emacs-agent-shell
   (package
     (name "emacs-agent-shell")
-    (version "20260104.1700")
+    (version "20260110.2045")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
               (url "https://github.com/xenodium/agent-shell")
-              (commit "9a7913a7c7b9b8e076b38e7133122dc608e7667e")))
+              (commit "91c518a5e78ced0e5810035519160059f2c1eebc")))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1bwxwn8jyzff5ls54iijm18xnahf9sjdn7hw0smfwbr2cldryc5y"))))
+        (base32 "13qyqfyfjp8a6wwyxmpqihj6zhnmizvypz3v2dv6hf000ps68bxj"))))
     (build-system emacs-build-system)
     (propagated-inputs (list emacs-shell-maker emacs-acp))
     (arguments '(#:tests? #f))
