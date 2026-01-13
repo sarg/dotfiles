@@ -1213,16 +1213,16 @@ http://github.com/nex3/haml-mode.")
 (define-public emacs-iwd-manager
   (package
     (name "emacs-iwd-manager")
-    (version "20260103.2138")
+    (version "0.2")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
               (url "https://github.com/sarg/wifi-manager")
-              (commit "22b424e6e6fa0eb4353394c64f31657ded09fe2b")))
+              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "12m89lyz0rydx13ndkahg1phkp2afg1wrif52hfs0kn4p7b8yjbx"))))
+        (base32 "1kfcxbjx1xgqbxx3s921nbkk1fqhndr91cckps5wk12d3mh98lqw"))))
     (build-system emacs-build-system)
     (propagated-inputs (list emacs-promise))
     (arguments
@@ -1233,7 +1233,7 @@ http://github.com/nex3/haml-mode.")
     (description
      "This package provides a dbus-based client for @code{iNet} Wireless Daemon.
 Supports connecting to PSK networks.")
-    (license #f)))
+    (license license:unlicense)))
 
 (define-public emacs-emms-player-spotify
   (package
