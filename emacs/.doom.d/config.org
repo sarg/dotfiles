@@ -267,9 +267,21 @@ dnsmasq_resolve=/etc/dnsmasq.resolve
 "emacs-iwd-manager"
 #+end_src
 #+begin_src elisp
+(cl-defun iwd-manager--format-mode-line-nerd-icons (&key state ssid scanning &allow-other-keys)
+  (concat
+   " "
+   (cond
+    (scanning #("󱛄" 0 1 (display (raise 0.05))))
+    ((eq state 'connected) #("󰖩" 0 1 (display (raise 0.05))))
+    (t #("󰤮" 0 1 (display (raise 0.05)))))
+   (if (and ssid (not (string= ssid "SARG"))) (concat " " ssid " ") " ")))
+
 (use-package! iwd-manager
-  :commands iwd-manager
+  :defer-incrementally t
+  :custom
+  (iwd-manager-mode-line-formatter #'iwd-manager--format-mode-line-nerd-icons)
   :config
+  (iwd-manager-register-agent)
   (evil-collection-inhibit-insert-state 'iwd-manager-mode-map)
   (evil-set-initial-state 'iwd-manager-mode-map 'normal)
   (evil-collection-define-key 'normal 'iwd-manager-mode-map
@@ -896,6 +908,7 @@ EXWM has a separate [[../.doom.d/modules/app/exwm][doom app]]. Here are just the
 (display-time-mode 1)
 (setq! global-mode-string
       '(emms-mode-line-string
+        iwd-manager-mode-line-string
         battery-mode-line-string
         display-time-string))
 #+end_src
