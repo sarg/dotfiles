@@ -1546,6 +1546,12 @@ services:
 "mu" "emacs-consult-mu"
 #+end_src
 #+begin_src elisp
+(defun sarg/update-email ()
+  "To be called from goimapnotify."
+  (unless (and (featurep 'mu4e) (mu4e-running-p))
+    (require 'mu4e))
+  (mu4e-update-mail-and-index 'background))
+
 (doom-load-packages-incrementally '(mu4e))
 
 (use-package! consult-mu
@@ -1807,7 +1813,7 @@ choose_entry() {
 
 * x11
 #+begin_src scheme :noweb-ref guix-pkg
-"xset" "xclip" "xrdb"
+"xset" "xclip"
 "hicolor-icon-theme" "adwaita-icon-theme"
 "greybird-gtk-theme"
 "font-jetbrains-mono"

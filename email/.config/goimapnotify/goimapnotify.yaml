@@ -10,9 +10,9 @@ configurations:
     xoAuth2: true
     boxes:
       - mailbox: INBOX
-        onNewMail: 'emacsclient -e "(mu4e-update-mail-and-index 1)"'
+        onNewMail: 'emacsclient -e "(sarg/update-email)"'
         onNewMailPost: SKIP
-        onChangedMail: 'emacsclient -e "(mu4e-update-mail-and-index 1)"'
+        onChangedMail: 'emacsclient -e "(sarg/update-email)"'
         onChangedMailPost: SKIP
-        onDeletedMail: 'emacsclient -e "(mu4e-update-mail-and-index 1)"'
+        onDeletedMail: 'emacsclient -e "(sarg/update-email)"'
         onDeletedMailPost: SKIP

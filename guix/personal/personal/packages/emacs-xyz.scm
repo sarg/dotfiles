@@ -1224,11 +1224,11 @@ http://github.com/nex3/haml-mode.")
        (sha256
         (base32 "1kfcxbjx1xgqbxx3s921nbkk1fqhndr91cckps5wk12d3mh98lqw"))))
     (build-system emacs-build-system)
-    (propagated-inputs (list emacs-promise))
     (arguments
-     '(#:tests? #f #:include '("^iwd-manager.el$")
-       #:exclude '()))
-    (home-page "https://github.com/sarg/wpa-manager.el")
+     '(#:tests? #f
+       #:include '("^iwd-manager")))
+    (propagated-inputs (list emacs-promise))
+    (home-page "https://github.com/sarg/wifi-manager")
     (synopsis "Manage IWD via the D-Bus interface")
     (description
      "This package provides a dbus-based client for @code{iNet} Wireless Daemon.
