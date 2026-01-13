@@ -39,6 +39,7 @@
        (sha256
         (base32 "0fd5vma846cjby87ysm33fdkfnnp73xnyj931x0xq554zpvfvgs0"))))
     (build-system copy-build-system)
+    (arguments '(#:install-plan '(("." "share/doomemacs"))))
     (propagated-inputs (list
                         emacs-auto-minor-mode
                         emacs-gcmh

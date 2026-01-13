@@ -63,7 +63,7 @@
   (package
     (name "doomemacs-profile")
     (version "0")
-    (source #f)
+    (source (local-file "build-profile.el"))
     (build-system emacs-build-system)
     (arguments
      (list
@@ -82,39 +82,14 @@
             (lambda* (#:key inputs #:allow-other-keys)
               (setenv "DOOMLOCALDIR" ".")
               (setenv "DOOMDIR" #$config)
-
               (invoke "emacs" "-q" "--no-site-file" "--batch"
-                      "--load" (string-append (assoc-ref inputs "doomemacs") "/early-init")
-                      "--eval" (simple-format #f "~s"
-                                 '(letf! (defun doom-initialize-core-packages (&optional force-p)
-                                           (message "Inhibiting core packages initialization"))
-
-                                         ;; this thing generates autoloads
-                                         ;; in guix they're collected by site-start.el
-                                         (cl-delete "90-loaddefs-packages.auto.el"
-                                                    doom-profile-generators
-                                                    :key 'car :test 'string=)
-
-                                         (doom-modules-initialize)
-                                         (setq doom-packages (doom-package-list))
-                                         (with-temp-buffer
-                                          (dolist (package doom-packages)
-                                                  (cl-destructuring-bind
-                                                   (name &key modules disable ignore &allow-other-keys) package
-
-                                                   (when disable
-                                                     (cl-pushnew name doom-disabled-packages))
-                                                   (unless (or disable ignore (equal modules '((:doom))))
-                                                     (insert "\"emacs-" (symbol-name name) "\"\n"))))
-                                          (write-region nil nil "pkgs.list"))
-
-                                         (doom-profile-generate))))))
+                      "--load" (string-append (assoc-ref inputs "doomemacs") "/share/doomemacs/early-init")
+                      "--load" (assoc-ref inputs "source"))))
           (replace 'install
             (lambda* (#:key inputs outputs #:allow-other-keys)
               (let* ((emacs (search-input-file inputs "/bin/emacs"))
                      (out (assoc-ref outputs "out")))
                 (setenv "SHELL" "sh")
-                (install-file "pkgs.list" out)
                 (install-file
                  (string-append "etc/@/" (car (scandir "etc/@" (cut string-suffix? ".el" <>))))
                  out)
@@ -169,7 +144,7 @@
        home-xdg-configuration-files-service-type
        (match-lambda
          (($ <doomemacs-configuration> emacs doomemacs config inputs)
-          `(("emacs" ,doomemacs)
+          `(("emacs" ,(file-append doomemacs "/share/doomemacs"))
             ("doom" ,config)))))))
     (description "Doomemacs and its config.")))
 
