@@ -1,3 +1,4 @@
+# -*- lexical-binding: t; -*-
 #+OPTIONS: num:nil
 #+SETUPFILE: ~/devel/ext/org-html-themes/org/theme-readtheorg-local.setup
 #+PROPERTY: header-args :noweb-prefix no :noweb no-export :eval no
@@ -1264,15 +1265,32 @@ REVERSE? it when true. Returns the selected buffer."
 #+end_src
 *** bindings
 #+begin_src scheme :noweb-ref emacs-dep
-"wireplumber"
+"wireplumber" "xosd"
 #+end_src
 #+begin_src elisp :noweb-ref exwm :tangle no
+(let (p)
+  (defun sarg/osd (value)
+    (when (exwm-layout--fullscreen-p)
+      (let ((tmp p))
+        (setq p (start-process "osd" nil
+                               (guix/pkg 'xosd "/bin/osd_cat")
+                               "-P" (if (numberp value) (number-to-string value) value)
+                               "-b" "percentage" "-T" "Volume" "-d" "1"
+                               "-A" "center" "-c" "blue" "-u" "green" "-o" "50"))
+        (when (process-live-p tmp) (delete-process tmp))))))
+
 (let ((my-vol-last-change 0))
-  (defun my-vol-change (up)
+  (defun my-vol-change (amount)
     (let* ((time-now (car (time-convert nil 1000)))
-           (delta (- time-now my-vol-last-change)))
-      (emms-volume-pulse-change
-       (* up (if (< delta 200) 5 2)))
+           (time-delta (- time-now my-vol-last-change)))
+
+      (thread-last
+        (* amount (if (< time-delta 200) 5 2))
+        (emms-volume-pulse-change)
+        (s-match (rx "Volume is " (group (+ num) "%")))
+        (cadr)
+        (sarg/osd))
+
       (setq my-vol-last-change time-now))))
 
 (let ((wpctl (guix/pkg 'wireplumber "/bin/wpctl")))
