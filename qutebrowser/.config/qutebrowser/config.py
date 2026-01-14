@@ -65,9 +65,8 @@ config.bind("t", "emacs '(and (qutebrowser-launcher-window) t)'")
 config.bind("o", "emacs '(and (qutebrowser-launcher) t)'")
 config.bind("O", "emacs '(and (qutebrowser-launcher \"{url:pretty}\") t)'")
 config.bind("xx", "spawn -u orgprotocol")
-config.bind("xc", "emacs '(sarg/magit-clone-or-open \"{url}\")'")
 config.bind("xp", "emacs '(and (qutebrowser-pass \"{url}\") t)'")
-config.bind("xe", "emacs '(browse-url \"{url}\")'")  # spotify / youtube
+config.bind("xe", "emacs '(and (qutebrowser-act-dwim \"{url}\") t)'")
 config.bind(";e", "hint links run emacs '(browse-url \"{hint-url}\")'")
 config.bind(";a", "hint links run open -t https://web.archive.org/web/{hint-url}")
 

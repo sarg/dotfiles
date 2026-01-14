@@ -83,6 +83,7 @@ MSG-PREDICATE is received."
   (telega-chat-show-avatars nil)
   (telega-chat-use-date-breaks nil)
   (telega-chat-input-markups '("markdown2" nil))
+  (telega-symbol-attach-brackets '("[" . "]"))
   (telega-animation-play-inline nil)
   (telega-video-play-incrementally nil)
   (telega-sticker-size '(8 . 48))

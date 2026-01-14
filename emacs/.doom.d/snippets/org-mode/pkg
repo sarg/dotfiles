@@ -4,8 +4,8 @@
 # key: pkg
 # condition: t
 # --
-#+begin_src elisp :tangle packages.el
-(package! $1)
+#+begin_src scheme :noweb-ref guix-pkg
+"emacs-$1"
 #+end_src
 #+begin_src elisp
 (use-package! $1)

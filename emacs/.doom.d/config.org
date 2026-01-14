@@ -42,7 +42,7 @@
 #+begin_src scheme :noweb-ref guix-channel
 (channel
  (name 'sops-guix)
- (url "https://github.com/fishinthecalculator/sops-guix")
+ (url "https://github.com/fishinthecalculator/sops-guix.git")
  (branch "main")
  (introduction
   (make-channel-introduction
@@ -57,7 +57,7 @@
  (url "https://github.com/sarg/dotfiles")
  (branch "master"))
 #+end_src
-* globals 
+* globals
 #+begin_src scheme :noweb-ref globals
 '((name . "Sergey Trofimov")
   (email . "sarg@sarg.org.ru")
@@ -112,7 +112,7 @@
   (kernel-arguments '("quiet" "loglevel=1"))
   (initrd microcode-initrd)
   (firmware (cons* amdgpu-firmware realtek-firmware %base-firmware))
-  (locale "en_GB.UTF-8")
+  (locale "C.UTF-8")
   (timezone "Europe/Berlin")
   (host-name "elitebook")
   (keyboard-layout (keyboard-layout "us"))
@@ -513,7 +513,6 @@ polkit.addRule(function(action, subject) {
 ;; generated from config.org
 (use-modules
  (gnu)
- (gnu artwork)
  (guix)
  (guix gexp)
  (guix packages)
@@ -673,9 +672,7 @@ polkit.addRule(function(action, subject) {
 #+begin_src scheme :noweb-ref guix-pkg
 ;; "zeal" "qalculate-gtk" "simplescreenrecorder"
 "libreoffice" "qview" "gimp"
-
-;; "nomacs"
-"tinymediamanager" "simple-scan"
+"nomacs" "tinymediamanager" "simple-scan"
 #+end_src
 #+begin_src scheme :noweb-ref guix-file
 (".local/share/tinyMediaManager" ,(symlink-to "/storage/data/tinyMediaManager"))
@@ -812,8 +809,8 @@ EXWM has a separate [[../.doom.d/modules/app/exwm][doom app]]. Here are just the
   ;; https://github.com/hiecaq/guix-config/blob/666d15b1f79b2b9171c430c24b877879ab61fd02/readme.org#desktop-notification-daemon
   (defvar my-ednc-posframe--buffer "*ednc-posframe*"
     "Buffer used for ednc notification posframe display.")
-  
-  
+
+
   (setq max-image-size nil)
   (defun sarg/ednc-format-notification (notification &rest args)
     (let* ((width 500) (icon-size 64) (font-height 20)
@@ -827,11 +824,11 @@ EXWM has a separate [[../.doom.d/modules/app/exwm][doom app]]. Here are just the
            (icon (ednc-notification-app-icon notification))
            (icon-path (if (file-name-absolute-p icon) icon
                         (locate-file icon (xdg-launcher--icon-path) xdg-launcher-icon-extensions))))
-      
+
       (when icon-path
         (svg-embed
          svg
-         icon-path 
+         icon-path
          (pcase (file-name-extension icon-path)
            ("svg" "image/svg+xml")
            ("png" "image/png")
@@ -846,7 +843,7 @@ EXWM has a separate [[../.doom.d/modules/app/exwm][doom app]]. Here are just the
         (dolist (line body-lines)
           (svg-text svg line :x (+ icon-size 8) :y current-y :font-size "80%")
           (setq current-y (+ current-y font-height))))
-      
+
       (with-temp-buffer
         (insert-image (svg-image svg))
         (buffer-string))))
@@ -885,15 +882,15 @@ EXWM has a separate [[../.doom.d/modules/app/exwm][doom app]]. Here are just the
                 ((frame-visible-p frame))
                 (notification (ednc-notifications)))
       (ednc-dismiss-notification (car notification))))
-  
-  
+
+
   ;; https://github.com/ch11ng/exwm/issues/550#issuecomment-763949321
   (with-eval-after-load 'posframe
     (define-advice posframe-show (:filter-return (frame) exwm-deparent)
       (set-frame-parameter frame 'parent-frame nil)
       frame))
-  
-  
+
+
   (defun sarg/ednc-icon-resolver (image-path)
     "Return image descriptor created from file URI IMAGE-PATH."
     (when image-path
@@ -1159,10 +1156,11 @@ REVERSE? it when true. Returns the selected buffer."
 
 (after! elfeed
   (setq elfeed-db-directory "/storage/data/elfeed")
-
   (setq elfeed-search-filter "@2-week-ago +unread -youtube"
         elfeed-show-entry-switch #'display-buffer)
 
+  (require 'elfeed-org)
+  (rmh-elfeed-org-process-advice)
   (evil-define-key 'normal elfeed-search-mode-map
     (kbd "RET") #'elfeed-open-special
     "q" #'elfeed-search-quit-window))
@@ -1237,12 +1235,12 @@ REVERSE? it when true. Returns the selected buffer."
         "r" #'emms-toggle-random-playlist)
 
   (setq emms-player-list (list emms-player-mpv))
-  
+
   (setq! emms-mode-line-mode-line-function #'emms/modeline-function)
   (add-hook 'emms-player-paused-hook #'emms-mode-line-alter)
   (delq 'emms-playing-time-string global-mode-string))
 #+end_src
-*** modeline functions 
+*** modeline functions
 #+begin_src elisp
 (defun emms/modeline-status-icon ()
   (let ((clickable
@@ -1823,6 +1821,7 @@ choose_entry() {
 "font-inconsolata"
 "font-fira-code"
 "font-nerd-fonts-symbols"
+"font-emojione-color"
 "font-google-noto-emoji" ; 💪🕹
 "font-hack"
 "font-terminus"
@@ -1880,7 +1879,7 @@ gtk-font-name="Fira Code 12"
      #:pam-service (global 'unlock-pam-service))🐜 &
 keymap.sh
 🐜(pkg "xhost")🐜/bin/xhost +si:localuser:$USER
-dbus-update-activation-environment --verbose DBUS_SESSION_BUS_ADDRESS DISPLAY XAUTHORITY
+🐜(pkg "dbus")🐜/bin/dbus-update-activation-environment --verbose DBUS_SESSION_BUS_ADDRESS DISPLAY XAUTHORITY
 
 ulimit -n 8192 # potentially prevents "too many open files" errors in emacs
 while true; do
@@ -1889,7 +1888,7 @@ while true; do
 done
 #+end_src
 
-#+RESULTS[a154ad1497589cba40398eedc880491005bd04e6]:
+#+RESULTS[e45ce76c2f65577b674b9f3ef15dc8099e8f2c15]:
 #+begin_src text :noweb-ref guix-file
 (".xinitrc"
 ,(mixed-text-file
@@ -1898,8 +1897,7 @@ done
      "saver_xscreensaver"
      ;(video-saver "/storage/data/backgrounds/snow.mp4")
      #:pam-service (global 'unlock-pam-service))" &\n"
-"keymap.sh\n"(pkg "xhost")"/bin/xhost +si:localuser:$USER\n"
-"dbus-update-activation-environment --verbose DBUS_SESSION_BUS_ADDRESS DISPLAY XAUTHORITY\n"
+"keymap.sh\n"(pkg "xhost")"/bin/xhost +si:localuser:$USER\n"(pkg "dbus")"/bin/dbus-update-activation-environment --verbose DBUS_SESSION_BUS_ADDRESS DISPLAY XAUTHORITY\n"
 "\n"
 "ulimit -n 8192 # potentially prevents \"too many open files\" errors in emacs\n"
 "while true; do\n"
@@ -2153,6 +2151,12 @@ wireplumber.profiles = {
 #+end_src
 * guix-emacs helper
 #+begin_src elisp
+(autoload 'guix-read-package-name "guix-package"
+  "read package name" t)
+(defadvice! +filter-wrong-dirs (directory)
+  :before-while #'guix-emacs-find-autoloads
+  (file-directory-p directory))
+
 (defun guix-package-use (pkg-name)
   (interactive (list (guix-read-package-name)))
 
@@ -2184,7 +2188,7 @@ wireplumber.profiles = {
          (button-get 'package-name)
          (split-string "@")
          (car)
-         (use-guix-package)))
+         (guix-package-use)))
      "Use it without installing"
      'package-name name)))
 
@@ -2499,18 +2503,7 @@ home-emacs
 #+end_src
 ** dashboard
 #+begin_src scheme :noweb-ref emacs-dep
-(list "guix-artwork"
-      (let ((commit "08259679a0faef63e3ba169df5b937d836bd9262"))
-        (origin
-          (method git-fetch)
-          (uri (git-reference
-                 (url "https://codeberg.org/guix/artwork.git")
-                 (commit commit)))
-          (file-name (string-append "guix-artwork-" (string-take commit 7)
-                                    "-checkout"))
-          (sha256
-           (base32
-            "0anryix0y8w9brksiaz39r8c10vdd0fp4h96b9f3m4aw0xpv8xlf")))))
+(list "guix-artwork" (@ (gnu artwork) %artwork-repository))
 #+end_src
 #+begin_src elisp
 (setq fancy-splash-image (guix/pkg 'guix-artwork "/logo/head-only/Guix-head-stencil.svg"))
@@ -2543,6 +2536,9 @@ home-emacs
 #+end_src
 ** completion
 #+begin_src elisp
+(define-obsolete-variable-alias 'consult--source-project-recent-file 'consult-source-project-recent-file "2.9")
+(define-obsolete-variable-alias 'consult--source-recent-file 'consult-source-recent-file "2.9")
+(define-obsolete-variable-alias 'consult--source-bookmark 'consult-source-bookmark "2.9")
 ; have no use for vertico-next-group
 (after! consult
   (define-key consult-async-map [remap vertico-insert] nil))
@@ -2595,11 +2591,14 @@ org.sugarlabs.MakeThemFall
 xargs flatpak install --or-update --noninteractive
 #+end_src
 * desktop
-** desktop entries
+** trash
+#+begin_src scheme :noweb-ref guix-pkg
+"emacs-trashed"
+#+end_src
+** xdg
 #+begin_src scheme :noweb-ref guix-pkg
 "jaro"
 #+end_src
-
 #+begin_src scheme :noweb-ref guix-file
 (".local/bin/xdg-open" ,(file-append (pkg "jaro") "/bin/jaro"))
 #+end_src
@@ -2678,6 +2677,7 @@ xargs flatpak install --or-update --noninteractive
    "<XF86MonBrightnessUp>" "brightnessctl -e set 10%+"
    "<XF86MonBrightnessDown>" "brightnessctl -e set 10%-"
    "<XF86ScreenSaver>" "xset s activate"
+   "<f13> S-<f12>" "flameshot gui"
    "<f13> <f12>" "flameshot gui -c -s")
 #+end_src
 ** dark mode
@@ -2747,6 +2747,12 @@ dbusserver: true
 ** kdeconnect
 #+begin_src scheme :noweb-ref guix-pkg
 "kdeconnect" "emacs-kdeconnect"
+#+end_src
+#+begin_src elisp
+(use-package! kdeconnect
+  :defer t
+  :custom
+  (kdeconnect-active-device '("Pixel 9a" . "96c0a00f623640859f01c89f53db3b45")))
 #+end_src
 #+begin_src scheme :noweb-ref guix-srv
 (simple-service
@@ -3076,7 +3082,7 @@ __pycache__/
            (parts (and desc (s-split-up-to "\n\n" desc 1)))
            (title (and parts (car parts)))
            (body (and parts (cadr parts))))
-      
+
       (magit-push-refspecs
        origin
        (concat source ":refs/for/" (cdr (magit-split-branch-name target)) "/" source)
@@ -3087,7 +3093,7 @@ __pycache__/
 
   (defsubst magit--branch-description-template ()
     (magit-get "remote" (magit-get-remote) "descriptionTemplate"))
-  
+
   (transient-define-suffix magit-branch-description-template (branch)
     :if (lambda () (and (not (magit-get "branch" (magit-get-current-branch) "description"))
                         (magit--branch-description-template)))
@@ -3114,6 +3120,7 @@ __pycache__/
 ** guix development
 #+begin_src scheme :noweb-ref guix-pkg
 "emacs-debbugs" "gnu-standards" "emacs-fj" "emacs-guix"
+(info-package (pkg "glibc"))
 #+end_src
 #+begin_src elisp
 (after! debbugs
@@ -3131,16 +3138,17 @@ __pycache__/
          fj-token (auth-source-pass-get 'secret "Api/codeberg.org/fj.el"))
   (map! :map fj-item-view-mode-map
         :nm "go" #'fj-browse-view)
-  
+
   (set-popup-rule! "^\\*fj-" :ignore t))
 
 (use-package! guix
   :commands guix
   :config
+  (require 'guix-profiles)
   (setq! guix-repl-use-server nil
-         guix-current-profile "~/.guix-home/profile"
+         guix-current-profile guix-home-profile
          guix-load-path (mapcar #'expand-file-name
-                                '("~/devel/dotfiles/guix/personal" "~/devel/ext/nonguix"))))
+                                '("~/devel/dotfiles/guix/personal"))))
 
 (after! magit
   (autoload #'fj-repo-+-owner-from-git "fj" nil t)
@@ -3165,7 +3173,7 @@ __pycache__/
   ; lsp-mode with dape support
   (defun dap-debug (cfg)
     (dape (dape--config-eval 'rust `(:program ,(plist-get cfg :program)))))
-  
+
   (let ((tmp (make-temp-file "config")))
     (with-temp-file tmp
       (insert "(provide 'dap-gdb)"))
@@ -3215,7 +3223,7 @@ install grammars as expected by clojure-ts-mode
 #+begin_src elisp
 (use-package! visual-shorthands
   :commands visual-shorthands-mode
-  
+
   :init
   (face-spec-set 'elisp-shorthand-font-lock-face
                  '((t :inherit nil :foreground nil))))
@@ -3374,6 +3382,12 @@ pgrep -f QtWebEngineProcess && qutebrowser ':config-source darkmode.py'
               (lambda (url &optional new-window)
                 (qutebrowser-cmd-open :bg url))))
 
+(defun qutebrowser-act-dwim (url)
+  (interactive)
+  (funcall (or (browse-url-select-handler url)
+               #'sarg/magit-clone-or-open)
+           url))
+
 (setq-default
  browse-url-browser-function 'browse-url-generic
  browse-url-generic-program "qutebrowser")
@@ -3393,6 +3407,18 @@ pgrep -f QtWebEngineProcess && qutebrowser ':config-source darkmode.py'
 
   :config
   (add-to-list 'qutebrowser-theme-export-face-mappings '(webpage.bg . default)))
+#+end_src
+** eww
+#+begin_src scheme :noweb-ref emacs-dep
+"rdrview"
+#+END_src
+#+begin_src elisp
+;; https://codeberg.org/divyaranjan/emacs-reader/issues/166
+;; (after! mailcap
+;;   (setq! mailcap-user-mime-data '((reader-mode "application/pdf"))))
+
+;; (after! eww
+;;   (setq! eww-retrieve-command (list (guix/pkg 'rdrview "/bin/rdrview" "-H" "-E" "utf-8"))))
 #+end_src
 ** yeetube
 #+begin_src scheme :noweb-ref guix-pkg
@@ -3414,6 +3440,9 @@ pgrep -f QtWebEngineProcess && qutebrowser ':config-source darkmode.py'
 (use-package! hnreader
   :commands hnreader-news
   :config
+  (after! browse-url
+    (add-to-list 'browse-url-handlers (cons (rx "news.ycombinator.com/item?id=")
+                                            (lambda (url &rest _) (hnreader-comment url)))))
   (org-link-set-parameters "eww" :follow 'eww-browse-url))
 #+end_src
 ** freefeed
@@ -3497,6 +3526,7 @@ eval "$(atuin init bash)"
          (eshell-load . eat-eshell-visual-command-mode)))
 
 (use-package! detached
+  :disabled ; causes freeze-ups in eshell
   :defer-incrementally t
   :config
   (detached-init)
@@ -3544,6 +3574,7 @@ eval "$(atuin init bash)"
   (setq dired-omit-files
         (concat dired-omit-files "\\|^\\..*$"))
 
+  (setq dired-listing-switches "-ahl --group-directories-first")
   (add-to-list 'dirvish-hide-details 'dired)
   (setq! dirvish-quick-access-entries
          `(("h" "~/"                             "Home")
@@ -3885,7 +3916,11 @@ token_file = "~/.local/state/vdirsyncer/token"
 #+begin_src scheme :noweb-ref guix-pkg
 "emacs-speed-type"
 #+end_src
-
+** tmr
+#+begin_src scheme :noweb-ref guix-pkg
+"emacs-tmr"
+#+end_src
+** collectd
 * TODO todo [9/12]
 ** DONE console font
 ** DONE mingetty with xorg autostart (under sarg), put `lock.sh` first in the .xsession
