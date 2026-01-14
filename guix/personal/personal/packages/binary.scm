@@ -56,13 +56,13 @@
 (define-public tinymediamanager
   (package
    (name "tinymediamanager")
-   (version "5.2.4")
+   (version "5.2.6")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://archive.tinymediamanager.org/v" version
                                 "/tinyMediaManager-" version "-linux-amd64.tar.xz"))
             (sha256
-             (base32 "1j84yclm7yxrwwfkzfh2w11dldbgl6pbqz6ns35hhsrn1alc0vxs"))))
+             (base32 "1va8z8msfa4gsswvgmizjxshzwwqizm9n3ja8r266arh2g66gvgk"))))
    (build-system binary-build-system)
    (inputs (list libmediainfo openjdk))
    (supported-systems '("x86_64-linux"))
@@ -186,14 +186,14 @@ failed operations.")
 (define-public github-cli
   (package
     (name "github-cli")
-    (version "2.83.2")
+    (version "2.86.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/cli/cli/releases/download/v" version
                            "/gh_" version "_linux_amd64.tar.gz"))
        (sha256
-        (base32 "0ph1jaq4axa6j78xdyfq8vcnyqmslxj4pv4w88hhxgag450pcvna"))))
+        (base32 "1iq3h6k1q1612is2jjzhscwbiwi5za3sd8dh54icq844lbb8pc7k"))))
     (properties '((upstream-name . "gh")))
     (build-system binary-build-system)
     (home-page "https://github.com/cli/cli")
@@ -207,14 +207,14 @@ working with git and your code.")
 (define-public atuin
   (package
    (name "atuin")
-   (version "18.10.0")
+   (version "18.11.0")
    (source
     (origin
      (method url-fetch)
      (uri (string-append "https://github.com/atuinsh/atuin/releases/download/v"
                          version
                          "/atuin-x86_64-unknown-linux-gnu.tar.gz"))
-     (sha256 (base32 "160q7d9iig2177g787l2z1nl7wwgg9xqczg3nwk6xfx7vi563z91"))))
+     (sha256 (base32 "16jwjmbw32j0i3znpfzdq3qls4cxvbcrcnj3wa7kg86jx4zzfwzl"))))
    (supported-systems '("x86_64-linux"))
    (build-system binary-build-system)
    (inputs `(("gcc:lib" ,gcc "lib")
@@ -490,7 +490,7 @@ modification with a unique cooperative gameplay.")
 (define-public python-ty
   (package
     (name "python-ty")
-    (version "0.0.11")
+    (version "0.0.13")
     (source
      (origin
        (method url-fetch)
@@ -498,7 +498,7 @@ modification with a unique cooperative gameplay.")
              "https://github.com/astral-sh/ty/releases/download/" version
              "/ty-x86_64-unknown-linux-gnu.tar.gz"))
        (sha256
-        (base32 "1rf5vkych2v3249vziywrhhqncwjf14xqnhvzbkn2snm31hj8v3k"))))
+        (base32 "0361n2xrvl1z94dlfzrpnwz5ca5xrlars6lqxbwn5dyww4qxlm0a"))))
     (properties '((upstream-name . "ty")))
     (build-system binary-build-system)
     (supported-systems '("x86_64-linux"))
@@ -550,23 +550,42 @@ modification with a unique cooperative gameplay.")
        (sha256
         (base32 "0skirmz6rc0845960957b19kvlbfpg5k9gs6hq8agsmhlc6hk33z"))))
     (build-system font-build-system)
-   (properties `((release-monitoring-url . "https://github.com/ryanoasis/nerd-fonts/releases")
-                 (release-file-regexp . "v([0-9.]*)$")))
+   (properties `((upstream-name . "NerdFontsSymbolsOnly")))
    (home-page "https://www.nerdfonts.com/")
     (synopsis "Nerd Font including only the symbols")
     (description "Nerd Font that includes only the icons.")
     (license license:silofl1.1)))
 
+(define-public font-emojione-color
+  (package
+    (name "font-emojione-color")
+    (version "1.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/adobe-fonts/emojione-color")
+              (commit "835b4ef8384f55ecf9abf7ecc943a3980884690b")))
+       (sha256
+        (base32 "1sc260ziqyr2q7rxh7n5bhy4czv2ny06pj79q68y3h0r9gsfgkjh"))
+       (modules '((guix build utils)))
+       (snippet '(delete-file "EmojiOneBW.otf"))))
+    (build-system font-build-system)
+    (home-page "https://www.emojione.com/emoji/v2")
+    (synopsis "EmojiOne color font")
+    (description "EmojiOne color font")
+    (license license:expat)))
+
 (define-public google-gemini-cli
   (package
     (name "google-gemini-cli")
-    (version "0.23.0")
+    (version "0.25.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/google-gemini/gemini-cli/releases/download/v" version "/gemini.js"))
        (sha256
-        (base32 "1qc3cf24a58ha1p9g3v52kqyql0ca39yd76d5icrqml2fcy9v5gm"))))
+        (base32 "1njb51b2k33gllg0dbdkj1bsgf58bbn2jsrwskwf8nv9v6scd74k"))))
     (build-system binary-build-system)
     (arguments (list
                 #:install-plan
@@ -576,9 +595,7 @@ modification with a unique cooperative gameplay.")
                     (add-before 'install 'chmod
                       (lambda _
                         (chmod "gemini.js" #o555))))))
-    (properties
-     '((release-monitoring-url . "https://github.com/google-gemini/gemini-cli/releases")
-       (release-file-regexp . "v([0-9.]*)$")))
+    (properties '((upstream-name . "gemini")))
     (inputs (list node))
     (home-page "https://geminicli.com/")
     (synopsis "Gemini AI agent")

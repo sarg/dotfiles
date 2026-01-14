@@ -12,6 +12,7 @@
   #:use-module (gnu packages emacs-xyz)
   #:use-module (gnu packages emacs-build)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages texinfo)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages pdf))
 
@@ -19,8 +20,8 @@
 (define-public emacs-reader
   (package
     (name "emacs-reader")
-    (properties '((commit . "9bca34a57097de9ebcafe004538d157bfd68617d")))
-    (version (git-version "0.3.2" "5" (assoc-ref properties 'commit)))
+    (properties '((commit . "75047b20897b75df38fccee6d6ba151145d32d72")))
+    (version (git-version "0.3.2" "6" (assoc-ref properties 'commit)))
     (source
      (origin
        (method git-fetch)
@@ -29,7 +30,7 @@
               (commit (assoc-ref properties 'commit))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0sfdgdrss8cnj07kpcm744dpysc54dry9rzqpjb4whi3dk86gdlb"))))
+        (base32 "00vhhr840wh0vy7y3c0scl136qqvdjbz59mikg8b3pkiapv70q4s"))))
     (build-system emacs-build-system)
     (arguments
      (list
@@ -60,18 +61,19 @@ And as such, it is effectively a drop-in replacement for them.")
 (define-public emacs-auto-minor-mode
   (package
     (name "emacs-auto-minor-mode")
-    (version "20180527.1123")
+    (properties '((commit . "17cfa1b54800fdef2975c0c0531dad34846a5065")))
+    (version (git-version "20180527.1" "0" (assoc-ref properties 'commit)))
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
               (url "https://github.com/joewreschnig/auto-minor-mode")
-              (commit "17cfa1b54800fdef2975c0c0531dad34846a5065")))
+              (commit (assoc-ref properties 'commit))))
        (file-name (git-file-name name version))
        (sha256
         (base32 "1jgq9b262pjr6npza3k0p2glb6mpp0dfpslgx3i2p8a5ipwhwaqa"))))
     (build-system emacs-build-system)
-    (arguments '(#:tests? #f))
+    (arguments (list #:test-command #~(list "make" "test")))
     (home-page "https://github.com/joewreschnig/auto-minor-mode")
     (synopsis "Enable minor modes by file name and contents")
     (description
@@ -89,31 +91,31 @@ for handling automatic major modes, is called.  If you also use ‘use-package�
 two new keywords are added, ‘:minor’ and ‘:magic-minor’, which register entries
 in these alists.  You must load (and not defer) ‘auto-minor-mode’ before using
 these keywords for other packages.")
-    (license #f)))
+    (license license:gpl3)))
 
 (define-public emacs-better-jumper
   (package
     (name "emacs-better-jumper")
-    (version "20241009.1517")
+    (properties '((commit . "b1bf7a3c8cb820d942a0305e0e6412ef369f819c")))
+    (version (git-version "1.0.1" "0" (assoc-ref properties 'commit)))
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-              (url "https://github.com/gilbertw1/better-jumper")
-              (commit "b1bf7a3c8cb820d942a0305e0e6412ef369f819c")))
+             (url "https://github.com/gilbertw1/better-jumper")
+             (commit (assoc-ref properties 'commit))))
        (file-name (git-file-name name version))
        (sha256
         (base32 "0cq99w9lpd9sg7hb6i9r6qirq626xcgzyjbk438h8qrjgm3xigh4"))))
     (build-system emacs-build-system)
-    (arguments '(#:tests? #f))
+    (arguments '(#:tests? #f))          ; no tests
     (home-page "https://github.com/gilbertw1/better-jumper")
     (synopsis "Configurable jump list")
     (description
      "Better-jumper is configurable jump list implementation for Emacs that can be
 used to easily jump back to previous locations.  That provides optional
-integration with evil.  To enable globally: (require better-jumper)
-(better-jumper-mode 1) See included README.md for more information.")
-    (license #f)))
+integration with evil.")
+    (license license:gpl3)))
 
 (define-public emacs-nerd-icons-corfu
   (package
@@ -366,48 +368,7 @@ detailed in the github README.")
     (arguments '(#:tests? #f))
     (home-page "https://github.com/cute-jumper/evil-embrace.el")
     (synopsis "Evil integration of embrace.el")
-    (description
-     "______________ EVIL-EMBRACE Junpeng Qiu ______________ Table of Contents
-_________________ 1 Overview 2 Why 3 Usage 4 Screencasts Evil integration of
-[embrace.el]. [embrace.el] https://github.com/cute-jumper/embrace.el 1 Overview
-========== This package provides evil integration of [embrace.el].  Since
-`evil-surround provides a similar set of features as `embrace.el', this package
-aims at adding the goodies of `embrace.el to `evil-surround and making
-`evil-surround even better. [embrace.el]
-https://github.com/cute-jumper/embrace.el 2 Why ===== `evil-surround is good
-when there is a text object defined.  But unfortunately, if you want to add
-custom surrouding pairs, `evil-surround will not be able to delete/change the
-pairs if there are no evil text objects defined for these pairs.  For example,
-if you want to make `\\textbf{ and `} as a surround pair in `@code{LaTeX-mode}',
-you can't either change or delete the surround pair since there is no text
-object for `\\textbf{ and `}'.  However, using `embrace', you can define whatever
-surrounding pairs you like, and adding, changing, and deleting will *always*
-work.  The idea of this package is that let `evil-surround handle the keys that
-corresponds to existing text objects (i.e., `(', `[', etc.), which is what
-`evil-surround is good at, and make `embrace handles all the other keys of
-custom surrounding pairs so that you can also benefit from the extensibility
-that `embrace offers.  In a word, you can use the default `evil-surround'.  But
-whenever you want to add a custom surrounding pair, use `embrace instead.  To
-see how to add a custom pair in `embrace', look at the README of [embrace.el].
-[embrace.el] https://github.com/cute-jumper/embrace.el 3 Usage ======= To enable
-the `evil-surround integration: ,---- |
-(evil-embrace-enable-evil-surround-integration) `---- And use
-`evil-embrace-disable-evil-surround-integration to disable whenever you don't
-like it.  The keys that are processed by `evil-surround are saved in the
-variable `evil-embrace-evil-surround-keys'.  The default value is: ,---- | (?\\(
-?\\[ ?\\{ ?\\) ?\\] ?\\} ?\\\" ?\\ ?< ?> ?b ?B ?t ?w ?W ?s ?p) `---- Note that this
-variable is buffer-local.  You should change it in the hook: ,---- | (add-hook
-@code{LaTeX-mode-hook} | (lambda () | (add-to-list
-evil-embrace-evil-surround-keys ?o))) `---- Only these keys saved in the
-variable are processed by `evil-surround', and all the other keys will be
-processed by `embrace'.  If you find the help message popup annoying, use the
-following code to disable it: ,---- | (setq evil-embrace-show-help-p nil) `----
-4 Screencasts ============= Use the following settings: ,---- | (add-hook
-org-mode-hook embrace-org-mode-hook) |
-(evil-embrace-enable-evil-surround-integration) `---- In an org-mode file, we
-can change the surrounding pair in the following way (note that this whole
-process can't be achieved solely by `evil-surround'):
-[./screencasts/evil-embrace.gif].")
+    (description "TODO")
     (license #f)))
 
 (define-public emacs-evil-snipe
@@ -1238,16 +1199,16 @@ Supports connecting to PSK networks.")
 (define-public emacs-emms-player-spotify
   (package
     (name "emacs-emms-player-spotify")
-    (version "20260109.1935")
+    (version "20260125")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
               (url "https://github.com/sarg/emms-spotify")
-              (commit "91fe535d3420fa57c24ef164bf4b47085ed3cd6a")))
+              (commit "43e6d0421cb622a21258d48eebb7070c6d9bc85b")))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0xhb4n7b57jb0m3jq2svqdm3hfraisqlq0i0lli18d5hx4p1jy6j"))))
+        (base32 "0ll4f4llbw6x9v9kxycy81kxxa89j54rqa40lld5qbf0sxv51xya"))))
     (build-system emacs-build-system)
     (propagated-inputs (list emacs-compat emacs-emms emacs-s
                              emacs-request emacs-consult))
@@ -1601,59 +1562,6 @@ collaborate with AI while staying in your familiar Emacs environment.
 Originally forked from Kang Tu <tninja@@gmail.com>'s Aider.el.")
     (license #f)))
 
-(define-public emacs-acp
-  (package
-    (name "emacs-acp")
-    (version "20251219.2135")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-              (url "https://github.com/xenodium/acp.el")
-              (commit "7b67facc657a7388a53ea8bba5d6e7eba20fa3e0")))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "0znm5qihx2qy3hgw0idg8j7bnhz8k3yaadff3y6696qckdh0qlnr"))))
-    (build-system emacs-build-system)
-    (arguments '(#:tests? #f))
-    (home-page "https://github.com/xenodium/acp.el")
-    (synopsis "An ACP (Agent Client Protocol) implementation")
-    (description
-     "acp.el implements ACP (Agent Client Protocol) as per spec
-https://agentclientprotocol.com Note: This package is in the very early stage
-and is likely incomplete or may have some rough edges.  Report issues at
-https://github.com/xenodium/acp.el/issues ✨ Please support this work
-https://github.com/sponsors/xenodium ✨.")
-    (license #f)))
-
-(define-public emacs-agent-shell
-  (package
-    (name "emacs-agent-shell")
-    (version "20260110.2045")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-              (url "https://github.com/xenodium/agent-shell")
-              (commit "91c518a5e78ced0e5810035519160059f2c1eebc")))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "13qyqfyfjp8a6wwyxmpqihj6zhnmizvypz3v2dv6hf000ps68bxj"))))
-    (build-system emacs-build-system)
-    (propagated-inputs (list emacs-shell-maker emacs-acp))
-    (arguments '(#:tests? #f))
-    (home-page "https://github.com/xenodium/agent-shell")
-    (synopsis "Native agentic integrations for Claude Code, Gemini CLI, etc")
-    (description
-     "`agent-shell offers a native `comint shell experience to interact with any agent
-powered by ACP (Agent Client Protocol). `agent-shell currently provides access
-to Claude Code, Cursor, Gemini CLI, Goose, Codex, @code{OpenCode}, and Qwen
-amongst other agents.  This package depends on the `acp package to provide the
-ACP layer as per https://agentclientprotocol.com spec.  Report issues at
-https://github.com/xenodium/agent-shell/issues ✨ Support this work
-https://github.com/sponsors/xenodium ✨.")
-    (license #f)))
-
 (define-public emacs-hnreader
   (package
     (name "emacs-hnreader")
@@ -1741,138 +1649,7 @@ adding the import org file to your org agenda to show current events there.")
     (arguments '(#:tests? #f))
     (home-page "https://github.com/cute-jumper/embrace.el")
     (synopsis "Add/Change/Delete pairs based on `expand-region'")
-    (description
-     "_____________ EMBRACE.EL Junpeng Qiu _____________ Table of Contents
-_________________ 1 Overview 2 Usage ..  2.1 Example ..  2.2 Screencasts ..  2.3
-`embrace-change and `embrace-delete ..  2.4 `embrace-add 3 Customization ..  3.1
-Adding More Semantic Units ..  3.2 Adding More Surrounding Pairs ..  3.3 Disable
-Help Message ..  3.4 Example Settings 4 For `evil-surround Users ..  4.1 Where
-`embrace is better ..  4.2 Why not use together? 5 Contributions 6 Related
-Packages Add/Change/Delete pairs based on [expand-region].  For `evil-surround
-integration, see [evil-embrace]. [expand-region]
-https://github.com/magnars/expand-region.el [evil-embrace]
-https://github.com/cute-jumper/evil-embrace.el 1 Overview ========== This
-package is heavily inspired by [evil-surround] (which is a port of the vim
-plugin [surround.vim]).  But instead of using `evil and its text objects, this
-package relies on another excellent package [expand-region].  For Emacs users
-who don't like `evil and thus don't use `evil-surround', `embrace provides
-similar commands that can be found in `evil-surround'. `Evil is absolutely *not*
-required.  For `evil-surround users, `embrace can make your `evil-surround
-commands even better! (Have you noticed that `evil-surround doesn't work on many
-custom pairs?) [evil-surround] https://github.com/timcharper/evil-surround
-[surround.vim] https://github.com/tpope/vim-surround [expand-region]
-https://github.com/magnars/expand-region.el 2 Usage ======= There are three
-commands: `embrace-add', `embrace-change and `embrace-delete that can add,
-change, and delete surrounding pairs respectively.  You can bind these commands
-to your favorite key bindings.  There is also a dispatch command
-`embrace-commander'.  After invoking `embrace-commander', you can hit: - `a for
-`embrace-add - `c for `embrace-change - `d for `embrace-delete 2.1 Example
-~~~~~~~~~~~ It might be a little hard for users who have no experience in `evil
-and `evil-surround to understand what `embrace can do.  So let's give an example
-to show what `embrace can do fist.  You can look at the following sections to
-see the meaning of key bindings.  In this example, I bind C-, to
-`embrace-commander'.  Assume we have following text in `c-mode and the cursor
-position is indicated by `|': ,---- | fo|o `---- Press C-, a w  to add  to the
-current word: ,---- | fo|o `---- Press C-, a q { to add {} to outside of the
-quotes: ,---- | {'fo|o'} `---- Press C-, c  \" to change the  to \"\": ,---- |
-{\"fo|o\"} `---- Press C-, c { t, and then enter the tag: body class=\"page-body\",
-to change the {} to a tag: ,---- | <body class=\"page-body\">\"fo|o\"</body> `----
-Press C-, c t f, and enter the function name `bar to change the tag to a
-function call: ,---- | bar(\"fo|o\") `---- Press C-, d f to remove the function
-call: ,---- | \"fo|o\" `---- If you're an `evil-surround user, you might notice
-that the last command can't be achieved by `evil-surround'.  However, it works
-in `embrace'! And yes, you can find even more examples in which `evil-surround
-doesn't work while `embrace works! 2.2 Screencasts ~~~~~~~~~~~~~~~ For non
-`evil-mode users, use the following settings (they will be explained later):
-,---- | (global-set-key (kbd \"C-,\") #'embrace-commander) | (add-hook
-org-mode-hook #'embrace-org-mode-hook) `---- Open an org-mode file, we can
-perform the following pair changing: [./screencasts/embrace.gif] For `evil-mode
-users, here is a similar screencast (see [evil-embrace] for more details):
-[https://github.com/cute-jumper/evil-embrace.el/blob/master/screencasts/evil-embrace.gif]
-[evil-embrace] https://github.com/cute-jumper/evil-embrace.el 2.3
-`embrace-change and `embrace-delete ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-These two commands can change and delete the surround pair respectively.  For
-`evil-surround users, `embrace-change is similar to `cs and `embrace-delete is
-similar to `ds'.  The surrounding pair is specified by a key, which is very
-similar to the key used for Vim's text objects.  For example, `( stands for the
-surrounding pair `( and `)', and `{ stands for the surrouding pair, `{ and `}'.
-The default key mappings are shown below: Key Left right
--------------------------------- ( \"(\" \")\" ) \"( \" \" )\" { \"{\" \"}\" } \"{ \" \" }\" [
-\"[\" \"]\" ] \"[ \" \" ]\" > \"<\" \">\" \" \"\\\"\" \"\\\"\"  \"\\'\" \"\\'\" ` \"`\" \"`\" t \"<foo bar=100>\"
-\"</foo>\" f \"func(\" \")\" Note that for `t and `f key, the real content is based on
-the user's input.  Also, you can override the closing quote when entering a `
-(backquote) in emacs-lisp to get a  (apostrophe) instead of a ` (backquote) by
-using `embrace-emacs-lisp-mode-hook (see below).  2.4 `embrace-add
-~~~~~~~~~~~~~~~~~ This command is similar to `evil-surround''s `ys command.  We
-need to enter a key for the semantic unit to which we want to add a surrounding
-pair.  The semantic unit is marked by the functions provided by `expand-region'.
- Here is the default mapping: key mark function ----------------------------- w
-er/mark-word s er/mark-symbol d er/mark-defun p er/mark-outside-pairs P
-er/mark-inside-pairs q er/mark-outside-quotes Q er/mark-inside-quotes .
-er/mark-sentence h er/mark-paragraph After pressing a key to select the semantic
-unit, you can press another key to add the surrounding pair, which is the same
-as `embrace-change and `embrace-delete'.  3 Customization =============== 3.1
-Adding More Semantic Units ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ You can modify the
-variable `embrace-semantic-units-alist and note that this variable is
-buffer-local so it is better to change the value in a hook: ,---- | (add-hook
-text-mode-hook | (lambda () | (add-to-list embrace-semantic-units-alist (?e .
-er/mark-email)))) `---- 3.2 Adding More Surrounding Pairs
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Use the command `embrace-add-pair to add a
-pair: ,---- | (embrace-add-pair key left right) `---- The change is also
-buffer-local, so wrap it in a hook function: ,---- | (add-hook
-@code{LaTeX-mode-hook} | (lambda () | (embrace-add-pair ?e \"\\\\begin{\" \"}\")))
-`---- If you want add something like the `t key for the tag, you can look at the
-function `embrace-add-pair-regexp in the source code.  Note that if you're using
-`embrace-add-pair to add an existing key, then it will replace the old one.  3.3
-Disable Help Message ~~~~~~~~~~~~~~~~~~~~~~~~ If you find the help message
-annoying, use the following code to disable it: ,---- | (setq
-embrace-show-help-p nil) `---- 3.4 Example Settings ~~~~~~~~~~~~~~~~~~~~ I
-recommend binding a convenient key for `embrace-commander'.  For example, ,----
-| (global-set-key (kbd \"C-,\") #'embrace-commander) `---- We have defined several
-example hook functions that provide additional key bindings which can be used in
-different major modes.  Right now there are hooks for `@code{LaTeX-mode}',
-`org-mode', `ruby-mode (including `enh-ruby-mode') and `emacs-lisp-mode':
-`@code{LaTeX-mode}': Key Left Right ---------------------- = \\verb| | ~ \\texttt{
-} * \\textbf{ } `org-mode': Key Left Right
------------------------------------------- = = = ~ ~ ~ * * * _ _ _ + + + k
-`@@@@html:<kbd>@@@@ `@@@@html:</kbd>@@@@ `ruby-mode and `enh-ruby-mode': Key
-Left Right ------------------ # #{ } d do end `emacs-lisp-mode': Key Left Right
------------------- ` `  To use them: ,---- | (add-hook @code{LaTeX-mode-hook}
-embrace-@code{LaTeX-mode-hook}) | (add-hook org-mode-hook embrace-org-mode-hook)
-| (add-hook ruby-mode-hook embrace-ruby-mode-hook) ;; or enh-ruby-mode-hook |
-(add-hook emacs-lisp-mode-hook embrace-emacs-lisp-mode-hook) `---- The code of
-two of the hooks above (which are defined in `embrace.el'): ,---- | (defun
-embrace-@code{LaTeX-mode-hook} () | (dolist (lst ((?= \"\\\\verb|\" . \"|\") | (?~
-\"\\\\texttt{\" . \"}\") | (?/ \"\\\\emph{\" . \"}\") | (?* \"\\\\textbf{\" . \"}\"))) |
-(embrace-add-pair (car lst) (cadr lst) (cddr lst)))) | (defun
-embrace-org-mode-hook () | (dolist (lst ((?= \"=\" . \"=\") | (?~ \"~\" . \"~\") | (?/
-\"/\" . \"/\") | (?* \"*\" . \"*\") | (?_ \"_\" . \"_\") | (?+ \"+\" . \"+\") | (?k
-\"@@@@html:<kbd>@@@@\" . \"@@@@html:</kbd>@@@@\"))) | (embrace-add-pair (car lst)
-(cadr lst) (cddr lst)))) `---- You can define and use your own hook function
-similar to the code above.  Welcome to add some settings for more major modes.
-4 For `evil-surround Users =========================== 4.1 Where `embrace is
-better ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ From the previous example, you can see that
-`embrace actually replicates all the funcionalities provided in `evil-surround
-and it can even do more than `evil-surround'.  Actually, they are quite
-different.  Since `embrace uses `expand-region behind the scene, you can expect
-it to work as long as `expand-region works.  Unlike `evil-surround', which is
-restricted to the pre-defined text objects, `embrace can define nearly arbitrary
-surrounding pairs and three core commands always work.  On the contratry, you
-get nearly no customization in `evil-surround': custom pairs don't work in `cs
-or `ds if you don't have a corresponding text object defined (they work in
-`ys'). *TL;DR*: `embrace is more customizable.  4.2 Why not use together?
-~~~~~~~~~~~~~~~~~~~~~~~~~ Sure! You can make `embrace and `evil-surround work
-together.  Look at [evil-embrace]! [evil-embrace]
-https://github.com/cute-jumper/evil-embrace.el 5 Contributions ===============
-This package is still in early stage, but it is quite usable right now.  More
-functions can be added and the evil integration is not perfect yet.
-Contributions are always welcome! 6 Related Packages ================== -
-[evil-embrace] - [expand-region] - [evil-surround] - [change-inner] -
-[smartparens] [evil-embrace] https://github.com/cute-jumper/evil-embrace.el
-[expand-region] https://github.com/magnars/expand-region.el [evil-surround]
-https://github.com/timcharper/evil-surround [change-inner]
-https://github.com/magnars/change-inner.el [smartparens]
-https://github.com/Fuco1/smartparens.")
+    (description "TODO")
     (license #f)))
 
 (define-public emacs-expand-region
@@ -1892,61 +1669,7 @@ https://github.com/Fuco1/smartparens.")
     (arguments '(#:tests? #f))
     (home-page "https://github.com/magnars/expand-region.el")
     (synopsis "Increase selected region by semantic units")
-    (description
-     "Expand region increases the selected region by semantic units.  Just keep
-pressing the key until it selects what you want.  An example: (setq
-alphabet-start \"abc def\") With the cursor at the `c`, it starts by marking the
-entire word `abc`, then expand to the contents of the quotes `abc def`, then to
-the entire quote `\"abc def\"`, then to the contents of the sexp `setq
-alphabet-start \"abc def\"` and finally to the entire sexp.  You can set it up
-like this: (require expand-region) (global-set-key (kbd \"C-=\") er/expand-region)
-There's also `er/contract-region` if you expand too far. ## Video You can [watch
-an intro to expand-region at Emacs Rocks](http://emacsrocks.com/e09.html). ##
-Language support Expand region works fairly well with most languages, due to the
-general nature of the basic expansions: er/mark-word er/mark-symbol
-er/mark-method-call er/mark-inside-quotes er/mark-outside-quotes
-er/mark-inside-pairs er/mark-outside-pairs However, most languages also will
-benefit from some specially crafted expansions.  For instance, expand-region
-comes with these extra expansions for html-mode: er/mark-html-attribute
-er/mark-inner-tag er/mark-outer-tag You can add your own expansions to the
-languages of your choice simply by creating a function that looks around point
-to see if it's inside or looking at the construct you want to mark, and if so -
-mark it.  There's plenty of examples to look at in these files.  After you make
-your function, add it to a buffer-local version of the `er/try-expand-list`.
-**Example:** Let's say you want expand-region to also mark paragraphs and pages
-in text-mode.  Incidentally Emacs already comes with `mark-paragraph` and
-`mark-page`.  To add it to the try-list, do this: (defun
-er/add-text-mode-expansions () (setq-local er/try-expand-list (append
-er/try-expand-list (mark-paragraph mark-page)))) (er/enable-mode-expansions
-text-mode #'er/add-text-mode-expansions) Add that to its own file, and require
-it at the bottom of this one, where it says \"Mode-specific expansions\"
-**Warning:** Badly written expansions might slow down expand-region
-dramatically.  Remember to exit quickly before you start traversing the entire
-document looking for constructs to mark. ## Contribute If you make some nice
-expansions for your favorite mode, it would be great if you opened a
-pull-request.  The repo is at: https://github.com/magnars/expand-region.el
-Changes to `expand-region-core` itself must be accompanied by feature tests.
-They are written in [Ecukes](http://ecukes.info), a Cucumber for Emacs.  To
-fetch the test dependencies: $ cd /path/to/expand-region $ git submodule init $
-git submodule update Run the tests with: $ ./util/ecukes/ecukes features If you
-want to add feature-tests for your mode-specific expansions as well, that is
-utterly excellent. ## Contributors * [Josh Johnston](https://github.com/joshwnj)
-contributed `er/contract-region` * [Le Wang](https://github.com/lewang)
-contributed consistent handling of the mark ring, expanding into pairs/quotes
-just left of the cursor, and general code clean-up. * [Matt
-Briggs](https://github.com/mbriggs) contributed expansions for ruby-mode. *
-[Ivan Andrus](https://github.com/gvol) contributed expansions for python-mode,
-text-mode, @code{LaTeX-mode} and nxml-mode. * [Raimon
-Grau](https://github.com/kidd) added support for when transient-mark-mode is
-off. * [Gleb Peregud](https://github.com/gleber) contributed expansions for
-erlang-mode. * [fgeller](https://github.com/fgeller) and
-[edmccard](https://github.com/edmccard) contributed better support for python
-and its multiple modes. * [François Févotte](https://github.com/ffevotte)
-contributed expansions for C and C++. * [Roland
-Walker](https://github.com/rolandwalker) added option to copy the contents of
-the most recent action to a register, and some fixes. * [Damien
-Cassou](https://github.com/@code{DamienCassou}) added option to continue
-expanding/contracting with fast keys after initial expand.  Thanks!")
+    (description "TODO")
     (license #f)))
 
 (define-public emacs-epl
@@ -1966,40 +1689,7 @@ expanding/contracting with fast keys after initial expand.  Thanks!")
     (arguments '(#:tests? #f))
     (home-page "http://github.com/cask/epl")
     (synopsis "Emacs Package Library")
-    (description
-     "This package provides a package management library for Emacs, based on
-package.el.  The purpose of this library is to wrap all the quirks and hassle of
-package.el into a sane API. The following functions comprise the public
-interface of this library: ; Package directory selection `epl-package-dir gets
-the directory of packages. `epl-default-package-dir gets the default package
-directory. `epl-change-package-dir changes the directory of packages. ; Package
-system management `epl-initialize initializes the package system and activates
-all packages. `epl-reset resets the package system. `epl-refresh refreshes all
-package archives. `epl-add-archive adds a new package archive. ; Package objects
-Struct `epl-requirement describes a requirement of a package with `name and
-`version slots. `epl-requirement-version-string gets a requirement version as
-string.  Struct `epl-package describes an installed or installable package with
-a `name and some internal `description'. `epl-package-version gets the version
-of a package. `epl-package-version-string gets the version of a package as
-string. `epl-package-summary gets the summary of a package.
-`epl-package-requirements gets the requirements of a package.
-`epl-package-directory gets the installation directory of a package.
-`epl-package-from-buffer creates a package object for the package contained in
-the current buffer. `epl-package-from-file creates a package object for a
-package file, either plain lisp or tarball. `epl-package-from-descriptor-file
-creates a package object for a package description (i.e. *-pkg.el) file. ;
-Package database access `epl-package-installed-p determines whether a package is
-installed, either built-in or explicitly installed. `epl-package-outdated-p
-determines whether a package is outdated, that is, whether a package with a
-higher version number is available. `epl-built-in-packages',
-`epl-installed-packages', `epl-outdated-packages and `epl-available-packages get
-all packages built-in, installed, outdated, or available for installation
-respectively. `epl-find-built-in-package', `epl-find-installed-packages and
-`epl-find-available-packages find built-in, installed and available packages by
-name. `epl-find-upgrades finds all upgradable packages. `epl-built-in-p return
-true if package is built-in to Emacs. ; Package operations `epl-install-file
-installs a package file. `epl-package-install installs a package.
-`epl-package-delete deletes a package. `epl-upgrade upgrades packages.")
+    (description "TODO")
     (license #f)))
 
 (define-public emacs-load-env-vars
@@ -2572,3 +2262,141 @@ comfort of Emacs.  It requires KDE Connect on your computer(s) and Android
 device(s).  KDE Connect currently requires Linux on the desktop, but does not
 require KDE.")
     (license #f)))
+
+(define-public emacs-evil-next
+  (let ((commit "729d9a58b387704011a115c9200614e32da3cefc")
+        (revision "1"))
+    (package
+      (name "emacs-evil-next")
+      (version (git-version "1.15.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/emacs-evil/evil")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0scdws40fg4k9lqyznjghnn8svn7l0c6mq7h2aq5pzkm6hanzqn3"))))
+      (arguments
+       (list
+        #:test-command
+        #~(list "emacs" "-Q" "--batch"
+                "-l" "evil-tests.el"
+                "-f" "evil-tests-initialize")
+        #:phases
+        #~(modify-phases %standard-phases
+            (add-before 'install 'make-info
+              (lambda _
+                (with-directory-excursion "doc/build/texinfo"
+                  (invoke "makeinfo" "--no-split"
+                          "-o" "evil.info" "evil.texi")))))))
+      (build-system emacs-build-system)
+      (native-inputs (list texinfo))
+      (home-page "https://github.com/emacs-evil/evil")
+      (synopsis "Extensible Vi layer for Emacs")
+      (description
+       "Evil is an extensible vi layer for Emacs.  It emulates the
+main features of Vim, and provides facilities for writing custom
+extensions.")
+      (license license:gpl3+))))
+
+(define-public emacs-pipewire
+  (package
+    (name "emacs-pipewire")
+    (version "20220725.1858")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://git.zamazal.org/pdm/pipewire-0")
+             (commit "ae7a95230f102e7430a80acb02850bc24430c3b2")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1f4hbjh5jb1skk104s52brq9mgsl275g1l631x07yffdps310axr"))))
+    (build-system emacs-build-system)
+    (home-page "https://git.zamazal.org/pdm/pipewire-0")
+    (synopsis "PipeWire user interface")
+    (description
+     "@code{PipeWire} user interface and library.  It currently uses pw-cli and
+pw-metadata command line utilities to interact with @code{PipeWire}.  An
+interactive @code{PipeWire} buffer can be displayed using `M-x pipewire'.  There
+you can view basic @code{PipeWire} status and change some settings.
+`pipewire-increase-volume', `pipewire-decrease-volume and `pipewire-toggle-muted
+functions can be used also standalone and are suitable to bind on the multimedia
+keys.  The package can be used also non-interactively in Elisp programs.  See
+pipewire-lib.el source file for available functions.")
+    (license #f)))
+
+(define-public emacs-uuidgen
+  (package
+    (name "emacs-uuidgen")
+    (version "20240201.2318")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/kanru/uuidgen-el")
+             (commit "cebbe09d27c63abe61fe8c2e2248587d90265b59")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1ih6kj3inwdxypbqj2n5vnfxmc6rfrx114w8bdy60yd8klx7273d"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/kanru/uuidgen-el")
+    (synopsis "Provides various UUID generating functions")
+    (description
+     "This is a naive implementation of RFC4122 Universally Unique IDentifier
+generation in elisp.  Currently implemented are UUID v1 v3, v4 and v5
+generation.  The resolution of the time based UUID is microseconds, which is 10
+times of the suggested 100-nanosecond resolution, but should be enough for
+general usage.")
+    (license license:gpl3)))
+
+(define-public emacs-code-review
+  (package
+    (name "emacs-code-review")
+    (version "20221206.113")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/doomelpa/code-review")
+              (commit "303edcfbad8190eccb9a9269dfc58ed26d386ba5")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "09i2y2zc2cfwgl024flfz2jfzqbcarxrll9mwyn28s0ycjqy4j9n"))))
+    (build-system emacs-build-system)
+    (arguments
+     (list #:test-command #~(list "buttercup" "-L" "test")
+           #:emacs emacs                ; full for sqlite and libxml
+           #:phases
+           #~(modify-phases %standard-phases
+               (add-after 'unpack 'enable-lexical-binding
+                 (lambda _
+                   (for-each
+                    (lambda (file)
+                      (emacs-batch-edit-file file
+                        '(progn
+                          (add-file-local-variable-prop-line 'lexical-binding t)
+                          (basic-save-buffer))))
+                    (find-files "test" "\\.el$"))))
+               (add-before 'check 'set-home
+                 (lambda _ (setenv "HOME" (getenv "TMPDIR")))))))
+    (native-inputs (list emacs-buttercup))
+    (propagated-inputs (list emacs-closql
+                             emacs-magit
+                             emacs-transient
+                             emacs-a
+                             emacs-ghub
+                             emacs-uuidgen
+                             emacs-deferred
+                             emacs-markdown-mode
+                             emacs-forge
+                             emacs-emojify))
+    (home-page "https://github.com/wandersoncferreira/code-review")
+    (synopsis "Perform code review from Github, Gitlab, and Bitbucket Cloud")
+    (description
+     "Review Pull Request in Emacs using a modern interface based on Magit Section and
+Transient.  Currently supports Github, Gitlab, and Bitbucket Cloud.")
+    (license license:gpl3)))
