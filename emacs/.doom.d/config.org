@@ -558,6 +558,7 @@ polkit.addRule(function(action, subject) {
  (personal packages binary)
  (personal packages next)
  (personal packages xlibre)
+ (ice-9 match)
  (ice-9 receive)
  (srfi srfi-1)
  (srfi srfi-11)
@@ -609,7 +610,13 @@ polkit.addRule(function(action, subject) {
                (file-name (git-file-name (package-name base) version))
                (sha256 (base32 hash))))))))
 
-(define all-packages (map pkg (flatten (list <<guix-pkg>>))))
+(define pinned (package-input-rewriting (list <<guix-pin>>)))
+(define pinned+output
+  (match-lambda
+    ((pkg output) (list (pinned pkg) output))
+    (pkg (pinned pkg))))
+(define all-packages (map (compose pinned+output pkg) (flatten (list <<guix-pkg>>))))
+
 (home-environment
   (services
    (cons*
@@ -1163,9 +1170,6 @@ REVERSE? it when true. Returns the selected buffer."
 
 ** emms
 *** package
-#+begin_src scheme :noweb-ref emacs-dep
-"emacs-emms"
-#+end_src
 #+begin_src elisp
 (defun dont-kill-buffer--hook ()
   (bury-buffer)
@@ -1339,9 +1343,6 @@ REVERSE? it when true. Returns the selected buffer."
 #+end_src
 *** spotify
 **** player
-#+begin_src scheme :noweb-ref guix-pkg
-"emacs-emms-player-spotify"
-#+end_src
 #+begin_src elisp
 (after! browse-url
   (defun browse-url-emms (url &rest _) (emms-add-url url))
@@ -2194,46 +2195,33 @@ wireplumber.profiles = {
 #+end_src
 * doom
 ** base packages
-#+begin_src scheme :noweb-ref doom-pins
+#+begin_src scheme :noweb-ref guix-pin
 ;; https://codeberg.org/guix/guix/pulls/5492
-(pin "emacs-evil-collection"
-     #:commit "163792a823bcdb2dae7ac1bba4018adfac35dca2"
-     #:hash "1vfhs1f4s0ygys9cs2iixv9f7rjf69gmvban68j92ndv6bvq31qg")
 (pin "emacs-elisp-demos"
      #:commit "1a108d1c5011f9ced58be2ca98bea1fbd4130a2f"
      #:hash "1rw7v8xks6rpjk10kw0lkb3f158jsqk6167f3dpmxm3q4000k8nz")
 (pin "emacs-org-contacts"
      #:commit "41f10b9ab07f267613d77e98ef7a33b1772292b0"
      #:hash "1aqvq1wca7csi7mrgy1gvy1lgq6ybi9ap030zwk697hvz8i0d59g")
-
-;; https://codeberg.org/guix/guix/pulls/5419
-(pin "emacs-general"
-     #:commit "a48768f85a655fe77b5f45c2880b420da1b1b9c3"
-     #:hash "19k82p8pwyh3krq8i6l6calwy9wddqklj1klkdyawgh5ar230vb2")
-(pin "emacs-evil-mc"
-     #:commit "7e363dd6b0a39751e13eb76f2e9b7b13c7054a43"
-     #:hash "0gzy2mqcdxhkg0hmxqzbjy5ihfal1s21wxd04mrikqri54sck4z5")
-(pin "emacs-nerd-icons"
-     #:commit "772987a28d6408f840331c52c91d04b623a87048"
-     #:hash "0n3kjz3ir43ghs0pq86plcz5mpf3m0qn19ahi0705pv56hgvr0h8")
-
 (pin "emacs-marginalia"
      #:commit "d38041df2c2d175040bbdb1df6e4cc75a75ca4f8"
      #:hash "180v5y24rjrbh4dk66x3xhx3vb52yj520d61bkxrx790555a0y8g")
-(pin "emacs-evil-org"
-     #:uri "https://github.com/doomelpa/evil-org-mode"
-     #:commit "06518c65ff4f7aea2ea51149d701549dcbccce5d"
-     #:hash "11r3aim8qvyddp9d7sphcd0hl3vwxl81z83aifzgx89jb5ivfn6y")
+
+(let* ((emms (pkg "emacs-emms"))
+       (emms-meta (cadr (assoc "emacs-emms-print-metadata" (package-inputs emms))))
+       (meta-fixed
+        (package
+          (inherit emms-meta)
+          (inputs (modify-inputs (package-inputs emms-meta)
+                    (append (pkg "zlib")))))))
+  (cons emms
+        (package
+          (inherit emms)
+          (inputs (modify-inputs (package-inputs emms)
+                    (replace (package-name emms-meta) meta-fixed))))))
 #+end_src
 #+begin_src scheme :noweb-ref guix-pkg
 home-emacs
-(let ((pins (list <<doom-pins>>)))
-  (append
-   (map cdr pins)
-   (map (compose (package-input-rewriting pins) pkg)
-        '("emacs-treemacs-nerd-icons"
-          "emacs-nerd-icons-completion"
-          "emacs-nerd-icons-corfu"))))
 
 "emacs-adaptive-wrap"
 "emacs-anzu"
@@ -2273,9 +2261,12 @@ home-emacs
 "emacs-elfeed-goodies"
 "emacs-elfeed-org"
 "emacs-elisp-def"
+"emacs-elisp-demos"
 "emacs-embark"
 "emacs-embark-consult"
 "emacs-emmet-mode"
+"emacs-emms"
+"emacs-emms-player-spotify"
 "emacs-envrc"
 "emacs-eros"
 "emacs-esh-help"
@@ -2286,6 +2277,7 @@ home-emacs
 "emacs-evil"
 "emacs-evil-anzu"
 "emacs-evil-args"
+"emacs-evil-collection"
 "emacs-evil-easymotion"
 "emacs-evil-embrace"
 "emacs-evil-escape"
@@ -2294,11 +2286,13 @@ home-emacs
 "emacs-evil-indent-plus"
 "emacs-evil-lion"
 "emacs-evil-markdown"
+"emacs-evil-mc"
 "emacs-evil-multiedit"
 "emacs-evil-nerd-commenter"
 "emacs-evil-numbers"
+"emacs-evil-org"
+"emacs-evil-smartparens"
 "emacs-evil-snipe"
-"emacs-evil-surround"
 "emacs-evil-textobj-anyblock"
 "emacs-evil-traces"
 "emacs-evil-vimish-fold"
@@ -2310,6 +2304,7 @@ home-emacs
 "emacs-flycheck-package"
 "emacs-flycheck-plantuml"
 "emacs-flycheck-popup-tip"
+"emacs-general"
 "emacs-git-modes"
 "emacs-git-timemachine"
 "emacs-go-gen-test"
@@ -2338,9 +2333,13 @@ home-emacs
 "emacs-macrostep"
 "emacs-magit"
 "emacs-makefile-executor"
+"emacs-marginalia"
 "emacs-markdown-mode"
 "emacs-markdown-toc"
 "emacs-nav-flash"
+"emacs-nerd-icons"
+"emacs-nerd-icons-completion"
+"emacs-nerd-icons-corfu"
 "emacs-nodejs-repl"
 "emacs-ob-async"
 "emacs-ob-go"
@@ -2349,6 +2348,7 @@ home-emacs
 "emacs-org"
 "emacs-org-appear"
 "emacs-org-cliplink"
+"emacs-org-contacts"
 "emacs-org-contrib"
 "emacs-org-download"
 "emacs-org-modern"
@@ -2389,6 +2389,7 @@ home-emacs
 "emacs-transient"
 "emacs-treemacs"
 "emacs-treemacs-extra"
+"emacs-treemacs-nerd-icons"
 "emacs-treesit-fold"
 "emacs-undo-fu"
 "emacs-undo-fu-session"
@@ -2454,16 +2455,25 @@ home-emacs
 #+begin_src scheme :noweb-ref guix-srv
 (service
  doomemacs-service-type
- (let ((pins (list <<doom-pins>>)))
-   (doomemacs-configuration
-    (emacs home-emacs)
-    (doomemacs ((package-input-rewriting pins) (pkg "doomemacs")))
-    (config (doomemacs-config
-             #:src (local-file (relative-file "../emacs/.doom.d") "src"
-                               #:recursive? #t
-                               #:select? (git-predicate (relative-file "../emacs/.doom.d")))
-             #:inputs (map pkg (list <<emacs-dep>>))))
-    (inputs all-packages))))
+ (doomemacs-configuration
+  (emacs home-emacs)
+  (doomemacs (pinned (pkg "doomemacs")))
+  (config (doomemacs-config
+           #:src (local-file (relative-file "../emacs/.doom.d") "src"
+                             #:recursive? #t
+                             #:select? (git-predicate (relative-file "../emacs/.doom.d")))
+           #:inputs (map pkg (list <<emacs-dep>>))))
+  (inputs all-packages)))
+#+end_src
+** evil
+#+begin_src scheme :noweb-ref guix-pin
+(pin "emacs-evil-collection"
+     #:commit "163792a823bcdb2dae7ac1bba4018adfac35dca2"
+     #:hash "1vfhs1f4s0ygys9cs2iixv9f7rjf69gmvban68j92ndv6bvq31qg")
+(pin "emacs-evil-org"
+     #:uri "https://github.com/doomelpa/evil-org-mode"
+     #:commit "06518c65ff4f7aea2ea51149d701549dcbccce5d"
+     #:hash "11r3aim8qvyddp9d7sphcd0hl3vwxl81z83aifzgx89jb5ivfn6y")
 #+end_src
 ** init.el
 #+begin_src elisp :tangle init.el
@@ -3622,12 +3632,7 @@ eval "$(atuin init bash)"
 #+end_src
 ** agent-shell
 #+begin_src scheme :noweb-ref guix-pkg
-"emacs-acp"
-((package-input-rewriting
-  (list (pin "emacs-shell-maker"
-             #:commit "v0.84.7"
-             #:hash "0x10qjhcym4nnv5zh4nwy7d46lp158q06w2iwgi265nl1bz9s7yq")))
-  (pkg "emacs-agent-shell"))
+"emacs-agent-shell"
 #+end_src
 ** gemini
 #+begin_src scheme :noweb-ref guix-pkg
