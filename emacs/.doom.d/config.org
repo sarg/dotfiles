@@ -316,35 +316,37 @@ dnsmasq_resolve=/etc/dnsmasq.resolve
 (defun sarg/vpn-start (country)
   "Start VPN in COUNTRY."
   (interactive (list (completing-read "Country: " '("de" "ru") nil t "de")))
-  (let ((bot (telega-user--by-username "DiogenisBot")))
-    (message "Starting VPN")
-    (sarg/telega-msg-send bot (concat "/vpn " country))
-    (promise-chain
-        (sarg/telega-msg-expect bot (lambda (txt) (s-starts-with? "VPN started" txt)))
-      (then (lambda (msg)
-              (eshell-command "sudo herd start wireguard-wg0")
-    
-              (when (= 1 (call-process "ip" nil nil nil "a" "show" "dev" "wg0"))
-                (notifications-notify :title "Hey" :body "wireguard not running"))
-              (notifications-notify :title "Hey" :body msg))))))
+  (message "Starting VPN")
+  (sarg/telega-msg-send (telega-chat-by-username "DiogenisBot")
+                        (concat "/vpn " country))
+  (promise-chain
+      (sarg/telega-msg-expect
+       (telega-match-gen-predicate 'msg
+         '(and (contains "VPN started")
+               (chat (bot-user (username "DiogenisBot"))))))
+    (then (lambda (msg)
+            (eshell-command "sudo herd start wireguard-wg0")
+
+            (when (= 1 (call-process "ip" nil nil nil "a" "show" "dev" "wg0"))
+              (notifications-notify :title "Hey" :body "wireguard not running"))
+            (notifications-notify :title "Hey" :body (telega-msg-content-text msg))))))
 
 
 (defun sarg/vpn-stop ()
   "Stop VPN."
   (interactive)
-  
-  (let ((bot (telega-user--by-username "DiogenisBot")))
-    (unless (= 1 (call-process "pgrep" nil nil nil "aria2c"))
-      (user-error "Aria2 is still running"))
-    (eshell-command "sudo herd stop wireguard-wg0")
-    (sarg/telega-msg-send bot "/vpn stop")
-    (promise-chain
-        (sarg/telega-msg-expect bot (lambda (txt)
-                                      (or
-                                       (s-matches? "Stopped.+VPN" txt)
-                                       (string= "Nothing to stop" txt))))
-      (then (lambda (msg)
-              (notifications-notify :title "Hey" :body msg))))))
+  (unless (= 1 (call-process "pgrep" nil nil nil "aria2c"))
+    (user-error "Aria2 is still running"))
+  (eshell-command "sudo herd stop wireguard-wg0")
+  (sarg/telega-msg-send (telega-chat-by-username "DiogenisBot") "/vpn stop")
+  (promise-chain
+      (sarg/telega-msg-expect
+       (telega-match-gen-predicate 'msg
+         '(and (or (contains "Stopped.+VPN")
+                   (contains "Nothing to stop"))
+               (chat (bot-user (username "DiogenisBot"))))))
+    (then (lambda (msg)
+            (notifications-notify :title "Hey" :body (telega-msg-content-text msg))))))
 #+end_src
 ** hardware
 #+begin_src scheme :noweb-ref system-use
