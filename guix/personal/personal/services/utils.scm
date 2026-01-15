@@ -5,18 +5,26 @@
   #:use-module (ice-9 match)
 
   #:export (transform-shepherd-extension
+            no-autostart
+            online-service
             augment-computed-file
             chmod-computed-file))
 
 (define (no-autostart service)
   (shepherd-service (inherit service) (auto-start? #f)))
 
+(define (online-service-transform service)
+  (shepherd-service
+    (inherit service)
+    (requirement (cons 'online (shepherd-service-requirement service)))))
+
 (define (transform-shepherd-extension input-service proc)
   "Augment shepherd extension of INPUT-SERVICE to disable auto-start."
-  (define (transform-extension ex)
-    (match ex
+  (define transform-extension
+    (match-lambda
       (($ (@@ (gnu services) <service-extension>)
-          (and ($ (@@ (gnu services) <service-type>) 'shepherd-root _) kind)
+          (and ($ (@@ (gnu services) <service-type>)
+                  (or 'shepherd-root 'home-shepherd) _) kind)
           compute)
 
        (service-extension
@@ -25,7 +33,7 @@
           (let ((orig (car (compute config))))
             (list (proc orig))))))
 
-      (_ ex)))
+      (ex ex)))
 
   (match input-service
     (($ (@@ (gnu services) <service>)
@@ -34,9 +42,13 @@
 
      (service
       (service-type
-       (inherit kind)
-       (extensions (map transform-extension extensions)))
+        (inherit kind)
+        (extensions (map transform-extension extensions)))
       value))))
+
+(define (online-service type config)
+  "Add 'online to the list of requirements of shepherd-service extension."
+  (transform-shepherd-extension (service type config) online-service-transform))
 
 (define (augment-computed-file proc content)
   "Wrap PROC returning a <computed-file> to append CONTENT to that file."
