@@ -2737,22 +2737,18 @@ xargs flatpak install --or-update --noninteractive
 #+end_src
 ** dark mode
 #+begin_src scheme :noweb-ref guix-pkg
-"darkman" "emacs-darkman"
+"emacs-darkman"
 #+end_src
-#+begin_src cfg :dest ".config/darkman/config.yaml"
-lat: 52.52
-lng: 13.39
-dbusserver: true
-#+end_src
-
-#+RESULTS[714f30d34b122acc2715a52b0a8481368d6d05ba]:
-#+begin_src text :noweb-ref guix-file
-(".config/darkman/config.yaml"
-,(mixed-text-file
-  "cfg-file"
-"lat: 52.52\n"
-"lng: 13.39\n"
-"dbusserver: true"))
+#+begin_src scheme :noweb-ref guix-srv
+(service
+ home-darkman-service-type
+ (home-darkman-configuration
+  (darkman
+   (cdr (pin "darkman"
+             #:commit "b7c84de3990977eb4ace8c9719ae708a45739d0d"
+             #:hash "1rkwjs3rjrzw6gkcm4q91d0axhdhnrwfp4f503dji2jvs8wqa33m")))
+  (latitude 52.52)
+  (longitude 13.39)))
 #+end_src
 
 #+begin_src elisp
@@ -3371,56 +3367,18 @@ include theme
 #+end_src
 * browsing
 ** qutebrowser
+#+begin_src scheme :noweb-ref guix-pin
+(pin "emacs-qutebrowser"
+     #:uri "https://github.com/sarg/qutebrowser.el"
+     #:commit "805c1ddc3685dfafec4bef7ada09135620ccd48e"
+     #:hash "0yd7p2pjcf7fn1bmp1p0ys0yn8qa6ilba5lqsqkd2ijys8frmwq4")
+#+end_src
 #+begin_src scheme :noweb-ref guix-pkg
 "qutebrowser" "emacs-qutebrowser"
 #+END_src
 #+begin_src scheme :noweb-reg guix-env-var
 ("BROWSER" . "qutebrowser")
 #+end_src
-#+begin_src cfg :chmod "u+x" :dest ".local/share/dark-mode.d/qutebrowser"
-#!🐜(pkg "bash-minimal")🐜/bin/sh
-cat <<EOF > ~/.config/qutebrowser/darkmode.py
-c.colors.webpage.darkmode.enabled = True
-EOF
-
-pgrep -f QtWebEngineProcess && qutebrowser ':config-source darkmode.py'
-#+end_src
-
-#+RESULTS[763eb98491bedcbabff19383e8d79504ad1d6d2f]:
-#+begin_src text :noweb-ref guix-file
-(".local/share/dark-mode.d/qutebrowser"
-,(chmod-computed-file (mixed-text-file
-  "cfg-file"
-"#!"(pkg "bash-minimal")"/bin/sh\n"
-"cat <<EOF > ~/.config/qutebrowser/darkmode.py\n"
-"c.colors.webpage.darkmode.enabled = True\n"
-"EOF\n"
-"\n"
-"pgrep -f QtWebEngineProcess && qutebrowser ':config-source darkmode.py'") #o744))
-#+end_src
-
-#+begin_src cfg :chmod "u+x" :dest ".local/share/light-mode.d/qutebrowser"
-#!🐜(pkg "bash-minimal")🐜/bin/sh
-cat <<EOF > ~/.config/qutebrowser/darkmode.py
-c.colors.webpage.darkmode.enabled = False
-EOF
-
-pgrep -f QtWebEngineProcess && qutebrowser ':config-source darkmode.py'
-#+end_src
-
-#+RESULTS[802f180103c2bbf76b5b27e7fd9cdbc5e13f177d]:
-#+begin_src text :noweb-ref guix-file
-(".local/share/light-mode.d/qutebrowser"
-,(chmod-computed-file (mixed-text-file
-  "cfg-file"
-"#!"(pkg "bash-minimal")"/bin/sh\n"
-"cat <<EOF > ~/.config/qutebrowser/darkmode.py\n"
-"c.colors.webpage.darkmode.enabled = False\n"
-"EOF\n"
-"\n"
-"pgrep -f QtWebEngineProcess && qutebrowser ':config-source darkmode.py'") #o744))
-#+end_src
-
 #+begin_src scheme :noweb-ref guix-file
 (".config/qutebrowser/urllog.py" ,(local-file "../qutebrowser/.config/qutebrowser/urllog.py"))
 (".config/qutebrowser/config.py" ,(local-file "../qutebrowser/.config/qutebrowser/config.py"))
@@ -3461,10 +3419,15 @@ pgrep -f QtWebEngineProcess && qutebrowser ':config-source darkmode.py'
          (exwm-init . qutebrowser-evil-state-mode)
          (exwm-init . qutebrowser-theme-export-mode))
   :custom
-  (qutebrowser-pass-username-function (lambda (e) (auth-source-pass-get "login" e)))
+  (qutebrowser-pass-username-function (fn! (auth-source-pass-get "login" %)))
+  (qutebrowser-rpc-timeout 1.5)
   (qutebrowser-launcher-backend #'qutebrowser-consult-launcher)
 
   :config
+  (add-hook! 'qutebrowser-theme-export-functions
+    (insert "c.colors.webpage.darkmode.enabled = "
+            (if (string= (darkman-current-mode) "dark") "True" "False")
+            "\n"))
   (add-to-list 'qutebrowser-theme-export-face-mappings '(webpage.bg . default)))
 #+end_src
 ** eww

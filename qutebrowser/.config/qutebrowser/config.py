@@ -97,8 +97,6 @@ def qute_blank(_url: QUrl):
     )
 
 
-config.source("darkmode.py")
-
 ## bangs
 c.url.searchengines = {
     "DEFAULT": "qute://bangs?q={}",
