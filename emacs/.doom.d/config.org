@@ -2566,10 +2566,20 @@ home-emacs
 #+begin_src scheme :noweb-ref guix-pkg
 "emacs-catppuccin-theme"
 "emacs-greymatters-theme"
+(let ((base (pkg "emacs-doom-themes")))
+  (package
+   (inherit base)
+   (source
+    (origin
+     (inherit (package-source base))
+     (modules '((guix build utils)))
+     (snippet #~(substitute* "doom-themes-base.el"
+                  (("(tab-line.+)bg-alt\\)" _ prefix)
+                   (string-append prefix "fg-alt)"))))))))
 #+end_src
 #+begin_src elisp
-(defvar doom-theme-dark 'catppuccin)
-(setq doom-theme 'greymatters
+(defvar doom-theme-dark 'doom-tomorrow-night)
+(setq doom-theme 'doom-gruvbox-light
       doom-font (font-spec :family "JetBrains Mono" :size 18)
       doom-serif-font (font-spec :family "JetBrains Mono")
       doom-symbol-font (font-spec :family "JetBrains Mono"))
