@@ -3417,7 +3417,8 @@ include theme
 (use-package! qutebrowser
   :hook ((exwm-init . global-qutebrowser-exwm-mode)
          (exwm-init . qutebrowser-evil-state-mode)
-         (exwm-init . qutebrowser-theme-export-mode))
+         (exwm-init . qutebrowser-theme-export-mode)
+         (exwm-init . qutebrowser-fileselect-mode))
   :custom
   (qutebrowser-pass-username-function (fn! (auth-source-pass-get "login" %)))
   (qutebrowser-rpc-timeout 1.5)
@@ -3838,25 +3839,6 @@ fi
 ** reddigg
 #+begin_src scheme :noweb-ref guix-pkg
 "emacs-reddigg"
-#+end_src
-** qute-dired
-#+begin_src elisp
-(defun qute/choose-file ()
-  (interactive)
-  (let ((files (dired-get-marked-files)))
-    (with-temp-file qute-filename
-      (insert (s-join "\n" files)))
-    (unbind-key "C-C C-c" 'dired-mode-map)
-    (+dired/quit-all)))
-
-(defun qute/dired-hook (&optional _)
-  (when (s-starts-with? "/tmp/qutebrowser-fileselect" buffer-file-name)
-    (setq qute-filename buffer-file-name)
-    (kill-buffer)
-    (dired "~/")
-    (bind-key "C-c C-c" #'qute/choose-file 'dired-mode-map)))
-
-(add-hook! 'server-visit-hook #'qute/dired-hook)
 #+end_src
 ** google calendar
 #+begin_src cfg :dest ".config/vdirsyncer/config"
