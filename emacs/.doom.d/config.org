@@ -2263,6 +2263,7 @@ home-emacs
 "emacs-clj-refactor"
 "emacs-clojure-mode"
 "emacs-clojure-ts-mode"
+"emacs-code-review"
 "emacs-cond-let"
 "emacs-consult"
 "emacs-consult-dash"
@@ -2377,6 +2378,7 @@ home-emacs
 "emacs-org-modern"
 "emacs-org-roam"
 "emacs-orgit"
+"emacs-orgit-forge"
 "emacs-overseer"
 "emacs-ox-clip"
 "emacs-ox-hugo"
@@ -2510,7 +2512,7 @@ home-emacs
  :editor      (evil +everywhere) fold lispy snippets (format +onsave) multiple-cursors word-wrap
  :emacs       (dired +dirvish +icons) electric vc ibuffer undo eww
  :term        eshell vterm
- :tools       editorconfig (eval +overlay) (lookup +docsets) magit (pass +auth)
+ :tools       editorconfig (eval +overlay) (lookup +docsets) (magit +forge) (pass +auth)
               make tree-sitter lsp direnv llm debugger
  :checkers    syntax
  :lang        (clojure +tree-sitter) data emacs-lisp (javascript +tree-sitter +lsp) markdown
@@ -3047,9 +3049,12 @@ mod? dotfiles '~/devel/dotfiles/guix/Justfile'
 [credential]
     helper = cache --timeout 21600  # six hours
     helper = oauth
+
+[github]
+    user = sarg
 #+end_src
 
-#+RESULTS[507e70f32440df35b916a3afa91bd324c7793f77]:
+#+RESULTS[4174896d10de9e6caad4ca208dfe152c38b3e59e]:
 #+begin_src text :noweb-ref guix-file
 (".config/git/config"
 ,(mixed-text-file
@@ -3071,7 +3076,10 @@ mod? dotfiles '~/devel/dotfiles/guix/Justfile'
 "\n"
 "[credential]\n"
 "    helper = cache --timeout 21600  # six hours\n"
-"    helper = oauth"))
+"    helper = oauth\n"
+"\n"
+"[github]\n"
+"    user = sarg"))
 #+end_src
 
 #+begin_src cfg :dest ".config/git/ignore"
