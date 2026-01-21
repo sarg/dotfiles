@@ -3602,8 +3602,7 @@ eval "$(atuin init bash)"
 
 * dired
 #+begin_src scheme :noweb-ref guix-pkg
-"emacs-dired-hacks" "emacs-dired-du"
-"emacs-openwith" "emacs-sxiv"
+"emacs-dired-hacks" "emacs-dired-du" "emacs-sxiv"
 #+end_src
 
 #+begin_src elisp
@@ -3642,28 +3641,26 @@ eval "$(atuin init bash)"
   :commands sxiv)
 (use-package! dired-du
   :after dired
-  :custom
-  ;; human readable
-  (dired-du-size-format 't))
+  :custom (dired-du-size-format t)) ;; human readable
 
 (after! async
   (dired-async-mode 1))
 
-(defun openwith-has-association (file)
-  (-any? (lambda (oa) (string-match (car oa) file)) openwith-associations))
+(defun dired-open/torrent (fn)
+  (let ((dir (read-directory-name "Directory: " aria2-download-directory nil t)))
+    (aria2-downloads-list)
+    (addTorrent aria2--cc fn :dir (expand-file-name dir))))
 
-(use-package! openwith
-  :hook (after-init . openwith-mode)
+(after! dired-x
+  (setq dired-guess-shell-alist-user
+        '(("\\.\\(?:mp4\\|mkv\\|avi\\)\\(?:\\.part\\)?\\'" "jaro"))))
+
+(use-package! dired-open
+  :after dired
   :custom
-  (openwith-associations
-   '(("\\.\\(?:mkv\\|webm\\|avi\\|mp4\\)\\'" "jaro" (file))))
-
-  :config
-  ;; Don't ask if file is too large when it'll be handled by openwith-mode.
-  (advice-add 'abort-if-file-too-large :before-until
-              (lambda (size op-type filename &rest args)
-                (and (boundp 'openwith-mode) openwith-mode
-                     (openwith-has-association filename)))))
+  (dired-open-extensions-elisp `(("torrent" . dired-open/torrent)))
+  (dired-open-functions '(dired-open-guess-shell-alist
+                          dired-open-call-function-by-extension)))
 #+end_src
 
 * bindings

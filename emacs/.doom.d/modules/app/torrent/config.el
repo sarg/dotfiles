@@ -17,8 +17,7 @@
               (substring-no-properties
                (string-join
                 (seq-map
-                 (lambda (el)
-                   (aref (cdr el) 0))
+                 (lambda (el) (aref (cdr el) 0))
                  (tablist-get-marked-items))
                 ","))
 
@@ -74,22 +73,6 @@
   "Ensure aria2 is up and running."
   (with-current-buffer (get-buffer-create aria2-list-buffer-name)
     (aria2-mode)))
-
-(defun sarg/aria2-file-at-point (dest-dir)
-  "Download selected files to DEST-DIR. Dwim if DEST-DIR is not
-provided and then fallback to `aria2-download-directory'."
-
-  (interactive
-   (list (read-directory-name "Directory: "
-                              (or (dired-dwim-target-directory)
-                                  aria2-download-directory)
-                              nil
-                              t)))
-  (aria2-ensure-started)
-  (mapc (lambda (fn) (addTorrent aria2--cc fn :dir (expand-file-name dest-dir)))
-        (dired-get-marked-files))
-
-  (pop-to-buffer aria2-list-buffer-name))
 
 (use-package! aria2
   :config
