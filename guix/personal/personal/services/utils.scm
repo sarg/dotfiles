@@ -1,14 +1,17 @@
 (define-module (personal services utils)
   #:use-module (guix gexp)
+  #:use-module (guix packages)
   #:use-module (gnu services)
   #:use-module (gnu services shepherd)
+  #:use-module (guix build-system trivial)
   #:use-module (ice-9 match)
 
   #:export (transform-shepherd-extension
             no-autostart
             online-service
             augment-computed-file
-            chmod-computed-file))
+            chmod-computed-file
+            info-package))
 
 (define (no-autostart service)
   (shepherd-service (inherit service) (auto-start? #f)))
@@ -71,3 +74,25 @@
    (computed-file-name f)
    #~(begin #$(computed-file-gexp f) (chmod #$output #$p))
    #:options (computed-file-options f)))
+
+(define (info-package p)
+  (let ((basename (package-name p)))
+    (package
+      (name (string-append basename "-info"))
+      (version "0")
+      (source #f)
+      (build-system trivial-build-system)
+      (arguments
+       (list
+        #:modules '((guix build utils))
+        #:builder
+        #~(begin
+            (use-modules (guix build utils))
+            (let ((out (string-append #$output "/share/info")))
+              (mkdir-p (dirname out))
+              (symlink (string-append #$p "/share/info") out)))))
+      (native-inputs (list p))
+      (home-page (package-home-page p))
+      (synopsis (string-append "Info pages of " basename))
+      (description #f)
+      (license (package-license p)))))
