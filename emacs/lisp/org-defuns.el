@@ -1,3 +1,6 @@
+;;; org-defuns.el --- Assorted org-mode helpers -*- lexical-binding: t; -*-
+(require 'ob-core)
+
 ;; https://isamert.net/2022/01/04/dealing-with-apis-jsons-and-databases-in-org-mode.html
 (defun org-babel-execute:json (body params)
   (let ((jq (cdr (assoc :jq params)))
@@ -19,6 +22,7 @@
         (shell-command-on-region (point-min) (point-max) "node -p" nil 't)
         (buffer-string))))))
 
+;;;###autoload
 (defun sarg/eval-org-src-block (name)
   "Eval elisp block NAME. To be used in org files in Local variables section."
 
@@ -36,3 +40,5 @@
                for (sexp . next) = (read-from-string body next)
                do (eval sexp)
                while (< next maxlen)))))
+
+(provide 'org-defuns)

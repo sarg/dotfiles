@@ -225,6 +225,7 @@ Pass OPTS directly to (request)."
     (add-to-list 'browse-url-handlers
                  (cons "freefeed.net/v4/attachments/" #'eww-browse-url))))
 
+;;;###autoload
 (defun frf-timeline (&optional feed offset)
   "Read Freefeed's FEED timeline from OFFSET."
   (interactive)

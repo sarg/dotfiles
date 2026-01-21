@@ -2490,6 +2490,21 @@ home-emacs
            #:inputs (map pkg (list <<emacs-dep>>))))
   (inputs all-packages)))
 #+end_src
+** my lisp code
+#+begin_src scheme :noweb-ref guix-pkg
+(package
+  (name "emacs-sarg-lisp")
+  (version "0")
+  (source (local-file "../emacs/lisp" #:recursive? #t))
+  (build-system (@ (guix build-system emacs) emacs-build-system))
+  (arguments '(#:tests? #f))
+  (propagated-inputs
+   (map pkg '("emacs-promise" "emacs-request" "emacs-s" "emacs-dash")))
+  (synopsis "My lisp code")
+  (home-page #f)
+  (description #f)
+  (license #f))
+#+end_src
 ** evil
 #+begin_src scheme :noweb-ref guix-pin
 (pin "emacs-evil-collection"
@@ -2909,8 +2924,6 @@ dbusserver: true
 (after! org-download
   (setq org-download-screenshot-method
         "flameshot gui --raw > %s"))
-
-(load! "org-defuns")
 #+end_src
 ** capture
 *** qutebrowser userscript
@@ -3481,10 +3494,6 @@ pgrep -f QtWebEngineProcess && qutebrowser ':config-source darkmode.py'
     (add-to-list 'browse-url-handlers (cons (rx "news.ycombinator.com/item?id=")
                                             (lambda (url &rest _) (hnreader-comment url)))))
   (org-link-set-parameters "eww" :follow 'eww-browse-url))
-#+end_src
-** freefeed
-#+begin_src elisp
-(autoload #'frf-timeline (file-name-concat (dir!) "frf") "Freefeed" t)
 #+end_src
 * shell
 #+begin_src scheme :noweb-ref guix-pkg
