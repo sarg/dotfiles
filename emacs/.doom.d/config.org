@@ -208,6 +208,7 @@
 (gnu packages cups)
 (gnu services dns)
 (gnu services networking)
+(gnu services monitoring)
 (gnu services avahi)
 #+end_src
 
@@ -232,6 +233,7 @@ dnsmasq_resolve=/etc/dnsmasq.resolve
 #+end_src
 
 #+begin_src scheme :noweb-ref system-service
+(service vnstat-service-type)
 (service openssh-service-type
          (openssh-configuration
           (x11-forwarding? #t)))
@@ -911,11 +913,18 @@ EXWM has a separate [[../.doom.d/modules/app/exwm][doom app]]. Here are just the
  display-time-string-forms '((substring (format-time-string "%a") 0 2)
                               (format-time-string " %d %R")))
 
+(use-package! net-usage
+  :custom
+  (net-usage-interface "wlp1s0")
+  :config
+  (net-usage-mode 1))
+
 (display-battery-mode 1)
 (display-time-mode 1)
 (setq! global-mode-string
       '(emms-mode-line-string
         iwd-manager-mode-line-string
+        net-usage-mode-line-string
         battery-mode-line-string
         display-time-string))
 #+end_src
