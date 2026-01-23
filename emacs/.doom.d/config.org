@@ -2034,6 +2034,7 @@ done
     (shepherd-service
      (documentation "Run minidlnad")
      (provision '(minidlnad))
+     (requirement '(online))
      (modules `(((shepherd support) #:hide (mkdir-p)) ;for '%user-log-dir'
                 ,@%default-modules))
      (start #~(make-forkexec-constructor
@@ -2096,7 +2097,7 @@ done
 ,@(resolve-relative-to "/storage/" '((".local/state/syncthing" "data/syncthing/")))
 #+end_src
 #+begin_src scheme :noweb-ref guix-srv
-(service
+(online-service
  home-syncthing-service-type
  (let ((pixel (syncthing-device (id "Q4ZQAU5-ZBFVS3E-OULHHHM-3HOCUXT-TVV5UYL-XPZRRWH-EXYYJWG-WVAUAAS")))
        (thinkpad (syncthing-device (id "NYWEUMS-WOSRVEG-TD6CQZA-IHZ66GX-HZT2PJ2-IZ244FL-N3JC7DD-3DV57AG"))))
@@ -2127,8 +2128,8 @@ allow_anonymous true
 #+end_src
 
 #+begin_src scheme :noweb-ref guix-srv
-(service mosquitto-service-type <<cfg-mosquitto()>>)
-(service owntracks-service-type
+(online-service mosquitto-service-type <<cfg-mosquitto()>>)
+(online-service owntracks-service-type
          (owntracks-service
           (config (owntracks-configuration
                    (storage-dir "/storage/data/owntracks")))))
