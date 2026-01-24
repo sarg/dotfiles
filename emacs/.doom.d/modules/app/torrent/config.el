@@ -1,28 +1,5 @@
 ;;; -*- lexical-binding: t; -*-
 
-;;;###autoload
-(defun torrent-do-download-selected (dest-dir)
-  "Download ARG entries."
-  (interactive
-   (list (read-directory-name "Directory: "
-                              (or (dired-dwim-target-directory)
-                                  aria2-download-directory)
-                              nil
-                              t))
-   torrent-mode)
-
-  (aria2-ensure-started)
-  (addTorrent aria2--cc original-buffer-file-name
-              :select-file
-              (substring-no-properties
-               (string-join
-                (seq-map
-                 (lambda (el) (aref (cdr el) 0))
-                 (tablist-get-marked-items))
-                ","))
-
-              :dir (expand-file-name dest-dir)))
-
 
 (defvar aria2-notify-completion-timer nil
   "Timer object for `aria2-notify-completion-mode` to check aria2 status.")
@@ -59,29 +36,40 @@
       (setq mode-line-process nil)
       (setq aria2-notify-completion-timer nil)))))
 
+
+(defun aria2-format-select-file (files)
+  (mapconcat (lambda (idx) (number-to-string (1+ idx))) files ","))
+
+(defun aria2-download (fn &rest selected)
+  (require 'aria2)
+  (let ((dir (read-directory-name "Directory: " aria2-download-directory nil t)))
+    (aria2-downloads-list)
+    (addTorrent aria2--cc fn
+                :select-file (aria2-format-select-file selected)
+                :dir (expand-file-name dir))))
+
 (use-package! torrent-mode
-  :mode ("\\.torrent\\'" . 'torrent-mode)
-
-  :config
-  (after! evil-collection
-    (evil-collection-define-key 'normal 'torrent-mode-map
-      "D" 'torrent-do-download-selected
-      "d" nil
-      "m" 'tablist-mark-forward)))
-
-(defun aria2-ensure-started ()
-  "Ensure aria2 is up and running."
-  (with-current-buffer (get-buffer-create aria2-list-buffer-name)
-    (aria2-mode)))
+  :custom
+  (torrent-mode-download-function #'aria2-download))
 
 (use-package! aria2
+  :defer t
   :config
-  (load! "aria2-entry")
-
   (set-popup-rule! aria2-list-buffer-name :ignore t)
+
+  ;; upstream it
+  (evil-collection-inhibit-insert-state 'aria2-mode-map)
+  (evil-set-initial-state 'aria2-mode-map 'normal)
+  (evil-collection-define-key 'normal 'aria2-mode-map
+    "Q" 'aria2-terminate
+    "p" 'aria2-toggle-pause
+    "a" 'aria2-add
+    "D" 'aria2-remove-download
+    "C" 'aria2-clean-removed-download
+    (kbd "M-k") 'aria2-move-up-in-list
+    (kbd "M-j") 'aria2-move-down-in-list)
 
   :custom
   (aria2-download-directory (expand-file-name "~/Downloads"))
   (aria2-start-rpc-server t)
-  (aria2-add-evil-quirks t)
   (aria2-custom-args '("--rpc-save-upload-metadata=false")))
