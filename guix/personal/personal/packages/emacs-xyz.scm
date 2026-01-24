@@ -1111,44 +1111,46 @@ http://github.com/nex3/haml-mode.")
 (define-public emacs-torrent-mode
   (package
     (name "emacs-torrent-mode")
-    (version "20250813.1529")
+    (version "0.2.1")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
               (url "https://github.com/sarg/torrent-mode.el")
-              (commit "5dbb59c60c0c2db24d3d138eb003c66c3578b7b4")))
+              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0r6hi18mjlip002lqfbch7fnkkzn5g1h2p3y9c6qmw79kd32qlf8"))))
+        (base32 "1bm83indkljygab84j91b9prhkrs98y3b0jm8yg4i0ip84c05274"))))
     (build-system emacs-build-system)
+    (inputs (list emacs-aria2))
     (propagated-inputs (list emacs-tablist emacs-bencoding))
     (arguments '(#:tests? #f))
     (home-page "https://github.com/sarg/torrent-mode.el")
     (synopsis "Display torrent files in a tabulated view")
-    (description "This package displays torrent files using tablist-mode.")
-    (license #f)))
+    (description "This package displays torrent files using tablist-mode.
+A helper is provided to download files using @code{aria2}.")
+    (license license:unlicense)))
 
 (define-public emacs-aria2
   (package
     (name "emacs-aria2")
-    (version "20230314.2131")
+    (version "3.0")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-              (url "https://github.com/ukaszg/aria2")
-              (commit "1f2cbe624f3a4e0109b5dc123bb4bbed496b15a7")))
+              (url "https://github.com/sarg/aria2")
+              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "166l6x802zz32zh6xlblfssd2rpvkkg8lf5apz76dbr4h0m2zw1k"))))
+        (base32 "0cr79i6w4wrlab6xpy1rdvxdaivdmrhf903xwfzqm3spx2m6nk3v"))))
     (build-system emacs-build-system)
     (arguments '(#:tests? #f))
-    (home-page "https://bitbucket.org/ukaszg/aria2-mode")
-    (synopsis "Control aria2c commandline tool from Emacs")
-    (description
-     "This package lacks a description.  Run \"info '(guix) Synopses and Descriptions'\" for more information.")
-    (license #f)))
+    (home-page "https://github.com/ukaszg/aria2")
+    (synopsis "Control @code{aria2c} commandline tool from Emacs")
+    (description "This package provides a tabulated-list based interface to aria2 bittorent
+client.")
+    (license license:unlicense)))
 
 (define-public emacs-circe-notifications
   (package
