@@ -124,7 +124,7 @@
     (theme (grub-theme
             (image (file-append %artwork-repository "/grub/guix-16-9.svg"))
             (resolution '(1920 . 1080))
-            (gfxmode '("1920x1080" "auto"))))
+            (gfxmode '("1920x1080"))))
     (bootloader grub-efi-bootloader)
     (targets '("/boot"))))
 
@@ -2232,25 +2232,6 @@ wireplumber.profiles = {
 (pin "emacs-elisp-demos"
      #:commit "1a108d1c5011f9ced58be2ca98bea1fbd4130a2f"
      #:hash "1rw7v8xks6rpjk10kw0lkb3f158jsqk6167f3dpmxm3q4000k8nz")
-(pin "emacs-org-contacts"
-     #:commit "41f10b9ab07f267613d77e98ef7a33b1772292b0"
-     #:hash "1aqvq1wca7csi7mrgy1gvy1lgq6ybi9ap030zwk697hvz8i0d59g")
-(pin "emacs-marginalia"
-     #:commit "d38041df2c2d175040bbdb1df6e4cc75a75ca4f8"
-     #:hash "180v5y24rjrbh4dk66x3xhx3vb52yj520d61bkxrx790555a0y8g")
-
-(let* ((emms (pkg "emacs-emms"))
-       (emms-meta (cadr (assoc "emacs-emms-print-metadata" (package-inputs emms))))
-       (meta-fixed
-        (package
-          (inherit emms-meta)
-          (inputs (modify-inputs (package-inputs emms-meta)
-                    (append (pkg "zlib")))))))
-  (cons emms
-        (package
-          (inherit emms)
-          (inputs (modify-inputs (package-inputs emms)
-                    (replace (package-name emms-meta) meta-fixed))))))
 #+end_src
 #+begin_src scheme :noweb-ref guix-pkg
 home-emacs
@@ -2381,7 +2362,6 @@ home-emacs
 "emacs-org"
 "emacs-org-appear"
 "emacs-org-cliplink"
-"emacs-org-contacts"
 "emacs-org-contrib"
 "emacs-org-download"
 "emacs-org-modern"
@@ -2540,7 +2520,7 @@ home-emacs
               make tree-sitter lsp direnv llm debugger
  :checkers    syntax
  :lang        (clojure +tree-sitter) data emacs-lisp (javascript +tree-sitter +lsp) markdown
-              (org +contacts +dragndrop +pandoc +hugo +roam2 +pretty) beancount (go +lsp +tree-sitter) (rust +lsp +tree-sitter)
+              (org +dragndrop +pandoc +hugo +roam2 +pretty) beancount (go +lsp +tree-sitter) (rust +lsp +tree-sitter)
               (rest +jq) (sh +tree-sitter) plantuml (python +lsp +tree-sitter) (web +tree-sitter) yaml (json +tree-sitter)
  :app         telega (rss +org) torrent irc exwm dash-menu
  :email       (mu4e +mbsync +gmail)
@@ -2728,7 +2708,7 @@ xargs flatpak install --or-update --noninteractive
 #+end_src
 #+begin_src elisp :noweb-ref exwm :tangle no
 (exwm/bind-command
-   "<menu>" #'dash-menu
+   "<menu>" (cmd! (unless (minibufferp) (dash-menu)))
    "<XF86MonBrightnessUp>" "brightnessctl -e set 10%+"
    "<XF86MonBrightnessDown>" "brightnessctl -e set 10%-"
    "<XF86ScreenSaver>" "xset s activate"
@@ -2917,11 +2897,6 @@ xargs flatpak install --or-update --noninteractive
 (use-package! org-tidy
   :disabled
   :hook (org-mode . org-tidy-mode))
-
-(use-package! org-contacts
-  :defer t
-  :custom
-  (org-contacts-files (list (expand-file-name "contacts.org" org-directory))))
 
 (use-package! org-modern-indent
   :hook (org-mode . org-modern-indent-mode))
@@ -3337,6 +3312,11 @@ include theme
 "include theme"))
 #+end_src
 ** calibre
+#+begin_src scheme :noweb-ref guix-pin
+(pin "emacs-calibredb"
+     #:commit "99a234167a092bc0017d11c814f0b8c0da53a107"
+     #:hash "0jkhaf5h2qcqz8nvw80wj0xjazdpm2l9n0d5a41p20gnz54rhkbd")
+#+end_src
 #+begin_src scheme :noweb-ref guix-pkg
 "emacs-calibredb" "sqlite" "calibre"
 #+end_src
@@ -3430,18 +3410,6 @@ include theme
             (if (string= (darkman-current-mode) "dark") "True" "False")
             "\n"))
   (add-to-list 'qutebrowser-theme-export-face-mappings '(webpage.bg . default)))
-#+end_src
-** eww
-#+begin_src scheme :noweb-ref emacs-dep
-"rdrview"
-#+END_src
-#+begin_src elisp
-;; https://codeberg.org/divyaranjan/emacs-reader/issues/166
-;; (after! mailcap
-;;   (setq! mailcap-user-mime-data '((reader-mode "application/pdf"))))
-
-;; (after! eww
-;;   (setq! eww-retrieve-command (list (guix/pkg 'rdrview "/bin/rdrview" "-H" "-E" "utf-8"))))
 #+end_src
 ** yeetube
 #+begin_src scheme :noweb-ref guix-pkg
@@ -3913,20 +3881,11 @@ token_file = "~/.local/state/vdirsyncer/token"
 "emacs-tmr"
 #+end_src
 ** collectd
-* TODO todo [9/12]
+* TODO todo [9/11]
 ** DONE console font
 ** DONE mingetty with xorg autostart (under sarg), put `lock.sh` first in the .xsession
 ** DONE user syncthing
 ** DONE check if greetd is necessary
-** TODO move away from org-contacts
-Reqs:
-- use [[https://datatracker.ietf.org/doc/html/rfc6350#section-5.4][ALTID]] for names in russian/english
-- group KIND
-- embed photo (=PHOTO:data:image/webp;base64,...=)
-- nickname
-- impp for telega/whatsapp
-https://isamert.net/2021/04/21/managing-your-contacts-in-org-mode-and-syncing-them-to-your-phone-android-ios-whatever-.html
-
 ** DONE guix gc, but not that aggressive
 =--gc-keep-derivations= and =--gc-keep-outputs= to =guix-daemon= params
 ** NO Fix hardcoded =Guix_image= root partition name

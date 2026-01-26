@@ -106,6 +106,7 @@ c.url.searchengines = {
     "arch": "https://wiki.archlinux.org/index.php?search={}",
     "yt": "https://www.youtube.com/results?search_query={}",
     "imdb": "https://www.imdb.com/find/?s=all&q={}",
+    "w": "https://en.wikipedia.org/wiki/Special:Search?search={}&go=Go",
     "g": "https://www.google.com/search?hl=en&udm=14&q={}",
     "gh": "https://github.com/search?utf8=✓&type=Code&q={}",
     "gm": "https://www.google.com/maps?hl=en&q={}",
