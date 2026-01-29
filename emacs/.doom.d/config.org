@@ -247,6 +247,7 @@ dnsmasq_resolve=/etc/dnsmasq.resolve
           (negative-cache? #f)
           (servers '("9.9.9.9"))
           (extra-options '("--bind-interfaces"
+                           "--dns-loop-detect"
                            "--interface=lo"))))
 (simple-service
  'resolvconf etc-service-type
@@ -558,7 +559,6 @@ polkit.addRule(function(action, subject) {
  (personal services secretsd)
  (personal services backup)
  (personal packages binary)
- (personal packages next)
  (personal packages xlibre)
  (ice-9 match)
  (ice-9 receive)
@@ -1632,6 +1632,7 @@ services:
         mu4e-refile-folder "/gmail/all"
         +mu4e-compose-org-msg-toggle-next nil
         sendmail-program "msmtp"
+        mail-specify-envelope-from t
         message-sendmail-f-is-evil t
         message-sendmail-extra-arguments '("--read-envelope-from")
         send-mail-function #'sendmail-send-it
@@ -2513,6 +2514,14 @@ home-emacs
            #:inputs (map pkg (list <<emacs-dep>>))))
   (inputs all-packages)))
 #+end_src
+** guix tweaks
+#+begin_src elisp
+(defadvice! +set-snippet-dir (fun &rest args)
+  "Use writeable snippets dir."
+  :around '(+snippets/new +snippets/find-private +snippets/find +snippets/new-alias)
+  (let ((+snippets-dir (expand-file-name "~/devel/otfiles/emacs/.doom.d/snippets")))
+    (apply fun args)))
+#+end_src
 ** my lisp code
 #+begin_src scheme :noweb-ref guix-pkg
 (package
@@ -3310,14 +3319,9 @@ install grammars as expected by clojure-ts-mode
   (pushnew! tramp-remote-path 'tramp-own-remote-path))
 #+end_src
 * book reading
-** COMMENT zathura
+** zathura
 #+begin_src scheme :noweb-ref guix-pkg
 "zathura" "zathura-pdf-mupdf" "zathura-djvu" "zathura-cb"
-#+end_src
-#+begin_src elisp :tangle packages.el
-(package! zathura-sync-theme
-  :recipe (:host github :repo "amolv06/zathura-sync-theme")
-  :pin "7f1dece30d9f03e37d12ebfb3af6b1d663e4c8dd")
 #+end_src
 #+begin_src elisp
 (use-package! zathura-sync-theme
@@ -3464,6 +3468,11 @@ include theme
   (add-to-list 'qutebrowser-theme-export-face-mappings '(webpage.bg . default)))
 #+end_src
 ** yeetube
+#+begin_src scheme :noweb-ref guix-pin
+(pin "emacs-yeetube"
+     #:commit "2eddda6d93050b25a00c739b8ad72b58ce8602cc"
+     #:hash "0jydjijmmj1nkr4462w5j5b3hhy7ms43zpxs325mjna6f9cmylgd")
+     #+end_src
 #+begin_src scheme :noweb-ref guix-pkg
 "emacs-yeetube"
 #+END_src
