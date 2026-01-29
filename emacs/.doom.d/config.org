@@ -907,11 +907,19 @@ EXWM has a separate [[../.doom.d/modules/app/exwm][doom app]]. Here are just the
 #+end_src
 *** bar
 #+begin_src elisp
+(defadvice! +battery-icons (bat-status)
+  "Add icons to battery status."
+  :filter-return #'battery-upower
+  (let ((indicator (assq ?b bat-status)))
+    (when (string= (cdr indicator) "+")
+      (setf (cdr indicator) "")))
+  bat-status)
+
 (setq!
  battery-mode-line-format " %b%>2p% "
  battery-mode-line-limit 50
  display-time-string-forms '((substring (format-time-string "%a") 0 2)
-                              (format-time-string " %d %R")))
+                              (format-time-string "/%d %R")))
 
 (use-package! net-usage
   :custom
