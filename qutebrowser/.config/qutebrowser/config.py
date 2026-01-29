@@ -4,9 +4,9 @@ from qutebrowser.api import cmdutils
 from qutebrowser.utils import objreg, qtutils
 from qutebrowser.qt.core import QUrl, QUrlQuery
 from qutebrowser.config import config as cfg
+import pathlib
 import urllog
 import re
-import os
 
 c.auto_save.session = True
 c.backend = "webengine"
@@ -87,13 +87,17 @@ config.load_autoconfig(False)
 ## theme loader
 config.source("emacs_theme.py")
 
+blankPage = (pathlib.Path(__file__).parent / "blank.html").read_text()
+
 
 ## dark mode
 @add_handler("blank")
 def qute_blank(_url: QUrl):
     return (
         "text/html",
-        f'<html style="background-color: {c.colors.webpage.bg}" />',
+        blankPage.replace(
+            "<html>", f"<html style='background-color: {c.colors.webpage.bg}'>"
+        ),
     )
 
 

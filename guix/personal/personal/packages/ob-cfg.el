@@ -19,9 +19,9 @@ with (chmod-computed-file)."
         (setf body (buffer-string))))
 
     (concat
-     (if .:dest (format "(%S\n," .:dest) "")
-     (if .:chmod "(chmod-computed-file " "")
-     "(mixed-text-file\n  \"cfg-file\"\n"
+     (when .:dest (format "(%S\n," .:dest))
+     (when .:chmod "(chmod-computed-file ")
+     "(mixed-text-file\n  \"cfg-" (if .:dest (file-name-nondirectory .:dest) "file") "\"\n"
      ;; split string into parts 'string-part🐜scheme-part🐜'
      ;; - output each line of 'string-part' quoted.
      ;; - output 'scheme-part' as is
@@ -35,11 +35,10 @@ with (chmod-computed-file)."
         (let ((string-part (match-string 1 e))
               (scheme-part (match-string 2 e)))
           (concat
-           (if (string-empty-p string-part) ""
-             (string-join
-              (mapcar
-               (lambda (l) (prin1-to-string l nil '((escape-newlines . t))))
-               (string-lines string-part nil t))
+           (unless (string-empty-p string-part)
+             (mapconcat
+              (lambda (l) (prin1-to-string l nil '((escape-newlines . t))))
+              (string-lines string-part nil t)
               "\n"))
            scheme-part)))
       (concat body "🐜🐜") t t)

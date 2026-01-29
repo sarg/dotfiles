@@ -3393,6 +3393,24 @@ include theme
 #+begin_src scheme :noweb-reg guix-env-var
 ("BROWSER" . "qutebrowser")
 #+end_src
+#+begin_src cfg :dest .config/qutebrowser/blank.html
+<!DOCTYPE html>
+<html><body style="min-height: 90vh; display: grid; place-items: center;">
+   <img src="file://🐜(@ (gnu artwork) %artwork-repository)🐜/logo/head-only/Guix-head-stencil.svg">
+</body></html>
+#+end_src
+
+#+RESULTS[c86319cfa1b269186e09c2b2d86921888fcf1196]:
+#+begin_src text :noweb-ref guix-file
+(".config/qutebrowser/blank.html"
+,(mixed-text-file
+  "cfg-blank.html"
+"<!DOCTYPE html>\n"
+"<html><body style=\"min-height: 90vh; display: grid; place-items: center;\">\n"
+"   <img src=\"file://"(@ (gnu artwork) %artwork-repository)"/logo/head-only/Guix-head-stencil.svg\">\n"
+"</body></html>"))
+#+end_src
+
 #+begin_src scheme :noweb-ref guix-file
 (".config/qutebrowser/urllog.py" ,(local-file "../qutebrowser/.config/qutebrowser/urllog.py"))
 (".config/qutebrowser/config.py" ,(local-file "../qutebrowser/.config/qutebrowser/config.py"))
