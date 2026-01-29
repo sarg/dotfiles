@@ -2161,7 +2161,23 @@ allow_anonymous true
 (service home-pipewire-service-type)
 #+end_src
 
-[[https://www.reddit.com/r/linux/comments/1em8biv/psa_pipewire_has_been_halving_your_battery_life/][fix camera draining battery]]
+#+begin_src cfg :dest ".config/user-dirs.dirs"
+XDG_DOWNLOAD_DIR="$HOME/Downloads"
+XDG_MUSIC_DIR="/storage/media/music"
+XDG_VIDEOS_DIR="$HOME/Movies"
+#+end_src
+
+#+RESULTS[45e1dae772a995ee3e2b5764b3744a06e9db4ad4]:
+#+begin_src text :noweb-ref guix-file
+(".config/user-dirs.dirs"
+,(mixed-text-file
+  "cfg-file"
+"XDG_DOWNLOAD_DIR=\"$HOME/Downloads\"\n"
+"XDG_MUSIC_DIR=\"/storage/media/music\"\n"
+"XDG_VIDEOS_DIR=\"$HOME/Movies\""))
+#+end_src
+
+[[https://www.reddit.com/r/linux/comments/1em8biv/psa_pipewire_has_been_halving_your_battery_life/][fix camera draining battery]] https://codeberg.org/guix/guix/pulls/5990
 #+begin_src cfg :dest ".config/wireplumber/wireplumber.conf.d/10-disable-camera.conf"
 wireplumber.profiles = {
   main = {
