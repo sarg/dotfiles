@@ -782,6 +782,11 @@ disable-ipv6=true
 #+end_src
 ** exwm
 EXWM has a separate [[../.doom.d/modules/app/exwm][doom app]]. Here are just the settings.
+#+begin_src scheme :noweb-ref guix-pin
+(pin "emacs-exwm"
+     #:commit "369b9126a94c801eb9ec3eddbc00da3236f53bc7"
+     #:hash "12v7iiq2yk3pafw4a83innib993cwi33sm4bnh8fawan6a9pgqqz")
+#+end_src
 #+begin_src scheme :noweb-ref guix-pkg
 "emacs-exwm"
 "emacs-exwm-edit"

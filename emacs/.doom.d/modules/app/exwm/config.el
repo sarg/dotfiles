@@ -1,12 +1,4 @@
 ;;; app/exwm/config.el -*- lexical-binding: t; -*-
-(defun exwm-set-default-cursor ()
-  "Sets default cursor to left_ptr (instead of default black cross)."
-  (xcb:+request exwm--connection
-      (make-instance 'xcb:ChangeWindowAttributes
-                     :window exwm--root
-                     :value-mask xcb:CW:Cursor
-                     :cursor (xcb:cursor:load-cursor exwm--connection "left_ptr"))))
-
 (defun exwm/bind-command (key command &rest bindings)
   (while key
     (exwm-input-set-key (if (vectorp key) key (kbd key))
@@ -31,11 +23,7 @@
   (when (modulep! +polybar)
     (exwm/polybar-mode))
 
-  (exwm-set-default-cursor)
-  (start-process-shell-command "show-login" nil "pkill -x -USR2 xsecurelock"))
-
-(defun exwm/new-window-hook ()
-  (doom-mark-buffer-as-real-h))
+  (call-process "pkill" nil nil nil "-x" "-USR2" "xsecurelock"))
 
 (defun exwm/update-title-hook ()
   (exwm-workspace-rename-buffer exwm-title))
@@ -44,7 +32,7 @@
   :commands (exwm-enable)
   :demand
   :hook (exwm-init . exwm/init)
-  :hook (exwm-mode . exwm/new-window-hook)
+  :hook (exwm-mode . doom-mark-buffer-as-real-h)
   :hook (exwm-update-title . exwm/update-title-hook)
 
   :init

@@ -1,0 +1,11 @@
+# -*- mode: snippet -*-
+# name: guix-pin
+# uuid: 
+# key: pin
+# condition: t
+# --
+#+begin_src scheme :noweb-ref guix-pin
+(pin "emacs-$1"
+     #:commit "$2"
+     #:hash "0000000000000000000000000000000000000000000000000000")
+#+end_src
