@@ -603,7 +603,7 @@ polkit.addRule(function(action, subject) {
             (version (string-append "pin." (string-take commit 7)))
             (source
              (origin
-               (method git-fetch)
+               (inherit (package-source base))
                (uri (git-reference
                       (url (or uri
                                (git-reference-url
@@ -770,6 +770,11 @@ disable-ipv6=true
   (mpv-default-options '("--force-window=immediate")))
 #+end_src
 ** telega
+#+begin_src scheme :noweb-ref guix-pin
+(pin "emacs-telega"
+     #:commit "303e4759e4b6d504b0ba2fe1c43f2b7d63bc98bc"
+     #:hash "0kmvvksff1b7ymc02p3i1224lcsghwjgrvpfv1czs4rfpij7h51m")
+#+end_src
 #+begin_src scheme :noweb-ref guix-pkg
 "emacs-telega" "emacs-telega-contrib"
 #+end_src

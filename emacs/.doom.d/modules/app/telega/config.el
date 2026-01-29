@@ -53,7 +53,12 @@ MSG-PREDICATE is received."
   (derived-mode-p 'telega-root-mode 'telega-chat-mode
                   'telega-image-mode 'telega-webpage-mode))
 
-(setq telega-online-status-function #'my/telega-online-status)
+(defun telega-restart ()
+  "Restart telega."
+  (interactive)
+  (telega-kill t)
+  (sit-for 0.5)
+  (telega 'bg))
 
 (use-package! telega
   :defer-incrementally t
