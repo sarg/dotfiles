@@ -490,7 +490,7 @@ modification with a unique cooperative gameplay.")
 (define-public python-ty
   (package
     (name "python-ty")
-    (version "0.0.13")
+    (version "0.0.14")
     (source
      (origin
        (method url-fetch)
@@ -498,7 +498,7 @@ modification with a unique cooperative gameplay.")
              "https://github.com/astral-sh/ty/releases/download/" version
              "/ty-x86_64-unknown-linux-gnu.tar.gz"))
        (sha256
-        (base32 "0361n2xrvl1z94dlfzrpnwz5ca5xrlars6lqxbwn5dyww4qxlm0a"))))
+        (base32 "0nl2w7hbqqzbh5h7lb361vpa5r7c0bhxz3jzff7japqwmk1s88hh"))))
     (properties '((upstream-name . "ty")))
     (build-system binary-build-system)
     (supported-systems '("x86_64-linux"))
@@ -579,13 +579,13 @@ modification with a unique cooperative gameplay.")
 (define-public google-gemini-cli
   (package
     (name "google-gemini-cli")
-    (version "0.25.2")
+    (version "0.26.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/google-gemini/gemini-cli/releases/download/v" version "/gemini.js"))
        (sha256
-        (base32 "1njb51b2k33gllg0dbdkj1bsgf58bbn2jsrwskwf8nv9v6scd74k"))))
+        (base32 "1bbkd3yjrixp8g0v1sgfk218nzfhyyq6r3ldly3qj6a9gygpxv10"))))
     (build-system binary-build-system)
     (arguments (list
                 #:install-plan

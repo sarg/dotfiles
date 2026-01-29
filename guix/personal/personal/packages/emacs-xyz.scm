@@ -1134,7 +1134,7 @@ A helper is provided to download files using @code{aria2}.")
 (define-public emacs-aria2
   (package
     (name "emacs-aria2")
-    (version "3.0")
+    (version "3.1")
     (source
      (origin
        (method git-fetch)
@@ -1143,7 +1143,7 @@ A helper is provided to download files using @code{aria2}.")
               (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0cr79i6w4wrlab6xpy1rdvxdaivdmrhf903xwfzqm3spx2m6nk3v"))))
+        (base32 "005h0d7qbfhj1ny8nbsprfqhnl400sfqkj632xykcigbhr6h61ss"))))
     (build-system emacs-build-system)
     (arguments '(#:tests? #f))
     (home-page "https://github.com/ukaszg/aria2")
