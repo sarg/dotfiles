@@ -1665,7 +1665,7 @@ services:
 * secrets
 ** sops
 #+begin_src scheme :noweb-ref guix-pkg
-"sops"
+"sops" "emacs-sops"
 #+end_src
 #+begin_src cfg :dest ".config/direnv/lib/sops.sh"
 #!/usr/bin/env bash
@@ -1716,7 +1716,7 @@ use_sops() {
 #+end_src
 
 #+begin_src scheme :noweb-ref guix-file
-(".config/openstack/clouds.yaml" ,(symlink-to (relative-file "../secure/.config/openstack/clouds.yaml")))
+;(".config/openstack/clouds.yaml" ,(symlink-to (relative-file "../secure/.config/openstack/clouds.yaml")))
 #+end_src
 ** password-store
 #+begin_src scheme :noweb-ref guix-pkg

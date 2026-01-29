@@ -54,8 +54,7 @@ write_files:
     permissions: '0744'
   - content: |
       #!/usr/bin/env bash
-      ipv4=$(ip -4 addr show eth0 | grep -oP '(?<=inet\s)\d+(\.\d+){3}')
-      echo "VPN started at $ipv4" | notify-tg
+      echo "VPN started at $(curl -s -4 ip.me)" | notify-tg
       while true; do
         start=$(date +%s)
         while sleep 60; do
