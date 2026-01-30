@@ -20,8 +20,8 @@
 (define-public emacs-reader
   (package
     (name "emacs-reader")
-    (properties '((commit . "75047b20897b75df38fccee6d6ba151145d32d72")))
-    (version (git-version "0.3.2" "6" (assoc-ref properties 'commit)))
+    (properties '((commit . "3f4af37bbe1db429d95f08bfeee82be23f536d4a")))
+    (version (git-version "0.3.2" "7" (assoc-ref properties 'commit)))
     (source
      (origin
        (method git-fetch)
@@ -30,7 +30,7 @@
               (commit (assoc-ref properties 'commit))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "00vhhr840wh0vy7y3c0scl136qqvdjbz59mikg8b3pkiapv70q4s"))))
+        (base32 "1kz0ywfksnvssmjq5zlafg101hbjrh6r1d0csy035nr8qnxsljc0"))))
     (build-system emacs-build-system)
     (arguments
      (list
@@ -1111,7 +1111,7 @@ http://github.com/nex3/haml-mode.")
 (define-public emacs-torrent-mode
   (package
     (name "emacs-torrent-mode")
-    (version "0.2.1")
+    (version "0.2.2")
     (source
      (origin
        (method git-fetch)
@@ -1120,7 +1120,7 @@ http://github.com/nex3/haml-mode.")
               (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1bm83indkljygab84j91b9prhkrs98y3b0jm8yg4i0ip84c05274"))))
+        (base32 "1ajmdz6vk68diyp93q0jbmwjwrwmdyszya7yppsn2qdpiksgz1z5"))))
     (build-system emacs-build-system)
     (inputs (list emacs-aria2))
     (propagated-inputs (list emacs-tablist emacs-bencoding))
