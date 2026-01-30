@@ -1,9 +1,10 @@
+;; -*- mode: scheme -*-
 (list (channel
         (name 'guix)
         (url "https://git.guix.gnu.org/guix.git")
         (branch "master")
         (commit
-          "f2a9731917a4065f7c01260f79efd4adf8927a95")
+          "d03de3625963cf97cf7cffd6c3b427c172a19085")
         (introduction
           (make-channel-introduction
             "9edb3f66fd807b096b48283debdcddccfea34bad"
@@ -14,7 +15,7 @@
         (url "https://gitlab.com/nonguix/nonguix")
         (branch "master")
         (commit
-          "216cf961b56a8b2679239ba102089ab94c259e89")
+          "48a8706d44040cc7014f36873dbd834c048aadd3")
         (introduction
           (make-channel-introduction
             "897c1a470da759236cc11798f4e0a5f7d4d59fbc"
@@ -25,7 +26,7 @@
         (url "https://github.com/fishinthecalculator/sops-guix.git")
         (branch "main")
         (commit
-          "cc67863ae3f3629a8f46597111d5b18c6b1e6731")
+          "909522979fb1e26cc8d73e486d21b1d0b7f43cf0")
         (introduction
           (make-channel-introduction
             "0bbaf1fdd25266c7df790f65640aaa01e6d2dbc9"
@@ -36,4 +37,4 @@
         (url "https://github.com/sarg/dotfiles")
         (branch "master")
         (commit
-          "74a73feb567030dfd6cb28e6fdd5c94922f6d6f6")))
+          "f5316a5f15dd8b7d23771bef4aa19ae17c029a7d")))

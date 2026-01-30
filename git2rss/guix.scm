@@ -2,11 +2,9 @@
              (guix gexp)
              (guix git-download)
              (guix build-system copy)
-             (guix build-system clojure)
              ((guix licenses) #:prefix license:)
 
              (nongnu packages clojure)
-             (gnu packages java)
              (gnu packages clojure)
              (gnu packages version-control))
 
@@ -14,29 +12,6 @@
        ;; Return true if the given file is under version control.
        (or (git-predicate (current-source-directory))
            (const #t)))
-
-(define-public clojure-data-zip
-  (package
-    (name "clojure-data-zip")
-    (version "1.1.0")
-    (home-page "https://github.com/clojure/data.zip")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url home-page)
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1763ddrhflvi3y7mdrw7s5x3p1jnii25wz8vj0gw7i09cnpga5kn"))))
-    (build-system clojure-build-system)
-    (arguments
-     '(#:source-dirs '("src/main/clojure")
-       #:test-dirs '("src/test/clojure")
-       #:doc-dirs '()))
-    (synopsis "Clojure library for filtering trees, and XML trees in particular.")
-    (description "@code{data.xml} is a Clojure library for filtering trees, and XML trees in particular.")
-    (license license:epl1.0)))
 
 (package
   (name "git2rss")

@@ -267,6 +267,11 @@ dnsmasq_resolve=/etc/dnsmasq.resolve
              (iwd-network-settings
               (name-resolving-service 'resolvconf)))))))
 #+end_src
+#+begin_src scheme :noweb-ref guix-pin
+(pin "emacs-iwd-manager"
+     #:commit "0bca13f9c5baa80f0ecced9ea943ebe99f4e6d17"
+     #:hash "17i9yl6h87qvnwgckfqgjdhaq0j4rgk71bkkir3xjn1q98pls5zh")
+     #+end_src
 #+begin_src scheme :noweb-ref guix-pkg
 "emacs-iwd-manager"
 #+end_src
@@ -291,6 +296,7 @@ dnsmasq_resolve=/etc/dnsmasq.resolve
   (evil-collection-define-key 'normal 'iwd-manager-mode-map
     "s" 'iwd-manager-scan
     "r" 'revert-buffer
+    "p" 'iwd-manager-toggle-power
     "c" 'iwd-manager-connect
     "d" 'iwd-manager-disconnect
     "D" 'iwd-manager-delete-network
@@ -1222,6 +1228,7 @@ REVERSE? it when true. Returns the selected buffer."
 
 (after! browse-url
   (add-to-list 'browse-url-handlers '("bandcamp.com" . browse-url-emms))
+  (add-to-list 'browse-url-handlers '("soundcloud.com" . browse-url-emms))
   (add-to-list 'browse-url-handlers '("bandcamp.com/album" . emms-add-ytdlp-playlist)))
 
 (use-package! emms
@@ -1866,7 +1873,7 @@ choose_entry() {
 "font-jetbrains-mono"
 "font-inconsolata"
 "font-fira-code"
-"font-nerd-fonts-symbols"
+"font-nerd-symbols"
 "font-emojione-color"
 "font-google-noto-emoji" ; 💪🕹
 "font-hack"
@@ -1927,25 +1934,23 @@ keymap.sh
 🐜(pkg "xhost")🐜/bin/xhost +si:localuser:$USER
 🐜(pkg "dbus")🐜/bin/dbus-update-activation-environment --verbose DBUS_SESSION_BUS_ADDRESS DISPLAY XAUTHORITY
 
-ulimit -n 8192 # potentially prevents "too many open files" errors in emacs
 while true; do
   xset s activate # lock to show password screen
   emacs -mm -f exwm-wm-mode
 done
 #+end_src
 
-#+RESULTS[e45ce76c2f65577b674b9f3ef15dc8099e8f2c15]:
+#+RESULTS[4c773088d66fef38b7ff956bf14dae0d59db5bb1]:
 #+begin_src text :noweb-ref guix-file
 (".xinitrc"
 ,(mixed-text-file
-  "cfg-file"
+  "cfg-.xinitrc"
 (screen-locker
      "saver_xscreensaver"
      ;(video-saver "/storage/data/backgrounds/snow.mp4")
      #:pam-service (global 'unlock-pam-service))" &\n"
 "keymap.sh\n"(pkg "xhost")"/bin/xhost +si:localuser:$USER\n"(pkg "dbus")"/bin/dbus-update-activation-environment --verbose DBUS_SESSION_BUS_ADDRESS DISPLAY XAUTHORITY\n"
 "\n"
-"ulimit -n 8192 # potentially prevents \"too many open files\" errors in emacs\n"
 "while true; do\n"
 "  xset s activate # lock to show password screen\n"
 "  emacs -mm -f exwm-wm-mode\n"
@@ -2186,27 +2191,6 @@ XDG_VIDEOS_DIR="$HOME/Movies"
 "XDG_DOWNLOAD_DIR=\"$HOME/Downloads\"\n"
 "XDG_MUSIC_DIR=\"/storage/media/music\"\n"
 "XDG_VIDEOS_DIR=\"$HOME/Movies\""))
-#+end_src
-
-[[https://www.reddit.com/r/linux/comments/1em8biv/psa_pipewire_has_been_halving_your_battery_life/][fix camera draining battery]] https://codeberg.org/guix/guix/pulls/5990
-#+begin_src cfg :dest ".config/wireplumber/wireplumber.conf.d/10-disable-camera.conf"
-wireplumber.profiles = {
-  main = {
-    monitor.libcamera = disabled
-  }
-}
-#+end_src
-
-#+RESULTS[97dedec3921e46170c328b8fb7144e5e3b9cd901]:
-#+begin_src text :noweb-ref guix-file
-(".config/wireplumber/wireplumber.conf.d/10-disable-camera.conf"
-,(mixed-text-file
-  "cfg-file"
-"wireplumber.profiles = {\n"
-"  main = {\n"
-"    monitor.libcamera = disabled\n"
-"  }\n"
-"}"))
 #+end_src
 ** COMMENT smartcard
 #+begin_src scheme :noweb-ref system-service
@@ -2492,7 +2476,6 @@ home-emacs
 "python-pyflakes"
 "python-pytest"
 "python-black"
-"python-nose"
 
 ;; dirvish
 "ffmpegthumbnailer" "poppler" "mediainfo" "vips"
@@ -2766,10 +2749,6 @@ xargs flatpak install --or-update --noninteractive
 (service
  home-darkman-service-type
  (home-darkman-configuration
-  (darkman
-   (cdr (pin "darkman"
-             #:commit "b7c84de3990977eb4ace8c9719ae708a45739d0d"
-             #:hash "1rkwjs3rjrzw6gkcm4q91d0axhdhnrwfp4f503dji2jvs8wqa33m")))
   (latitude 52.52)
   (longitude 13.39)))
 #+end_src
@@ -3019,13 +2998,20 @@ os.execlp('jaro', 'jaro',
     (setq magit-repository-directories `((,sarg-repos-dir . 2))
           magit-clone-default-directory (concat sarg-repos-dir "ext/"))))
 
+(defun sarg/magit-clone-clean-url (url)
+  (cond
+   ((string-match "^.+github.com/[^/]+/[^/]+" url)
+    (substring url 0 (match-end 0)))
+   (t url)))
+
 (defun sarg/magit-clone-or-open (url)
   (let ((target-dir
          (expand-file-name (magit-clone--url-to-name url)
                            magit-clone-default-directory)))
     (if (magit-git-repo-p target-dir)
         (magit-status target-dir)
-      (magit-clone-regular url magit-clone-default-directory nil))
+      (magit-clone-regular (sarg/magit-clone-clean-url url)
+                           magit-clone-default-directory nil))
 
     t))
 
@@ -3468,17 +3454,14 @@ include theme
   (add-to-list 'qutebrowser-theme-export-face-mappings '(webpage.bg . default)))
 #+end_src
 ** yeetube
-#+begin_src scheme :noweb-ref guix-pin
-(pin "emacs-yeetube"
-     #:commit "2eddda6d93050b25a00c739b8ad72b58ce8602cc"
-     #:hash "0jydjijmmj1nkr4462w5j5b3hhy7ms43zpxs325mjna6f9cmylgd")
-     #+end_src
 #+begin_src scheme :noweb-ref guix-pkg
 "emacs-yeetube"
 #+END_src
 #+begin_src elisp
 (use-package! yeetube
   :commands yeetube-search
+  :custom
+  (yeetube-play-function #'browse-url-mpv)
   :config
   (map! :map yeetube-mode-map
         :n "RET" #'yeetube-play

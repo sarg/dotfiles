@@ -537,25 +537,6 @@ modification with a unique cooperative gameplay.")
     (description "Goose is an extensible AI agent that goes beyond code suggestions - install, execute, edit, and test with any LLM")
     (license license:asl2.0)))
 
-(define-public font-nerd-fonts-symbols
-  (package
-    (name "font-nerd-fonts-symbols")
-    (version "3.4.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/ryanoasis/nerd-fonts/"
-                           "releases/download/v" version
-                           "/NerdFontsSymbolsOnly.tar.xz"))
-       (sha256
-        (base32 "0skirmz6rc0845960957b19kvlbfpg5k9gs6hq8agsmhlc6hk33z"))))
-    (build-system font-build-system)
-   (properties `((upstream-name . "NerdFontsSymbolsOnly")))
-   (home-page "https://www.nerdfonts.com/")
-    (synopsis "Nerd Font including only the symbols")
-    (description "Nerd Font that includes only the icons.")
-    (license license:silofl1.1)))
-
 (define-public font-emojione-color
   (package
     (name "font-emojione-color")
