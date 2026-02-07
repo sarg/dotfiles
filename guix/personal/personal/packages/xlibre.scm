@@ -71,7 +71,7 @@
   (package
     (inherit xorg-server)
     (name "xlibre-server")
-    (version "25.1.1")
+    (version "25.1.2")
     (source
      (origin
        (method git-fetch)
@@ -80,7 +80,7 @@
              (commit (string-append "xlibre-xserver-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0187hkpmjnrn4904n75flfzf5l0kmhjbh1dgsrqvx66kc6qzara6"))))
+        (base32 "0dgbs12bx0n85fi0rdm8v7wajl9cb1vgfgd21aglwq4zljiyf1qj"))))
     (build-system meson-build-system)
     (propagated-inputs
      (modify-inputs (package-propagated-inputs xorg-server)

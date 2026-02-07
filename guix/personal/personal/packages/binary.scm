@@ -207,14 +207,14 @@ working with git and your code.")
 (define-public atuin
   (package
    (name "atuin")
-   (version "18.11.0")
+   (version "18.12.0")
    (source
     (origin
      (method url-fetch)
      (uri (string-append "https://github.com/atuinsh/atuin/releases/download/v"
                          version
                          "/atuin-x86_64-unknown-linux-gnu.tar.gz"))
-     (sha256 (base32 "16jwjmbw32j0i3znpfzdq3qls4cxvbcrcnj3wa7kg86jx4zzfwzl"))))
+     (sha256 (base32 "15ja4y1ag2mgarj0rmkcp370628n5z5pcvvw7yflhy9cvbwcx9ja"))))
    (supported-systems '("x86_64-linux"))
    (build-system binary-build-system)
    (inputs `(("gcc:lib" ,gcc "lib")
@@ -372,14 +372,14 @@ command-line programs gsutil and gcloud among others.")
 (define-public pulumi
   (package
     (name "pulumi")
-    (version "3.177.0")
+    (version "3.220.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "https://get.pulumi.com/releases/sdk/pulumi-v" version "-linux-x64.tar.gz"))
        (sha256
-        (base32 "1wzvhngr12pvrnwn375d8qbil0b17nxil2apmyrbwmdpry4a2sd6"))))
+        (base32 "1zs5mpy4rcgv0fadbb6pv95kq75152rpngch676j2n63w2awa03g"))))
     (build-system binary-build-system)
     (supported-systems '("x86_64-linux"))
     (arguments
@@ -490,7 +490,7 @@ modification with a unique cooperative gameplay.")
 (define-public python-ty
   (package
     (name "python-ty")
-    (version "0.0.14")
+    (version "0.0.15")
     (source
      (origin
        (method url-fetch)
@@ -498,7 +498,7 @@ modification with a unique cooperative gameplay.")
              "https://github.com/astral-sh/ty/releases/download/" version
              "/ty-x86_64-unknown-linux-gnu.tar.gz"))
        (sha256
-        (base32 "0nl2w7hbqqzbh5h7lb361vpa5r7c0bhxz3jzff7japqwmk1s88hh"))))
+        (base32 "0lh8lggijf2cqw25rqib37k29x4srgzqvq26qvrx0sxfq4hj2fd2"))))
     (properties '((upstream-name . "ty")))
     (build-system binary-build-system)
     (supported-systems '("x86_64-linux"))
@@ -560,13 +560,13 @@ modification with a unique cooperative gameplay.")
 (define-public google-gemini-cli
   (package
     (name "google-gemini-cli")
-    (version "0.26.0")
+    (version "0.27.4")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/google-gemini/gemini-cli/releases/download/v" version "/gemini.js"))
        (sha256
-        (base32 "1bbkd3yjrixp8g0v1sgfk218nzfhyyq6r3ldly3qj6a9gygpxv10"))))
+        (base32 "13fahvapw0gcq5ivq1vpbmdi9g4plgn9rkzj5hnr0ir9ahmgkxfr"))))
     (build-system binary-build-system)
     (arguments (list
                 #:install-plan
