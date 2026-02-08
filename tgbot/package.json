@@ -4,7 +4,7 @@
 	"private": true,
 	"devDependencies": {
 		"typescript": "^5.5.2",
-		"wrangler": "^4.21.2"
+		"wrangler": "^4.63.0"
 	},
 	"dependencies": {
 		"@types/node": "^22.15.30",

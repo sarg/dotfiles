@@ -20,7 +20,7 @@ export class Telegram extends pulumi.ComponentResource {
         commands: [
           {
             command: 'vpn',
-            description: 'start vpn',
+            description: 'start/stop vpn',
           },
           {
             command: 'setup',

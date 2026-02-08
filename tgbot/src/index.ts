@@ -102,7 +102,26 @@ function prepareUserData(chatId: number): string {
 }
 
 async function vpnHandler(chatId: number, args: string[]) {
-	switch (args[0] ?? 'ru') {
+	if (args.length === 0) {
+		await respond(
+			chatId,
+			{
+				text: 'Please choose a VPN action:',
+				reply_markup: {
+					keyboard: [
+						[{ text: '/vpn de' }],
+						[{ text: '/vpn ru' }],
+						[{ text: '/vpn stop' }],
+					],
+					resize_keyboard: true,
+					one_time_keyboard: true,
+				},
+			},
+		);
+		return;
+	}
+
+	switch (args[0]) {
 		case 'de':
 			var response = await startHetzner(prepareUserData(chatId));
 			if (!response.ok) {
@@ -127,6 +146,7 @@ async function vpnHandler(chatId: number, args: string[]) {
 			break;
 		default:
 			console.log({ msg: 'Unknown arguments', args });
+			await respond(chatId, 'Unknown VPN action.');
 	}
 }
 
