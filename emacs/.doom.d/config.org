@@ -285,7 +285,7 @@ dnsmasq_resolve=/etc/dnsmasq.resolve
     (t #("󰤮" 0 1 (display (raise 0.05)))))
    (if (and ssid (not (string= ssid "SARG"))) (concat " " ssid " ") " ")))
 
-(use-package! iwd-manager
+(use-package iwd-manager
   :defer-incrementally t
   :custom
   (iwd-manager-mode-line-formatter #'iwd-manager--format-mode-line-nerd-icons)
@@ -764,13 +764,13 @@ disable-ipv6=true
               (file-append (pkg "mpv-uosc") "/share/mpv/scripts/uosc")))))
 #+end_src
 #+begin_src elisp
-(after! browse-url
+(with-eval-after-load 'browse-url
   (defun browse-url-mpv (url &rest _) (mpv-play-url url))
   (add-to-list 'browse-url-handlers
                (cons (rx string-start "https://" (opt "www.") "youtu" (or ".be" "be.com/watch"))
                      #'browse-url-mpv)))
 
-(use-package! mpv
+(use-package mpv
   :commands mpv-play-url
   :custom
   (mpv-default-options '("--force-window=immediate")))
@@ -788,7 +788,7 @@ disable-ipv6=true
 (".telega" ,(symlink-to "/storage/data/telega"))
 #+end_src
 #+begin_src elisp
-(after! telega
+(with-eval-after-load 'telega
   (telega 'no-popup))
 #+end_src
 ** exwm
@@ -812,7 +812,7 @@ EXWM has a separate [[../.doom.d/modules/app/exwm][doom app]]. Here are just the
                  )
      do (start-process-shell-command "autostart" "*autostart*" cmd)))
 
-(after! exwm
+(with-eval-after-load 'exwm
   <<exwm>>
   (add-hook! exwm-init #'exwm-autostart-apps))
 #+end_src
@@ -821,7 +821,7 @@ EXWM has a separate [[../.doom.d/modules/app/exwm][doom app]]. Here are just the
 "emacs-ednc"
 #+end_src
 #+begin_src elisp
-(use-package! ednc
+(use-package ednc
   :hook (exwm-init . ednc-mode)
 
   :config
@@ -937,7 +937,7 @@ EXWM has a separate [[../.doom.d/modules/app/exwm][doom app]]. Here are just the
  display-time-string-forms '((substring (format-time-string "%a") 0 2)
                               (format-time-string "/%d %R")))
 
-(use-package! net-usage
+(use-package net-usage
   :custom
   (net-usage-interface "wlp1s0")
   :config
@@ -1124,7 +1124,7 @@ REVERSE? it when true. Returns the selected buffer."
          (put xdg-symbol 'function-documentation (cdr (assq 'comment app))))))
    (xdg-launcher-list-apps)))
 
-(use-package! xdg-launcher
+(use-package xdg-launcher
   :defer-incrementally t
   :config
   (advice-add 'xdg-launcher-parse-files
@@ -1134,7 +1134,7 @@ REVERSE? it when true. Returns the selected buffer."
 #+end_src
 *** consult
 #+begin_src elisp
-(after! consult
+(with-eval-after-load 'consult
   (defvar consult--source-exwm
     (list :name     "X11"
           :narrow   ?x
@@ -1188,7 +1188,7 @@ REVERSE? it when true. Returns the selected buffer."
         (elfeed-search-browse-url)
       (elfeed-search-show-entry entry))))
 
-(after! elfeed
+(with-eval-after-load 'elfeed
   (setq elfeed-db-directory "/storage/data/elfeed")
   (setq elfeed-search-filter "@2-week-ago +unread -youtube"
         elfeed-show-entry-switch #'display-buffer)
@@ -1226,12 +1226,12 @@ REVERSE? it when true. Returns the selected buffer."
 
 (defun browse-url-emms (url &rest _) (emms-add-url url))
 
-(after! browse-url
+(with-eval-after-load 'browse-url
   (add-to-list 'browse-url-handlers '("bandcamp.com" . browse-url-emms))
   (add-to-list 'browse-url-handlers '("soundcloud.com" . browse-url-emms))
   (add-to-list 'browse-url-handlers '("bandcamp.com/album" . emms-add-ytdlp-playlist)))
 
-(use-package! emms
+(use-package emms
   :defer t
   :commands (emms emms-add-url emms-stop emms-pause emms-previous)
   :init
@@ -1394,11 +1394,11 @@ REVERSE? it when true. Returns the selected buffer."
 *** spotify
 **** player
 #+begin_src elisp
-(after! browse-url
+(with-eval-after-load 'browse-url
   (defun browse-url-emms (url &rest _) (emms-add-url url))
   (add-to-list 'browse-url-handlers '("open.spotify.com" . browse-url-emms)))
 
-(use-package! emms-player-spotify
+(use-package emms-player-spotify
   :after emms
 
   :custom
@@ -1411,7 +1411,7 @@ REVERSE? it when true. Returns the selected buffer."
 #+end_src
 **** search
 #+begin_src elisp
-(use-package! consult-spotify-emms
+(use-package consult-spotify-emms
   :commands consult-spotify-emms
   :custom
   (consult-spotify-emms-client-id
@@ -1422,7 +1422,7 @@ REVERSE? it when true. Returns the selected buffer."
 *** scrobble
 Enable scrobbling of URL tracks: https://lists.gnu.org/archive/html/emms-help/2025-12/msg00011.html
 #+begin_src elisp
-(after! emms
+(with-eval-after-load 'emms
   (require 'emms-listenbrainz-scrobbler)
 
   (defun emms-scrobbler-good-track (track)
@@ -1486,7 +1486,7 @@ Enable scrobbling of URL tracks: https://lists.gnu.org/archive/html/emms-help/20
       (shr-insert-document tree)
       (buffer-string))))
 
-(use-package! lexic
+(use-package lexic
   :commands lexic-search
   :config
   (set-lookup-handlers! 'lexic-mode
@@ -1607,10 +1607,10 @@ services:
 
 (doom-load-packages-incrementally '(mu4e))
 
-(use-package! consult-mu
+(use-package consult-mu
   :commands consult-mu)
 
-(after! mu4e
+(with-eval-after-load 'mu4e
   (defun mu4e~headers-quit-buffer ()
     "Quit the mu4e-headers buffer."
     (interactive)
@@ -1739,10 +1739,10 @@ use_sops() {
 #+end_src
 
 #+begin_src elisp
-(after! auth-source
+(with-eval-after-load 'auth-source
   (setq auth-sources '(password-store)))
 
-(after! embark
+(with-eval-after-load 'embark
   (defun password-store-otp-token-copy-and-echo (entry)
     "Copy an OTP token from ENTRY to clipboard."
     (interactive (list (read-string "Password entry: ")))
@@ -1770,10 +1770,10 @@ use_sops() {
 (setq password-cache-expiry (* 60 15))
 
 ;; for magithub auth to work create pass entry user^magithub@api.github.com
-(after! magit
+(with-eval-after-load 'magit
     (setq! magit-process-find-password-functions '(magit-process-password-auth-source)))
 
-(use-package! password-generator
+(use-package password-generator
   :after password-store
 
   :config
@@ -1840,7 +1840,7 @@ choose_entry() {
   (extra-content "disable-scdaemon")))
 #+end_src
 #+begin_src elisp
-(use-package! pinentry
+(use-package pinentry
   :config
   (pinentry-start))
 #+end_src
@@ -2120,7 +2120,7 @@ done
 "emacs-syncthing"
 #+end_src
 #+begin_src elisp
-(use-package! syncthing
+(use-package syncthing
   :commands syncthing
   :custom
   (syncthing-default-server-token "apikey"))
@@ -2239,7 +2239,7 @@ XDG_VIDEOS_DIR="$HOME/Movies"
      "Use it without installing"
      'package-name name)))
 
-(after! guix-ui-package
+(with-eval-after-load 'guix-ui-package
   (add-to-list 'guix-package-info-button-functions
                'guix-package-info-insert-emacs-install-button
                'append))
@@ -2591,7 +2591,7 @@ home-emacs
 (define-obsolete-variable-alias 'consult--source-recent-file 'consult-source-recent-file "2.9")
 (define-obsolete-variable-alias 'consult--source-bookmark 'consult-source-bookmark "2.9")
 ; have no use for vertico-next-group
-(after! consult
+(with-eval-after-load 'consult
   (define-key consult-async-map [remap vertico-insert] nil))
 #+end_src
 ** theme
@@ -2754,7 +2754,7 @@ xargs flatpak install --or-update --noninteractive
 #+end_src
 
 #+begin_src elisp
-(use-package! darkman
+(use-package darkman
   :custom
   (darkman-themes `(:light ,doom-theme
                     :dark ,doom-theme-dark))
@@ -2781,7 +2781,7 @@ xargs flatpak install --or-update --noninteractive
 "emacs-bluetooth"
 #+end_src
 #+begin_src elisp
-(use-package! bluetooth
+(use-package bluetooth
   :commands bluetooth-list-devices)
 #+end_src
 ** udisks
@@ -2789,7 +2789,7 @@ xargs flatpak install --or-update --noninteractive
 "emacs-discomfort"
 #+end_src
 #+begin_src elisp
-(use-package! discomfort
+(use-package discomfort
   :commands discomfort
   :config
   (add-to-list 'evil-emacs-state-modes 'discomfort-mode)
@@ -2802,7 +2802,7 @@ xargs flatpak install --or-update --noninteractive
 "kdeconnect" "emacs-kdeconnect"
 #+end_src
 #+begin_src elisp
-(use-package! kdeconnect
+(use-package kdeconnect
   :defer t
   :custom
   (kdeconnect-active-device '("Pixel 9a" . "96c0a00f623640859f01c89f53db3b45")))
@@ -2836,7 +2836,7 @@ xargs flatpak install --or-update --noninteractive
 
 (setq! auto-revert-use-notify t)
 
-(after! recentf
+(with-eval-after-load 'recentf
   (add-to-list 'recentf-exclude "500GB/sort/"))
 
 (setq-default
@@ -2858,16 +2858,16 @@ xargs flatpak install --or-update --noninteractive
 "emacs-bufler"
 #+end_src
 #+begin_src elisp
-(use-package! bufler
+(use-package bufler
   :commands bufler
   :init
   (set-popup-rule! "^\\*Bufler\\*$" :ignore t)
 
   :config
-  (after! exwm
+  (with-eval-after-load 'exwm
     (exwm-input-set-key (kbd "s-b") #'bufler-switch-buffer))
 
-  (after! evil-collection
+  (with-eval-after-load 'evil-collection
     (evil-collection-define-key 'normal 'bufler-list-mode-map
       (kbd "C-k") 'bufler-list-buffer-kill
       "r" 'bufler
@@ -2904,26 +2904,26 @@ xargs flatpak install --or-update --noninteractive
  org-src-window-setup 'current-window
  org-fold-catch-invisible-edits 'show-and-error)
 
-(use-package! org-checklist
+(use-package org-checklist
   :after org)
-(use-package! org-projectile
+(use-package org-projectile
   :after org
   :config
   (setq org-project-capture-default-backend
         (make-instance 'org-project-capture-projectile-backend))
   (org-project-capture-per-project))
 
-(use-package! corg
+(use-package corg
   :hook (org-mode . corg-setup))
 
-(use-package! org-tidy
+(use-package org-tidy
   :disabled
   :hook (org-mode . org-tidy-mode))
 
-(use-package! org-modern-indent
+(use-package org-modern-indent
   :hook (org-mode . org-modern-indent-mode))
 
-(after! org-download
+(with-eval-after-load 'org-download
   (setq org-download-screenshot-method
         "flameshot gui --raw > %s"))
 #+end_src
@@ -2940,7 +2940,7 @@ os.execlp('jaro', 'jaro',
 #+end_src
 *** template
 #+begin_src elisp
-(after! org-project-capture
+(with-eval-after-load 'org-project-capture
   (pushnew! org-capture-templates
             '("b" "Bookmark URL" entry
               (file+headline +org-capture-todo-file "Inbox")
@@ -2951,11 +2951,11 @@ os.execlp('jaro', 'jaro',
 "emacs-german-holidays"
 #+end_src
 #+begin_src elisp
-(use-package! german-holidays
+(use-package german-holidays
   :custom
   (calendar-holidays holiday-german-BE-holidays))
 
-(after! org-project-capture
+(with-eval-after-load 'org-project-capture
   (setq
    org-agenda-files
    (-concat
@@ -2968,7 +2968,7 @@ os.execlp('jaro', 'jaro',
 
 ** roam
 #+begin_src elisp
-(after! org-roam
+(with-eval-after-load 'org-roam
   (setq org-roam-db-node-include-function
         (lambda ()
           (not (member "ATTACH" (org-get-tags))))))
@@ -2979,7 +2979,7 @@ os.execlp('jaro', 'jaro',
 #+end_src
 
 #+begin_src elisp :tangle no
-(use-package! es-mode
+(use-package es-mode
   :commands (org-babel-execute:es)
 
   :config
@@ -2993,7 +2993,7 @@ os.execlp('jaro', 'jaro',
 #+end_src
 
 #+begin_src elisp
-(after! magit
+(with-eval-after-load 'magit
   (let ((sarg-repos-dir (expand-file-name "~/devel/")))
     (setq magit-repository-directories `((,sarg-repos-dir . 2))
           magit-clone-default-directory (concat sarg-repos-dir "ext/"))))
@@ -3015,7 +3015,7 @@ os.execlp('jaro', 'jaro',
 
     t))
 
-(after! browse-at-remote
+(with-eval-after-load 'browse-at-remote
   (setq browse-at-remote-prefer-symbolic nil))
 #+end_src
 ** just
@@ -3043,8 +3043,8 @@ mod? dotfiles '~/devel/dotfiles/guix/Justfile'
 #+end_src
 
 #+begin_src elisp
-(use-package! just-mode)
-(use-package! justl
+(use-package just-mode)
+(use-package justl
   :commands justl)
 #+end_src
 
@@ -3124,7 +3124,7 @@ __pycache__/
 
 *** agit
 #+begin_src elisp
-(after! magit
+(with-eval-after-load 'magit
   ;; agit flow
   (transient-define-suffix magit-push-current-agit (source target args)
     :if (lambda () (magit-get-boolean "remote" (magit-get-remote) "agit"))
@@ -3172,7 +3172,7 @@ __pycache__/
 
 *** magit
 #+begin_src elisp
-(after! magit
+(with-eval-after-load 'magit
   (setq magit-diff-visit-prefer-worktree t))
 #+end_src
 
@@ -3182,13 +3182,13 @@ __pycache__/
 (info-package (pkg "glibc"))
 #+end_src
 #+begin_src elisp
-(after! debbugs
+(with-eval-after-load 'debbugs
   (setq debbugs-gnu-default-packages '("guix" "guix-patches"))
   (set-popup-rule! "^\\*Guix-Patches Bugs\\*$" :ignore t)
   (set-popup-rule! "^\\*Summary nndoc" :ignore t)
   (set-popup-rule! "^\\*Article" :ignore t))
 
-(use-package! fj
+(use-package fj
   :commands fj-list-issues fj-list-pulls
   :config
   (setq! fj-host "https://codeberg.org"
@@ -3200,7 +3200,7 @@ __pycache__/
 
   (set-popup-rule! "^\\*fj-" :ignore t))
 
-(use-package! guix
+(use-package guix
   :commands guix
   :config
   (require 'guix-profiles)
@@ -3209,7 +3209,7 @@ __pycache__/
          guix-load-path (mapcar #'expand-file-name
                                 '("~/devel/dotfiles/guix/personal"))))
 
-(after! magit
+(with-eval-after-load 'magit
   (autoload #'fj-repo-+-owner-from-git "fj" nil t)
   (transient-define-prefix magit-fj ()
     "fj.el"
@@ -3225,7 +3225,7 @@ __pycache__/
 "lldb" "codelldb"
 #+end_src
 #+begin_src elisp
-(after! dape
+(with-eval-after-load 'dape
   ; lsp-mode runs cargo with incomplete PATH otherwise
   (advice-add 'shell-command-to-string :around #'envrc-propagate-environment)
 
@@ -3280,7 +3280,7 @@ install grammars as expected by clojure-ts-mode
 "emacs-visual-shorthands"
 #+end_src
 #+begin_src elisp
-(use-package! visual-shorthands
+(use-package visual-shorthands
   :commands visual-shorthands-mode
 
   :init
@@ -3297,11 +3297,11 @@ install grammars as expected by clojure-ts-mode
         (r (pkg "emacs-tramp-hlo"))))
 #+end_src
 #+begin_src elisp
-(use-package! tramp-hlo
+(use-package tramp-hlo
   :config (tramp-hlo-setup))
 #+end_src
 #+begin_src elisp
-(after! tramp
+(with-eval-after-load 'tramp
   (pushnew! tramp-remote-path 'tramp-own-remote-path))
 #+end_src
 * book reading
@@ -3310,7 +3310,7 @@ install grammars as expected by clojure-ts-mode
 "zathura" "zathura-pdf-mupdf" "zathura-djvu" "zathura-cb"
 #+end_src
 #+begin_src elisp
-(use-package! zathura-sync-theme
+(use-package zathura-sync-theme
   :config
   (zathura-sync-theme-mode))
 #+end_src
@@ -3348,7 +3348,7 @@ include theme
 (".config/calibre" ,(symlink-to "/storage/data/calibre"))
 #+end_src
 #+begin_src elisp
-(use-package! calibredb
+(use-package calibredb
   :commands calibredb
 
   :custom
@@ -3436,7 +3436,7 @@ include theme
 
 (set-modeline-hook! 'qutebrowser-exwm-mode-hook :qutebrowser)
 
-(use-package! qutebrowser
+(use-package qutebrowser
   :hook ((exwm-init . global-qutebrowser-exwm-mode)
          (exwm-init . qutebrowser-evil-state-mode)
          (exwm-init . qutebrowser-theme-export-mode)
@@ -3458,7 +3458,7 @@ include theme
 "emacs-yeetube"
 #+END_src
 #+begin_src elisp
-(use-package! yeetube
+(use-package yeetube
   :commands yeetube-search
   :custom
   (yeetube-play-function #'browse-url-mpv)
@@ -3472,10 +3472,10 @@ include theme
 "emacs-hnreader"
 #+end_src
 #+begin_src elisp
-(use-package! hnreader
+(use-package hnreader
   :commands hnreader-news
   :config
-  (after! browse-url
+  (with-eval-after-load 'browse-url
     (add-to-list 'browse-url-handlers (cons (rx "news.ycombinator.com/item?id=")
                                             (lambda (url &rest _) (hnreader-comment url)))))
   (org-link-set-parameters "eww" :follow 'eww-browse-url))
@@ -3536,14 +3536,14 @@ eval "$(atuin init bash)"
 (setq process-adaptive-read-buffering nil)
 (setq read-process-output-max (* 4 1024 1024))
 
-(use-package! eshell-atuin
+(use-package eshell-atuin
   :after eshell
   :config
   (map! :map eshell-mode-map
         :ni "C-r" #'eshell-atuin-history)
   (eshell-atuin-mode))
 
-(after! eshell
+(with-eval-after-load 'eshell
   (setq! eshell-prefer-lisp-functions 't)
   (set-eshell-alias!
    "doom" "$doom-core-dir/../bin/doom $@*"
@@ -3552,11 +3552,11 @@ eval "$(atuin init bash)"
    "guix" "*guix $@*")
   (add-to-list 'eshell-modules-list 'eshell-smart))
 
-(use-package! eat
+(use-package eat
   :hook ((eshell-load . eat-eshell-mode)
          (eshell-load . eat-eshell-visual-command-mode)))
 
-(use-package! detached
+(use-package detached
   :disabled ; causes freeze-ups in eshell
   :defer-incrementally t
   :config
@@ -3600,7 +3600,7 @@ eval "$(atuin init bash)"
 #+end_src
 
 #+begin_src elisp
-(after! dirvish
+(with-eval-after-load 'dirvish
   (setq dired-omit-files
         (concat dired-omit-files "\\|^\\..*$"))
 
@@ -3613,20 +3613,20 @@ eval "$(atuin init bash)"
            ("d" "~/Downloads/"                   "Downloads")
            ("m" ,sarg/media-dir                  "Media"))))
 
-(use-package! sxiv
+(use-package sxiv
   :commands sxiv)
-(use-package! dired-du
+(use-package dired-du
   :after dired
   :custom (dired-du-size-format t)) ;; human readable
 
-(after! async
+(with-eval-after-load 'async
   (dired-async-mode 1))
 
-(after! dired-x
+(with-eval-after-load 'dired-x
   (setq dired-guess-shell-alist-user
         '(("\\.\\(?:mp4\\|mkv\\|avi\\)\\(?:\\.part\\)?\\'" "jaro"))))
 
-(use-package! dired-open
+(use-package dired-open
   :after dired
   :custom
   (dired-open-extensions-elisp `(("torrent" . aria2-download)))
@@ -3655,7 +3655,7 @@ eval "$(atuin init bash)"
 * llm
 ** gptel
 #+begin_src elisp
-(after! gptel
+(with-eval-after-load 'gptel
   (let ((openrouter
          (gptel-make-openai "OpenRouter"
            :host "openrouter.ai"
@@ -3678,7 +3678,7 @@ eval "$(atuin init bash)"
 "emacs-aidermacs"
 #+end_src
 #+begin_src elisp
-(use-package! aidermacs
+(use-package aidermacs
   :commands aidermacs-transient-menu
   :bind (("C-c a" . aidermacs-transient-menu))
   :custom
@@ -3700,9 +3700,9 @@ eval "$(atuin init bash)"
 #+end_src
 
 #+begin_src elisp
-(use-package! command-log-mode
+(use-package command-log-mode
   :commands command-log-mode)
-;; (use-package! camcorder
+;; (use-package camcorder
 ;;   :commands camcorder-mode
 ;;   :hook (camcorder-mode-hook . clm/command-log-clear))
 #+end_src
@@ -3717,14 +3717,14 @@ eval "$(atuin init bash)"
 #+end_src
 #+begin_src elisp
 (setq bookmark-default-file "/storage/data/emacs/bookmarks")
-(use-package! bookmark+)
+(use-package bookmark+)
 #+end_src
 ** cyclekey
 #+begin_src scheme :noweb-ref guix-pkg
 "emacs-cyclekey"
 #+end_src
 #+begin_src elisp
-(use-package! cyclekey
+(use-package cyclekey
   :defer-incrementally t
   :bind ("M-o" . cyclekey-cycle)
 
@@ -3735,7 +3735,7 @@ eval "$(atuin init bash)"
 ** magic sqlite
 #+begin_src elisp
 ; https://christiantietze.de/posts/2024/01/emacs-sqlite-mode-open-sqlite-files-automatically/
-(use-package! sqlite-mode
+(use-package sqlite-mode
   :config
   (defun ct/sqlite-view-file-magically ()
     "Runs `sqlite-mode-open-file' on the file name visited by the
@@ -3752,12 +3752,12 @@ current buffer, killing it."
 "emacs-gpx" "emacs-osm"
 #+end_src
 #+begin_src elisp
-(use-package! osm
+(use-package osm
   :commands osm
   :init
   (set-popup-rule! "^\\*osm" :ignore t))
 
-(use-package! gpx
+(use-package gpx
   :after osm
   :config
   (defun gpx-show-map-gpxsee (file track segment)
@@ -3913,7 +3913,7 @@ token_file = "~/.local/state/vdirsyncer/token"
 "vdirsyncer" "khal" "emacs-khalel"
 #+end_src
 #+begin_src elisp
-(use-package! khalel
+(use-package khalel
   :defer t)
 #+end_src
 ** speed-type
@@ -4017,18 +4017,18 @@ fi
     (if (string= input pass)
         (apply proc args))))
 
-(after! elfeed
+(with-eval-after-load 'elfeed
   (advice-add 'elfeed-update :around #'sarg/ad-selfcontrol-otp-confirm)
   (advice-add '=rss :around #'sarg/ad-selfcontrol-otp-confirm)
   (advice-add 'elfeed-update :around #'sarg/selfcontrol-time-restriction))
 
-(after! telega
+(with-eval-after-load 'telega
   (advice-add 'ivy-telega-chat-with :around #'sarg/ad-selfcontrol-otp-confirm))
 #+end_src
 
 ** fate
 #+begin_src elisp
-(use-package! fate
+(use-package fate
   :disabled
   :load-path "~/devel/ext/fate"
   :config
