@@ -207,14 +207,14 @@ working with git and your code.")
 (define-public atuin
   (package
    (name "atuin")
-   (version "18.12.0")
+   (version "18.12.1")
    (source
     (origin
      (method url-fetch)
      (uri (string-append "https://github.com/atuinsh/atuin/releases/download/v"
                          version
                          "/atuin-x86_64-unknown-linux-gnu.tar.gz"))
-     (sha256 (base32 "15ja4y1ag2mgarj0rmkcp370628n5z5pcvvw7yflhy9cvbwcx9ja"))))
+     (sha256 (base32 "07rmls7czkqk8sp7py2x2p8jchxk241wkn9qcm68i9prh3dv7nnx"))))
    (supported-systems '("x86_64-linux"))
    (build-system binary-build-system)
    (inputs `(("gcc:lib" ,gcc "lib")
@@ -490,7 +490,7 @@ modification with a unique cooperative gameplay.")
 (define-public python-ty
   (package
     (name "python-ty")
-    (version "0.0.15")
+    (version "0.0.17")
     (source
      (origin
        (method url-fetch)
@@ -498,7 +498,7 @@ modification with a unique cooperative gameplay.")
              "https://github.com/astral-sh/ty/releases/download/" version
              "/ty-x86_64-unknown-linux-gnu.tar.gz"))
        (sha256
-        (base32 "0lh8lggijf2cqw25rqib37k29x4srgzqvq26qvrx0sxfq4hj2fd2"))))
+        (base32 "0pycx443gx3v3nn59w6v7akqk5vffdvg8x8rxxyky36wl31vj37d"))))
     (properties '((upstream-name . "ty")))
     (build-system binary-build-system)
     (supported-systems '("x86_64-linux"))
@@ -560,13 +560,13 @@ modification with a unique cooperative gameplay.")
 (define-public google-gemini-cli
   (package
     (name "google-gemini-cli")
-    (version "0.27.4")
+    (version "0.28.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/google-gemini/gemini-cli/releases/download/v" version "/gemini.js"))
        (sha256
-        (base32 "13fahvapw0gcq5ivq1vpbmdi9g4plgn9rkzj5hnr0ir9ahmgkxfr"))))
+        (base32 "0d6hi3w31b2prsv5719qhb45vq2fyq4wkymjv6wbbl36qp22kdj2"))))
     (build-system binary-build-system)
     (arguments (list
                 #:install-plan
