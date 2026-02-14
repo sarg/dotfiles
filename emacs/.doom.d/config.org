@@ -784,9 +784,6 @@ disable-ipv6=true
 #+begin_src scheme :noweb-ref guix-pkg
 "emacs-telega" "emacs-telega-contrib"
 #+end_src
-#+begin_src scheme :noweb-ref guix-file
-(".telega" ,(symlink-to "/storage/data/telega"))
-#+end_src
 #+begin_src elisp
 (with-eval-after-load 'telega
   (telega 'no-popup))

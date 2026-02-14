@@ -75,6 +75,10 @@ MSG-PREDICATE is received."
   ;; :init
   ;; (setq telega-inserter-for-msg-button #'sarg/telega-ins--message)
   :custom
+  (telega-directory (expand-file-name "telega" (xdg-state-home)))
+  (telega-cache-dir (expand-file-name "telega" (xdg-cache-home)))
+  (telega-temp-dir (expand-file-name "telega" (temporary-file-directory)))
+  (telega-server-logfile nil)
   (telega-online-status-function #'sarg/telega-online-status)
   (telega-chat-show-deleted-messages-for '(not saved-messages))
   (telega-root-show-avatars nil)
