@@ -2408,8 +2408,6 @@ home-emacs
 "emacs-request"
 "emacs-restclient"
 "emacs-restclient-jq"
-"emacs-rust-mode"
-"emacs-rustic"
 "emacs-sass-mode"
 "emacs-shrink-path"
 "emacs-slim-mode"
@@ -2460,7 +2458,6 @@ home-emacs
 "tree-sitter-css"
 "tree-sitter-bash"
 "tree-sitter-python"
-"tree-sitter-rust"
 
 ;;  modules dependencies
 "shfmt" "shellcheck" "fd" "editorconfig-core-c"
@@ -2543,7 +2540,7 @@ home-emacs
               make tree-sitter lsp direnv llm debugger
  :checkers    syntax
  :lang        (clojure +tree-sitter) data emacs-lisp (javascript +tree-sitter +lsp) markdown
-              (org +dragndrop +pandoc +hugo +roam2 +pretty) beancount (go +lsp +tree-sitter) (rust +lsp +tree-sitter)
+              (org +dragndrop +pandoc +hugo +roam2 +pretty) beancount (go +lsp +tree-sitter) ; (rust +lsp +tree-sitter)
               (rest +jq) (sh +tree-sitter) plantuml (python +lsp +tree-sitter) (web +tree-sitter) yaml (json +tree-sitter)
  :app         telega (rss +org) torrent irc exwm dash-menu
  :email       (mu4e +mbsync +gmail)
@@ -3217,7 +3214,10 @@ __pycache__/
   (transient-insert-suffix 'magit-fetch
     '(2 0) (list "j" "fj.el" #'magit-fj :if #'fj-repo-+-owner-from-git)))
 #+end_src
-** rust
+** COMMENT rust
+#+begin_src scheme :noweb-ref guix-pkg
+"emacs-rust-mode" "emacs-rustic" "tree-sitter-rust"
+#+end_src
 #+begin_src scheme :noweb-ref emacs-dep
 "lldb" "codelldb"
 #+end_src
@@ -3659,27 +3659,15 @@ eval "$(atuin init bash)"
            :endpoint "/api/v1/chat/completions"
            :stream t
            :key (lambda (&rest args) (gptel-api-key-from-auth-source "Api" "openrouter.ai"))
-           :models '(tngtech/deepseek-r1t2-chimera:free
-                     moonshotai/kimi-k2:free)))
+           :models '(arcee-ai/trinity-large-preview:free)))
         (gemini
          (gptel-make-gemini "Gemini"
            :key (lambda (&rest args)
                   (gptel-api-key-from-auth-source "google.com" "gemini"))
            :stream t)))
 
-    (setq gptel-model 'tngtech/deepseek-r1t2-chimera:free
+    (setq gptel-model 'arcee-ai/trinity-large-preview:free
           gptel-backend openrouter)))
-#+end_src
-** aidermacs
-#+begin_src scheme :noweb-ref guix-pkg
-"emacs-aidermacs"
-#+end_src
-#+begin_src elisp
-(use-package aidermacs
-  :commands aidermacs-transient-menu
-  :bind (("C-c a" . aidermacs-transient-menu))
-  :custom
-  (aidermacs-default-model "openrouter/mistralai/devstral-2512:free"))
 #+end_src
 ** agent-shell
 #+begin_src scheme :noweb-ref guix-pkg
@@ -3922,49 +3910,6 @@ token_file = "~/.local/state/vdirsyncer/token"
 "emacs-tmr"
 #+end_src
 ** collectd
-* TODO todo [9/11]
-** DONE console font
-** DONE mingetty with xorg autostart (under sarg), put `lock.sh` first in the .xsession
-** DONE user syncthing
-** DONE check if greetd is necessary
-** DONE guix gc, but not that aggressive
-=--gc-keep-derivations= and =--gc-keep-outputs= to =guix-daemon= params
-** NO Fix hardcoded =Guix_image= root partition name
-** DONE Fix =gnupg= symlink\\
-=guix home= =update-symlinks= creates =~/.gnupg= before my symlink activation service runs
-therefore gnupg private keys are not symlinked\\
-Target state:
-*** =~/.gnupg= is a symlink to =/storage/data/gnupg=
-*** =gpg-agent.conf= and =gpg.conf= are managed by =guix home=
-** DONE +duplicate env entries because of ~doom env~+ (just delete the file)
-** TODO emacs keybindings revamp
-- winner to be replaced with custom window management
-- evil bindings in EMMS buffers (q to close, SPC to enter)
-- repeat Super+<digit> to switch (saved) window configurations
-** DONE how to make home services depend on online status?
-see [[*online][online]]
-** TODO set password in system-image
-#+begin_src scheme :noweb-ref nil
-;; (define user-pass
-;;   (let ((user-pass-1 (begin
-;;                        (format #t "Define user password: ")
-;;                        (force-output)
-;;                        (get-line (current-input-port))))
-;;         (user-pass-2 (begin
-;;                        (format #t "Repeat user password: ")
-;;                        (force-output)
-;;                        (get-line (current-input-port)))))
-
-;;     (when (not (string=? user-pass-1 user-pass-2))
-;;       (error "Passwords don't match"))
-
-;;     user-pass-1))
-
-;; (define user-account
-;;   (user-account
-;;    (inherit user)
-;;    (password (crypt user-pass "$6$salt"))))
-#+end_src
 * COMMENT archive
 ** emacs-one-frame
 #+begin_src sh :shebang #!/bin/bash

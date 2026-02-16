@@ -1996,28 +1996,6 @@ category that is selected depending on a some piece of Emacs context.")
 integration between Qutebrowser and EXWM")
     (license license:gpl3+)))
 
-(define-public emacs-xdg-launcher
-  (package
-    (name "emacs-xdg-launcher")
-    (version "20251129.2038")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-              (url "https://github.com/emacs-exwm/xdg-launcher")
-              (commit "1592f8ee3dc26180112411e7f983cafba88024fa")))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "1mpw9cc01hb75yl8gzn8kbx5wbaz1l0gh75cpjv42i2d021bc59z"))))
-    (build-system emacs-build-system)
-    (arguments (list #:tests? #f))
-    (home-page "https://github.com/emacs-exwm/xdg-launcher")
-    (synopsis "XDG application launcher for emacs")
-    (description "XDG launcher implements a dmenu-style XDG application launcher in Emacs using
-standard Emacs minibuffer completion. It works best with a vertical completion
-framework like ~icomplete-vertical-mode~, ~fido-vertical-mode~, ~vertico~, etc. ")
-    (license license:gpl3+)))
-
 (define-public emacs-cyclekey
   (package
     (name "emacs-cyclekey")
