@@ -27,8 +27,8 @@
 (define-public doomemacs
   (package
     (name "doomemacs")
-    (properties '((commit . "a0d6aac43fc94def29c98826e2f0088bcb703d13")))
-    (version (git-version "3.0.0" "3" (assoc-ref properties 'commit)))
+    (properties '((commit . "28e52b8c898636bc860a123d2ba7bda1514ffd2b")))
+    (version (git-version "3.0.0" "4" (assoc-ref properties 'commit)))
     (source
      (origin
        (method git-fetch)
@@ -37,7 +37,7 @@
               (commit (assoc-ref properties 'commit))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1ssdb3rlhwfrknjlxyp487r3lzmyw80dm5c1f69bfqd7ly0s2jxl"))))
+        (base32 "0amfw1y3dcs8mmp3jdiwhlzwj4r010w5mq2zdhgr9lq7gbpxmq5q"))))
     (build-system copy-build-system)
     (arguments '(#:install-plan '(("." "share/doomemacs"))))
     (propagated-inputs (list
@@ -50,7 +50,6 @@
                         emacs-better-jumper
                         emacs-smartparens
                         emacs-projectile
-                        emacs-project
                         emacs-general
                         emacs-which-key))
     (home-page "https://github.com/doomemacs/doomemacs")
