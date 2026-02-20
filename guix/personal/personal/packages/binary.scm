@@ -186,14 +186,14 @@ failed operations.")
 (define-public github-cli
   (package
     (name "github-cli")
-    (version "2.86.0")
+    (version "2.87.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/cli/cli/releases/download/v" version
                            "/gh_" version "_linux_amd64.tar.gz"))
        (sha256
-        (base32 "1iq3h6k1q1612is2jjzhscwbiwi5za3sd8dh54icq844lbb8pc7k"))))
+        (base32 "0madn7hb85wpwrsgdhnwazwlrbh0cigv8p83awa9rgz38ci0ndhq"))))
     (properties '((upstream-name . "gh")))
     (build-system binary-build-system)
     (home-page "https://github.com/cli/cli")
@@ -560,13 +560,13 @@ modification with a unique cooperative gameplay.")
 (define-public google-gemini-cli
   (package
     (name "google-gemini-cli")
-    (version "0.28.2")
+    (version "0.29.5")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/google-gemini/gemini-cli/releases/download/v" version "/gemini.js"))
        (sha256
-        (base32 "0d6hi3w31b2prsv5719qhb45vq2fyq4wkymjv6wbbl36qp22kdj2"))))
+        (base32 "1ikaj8l44dh9w7964ssmarrhn86ixrm597ns316b6p1mbvda4fk3"))))
     (build-system binary-build-system)
     (arguments (list
                 #:install-plan
