@@ -8,6 +8,7 @@
   #:use-module ((guix licenses)
                 #:prefix license:)
 
+  #:use-module (personal packages rust-apps)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages emacs-xyz)
   #:use-module (gnu packages emacs-build)
@@ -2380,3 +2381,19 @@ general usage.")
      "Review Pull Request in Emacs using a modern interface based on Magit Section and
 Transient.  Currently supports Github, Gitlab, and Bitbucket Cloud.")
     (license license:gpl3)))
+
+(define-public emacs-ewm
+  (package
+    (inherit ewm)
+    (name "emacs-ewm")
+    (build-system emacs-build-system)
+    (arguments
+     (list #:lisp-directory "lisp"
+           #:phases
+           #~(modify-phases %standard-phases
+               (add-after 'unpack 'substitute-ewm-module-path
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   (substitute* "ewm.el"
+                     (("\\(getenv \"EWM_MODULE_PATH\"\\)")
+                      (string-append "\"" (assoc-ref inputs "ewm") "/lib/libewm_core.so\""))))))))
+    (inputs (list ewm))))

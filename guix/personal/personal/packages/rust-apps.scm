@@ -9,7 +9,13 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages wm)
+  #:use-module (gnu packages admin)
+  #:use-module (gnu packages gl)
+  #:use-module (gnu packages xdisorg)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages llvm)
+  #:use-module (gnu packages xorg)
   #:use-module (gnu packages pkg-config))
 
 (define-syntax-rule (my-cargo-inputs name)
@@ -88,3 +94,55 @@ Supported launchers are: dmenu, fuzzel, rofi, walker and custom.")
      "@code{pwmenu} (PipeWire Menu) manages audio through your launcher of choice.
 Supported launchers are: dmenu, fuzzel, rofi, walker and custom.")
     (license license:gpl3)))
+
+(define-public ewm
+  (package
+    (name "ewm")
+    (properties '((commit . "e927635ca72fda803d5daaf13ee45deaf83965ce")))
+    (version (git-version "0.1.0" "0" (assoc-ref properties 'commit)))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://codeberg.org/ezemtsov/ewm")
+              (commit (assoc-ref properties 'commit))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "10bjcpd4wf6jvn7mkgbikpak1fpq3gkl7d2183k0ixglg7jwm82n"))))
+    (build-system cargo-build-system)
+    (arguments
+     (list #:install-source? #f
+           #:phases
+           #~(modify-phases %standard-phases
+               (add-after 'unpack 'fix-deps
+                 (lambda _
+                   (chdir "compositor")
+                   (delete-file "Cargo.lock")
+                   (substitute* "Cargo.toml"
+                     (("^rev =.*") "version = \"*\"\n")
+                     (("^git = .*") ""))))
+               (replace 'install
+                 (lambda _
+                   (install-file "target/release/libewm_core.so"
+                    (string-append #$output "/lib")))))))
+    (native-inputs (list pkg-config))
+    (inputs (cons*
+             dbus
+             libdisplay-info
+             libinput-minimal
+             libseat
+             libxkbcommon
+             mesa
+             pipewire
+             wayland
+             glib
+             libx11
+             libxcursor
+             libxrandr
+             libxi
+             libdrm
+             (my-cargo-inputs 'ewm)))
+    (home-page "https://codeberg.org/ezemtsov/ewm")
+    (synopsis "Emacs Wayland Manager")
+    (description "Emacs Wayland Manager - Wayland compositor")
+    (license license:gpl3+)))
