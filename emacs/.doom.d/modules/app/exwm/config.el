@@ -10,6 +10,21 @@
 
   (exwm-input--update-global-prefix-keys))
 
+(defun exwm/switch-to-next-buffer (class &optional reverse?)
+  "Form a cycle of CLASS buffers and return the one next to current buffer.
+REVERSE? it when true. Returns the selected buffer."
+  (cl-loop
+   with first with this with next
+   for b in (if reverse? (reverse (buffer-list)) (buffer-list))
+   when (string= class (buffer-local-value 'exwm-class-name b)) do
+   (setf first (or first b))
+   (setf next (and this b))
+   (setf this (or this (when (eq (current-buffer) b) b)))
+   until next
+   finally return
+   (and (or next first)
+        (switch-to-buffer (or next first) t t))))
+
 (defun exwm/clean-killed-buffers ()
   "Remove killed buffers from exwm--id-buffer-alist."
   (interactive)
@@ -32,13 +47,13 @@
   :commands (exwm-enable)
   :demand
   :hook (exwm-init . exwm/init)
-  :hook (exwm-mode . doom-mark-buffer-as-real-h)
   :hook (exwm-update-title . exwm/update-title-hook)
 
   :init
   (set-popup-rule! "^\\*EXWM\\*$" :ignore t)
 
   :config
+  (add-to-list 'doom-real-buffer-modes 'exwm-mode)
   (when (modulep! +workspaces) (load! "+workspaces"))
   (load! "+patch")
   (load! "+xkb-layout-switch")

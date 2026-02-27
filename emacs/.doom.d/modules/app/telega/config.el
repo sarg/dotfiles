@@ -70,7 +70,6 @@ MSG-PREDICATE is received."
   ;;   this function delegates to original kill-this-buffer if the buffer isn't doom-real-buffer-p
   ;;   then doom|protect-visible-functions in kill-buffer-query-functions prevents the close.
   ;; So, to fix this make telega.el chat buffers real.
-  :hook (telega-chat-mode . doom-mark-buffer-as-real-h)
 
   ;; :init
   ;; (setq telega-inserter-for-msg-button #'sarg/telega-ins--message)
@@ -106,6 +105,7 @@ MSG-PREDICATE is received."
        (format " --start=%f" telega-ffplay-media-timestamp))))
 
   :config
+  (add-to-list 'doom-real-buffer-modes 'telega-chat-mode)
   (add-hook! telega-root-mode (cd telega-directory))
   (add-hook! telega-chat-mode (cd telega-directory))
 

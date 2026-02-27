@@ -593,7 +593,7 @@ polkit.addRule(function(action, subject) {
         (cons head out)))
   (fold-right flatten1 '() lst))
 
-(define home-emacs (pkg "emacs-next"))
+(define home-emacs (pkg "emacs-next-pgtk"))
 
 (define (build-with-home-emacs p)
   (package/inherit p
@@ -776,11 +776,6 @@ disable-ipv6=true
   (mpv-default-options '("--force-window=immediate")))
 #+end_src
 ** telega
-#+begin_src scheme :noweb-ref guix-pin
-(pin "emacs-telega"
-     #:commit "303e4759e4b6d504b0ba2fe1c43f2b7d63bc98bc"
-     #:hash "0kmvvksff1b7ymc02p3i1224lcsghwjgrvpfv1czs4rfpij7h51m")
-#+end_src
 #+begin_src scheme :noweb-ref guix-pkg
 "emacs-telega" "emacs-telega-contrib"
 #+end_src
@@ -788,38 +783,13 @@ disable-ipv6=true
 (with-eval-after-load 'telega
   (telega 'no-popup))
 #+end_src
-** exwm
-EXWM has a separate [[../.doom.d/modules/app/exwm][doom app]]. Here are just the settings.
-#+begin_src scheme :noweb-ref guix-pin
-(pin "emacs-exwm"
-     #:commit "369b9126a94c801eb9ec3eddbc00da3236f53bc7"
-     #:hash "12v7iiq2yk3pafw4a83innib993cwi33sm4bnh8fawan6a9pgqqz")
-#+end_src
-#+begin_src scheme :noweb-ref guix-pkg
-"emacs-exwm"
-"emacs-exwm-edit"
-"emacs-exwm-ss"
-#+end_src
-#+begin_src elisp
-(defun exwm-autostart-apps ()
-    (interactive)
-    (cl-loop
-     for cmd in (list
-                 <<autostart>>
-                 )
-     do (start-process-shell-command "autostart" "*autostart*" cmd)))
-
-(with-eval-after-load 'exwm
-  <<exwm>>
-  (add-hook! exwm-init #'exwm-autostart-apps))
-#+end_src
-*** notifications
+** notifications
 #+begin_src scheme :noweb-ref guix-pkg
 "emacs-ednc"
 #+end_src
 #+begin_src elisp
 (use-package ednc
-  :hook (exwm-init . ednc-mode)
+  :hook (ewm-mode . ednc-mode)
 
   :config
   ;; https://github.com/hiecaq/guix-config/blob/666d15b1f79b2b9171c430c24b877879ab61fd02/readme.org#desktop-notification-daemon
@@ -901,11 +871,11 @@ EXWM has a separate [[../.doom.d/modules/app/exwm][doom app]]. Here are just the
 
 
   ;; https://github.com/ch11ng/exwm/issues/550#issuecomment-763949321
-  (with-eval-after-load 'posframe
-    (define-advice posframe-show (:filter-return (frame) exwm-deparent)
-      (set-frame-parameter frame 'parent-frame nil)
-      frame))
-
+  (when (modulep! :app exwm)
+    (with-eval-after-load 'posframe
+      (define-advice posframe-show (:filter-return (frame) exwm-deparent)
+        (set-frame-parameter frame 'parent-frame nil)
+        frame)))
 
   (defun sarg/ednc-icon-resolver (image-path)
     "Return image descriptor created from file URI IMAGE-PATH."
@@ -918,46 +888,11 @@ EXWM has a separate [[../.doom.d/modules/app/exwm][doom app]]. Here are just the
   (advice-add #'keyboard-quit :before #'my-ednc--dismiss-first-notification)
   (add-hook 'ednc-notification-presentation-functions #'my-ednc-posframe--update))
 #+end_src
-*** bar
+** workspaces
 #+begin_src elisp
-(defadvice! +battery-icons (bat-status)
-  "Add icons to battery status."
-  :filter-return #'battery-upower
-  (let ((indicator (assq ?b bat-status)))
-    (when (string= (cdr indicator) "+")
-      (setf (cdr indicator) "")))
-  bat-status)
-
-(setq!
- battery-mode-line-format " %b%>2p% "
- battery-mode-line-limit 50
- display-time-string-forms '((substring (format-time-string "%a") 0 2)
-                              (format-time-string "/%d %R")))
-
-(use-package net-usage
-  :custom
-  (net-usage-interface "wlp1s0")
-  :config
-  (net-usage-mode 1))
-
-(display-battery-mode 1)
-(display-time-mode 1)
-(setq! global-mode-string
-      '(emms-mode-line-string
-        iwd-manager-mode-line-string
-        net-usage-mode-line-string
-        battery-mode-line-string
-        display-time-string))
-#+end_src
-*** workspaces
-#+begin_src elisp :noweb-ref exwm :tangle no
 (tab-rename "code" 1)
 (progn (tab-new) (tab-rename "brow" 2))
 (tab-bar-mode 1)
-
-(exwm/bind-command
- "<f13> 1" (cmd! (tab-bar-switch-to-tab "code"))
- "<f13> 2" (cmd! (tab-bar-switch-to-tab "brow")))
 
 (custom-set-faces!
   '(tab-bar-tab :weight bold)
@@ -971,6 +906,26 @@ EXWM has a separate [[../.doom.d/modules/app/exwm][doom app]]. Here are just the
                   tab-bar-separator
                   tab-bar-format-align-right
                   tab-bar-format-global))
+#+end_src
+** COMMENT exwm
+EXWM has a separate [[../.doom.d/modules/app/exwm][doom app]]. Here are just the settings.
+#+begin_src scheme :noweb-ref guix-pin
+(pin "emacs-exwm"
+     #:commit "369b9126a94c801eb9ec3eddbc00da3236f53bc7"
+     #:hash "12v7iiq2yk3pafw4a83innib993cwi33sm4bnh8fawan6a9pgqqz")
+#+end_src
+#+begin_src elisp
+(defun exwm-autostart-apps ()
+    (interactive)
+    (cl-loop
+     for cmd in (list
+                 <<autostart>>
+                 )
+     do (start-process-shell-command "autostart" "*autostart*" cmd)))
+
+(with-eval-after-load 'exwm
+  <<exwm>>
+  (add-hook! exwm-init #'exwm-autostart-apps))
 #+end_src
 *** per-app settings
 #+begin_src elisp :noweb-ref exwm :tangle no
@@ -1038,28 +993,16 @@ These are bound only for X11 apps.
 #+end_src
 **** global
 #+begin_src elisp :noweb-ref exwm :tangle no
-(defun exwm/switch-to-next-buffer (class &optional reverse?)
-  "Form a cycle of CLASS buffers and return the one next to current buffer.
-REVERSE? it when true. Returns the selected buffer."
-  (cl-loop
-    with first with this with next
-    for b in (if reverse? (reverse (buffer-list)) (buffer-list))
-    when (string= class (buffer-local-value 'exwm-class-name b)) do
-      (setf first (or first b))
-      (setf next (and this b))
-      (setf this (or this (when (eq (current-buffer) b) b)))
-    until next
-    finally return
-    (and (or next first)
-         (switch-to-buffer (or next first) t t))))
 
 (exwm/bind-command
- "<f13> r"     #'xdg-launcher-run-app
+ "<f13> r"    #'xdg-launcher-run-app
+ "<f13> 1"    (cmd! (tab-bar-switch-to-tab "code"))
+ "<f13> 2"    (cmd! (tab-bar-switch-to-tab "brow"))
 
- "<f13> h"     #'evil-window-left
- "<f13> j"     #'evil-window-down
- "<f13> k"     #'evil-window-up
- "<f13> l"     #'evil-window-right
+ "<f13> h"    #'evil-window-left
+ "<f13> j"    #'evil-window-down
+ "<f13> k"    #'evil-window-up
+ "<f13> l"    #'evil-window-right
 
  "<f13> E"    (cmd!
                  (tab-switch "brow")
@@ -1074,60 +1017,6 @@ REVERSE? it when true. Returns the selected buffer."
                (tab-switch "brow")
                (or (exwm/switch-to-next-buffer "qutebrowser")
                    (start-process "qutebrowser" nil "setsid" "-w" "qutebrowser"))))
-#+end_src
-*** app launcher
-#+begin_src scheme :noweb-ref guix-pkg
-"emacs-xdg-launcher"
-#+end_src
-#+begin_src elisp
-(defvar xdg-launcher-allow-list
-  '("lutris" "libreoffice-startcenter" "flatseal" "spotify" "calibre-gui" "idea" "simple-scan"
-    "iwgtk" "android")
-  "Apps that are visible in the xdg-launcher")
-
-(defvar xdg-launcher-hide-list
-  '("flatpak" "emacs" "qview" "scrcpy" "qutebrowser" "darkman" "kdeconnect"
-    "libreoffice" "mpv" "quake3" "flameshot" "calibre" "htop")
-  "Apps to hide from the xdg-launcher")
-
-(defun xdg-launcher-filter (apps)
-  (maphash (lambda (_ def)
-             (let ((file (alist-get 'file def)))
-               (unless (or
-                        (-any? (lambda (i) (s-contains? i file t)) xdg-launcher-allow-list)
-                        (-none? (lambda (i) (s-contains? i file t)) xdg-launcher-hide-list))
-                 (setf (alist-get 'visible def) nil))))
-           apps)
-  apps)
-
-(defvar xdg-launcher--M-x-set '())
-(defun xdg-launcher-to-M-x ()
-  (interactive)
-
-  ;; forget previously set functions
-  (-each xdg-launcher--M-x-set #'fmakunbound)
-  (setq xdg-launcher--M-x-set '())
-
-  ;; create new functions
-  (maphash
-   (lambda (name app)
-     (when (cdr (assq 'visible app))
-       (let ((xdg-symbol (intern (concat "app-" (s-dashed-words name)))))
-         (push xdg-symbol xdg-launcher--M-x-set)
-         (fset xdg-symbol
-               (lambda ()
-                 (interactive)
-                 (funcall xdg-launcher-action-function app)))
-         (put xdg-symbol 'function-documentation (cdr (assq 'comment app))))))
-   (xdg-launcher-list-apps)))
-
-(use-package xdg-launcher
-  :defer-incrementally t
-  :config
-  (advice-add 'xdg-launcher-parse-files
-              :filter-return #'xdg-launcher-filter)
-
-  (xdg-launcher-to-M-x))
 #+end_src
 *** consult
 #+begin_src elisp
@@ -1173,6 +1062,68 @@ REVERSE? it when true. Returns the selected buffer."
           (x-focus-frame f t))))))
 
 (advice-add 'exwm--on-net-active-window :override #'sarg/exwm--on-net-active-window)
+#+end_src
+** bar
+#+begin_src elisp
+(defadvice! +battery-icons (bat-status)
+  "Add icons to battery status."
+  :filter-return #'battery-upower
+  (let ((indicator (assq ?b bat-status)))
+    (when (string= (cdr indicator) "+")
+      (setf (cdr indicator) "")))
+  bat-status)
+
+(setq!
+ battery-mode-line-format " %b%>2p% "
+ battery-mode-line-limit 50
+ display-time-string-forms '((substring (format-time-string "%a") 0 2)
+                              (format-time-string "/%d %R")))
+
+(use-package net-usage
+  :custom
+  (net-usage-interface "wlp1s0")
+  :config
+  (net-usage-mode 1))
+
+(display-battery-mode 1)
+(display-time-mode 1)
+(setq! global-mode-string
+      '(emms-mode-line-string
+        iwd-manager-mode-line-string
+        net-usage-mode-line-string
+        battery-mode-line-string
+        display-time-string))
+#+end_src
+** app launcher
+#+begin_src scheme :noweb-ref guix-pkg
+"emacs-xdg-launcher"
+#+end_src
+#+begin_src elisp
+(defvar xdg-launcher-allow-list
+  '("lutris" "libreoffice-startcenter" "flatseal" "spotify" "calibre-gui" "idea" "simple-scan"
+    "iwgtk" "android")
+  "Apps that are visible in the xdg-launcher")
+
+(defvar xdg-launcher-hide-list
+  '("flatpak" "emacs" "qview" "scrcpy" "qutebrowser" "darkman" "kdeconnect"
+    "libreoffice" "mpv" "quake3" "flameshot" "calibre" "htop")
+  "Apps to hide from the xdg-launcher")
+
+(defun xdg-launcher-filter (apps)
+  (maphash (lambda (_ def)
+             (let ((file (alist-get 'file def)))
+               (unless (or
+                        (-any? (lambda (i) (s-contains? i file t)) xdg-launcher-allow-list)
+                        (-none? (lambda (i) (s-contains? i file t)) xdg-launcher-hide-list))
+                 (setf (alist-get 'visible def) nil))))
+           apps)
+  apps)
+
+(use-package xdg-launcher
+  :defer-incrementally t
+  :after consult
+  :config
+  (push 'xdg-launcher-consult-source (cdr (memq 'consult-source-buffer consult-buffer-sources))))
 #+end_src
 ** elfeed
 #+begin_src elisp
@@ -1298,17 +1249,8 @@ REVERSE? it when true. Returns the selected buffer."
 #+begin_src scheme :noweb-ref emacs-dep
 "wireplumber" "xosd"
 #+end_src
-#+begin_src elisp :noweb-ref exwm :tangle no
-(let (p)
-  (defun sarg/osd (value)
-    (when (exwm-layout--fullscreen-p)
-      (let ((tmp p))
-        (setq p (start-process "osd" nil
-                               (guix/pkg 'xosd "/bin/osd_cat")
-                               "-P" (if (numberp value) (number-to-string value) value)
-                               "-b" "percentage" "-T" "Volume" "-d" "1"
-                               "-A" "center" "-c" "blue" "-u" "green" "-o" "50"))
-        (when (process-live-p tmp) (delete-process tmp))))))
+#+begin_src elisp
+(defalias 'sarg/osd #'ignore)
 
 (let ((my-vol-last-change 0))
   (defun my-vol-change (amount)
@@ -1374,6 +1316,19 @@ REVERSE? it when true. Returns the selected buffer."
   (if emms-player-playing-p
       (emms-pause)
     (emms-dwim-menu)))
+#+end_src
+
+#+begin_src elisp :noweb-ref exwm :tangle no
+(let (p)
+  (defun sarg/osd (value)
+    (when (exwm-layout--fullscreen-p)
+      (let ((tmp p))
+        (setq p (start-process "osd" nil
+                               (guix/pkg 'xosd "/bin/osd_cat")
+                               "-P" (if (numberp value) (number-to-string value) value)
+                               "-b" "percentage" "-T" "Volume" "-d" "1"
+                               "-A" "center" "-c" "blue" "-u" "green" "-o" "50"))
+        (when (process-live-p tmp) (delete-process tmp))))))
 
 (exwm/bind-command
  "<XF86AudioRaiseVolume>" (cmd! (my-vol-change 1))
@@ -1429,7 +1384,7 @@ Enable scrobbling of URL tracks: https://lists.gnu.org/archive/html/emms-help/20
 
   (defun emms-listenbrainz-scrobbler-start-hook ()
     (setq emms-listenbrainz-scrobbler-track-play-start-timestamp
-	  (time-convert nil 'integer))
+          (time-convert nil 'integer))
     (when-let* ((current-track (emms-playlist-current-selected-track))
                 ((emms-scrobbler-good-track current-track)))
       (emms-listenbrainz-scrobbler-make-async-submission-call current-track t)))
@@ -1439,10 +1394,10 @@ Enable scrobbling of URL tracks: https://lists.gnu.org/archive/html/emms-help/20
       (let ((track-length (emms-track-get current-track 'info-playing-time)))
         (when (and track-length
                    (emms-scrobbler-good-track current-track)
-	           (> track-length 30)
-	           (> emms-playing-time (min 240 (/ track-length 2))))
-	  (emms-listenbrainz-scrobbler-make-async-submission-call
-	   current-track)))))
+                   (> track-length 30)
+                   (> emms-playing-time (min 240 (/ track-length 2))))
+          (emms-listenbrainz-scrobbler-make-async-submission-call
+           current-track)))))
 
   (emms-listenbrainz-scrobbler-enable))
 #+end_src
@@ -1862,6 +1817,104 @@ choose_entry() {
          (arguments '("try_first_pass" "nullok"))))))
 #+end_src
 
+* ewm
+#+begin_src scheme :noweb-ref guix-pkg
+"emacs-ewm"
+#+end_src
+#+begin_src elisp
+(when (daemonp)
+  (add-hook 'after-make-frame-functions
+            (defun +ewm-trigger-server-hooks-h (frame)
+              (when (display-graphic-p frame)
+                (remove-hook 'after-make-frame-functions #'+ewm-trigger-server-hooks-h)
+                (with-selected-frame frame
+                  (run-hooks 'server-after-make-frame-hook))))))
+
+(defmacro sh! (command)
+  "Returns lambda that starts given command in shell."
+  (declare (doc-string 1))
+  `(lambda (&rest _) (interactive)
+     (start-process-shell-command "ewm-bind" nil ,command)))
+
+(defun ewm/switch-to-next-buffer (class &optional reverse?)
+  "Form a cycle of CLASS buffers and return the one next to current buffer.
+REVERSE? it when true. Returns the selected buffer."
+  (cl-loop
+   with first with this with next
+   for b in (if reverse? (reverse (buffer-list)) (buffer-list))
+   when (string= class (buffer-local-value 'ewm-surface-app b)) do
+   (setf first (or first b))
+   (setf next (and this b))
+   (setf this (or this (when (eq (current-buffer) b) b)))
+   until next
+   finally return
+   (and (or next first)
+        (switch-to-buffer (or next first) t t))))
+
+(use-package ewm
+  :custom
+  (ewm-input-config '((keyboard :xkb-layouts "us,ru")))
+  (ewm-intercept-prefixes '("C-x" "M-x" "<menu>"))
+  :config
+  (map! :map ewm-mode-map
+        "s-r"     #'xdg-launcher-run-app
+
+        "s-h"     #'evil-window-left
+        "s-j"     #'evil-window-down
+        "s-k"     #'evil-window-up
+        "s-l"     #'evil-window-right
+
+        "s-1" (cmd! (tab-bar-switch-to-tab "code"))
+        "s-2" (cmd! (tab-bar-switch-to-tab "brow"))
+
+        "<menu>" (cmd! (unless (minibufferp) (dash-menu)))
+        "s-<delete>" #'dash-menu/audio
+
+        "<AudioPlay>" #'emms-play-dwim
+        "<AudioPause>" #'emms-stop
+        "<AudioPrev>" #'emms-previous
+        "<AudioNext>" (cmd! (funcall emms-player-next-function))
+        "<AudioRaiseVolume>" (cmd! (my-vol-change 1))
+        "<AudioLowerVolume>" (cmd! (my-vol-change -1))
+        "<AudioMute>" (sh! "pactl set-sink-mute @DEFAULT_SINK@ toggle")
+        "<AudioMicMute>" (sh! "pactl set-source-mute @DEFAULT_SOURCE@ toggle")
+        "<MonBrightnessUp>" (sh! "brightnessctl -e set 10%+")
+        "<MonBrightnessDown>" (sh! "brightnessctl -e set 10%-")
+        "<ScreenSaver>" (sh! "xset s activate")
+        "S-s-<f12>" (sh! "flameshot gui")
+        "s-<f12>" (sh! "flameshot gui -c -s")
+
+        "s-E"    (cmd!
+                  (tab-switch "brow")
+                  (cond
+                   ((string= "qutebrowser" exwm-class-name)
+                    (ewm/switch-to-next-buffer "org.qutebrowser.qutebrowser" 'reverse))
+
+                   ((not (get-process "qutebrowser"))
+                    (start-process "qutebrowser" nil "setsid" "-w" "qutebrowser"))))
+
+        "s-e"    (cmd!
+                  (tab-switch "brow")
+                  (or (ewm/switch-to-next-buffer "org.qutebrowser.qutebrowser")
+                      (start-process "qutebrowser" nil "setsid" "-w" "qutebrowser"))))
+
+  (ewm--send-intercept-keys))
+#+end_src
+#+begin_src scheme :noweb-ref guix-env-var
+("QT_PLUGIN_PATH" . ,(file-append (pkg "qtwayland") "/lib/qt6/plugins"))
+("QT_QPA_PLATFORM_PLUGIN_PATH" . ,(file-append (pkg "qtwayland") "/lib/qt6/plugins/platforms"))
+#+end_src
+#+begin_src scheme :noweb-ref system-use
+(gnu services xorg)
+#+end_src
+#+begin_src scheme :noweb-ref system-service
+(service screen-locker-service-type
+         (screen-locker-configuration
+           (name "swaylock")
+           (program (file-append (pkg "swaylock-fprintd") "/bin/swaylock"))
+           (using-pam? #t)
+           (using-setuid? #f)))
+#+end_src
 * x11
 #+begin_src scheme :noweb-ref guix-pkg
 "xset" "xclip"
@@ -1963,6 +2016,7 @@ done
   (shepherd-service
    (provision '(xorg))
    (requirement '(dbus))
+   (auto-start? #f)
    (start #~(make-forkexec-constructor
              (list #$(xorg-start-command-xinit
                       (xorg-configuration
@@ -2527,9 +2581,7 @@ home-emacs
 ** init.el
 #+begin_src elisp :tangle init.el
 ;; generated from config.org
-(setq doom-leader-key "<f13>"
-      doom-leader-alt-key "<f13>"
-      custom-file "~/devel/dotfiles/emacs/.doom.d/custom.el")
+(setq custom-file "~/devel/dotfiles/emacs/.doom.d/custom.el")
 (doom!
  :completion  (corfu +icons +orderless) (vertico +icons)
  :ui          nav-flash (modeline +light) ophints (popup +defaults) ligatures treemacs doom-dashboard
@@ -2542,7 +2594,7 @@ home-emacs
  :lang        (clojure +tree-sitter) data emacs-lisp (javascript +tree-sitter +lsp) markdown
               (org +dragndrop +pandoc +hugo +roam2 +pretty) beancount (go +lsp +tree-sitter) ; (rust +lsp +tree-sitter)
               (rest +jq) (sh +tree-sitter) plantuml (python +lsp +tree-sitter) (web +tree-sitter) yaml (json +tree-sitter)
- :app         telega (rss +org) torrent irc exwm dash-menu
+ :app         telega (rss +org) torrent irc dash-menu
  :email       (mu4e +mbsync +gmail)
  :config      (default +bindings +smartparens +gnupg))
 #+end_src
@@ -2723,7 +2775,7 @@ xargs flatpak install --or-update --noninteractive
 
 ** multimedia keys
 #+begin_src text :noweb-ref guix-pkg
-"flameshot" ; needs to be in the profile for dbus facility
+"flameshot" "grim" ; needs to be in the profile for dbus facility
 "brightnessctl"
 #+end_src
 #+begin_src elisp :noweb-ref exwm :tangle no
@@ -3371,8 +3423,8 @@ include theme
 #+begin_src scheme :noweb-ref guix-pin
 (pin "emacs-qutebrowser"
      #:uri "https://github.com/sarg/qutebrowser.el"
-     #:commit "805c1ddc3685dfafec4bef7ada09135620ccd48e"
-     #:hash "0yd7p2pjcf7fn1bmp1p0ys0yn8qa6ilba5lqsqkd2ijys8frmwq4")
+     #:commit "23d507b93a458b95c615a8442dad4991fdc03407"
+     #:hash "0n2a3ad2c3zry4hci1242w0nj7h082hhsdfngdxzy537viqjhmah")
 #+end_src
 #+begin_src scheme :noweb-ref guix-pkg
 "qutebrowser" "emacs-qutebrowser"
@@ -3434,6 +3486,7 @@ include theme
 (set-modeline-hook! 'qutebrowser-exwm-mode-hook :qutebrowser)
 
 (use-package qutebrowser
+  :autoload qutebrowser-rpc-connect
   :hook ((exwm-init . global-qutebrowser-exwm-mode)
          (exwm-init . qutebrowser-evil-state-mode)
          (exwm-init . qutebrowser-theme-export-mode)

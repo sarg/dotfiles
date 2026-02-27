@@ -4,6 +4,7 @@ from qutebrowser.api import cmdutils
 from qutebrowser.utils import objreg, qtutils
 from qutebrowser.qt.core import QUrl, QUrlQuery
 from qutebrowser.config import config as cfg
+import subprocess
 import pathlib
 import urllog
 import re
@@ -151,3 +152,10 @@ def command_close_tab(self) -> None:
 
 
 config.bind("d", "close-or-hide")
+subprocess.run(
+    [
+        "emacsclient",
+        "--eval",
+        '(progn (delete-file "/tmp/emacs-rpc") (qutebrowser-rpc-connect t))',
+    ]
+)
