@@ -9,6 +9,7 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages cmake)
   #:use-module (gnu packages samba)
+  #:use-module (gnu packages wm)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages polkit)
@@ -47,3 +48,31 @@
 password and fingerprint authentication.")
     (synopsis "PAM module that allows either a password or fingerprint authentication.")
     (license license:gpl2+)))
+
+(define-public swaylock-fprintd
+  (let ((commit "536d9dff795eb85720fc942da13e93bebea9f5fa"))
+    (package
+      (inherit swaylock)
+      (name "swaylock-fprintd")
+      (version (git-version "0" "0" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+                (url "https://github.com/SL-RU/swaylock-fprintd")
+                (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "07hziksn74a61bjv0c7lblvfgad4lc51pgxh7pfw985rbx3m2prk"))))
+      (arguments
+       (list #:phases
+             #~(modify-phases %standard-phases
+                 (add-after 'unpack 'fix-dbus
+                   (lambda* (#:key inputs #:allow-other-keys)
+                     (substitute* "fingerprint/meson.build"
+                       (("/usr") (assoc-ref inputs "fprintd"))))))))
+      (native-inputs
+       (modify-inputs (package-native-inputs swaylock)
+         (append `(,glib "bin")))) ; for gdbus-codegen
+      (inputs (modify-inputs (package-inputs swaylock)
+                (append fprintd dbus))))))

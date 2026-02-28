@@ -98,9 +98,10 @@ Supported launchers are: dmenu, fuzzel, rofi, walker and custom.")
 (define-public ewm
   (package
     (name "ewm")
-    (properties '((commit . "e927635ca72fda803d5daaf13ee45deaf83965ce")))
-    (version (git-version "0.1.0" "0" (assoc-ref properties 'commit)))
+    (properties '((commit . "7461052b9b128faa407ef6e623424eb5c19c5e06")))
+    (version (git-version "0.1.0" "2" (assoc-ref properties 'commit)))
     (source
+     ;; (local-file "/storage/devel/ext/ewm" #:recursive? #t)
      (origin
        (method git-fetch)
        (uri (git-reference
@@ -108,7 +109,7 @@ Supported launchers are: dmenu, fuzzel, rofi, walker and custom.")
               (commit (assoc-ref properties 'commit))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "10bjcpd4wf6jvn7mkgbikpak1fpq3gkl7d2183k0ixglg7jwm82n"))))
+        (base32 "0wn0arqirsv6h9wmvlh31qryk57jkk73sh9k1aafk5zrhjmpjf3g"))))
     (build-system cargo-build-system)
     (arguments
      (list #:install-source? #f

@@ -186,14 +186,14 @@ failed operations.")
 (define-public github-cli
   (package
     (name "github-cli")
-    (version "2.87.2")
+    (version "2.87.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/cli/cli/releases/download/v" version
                            "/gh_" version "_linux_amd64.tar.gz"))
        (sha256
-        (base32 "0madn7hb85wpwrsgdhnwazwlrbh0cigv8p83awa9rgz38ci0ndhq"))))
+        (base32 "1ckkhxd540x0j44c4b20x68v8ffia63ww1glgqkmz97w65v57rf6"))))
     (properties '((upstream-name . "gh")))
     (build-system binary-build-system)
     (home-page "https://github.com/cli/cli")
@@ -426,14 +426,14 @@ command-line programs gsutil and gcloud among others.")
 (define-public ddnet
   (package
     (name "ddnet")
-    (version "19.6")
+    (version "19.7")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "https://ddnet.org/downloads/DDNet-" version "-linux_x86_64.tar.xz"))
        (sha256
-        (base32 "1bhqzgf646nr54hc9abhq4d87d3bsr1113n6f9fy9kic9kcpwin8"))))
+        (base32 "1pan6hsigsapx5jhf9ljvk5rc58jhm2bgpgvix0x2m0nsq2n1a10"))))
     (build-system binary-build-system)
     (arguments
      (list #:strip-binaries? #f
@@ -490,7 +490,7 @@ modification with a unique cooperative gameplay.")
 (define-public python-ty
   (package
     (name "python-ty")
-    (version "0.0.17")
+    (version "0.0.19")
     (source
      (origin
        (method url-fetch)
@@ -498,7 +498,7 @@ modification with a unique cooperative gameplay.")
              "https://github.com/astral-sh/ty/releases/download/" version
              "/ty-x86_64-unknown-linux-gnu.tar.gz"))
        (sha256
-        (base32 "0pycx443gx3v3nn59w6v7akqk5vffdvg8x8rxxyky36wl31vj37d"))))
+        (base32 "1c8fhry1qb0lgnnpfyhssd73ajb4xfx866ky6cg41s3b6lndjqrz"))))
     (properties '((upstream-name . "ty")))
     (build-system binary-build-system)
     (supported-systems '("x86_64-linux"))
@@ -560,13 +560,13 @@ modification with a unique cooperative gameplay.")
 (define-public google-gemini-cli
   (package
     (name "google-gemini-cli")
-    (version "0.29.5")
+    (version "0.30.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/google-gemini/gemini-cli/releases/download/v" version "/gemini.js"))
        (sha256
-        (base32 "1ikaj8l44dh9w7964ssmarrhn86ixrm597ns316b6p1mbvda4fk3"))))
+        (base32 "1g4vn9wmfk0379vg6d4a45890nzgji1fpikn00am13j3phqgxv3f"))))
     (build-system binary-build-system)
     (arguments (list
                 #:install-plan
