@@ -233,38 +233,6 @@ working with git and your code.")
 history in an SQLite database.")
    (license license:expat)))
 
-(define-public git-bug
-  (package
-    (name "git-bug")
-    (version "0.10.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/git-bug/git-bug/releases/download/v" version "/git-bug_linux_amd64"))
-       (sha256 "18al1pnryq5x748pna0saav5privh8q50pc2dqdyyvsj3ssgi8iv")))
-    (build-system binary-build-system)
-    (arguments
-     (list
-      #:patchelf-plan #~'(("git-bug" ()))
-      #:install-plan #~'(("git-bug" "bin/"))
-      #:phases
-      #~(modify-phases %standard-phases
-          (replace 'unpack
-            (lambda* (#:key source #:allow-other-keys)
-              (copy-file source "./git-bug")
-              (chmod "git-bug" #o644)))
-          (add-before 'install 'chmod
-            (lambda* (#:key inputs #:allow-other-keys)
-              (chmod "git-bug" #o555))))))
-    (inputs (list glibc))
-    (home-page "https://github.com/git-bug/git-bug")
-    (synopsis "a decentralized issue tracker")
-    (description "git-bug is a standalone, distributed, offline-first issue management tool that
-embeds issues, comments, and more as objects in a git repository (not files!),
-enabling you to push and pull them to one or more remotes.")
-    (license license:gpl3+)))
-
 (define-public terraform
   (package
    (name "terraform")
@@ -560,13 +528,13 @@ modification with a unique cooperative gameplay.")
 (define-public google-gemini-cli
   (package
     (name "google-gemini-cli")
-    (version "0.30.1")
+    (version "0.31.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/google-gemini/gemini-cli/releases/download/v" version "/gemini.js"))
        (sha256
-        (base32 "1g4vn9wmfk0379vg6d4a45890nzgji1fpikn00am13j3phqgxv3f"))))
+        (base32 "1r2msy3xbj77jpfizdyxzc2yw9pkvfi2l3k3ycpa5lw6ilvm1z3g"))))
     (build-system binary-build-system)
     (arguments (list
                 #:install-plan

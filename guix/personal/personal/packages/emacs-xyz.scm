@@ -21,8 +21,8 @@
 (define-public emacs-reader
   (package
     (name "emacs-reader")
-    (properties '((commit . "3f4af37bbe1db429d95f08bfeee82be23f536d4a")))
-    (version (git-version "0.3.2" "7" (assoc-ref properties 'commit)))
+    (properties '((commit . "98c5046683e997902a83092b65cdb70ab120e000")))
+    (version (git-version "0.3.2" "8" (assoc-ref properties 'commit)))
     (source
      (origin
        (method git-fetch)
@@ -31,7 +31,7 @@
               (commit (assoc-ref properties 'commit))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1kz0ywfksnvssmjq5zlafg101hbjrh6r1d0csy035nr8qnxsljc0"))))
+        (base32 "19xibs9k1ivi8cnx390w3j9v0b5xqafcqfa7ws9nsqrqqdwik3r6"))))
     (build-system emacs-build-system)
     (arguments
      (list
@@ -2381,19 +2381,3 @@ general usage.")
      "Review Pull Request in Emacs using a modern interface based on Magit Section and
 Transient.  Currently supports Github, Gitlab, and Bitbucket Cloud.")
     (license license:gpl3)))
-
-(define-public emacs-ewm
-  (package
-    (inherit ewm)
-    (name "emacs-ewm")
-    (build-system emacs-build-system)
-    (arguments
-     (list #:lisp-directory "lisp"
-           #:phases
-           #~(modify-phases %standard-phases
-               (add-after 'unpack 'substitute-ewm-module-path
-                 (lambda* (#:key inputs #:allow-other-keys)
-                   (substitute* "ewm.el"
-                     (("\\(getenv \"EWM_MODULE_PATH\"\\)")
-                      (string-append "\"" (assoc-ref inputs "ewm") "/lib/libewm_core.so\""))))))))
-    (inputs (list ewm))))

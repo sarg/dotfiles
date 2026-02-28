@@ -890,9 +890,11 @@ disable-ipv6=true
 #+end_src
 ** workspaces
 #+begin_src elisp
-(tab-rename "code" 1)
-(progn (tab-new) (tab-rename "brow" 2))
-(tab-bar-mode 1)
+(add-hook 'doom-init-ui-hook
+          (lambda ()
+            (tab-rename "code" 1)
+            (progn (tab-new) (tab-rename "brow" 2))
+            (tab-bar-mode 1)))
 
 (custom-set-faces!
   '(tab-bar-tab :weight bold)

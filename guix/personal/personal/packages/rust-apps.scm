@@ -9,6 +9,10 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages emacs)
+  #:use-module (gnu packages package-management)
+  #:use-module (gnu packages build-tools)
+
   #:use-module (gnu packages wm)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages gl)
@@ -95,13 +99,12 @@ Supported launchers are: dmenu, fuzzel, rofi, walker and custom.")
 Supported launchers are: dmenu, fuzzel, rofi, walker and custom.")
     (license license:gpl3)))
 
-(define-public ewm
+(define-public emacs-ewm
   (package
-    (name "ewm")
-    (properties '((commit . "7461052b9b128faa407ef6e623424eb5c19c5e06")))
-    (version (git-version "0.1.0" "2" (assoc-ref properties 'commit)))
+    (name "emacs-ewm")
+    (properties '((commit . "bc52ede30f4db5af791c8791048f953d3ba00ef7")))
+    (version (git-version "0.1.0" "3" (assoc-ref properties 'commit)))
     (source
-     ;; (local-file "/storage/devel/ext/ewm" #:recursive? #t)
      (origin
        (method git-fetch)
        (uri (git-reference
@@ -109,24 +112,48 @@ Supported launchers are: dmenu, fuzzel, rofi, walker and custom.")
               (commit (assoc-ref properties 'commit))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0wn0arqirsv6h9wmvlh31qryk57jkk73sh9k1aafk5zrhjmpjf3g"))))
+        (base32 "11scasvan8fh3h6z3aiccdgr7i11c3pbxv4lh1g1nm5sv2wrqyza"))))
     (build-system cargo-build-system)
     (arguments
      (list #:install-source? #f
+           #:modules '((guix build cargo-build-system)
+                       ((guix build emacs-build-system) #:prefix emacs:)
+                       (guix build emacs-utils)
+                       (guix build utils))
+           #:imported-modules `(,@%cargo-build-system-modules
+                                (guix build emacs-utils)
+                                (guix build emacs-build-system))
            #:phases
            #~(modify-phases %standard-phases
-               (add-after 'unpack 'fix-deps
+               (add-after 'unpack 'build-lisp
+                 (lambda args
+                   (chdir "lisp")
+
+                   (substitute* "ewm.el"
+                     (("\\(getenv \"EWM_MODULE_PATH\"\\)")
+                      (string-append "\"" #$output "/lib/libewm_core.so\"")))
+
+                   (for-each
+                    (lambda (phase)
+                      (apply (cdr phase) args))
+                    (modify-phases emacs:%standard-phases
+                      (delete 'unpack)))
+                   
+                   (chdir "..")))
+
+               (add-after 'build-lisp 'fix-deps
                  (lambda _
                    (chdir "compositor")
                    (delete-file "Cargo.lock")
                    (substitute* "Cargo.toml"
                      (("^rev =.*") "version = \"*\"\n")
                      (("^git = .*") ""))))
+
                (replace 'install
                  (lambda _
                    (install-file "target/release/libewm_core.so"
-                    (string-append #$output "/lib")))))))
-    (native-inputs (list pkg-config))
+                                 (string-append #$output "/lib")))))))
+    (native-inputs (list emacs-minimal pkg-config))
     (inputs (cons*
              dbus
              libdisplay-info
