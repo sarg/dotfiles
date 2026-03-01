@@ -255,17 +255,12 @@ dnsmasq_resolve=/etc/dnsmasq.resolve
 
 (service ntp-service-type)
 
+(service network-manager-service-type
+         (network-manager-configuration
+           (shepherd-requirement '(iwd))))
 (service iwd-service-type
          (iwd-configuration
-          (shepherd-provision '(iwd networking wireless-daemon))
-          (config
-           (iwd-settings
-            (general
-             (iwd-general-settings
-              (enable-network-configuration? #t)))
-            (network
-             (iwd-network-settings
-              (name-resolving-service 'resolvconf)))))))
+          (shepherd-provision '(iwd wireless-daemon))))
 #+end_src
 #+begin_src scheme :noweb-ref guix-pin
 (pin "emacs-iwd-manager"
@@ -422,11 +417,6 @@ polkit-wheel-service
          (elogind-configuration
           (handle-lid-switch-external-power 'suspend)
           (kill-user-processes? #t)))
-#+end_src
-#+begin_src scheme :noweb-ref privileged-program
-(privileged-program
- (program (file-append (pkg "xsecurelock") "/libexec/xsecurelock/authproto_pam"))
- (setuid? #t))
 #+end_src
 #+name: cfg-udisks-wheel
 #+begin_src cfg :wrap src text
@@ -600,6 +590,14 @@ polkit.addRule(function(action, subject) {
     (arguments
      (substitute-keyword-arguments (package-arguments p)
        ((#:emacs emacs #f) home-emacs)))))
+
+(define* (local-pkg p #:key dir)
+  (let ((base (pkg p)))
+    (cons base
+          (package
+            (inherit base)
+            (version "local")
+            (source (local-file dir #:recursive? #t #:select? (git-predicate dir)))))))
 
 (define* (pin p #:key commit hash uri)
   (let ((base (pkg p)))
@@ -783,7 +781,7 @@ disable-ipv6=true
 (with-eval-after-load 'telega
   (telega 'no-popup))
 #+end_src
-** notifications
+** COMMENT notifications
 #+begin_src scheme :noweb-ref guix-pkg
 "emacs-ednc"
 #+end_src
@@ -891,16 +889,25 @@ disable-ipv6=true
 ** workspaces
 #+begin_src elisp
 (add-hook 'doom-init-ui-hook
-          (lambda ()
+          (defun sarg/noctalia ()
             (tab-rename "code" 1)
             (progn (tab-new) (tab-rename "brow" 2))
-            (tab-bar-mode 1)))
+            (tab-bar-mode -1)
+            
+            (set-frame-parameter (selected-frame) 'alpha-background 80)
+            ; force noctalia to use labwc workspace service
+            (setenv "LABWC_PID" (format "%s" (emacs-pid)))
+            (setenv "NOCTALIA_PAM_SERVICE" "fingerprint")
+            (make-process :buffer " *noctalia*"
+                          :name "noctalia"
+                          :command '("noctalia-shell" "--no-color")
+                          :noquery t)))
 
 (custom-set-faces!
   '(tab-bar-tab :weight bold)
   '(tab-bar-tab-inactive :weight normal))
 
-(setq!
+(setopt
  tab-bar-auto-width nil
  tab-bar-select-restore-windows nil
  tab-bar-new-tab-choice "*scratch*"
@@ -1034,7 +1041,7 @@ These are bound only for X11 apps.
           (lambda ()
             (consult--buffer-query :mode 'exwm-mode :as #'consult--buffer-pair))))
 
-  (setq! consult-preview-key (list :debounce 0.5 'any))
+  (setopt consult-preview-key (list :debounce 0.5 'any))
   (add-to-list 'consult-buffer-sources 'consult--source-exwm))
 #+end_src
 *** TODO fix waiting for upstream
@@ -1075,11 +1082,11 @@ These are bound only for X11 apps.
       (setf (cdr indicator) "")))
   bat-status)
 
-(setq!
+(setopt
  battery-mode-line-format " %b%>2p% "
  battery-mode-line-limit 50
  display-time-string-forms '((substring (format-time-string "%a") 0 2)
-                              (format-time-string "/%d %R")))
+                             (format-time-string "/%d %R")))
 
 (use-package net-usage
   :custom
@@ -1089,12 +1096,12 @@ These are bound only for X11 apps.
 
 (display-battery-mode 1)
 (display-time-mode 1)
-(setq! global-mode-string
-      '(emms-mode-line-string
-        iwd-manager-mode-line-string
-        net-usage-mode-line-string
-        battery-mode-line-string
-        display-time-string))
+(setopt global-mode-string
+        '(emms-mode-line-string
+          iwd-manager-mode-line-string
+          net-usage-mode-line-string
+          battery-mode-line-string
+          display-time-string))
 #+end_src
 ** app launcher
 #+begin_src scheme :noweb-ref guix-pkg
@@ -1221,7 +1228,7 @@ These are bound only for X11 apps.
 
   (setq emms-player-list (list emms-player-mpv))
 
-  (setq! emms-mode-line-mode-line-function #'emms/modeline-function)
+  (setopt emms-mode-line-mode-line-function #'emms/modeline-function)
   (add-hook 'emms-player-paused-hook #'emms-mode-line-alter)
   (delq 'emms-playing-time-string global-mode-string))
 #+end_src
@@ -1293,7 +1300,7 @@ These are bound only for X11 apps.
     ("l" "Likes" (lambda () (interactive)
                    (with-current-emms-playlist
                      (emms-playlist-current-clear)
-                     (setq! emms-random-playlist t)
+                     (setopt emms-random-playlist t)
                      (emms-add-directory (concat sarg/media-dir "/music_liked/"))
                      (emms-random))))]
    ["EMMS"
@@ -1524,29 +1531,21 @@ services:
 (".config/isyncrc" ,(local-file "../email/.config/isyncrc"))
 #+end_src
 *** notification
+#+begin_src scheme :noweb-ref emacs-dep
+"goimapnotify"
+#+end_src
 #+begin_src scheme :noweb-ref guix-file
 (".config/goimapnotify/goimapnotify.yaml"
  ,(local-file "../email/.config/goimapnotify/goimapnotify.yaml"))
 #+end_src
-#+begin_src scheme :noweb-ref guix-srv
-(simple-service
- 'goimapnotify
- home-shepherd-service-type
- (list
-  (shepherd-service
-   (provision '(goimapnotify))
-   (requirement '(x11-display gpg-agent online))
-   (modules `(((shepherd support) #:hide (mkdir-p)) ;for '%user-log-dir'
-              ,@(@ (gnu services shepherd) %default-modules)))
-   (auto-start? #f)
-   (respawn? #f)
-   (start #~(make-forkexec-constructor
-             (list #$(file-append (@ (gnu packages mail) goimapnotify) "/bin/goimapnotify"))
-             #:log-file (string-append %user-log-dir "/goimapnotify.log")))
-   (stop #~(make-kill-destructor)))))
-#+end_src
-#+begin_src sh :noweb-ref autostart :tangle no
-"herd start goimapnotify"
+#+begin_src elisp
+(add-hook 'doom-init-ui-hook
+          (defun sarg/goimapnotify ()
+            (interactive)
+            (make-process :buffer " *goimapnotify*"
+                          :name "goimapnotify"
+                          :command (list (guix/pkg 'goimapnotify "/bin/goimapnotify"))
+                          :noquery t)))
 #+end_src
 *** client
 #+begin_src scheme :noweb-ref guix-pkg
@@ -1725,7 +1724,7 @@ use_sops() {
 
 ;; for magithub auth to work create pass entry user^magithub@api.github.com
 (with-eval-after-load 'magit
-    (setq! magit-process-find-password-functions '(magit-process-password-auth-source)))
+    (setopt magit-process-find-password-functions '(magit-process-password-auth-source)))
 
 (use-package password-generator
   :after password-store
@@ -1821,7 +1820,7 @@ choose_entry() {
 
 * ewm
 #+begin_src scheme :noweb-ref guix-pkg
-"emacs-ewm"
+"emacs-ewm" "noctalia-shell" "xwayland-satellite"
 #+end_src
 #+begin_src elisp
 (when (daemonp)
@@ -1855,12 +1854,10 @@ REVERSE? it when true. Returns the selected buffer."
 
 (use-package ewm
   :custom
-  (ewm-input-config '((keyboard :xkb-layouts "us,ru")))
-  (ewm-intercept-prefixes '("C-x" "M-x" "<menu>"))
+  (ewm-intercept-prefixes '("C-x" "M-x" "<menu>" "C-\\"))
   :config
+  (add-to-list 'evil-emacs-state-modes 'ewm-surface-mode)
   (map! :map ewm-mode-map
-        "s-r"     #'xdg-launcher-run-app
-
         "s-h"     #'evil-window-left
         "s-j"     #'evil-window-down
         "s-k"     #'evil-window-up
@@ -1883,8 +1880,7 @@ REVERSE? it when true. Returns the selected buffer."
         "<MonBrightnessUp>" (sh! "brightnessctl -e set 10%+")
         "<MonBrightnessDown>" (sh! "brightnessctl -e set 10%-")
         "<ScreenSaver>" (sh! "xset s activate")
-        "S-s-<f12>" (sh! "flameshot gui")
-        "s-<f12>" (sh! "flameshot gui -c -s")
+        "s-<f12>" (sh! "grim -g \"$(slurp -d)\" - | wl-copy -t image/png")
 
         "s-E"    (cmd!
                   (tab-switch "brow")
@@ -1906,49 +1902,10 @@ REVERSE? it when true. Returns the selected buffer."
 ("QT_PLUGIN_PATH" . ,(file-append (pkg "qtwayland") "/lib/qt6/plugins"))
 ("QT_QPA_PLATFORM_PLUGIN_PATH" . ,(file-append (pkg "qtwayland") "/lib/qt6/plugins/platforms"))
 #+end_src
-#+begin_src scheme :noweb-ref system-use
-(gnu services xorg)
-#+end_src
-#+begin_src scheme :noweb-ref system-service
-(service screen-locker-service-type
-         (screen-locker-configuration
-           (name "swaylock")
-           (program (file-append (pkg "swaylock-fprintd") "/bin/swaylock"))
-           (using-pam? #t)
-           (using-setuid? #f)))
-#+end_src
-* x11
+* COMMENT x11
 #+begin_src scheme :noweb-ref guix-pkg
 "xset" "xclip"
-"hicolor-icon-theme" "adwaita-icon-theme"
-"greybird-gtk-theme"
-"font-jetbrains-mono"
-"font-inconsolata"
-"font-fira-code"
-"font-nerd-symbols"
-"font-emojione-color"
-"font-google-noto-emoji" ; 💪🕹
-"font-hack"
-"font-terminus"
 #+end_src
-#+begin_src cfg :dest ".config/gtk-3.0/settings.ini"
-[Settings]
-gtk-theme-name="Greybird"
-gtk-icon-theme-name="Adwaita"
-gtk-font-name="Fira Code 12"
-#+end_src
-
-#+RESULTS[5890d8681422e44008e0252b5c4006e5d4ac9aa0]:
-#+begin_src text :noweb-ref guix-file
-(".config/gtk-3.0/settings.ini"
-,(mixed-text-file
-  "cfg-file"
-"[Settings]\n"
-"gtk-theme-name=\"Greybird\"\n"
-"gtk-icon-theme-name=\"Adwaita\"\n"
-"gtk-font-name=\"Fira Code 12\""))
-#+end_src
-
 #+begin_src scheme :noweb-ref guix-pkg
 (package
   (name "keymap-helper")
@@ -1972,10 +1929,6 @@ gtk-font-name="Fira Code 12"
   (home-page #f)
   (synopsis #f)
   (license #f))
-#+end_src
-#+begin_src scheme :noweb-ref guix-env-var
-("_JAVA_AWT_WM_NONREPARENTING" . "1")
-("QT_QPA_PLATFORMTHEME" . "gtk3")
 #+end_src
 #+begin_src cfg :dest ".xinitrc"
 🐜(screen-locker
@@ -2026,10 +1979,6 @@ done
                        (modules (list xlibre-xf86-input-libinput)))))
              #:create-session? #f))
    (stop #~(make-kill-destructor)))))
-#+end_src
-#+begin_src scheme :noweb-ref guix-file
-(".icons/default"
-    ,(file-append (pkg "hackneyed-x11-cursors") "/share/icons/Hackneyed"))
 #+end_src
 * ssh
 #+begin_src scheme :noweb-ref guix-pkg
@@ -2429,6 +2378,7 @@ home-emacs
 "emacs-nodejs-repl"
 "emacs-ob-async"
 "emacs-ob-go"
+"emacs-ob-gptel"
 "emacs-ob-restclient"
 "emacs-orderless"
 "emacs-org"
@@ -2451,6 +2401,7 @@ home-emacs
 "emacs-pass"
 "emacs-password-store"
 "emacs-password-store-otp"
+"emacs-pcmpl-args"
 "emacs-pip-requirements"
 "emacs-pipenv"
 "emacs-plantuml-mode"
@@ -2594,7 +2545,7 @@ home-emacs
               make tree-sitter lsp direnv llm debugger
  :checkers    syntax
  :lang        (clojure +tree-sitter) data emacs-lisp (javascript +tree-sitter +lsp) markdown
-              (org +dragndrop +pandoc +hugo +roam2 +pretty) beancount (go +lsp +tree-sitter) ; (rust +lsp +tree-sitter)
+              (org +dragndrop +pandoc +hugo +roam2 +pretty) beancount (go +lsp +tree-sitter) (rust +lsp +tree-sitter)
               (rest +jq) (sh +tree-sitter) plantuml (python +lsp +tree-sitter) (web +tree-sitter) yaml (json +tree-sitter)
  :app         telega (rss +org) torrent irc dash-menu
  :email       (mu4e +mbsync +gmail)
@@ -2607,20 +2558,19 @@ home-emacs
 #+begin_src elisp
 (setq fancy-splash-image (guix/pkg 'guix-artwork "/logo/head-only/Guix-head-stencil.svg"))
 (setq +doom-dashboard-functions
-      '(doom-dashboard-widget-banner
-        doom-dashboard-widget-shortmenu))
+      '(doom-dashboard-widget-shortmenu))
 #+end_src
 ** modeline
 #+begin_src elisp
-(setq! +modeline-encoding nil
-       +modeline-height 20)
+(setopt +modeline-encoding nil
+        +modeline-height 20)
 
 (def-modeline! :main
-  '(" " +modeline-buffer-identification) `(""))
+               '(" " +modeline-buffer-identification) `(""))
 (set-modeline! :main 'default)
 
 (def-modeline! 'project
-  `(" " (:eval (abbreviate-file-name default-directory))) '(""))
+               `(" " (:eval (abbreviate-file-name default-directory))) '(""))
 #+end_src
 ** override popup params
 #+begin_src elisp
@@ -2700,6 +2650,46 @@ org.sugarlabs.MakeThemFall
 xargs flatpak install --or-update --noninteractive
 #+end_src
 * desktop
+** theme
+#+begin_src scheme :noweb-ref guix-pkg
+"hicolor-icon-theme" "adwaita-icon-theme"
+"greybird-gtk-theme"
+"font-jetbrains-mono"
+"font-inconsolata"
+"font-fira-code"
+"font-nerd-symbols"
+"font-emojione-color"
+"font-google-noto-emoji" ; 💪🕹
+"font-hack"
+"font-terminus"
+#+end_src
+
+#+begin_src cfg :dest ".config/gtk-3.0/settings.ini"
+[Settings]
+gtk-theme-name="Greybird"
+gtk-icon-theme-name="Adwaita"
+gtk-font-name="Fira Code 12"
+#+end_src
+
+#+RESULTS[5890d8681422e44008e0252b5c4006e5d4ac9aa0]:
+#+begin_src text :noweb-ref guix-file
+(".config/gtk-3.0/settings.ini"
+,(mixed-text-file
+  "cfg-file"
+"[Settings]\n"
+"gtk-theme-name=\"Greybird\"\n"
+"gtk-icon-theme-name=\"Adwaita\"\n"
+"gtk-font-name=\"Fira Code 12\""))
+#+end_src
+
+#+begin_src scheme :noweb-ref guix-file
+(".icons/default"
+    ,(file-append (pkg "hackneyed-x11-cursors") "/share/icons/Hackneyed"))
+#+end_src
+#+begin_src scheme :noweb-ref guix-env-var
+("_JAVA_AWT_WM_NONREPARENTING" . "1")
+("QT_QPA_PLATFORMTHEME" . "gtk3")
+#+end_src
 ** trash
 #+begin_src scheme :noweb-ref guix-pkg
 "emacs-trashed"
@@ -2777,7 +2767,8 @@ xargs flatpak install --or-update --noninteractive
 
 ** multimedia keys
 #+begin_src text :noweb-ref guix-pkg
-"flameshot" "grim" ; needs to be in the profile for dbus facility
+"flameshot" ; needs to be in the profile for dbus facility
+"grim" "slurp" "wl-clipboard"
 "brightnessctl"
 #+end_src
 #+begin_src elisp :noweb-ref exwm :tangle no
@@ -2811,10 +2802,9 @@ xargs flatpak install --or-update --noninteractive
     "Disable the previous theme before loading a new one."
     (mapc #'disable-theme custom-enabled-themes))
 
-  (if (display-graphic-p)
-    (add-hook! 'after-init-hook :depth -95 #'darkman-mode)))
+  (add-hook! 'doom-init-ui-hook #'darkman-mode))
 #+end_src
-** redshift
+** COMMENT redshift
 #+begin_src scheme :noweb-ref guix-srv
 (service
  home-redshift-service-type
@@ -2851,38 +2841,17 @@ xargs flatpak install --or-update --noninteractive
 #+end_src
 #+begin_src elisp
 (use-package kdeconnect
+  :hook (doom-init-ui . kdeconnect-refresh)
   :defer t
   :custom
   (kdeconnect-active-device '("Pixel 9a" . "96c0a00f623640859f01c89f53db3b45")))
-#+end_src
-#+begin_src scheme :noweb-ref guix-srv
-(simple-service
- 'kdeconnect
- home-shepherd-service-type
- (list
-  (shepherd-service
-   (provision '(kdeconnect))
-   (requirement '(dbus x11-display))
-   (modules `(((shepherd support) #:hide (mkdir-p)) ;for '%user-log-dir'
-              (srfi srfi-1) (srfi srfi-26)
-              ,@(@ (gnu services shepherd) %default-modules)))
-   ;; not make-forkexec-constructor as it doesn't observe DISPLAY changes
-   (start #~(lambda _
-              (fork+exec-command
-               (list #$(file-append (pkg "kdeconnect") "/bin/kdeconnectd"))
-               #:environment-variables
-               (cons (string-append "DISPLAY=" (getenv "DISPLAY"))
-                     (remove (cut string-prefix? "DISPLAY=" <>)
-                             (default-environment-variables))))
-              #:log-file (string-append %user-log-dir "/kdeconnectd.log")))
-   (stop #~(make-kill-destructor)))))
 #+end_src
 * miscellaneous
 #+begin_src elisp
 ;; C-h deletes character backwards
 (define-key key-translation-map [?\C-h] [?\C-?])
 
-(setq! auto-revert-use-notify t)
+(setopt auto-revert-use-notify t)
 
 (with-eval-after-load 'recentf
   (add-to-list 'recentf-exclude "500GB/sort/"))
@@ -2900,37 +2869,6 @@ xargs flatpak install --or-update --noninteractive
 (defadvice! +debug-modeline-format-icon (icon-set icon label &optional face &rest args)
   :override +modeline-format-icon
   (propertize (format "X %s" label) 'face face))
-#+end_src
-* buffers
-#+begin_src scheme :noweb-ref guix-pkg
-"emacs-bufler"
-#+end_src
-#+begin_src elisp
-(use-package bufler
-  :commands bufler
-  :init
-  (set-popup-rule! "^\\*Bufler\\*$" :ignore t)
-
-  :config
-  (with-eval-after-load 'exwm
-    (exwm-input-set-key (kbd "s-b") #'bufler-switch-buffer))
-
-  (with-eval-after-load 'evil-collection
-    (evil-collection-define-key 'normal 'bufler-list-mode-map
-      (kbd "C-k") 'bufler-list-buffer-kill
-      "r" 'bufler
-      (kbd "RET") 'bufler-list-buffer-switch))
-
-  :custom
-  (bufler-groups
-   (bufler-defgroups
-     (group (mode-match "Telega" (rx bos "telega-chat")))
-     (group
-      (group-and "X11" (mode-match "exwm-mode" (rx bos "exwm-mode")))
-      (group-and "WWW"
-       (lambda (b) (string= "qutebrowser" (buffer-local-value 'exwm-class-name b)))))
-     (group (auto-project))
-     (auto-directory))))
 #+end_src
 * org mode
 #+begin_src scheme :noweb-ref guix-pkg
@@ -2989,10 +2927,10 @@ os.execlp('jaro', 'jaro',
 *** template
 #+begin_src elisp
 (with-eval-after-load 'org-project-capture
-  (pushnew! org-capture-templates
-            '("b" "Bookmark URL" entry
-              (file+headline +org-capture-todo-file "Inbox")
-              "* %?%a\n%i" :prepend t)))
+  (add-to-list 'org-capture-templates
+               '("b" "Bookmark URL" entry
+                 (file+headline +org-capture-todo-file "Inbox")
+                 "* %?%a\n%i" :prepend t)))
 #+end_src
 ** agenda
 #+begin_src scheme :noweb-ref guix-pkg
@@ -3239,10 +3177,10 @@ __pycache__/
 (use-package fj
   :commands fj-list-issues fj-list-pulls
   :config
-  (setq! fj-host "https://codeberg.org"
-         fj-user "sarg"
-         fj-token-use-auth-source nil
-         fj-token (auth-source-pass-get 'secret "Api/codeberg.org/fj.el"))
+  (setopt fj-host "https://codeberg.org"
+          fj-user "sarg"
+          fj-token-use-auth-source nil
+          fj-token (auth-source-pass-get 'secret "Api/codeberg.org/fj.el"))
   (map! :map fj-item-view-mode-map
         :nm "go" #'fj-browse-view)
 
@@ -3250,12 +3188,14 @@ __pycache__/
 
 (use-package guix
   :commands guix
+  :custom
+  (guix-repl-use-server nil)
   :config
   (require 'guix-profiles)
-  (setq! guix-repl-use-server nil
-         guix-current-profile guix-home-profile
-         guix-load-path (mapcar #'expand-file-name
-                                '("~/devel/dotfiles/guix/personal"))))
+  (setopt 
+   guix-current-profile guix-home-profile
+   guix-load-path (mapcar #'expand-file-name
+                          '("~/devel/dotfiles/guix/personal"))))
 
 (with-eval-after-load 'magit
   (autoload #'fj-repo-+-owner-from-git "fj" nil t)
@@ -3268,7 +3208,7 @@ __pycache__/
   (transient-insert-suffix 'magit-fetch
     '(2 0) (list "j" "fj.el" #'magit-fj :if #'fj-repo-+-owner-from-git)))
 #+end_src
-** COMMENT rust
+** rust
 #+begin_src scheme :noweb-ref guix-pkg
 "emacs-rust-mode" "emacs-rustic" "tree-sitter-rust"
 #+end_src
@@ -3340,12 +3280,7 @@ install grammars as expected by clojure-ts-mode
 #+end_src
 * tramp
 #+begin_src scheme :noweb-ref guix-pkg
-; build with emacs-next to avoid version mismatch warning
-(let* ((emacs-tramp (pkg "emacs-tramp"))
-       (emacs-tramp-next (build-with-home-emacs emacs-tramp))
-       (r (package-input-rewriting `((,emacs-tramp . ,emacs-tramp-next)))))
-  (list emacs-tramp-next
-        (r (pkg "emacs-tramp-hlo"))))
+"emacs-tramp-hlo"
 #+end_src
 #+begin_src elisp
 (use-package tramp-hlo
@@ -3353,7 +3288,7 @@ install grammars as expected by clojure-ts-mode
 #+end_src
 #+begin_src elisp
 (with-eval-after-load 'tramp
-  (pushnew! tramp-remote-path 'tramp-own-remote-path))
+  (add-to-list 'tramp-remote-path 'tramp-own-remote-path))
 #+end_src
 * book reading
 ** zathura
@@ -3596,7 +3531,7 @@ eval "$(atuin init bash)"
   (eshell-atuin-mode))
 
 (with-eval-after-load 'eshell
-  (setq! eshell-prefer-lisp-functions 't)
+  (setopt eshell-prefer-lisp-functions 't)
   (set-eshell-alias!
    "doom" "$doom-core-dir/../bin/doom $@*"
    "gu" "just -g guix $@*"
@@ -3658,12 +3593,12 @@ eval "$(atuin init bash)"
 
   (setq dired-listing-switches "-ahl --group-directories-first")
   (add-to-list 'dirvish-hide-details 'dired)
-  (setq! dirvish-quick-access-entries
-         `(("h" "~/"                             "Home")
-           ("c" ,(f-dirname doom-core-dir)       "Doom root")
-           ("e" "~/devel/dotfiles/emacs/.doom.d" "Emacs config")
-           ("d" "~/Downloads/"                   "Downloads")
-           ("m" ,sarg/media-dir                  "Media"))))
+  (setopt dirvish-quick-access-entries
+          `(("h" "~/"                             "Home")
+            ("c" ,(f-dirname doom-core-dir)       "Doom root")
+            ("e" "~/devel/dotfiles/emacs/.doom.d" "Emacs config")
+            ("d" "~/Downloads/"                   "Downloads")
+            ("m" ,sarg/media-dir                  "Media"))))
 
 (use-package sxiv
   :commands sxiv)
@@ -3689,8 +3624,6 @@ eval "$(atuin init bash)"
 * bindings
 #+begin_src elisp
 (map!
- "C-x b" #'bufler-switch-buffer
-
  (:map dired-mode-map
   :n (kbd "DEL") #'dired-up-directory
   :n "K" #'dired-do-kill-lines)
@@ -3700,7 +3633,6 @@ eval "$(atuin init bash)"
 
  :leader
  "h" nil
- "," #'bufler-switch-buffer
  :desc "Music" "oM" #'=emms
  :desc "Dash" "om" #'dash-menu)
 #+end_src
