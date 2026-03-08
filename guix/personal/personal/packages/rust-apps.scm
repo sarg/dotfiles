@@ -102,8 +102,8 @@ Supported launchers are: dmenu, fuzzel, rofi, walker and custom.")
 (define-public emacs-ewm
   (package
     (name "emacs-ewm")
-    (properties '((commit . "bc52ede30f4db5af791c8791048f953d3ba00ef7")))
-    (version (git-version "0.1.0" "3" (assoc-ref properties 'commit)))
+    (properties '((commit . "2fc4c6e54fa359b58dd6613a1016e3dddaafd66a")))
+    (version (git-version "0.1.0" "4" (assoc-ref properties 'commit)))
     (source
      (origin
        (method git-fetch)
@@ -112,7 +112,7 @@ Supported launchers are: dmenu, fuzzel, rofi, walker and custom.")
               (commit (assoc-ref properties 'commit))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "11scasvan8fh3h6z3aiccdgr7i11c3pbxv4lh1g1nm5sv2wrqyza"))))
+        (base32 "0b007vwicvi0yk5bngmzdv1rd9byyk5l75cy48si24rb1awn76r9"))))
     (build-system cargo-build-system)
     (arguments
      (list #:install-source? #f

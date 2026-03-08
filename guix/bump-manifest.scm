@@ -4,6 +4,7 @@
              (personal packages quake3e)
              (personal packages scrcpy)
              (personal packages haskell)
+             (personal packages wm)
              (personal packages xlibre)
              (personal packages binary))
 
@@ -14,5 +15,7 @@
        oama
        python-ty
        tinymediamanager
+       noctalia-shell
+       noctalia-qs
        github-cli
        google-gemini-cli))

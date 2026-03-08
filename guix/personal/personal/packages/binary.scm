@@ -56,13 +56,13 @@
 (define-public tinymediamanager
   (package
    (name "tinymediamanager")
-   (version "5.2.7.1")
+   (version "5.2.8")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://archive.tinymediamanager.org/v" version
                                 "/tinyMediaManager-" version "-linux-amd64.tar.xz"))
             (sha256
-             (base32 "04rpikklzhxxf97b0claqdk4dkkfridiw0m3rl35057hqpzsbxgf"))))
+             (base32 "015nmn78s14fb4xng7l396w6a8qxpmlcwx7dy8xap2l9cxkk3v51"))))
    (build-system binary-build-system)
    (inputs (list libmediainfo openjdk))
    (supported-systems '("x86_64-linux"))
@@ -458,7 +458,7 @@ modification with a unique cooperative gameplay.")
 (define-public python-ty
   (package
     (name "python-ty")
-    (version "0.0.19")
+    (version "0.0.21")
     (source
      (origin
        (method url-fetch)
@@ -466,7 +466,7 @@ modification with a unique cooperative gameplay.")
              "https://github.com/astral-sh/ty/releases/download/" version
              "/ty-x86_64-unknown-linux-gnu.tar.gz"))
        (sha256
-        (base32 "1c8fhry1qb0lgnnpfyhssd73ajb4xfx866ky6cg41s3b6lndjqrz"))))
+        (base32 "0g6krfm75xxza48m4i9pmc8wdvrffpippp2x5kh6kxnr3ak8hw01"))))
     (properties '((upstream-name . "ty")))
     (build-system binary-build-system)
     (supported-systems '("x86_64-linux"))
@@ -528,13 +528,13 @@ modification with a unique cooperative gameplay.")
 (define-public google-gemini-cli
   (package
     (name "google-gemini-cli")
-    (version "0.31.0")
+    (version "0.32.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/google-gemini/gemini-cli/releases/download/v" version "/gemini.js"))
        (sha256
-        (base32 "1r2msy3xbj77jpfizdyxzc2yw9pkvfi2l3k3ycpa5lw6ilvm1z3g"))))
+        (base32 "0vv7xfpn150x82xpq6wyfm0pkz1scfnrq2ibhp1zpriylv776spl"))))
     (build-system binary-build-system)
     (arguments (list
                 #:install-plan
