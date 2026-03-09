@@ -2291,7 +2291,6 @@ home-emacs
 "emacs-doom-snippets"
 "emacs-dumb-jump"
 "emacs-edit-indirect"
-"emacs-editorconfig"
 "emacs-elfeed"
 "emacs-elfeed-goodies"
 "emacs-elfeed-org"
@@ -2467,7 +2466,7 @@ home-emacs
 "tree-sitter-python"
 
 ;;  modules dependencies
-"shfmt" "shellcheck" "fd" "editorconfig-core-c"
+"shfmt" "shellcheck" "fd"
 "gopls" "go"
 
 ;; python
@@ -2537,11 +2536,11 @@ home-emacs
 (setq custom-file "~/devel/dotfiles/emacs/.doom.d/custom.el")
 (doom!
  :completion  (corfu +icons +orderless) (vertico +icons)
- :ui          nav-flash (modeline +light) ophints (popup +defaults) ligatures treemacs doom-dashboard
+ :ui          nav-flash (modeline +light) ophints (popup +defaults) ligatures treemacs
  :editor      (evil +everywhere) fold lispy snippets (format +onsave) multiple-cursors word-wrap
  :emacs       (dired +dirvish +icons) electric vc ibuffer undo eww
  :term        eshell vterm
- :tools       editorconfig (eval +overlay) (lookup +docsets) (magit +forge) (pass +auth)
+ :tools       (eval +overlay) (lookup +docsets) (magit +forge) (pass +auth)
               make tree-sitter lsp direnv llm debugger
  :checkers    syntax
  :lang        (clojure +tree-sitter) data emacs-lisp (javascript +tree-sitter +lsp) markdown
@@ -2767,7 +2766,6 @@ gtk-font-name="Fira Code 12"
 
 ** multimedia keys
 #+begin_src text :noweb-ref guix-pkg
-"flameshot" ; needs to be in the profile for dbus facility
 "grim" "slurp" "wl-clipboard"
 "brightnessctl"
 #+end_src
@@ -2911,7 +2909,7 @@ gtk-font-name="Fira Code 12"
 
 (with-eval-after-load 'org-download
   (setq org-download-screenshot-method
-        "flameshot gui --raw > %s"))
+        "grim -g \"$(slurp -d)\" %s"))
 #+end_src
 ** capture
 *** qutebrowser userscript

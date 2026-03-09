@@ -27,6 +27,7 @@ c.scrolling.smooth = True
 c.downloads.location.prompt = False
 c.downloads.remove_finished = 15000
 c.window.title_format = "{audio}{private}{current_title}{title_sep}{current_url}"
+c.window.hide_decoration = True
 c.input.partial_timeout = 0
 c.input.links_included_in_focus_chain = False
 
