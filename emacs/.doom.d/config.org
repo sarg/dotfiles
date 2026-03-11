@@ -583,7 +583,7 @@ polkit.addRule(function(action, subject) {
         (cons head out)))
   (fold-right flatten1 '() lst))
 
-(define home-emacs (pkg "emacs-next-pgtk"))
+(define home-emacs (pkg "emacs-pgtk"))
 
 (define (build-with-home-emacs p)
   (package/inherit p
@@ -3661,6 +3661,10 @@ eval "$(atuin init bash)"
 ** gemini
 #+begin_src scheme :noweb-ref guix-pkg
 "google-gemini-cli"
+#+end_src
+** opencode
+#+begin_src scheme :noweb-ref guix-pkg
+"emacs-opencode"
 #+end_src
 * COMMENT emacs screencast recording
 #+begin_src elisp :tangle packages.el

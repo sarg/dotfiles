@@ -1,40 +1,36 @@
 ;; -*- mode: scheme -*-
 (list (channel
-        (name 'guix)
-        (url "https://git.guix.gnu.org/guix.git")
-        (branch "master")
-        (commit
-          "403df42a3467be67e399b1f2f78394773177df0a")
-        (introduction
-          (make-channel-introduction
-            "9edb3f66fd807b096b48283debdcddccfea34bad"
-            (openpgp-fingerprint
-              "BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA"))))
+       (name 'guix)
+       (url "https://git.guix.gnu.org/guix.git")
+       (branch "master")
+       (commit "6da5c6775bc2b20d4608e77b418abfa5a5c20637")
+       (introduction
+        (make-channel-introduction
+         "9edb3f66fd807b096b48283debdcddccfea34bad"
+         (openpgp-fingerprint
+          "BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA"))))
       (channel
-        (name 'nonguix)
-        (url "https://gitlab.com/nonguix/nonguix")
-        (branch "master")
-        (commit
-          "816b5c6f45ed56cd81e2a6338ed5b710e4e66e98")
-        (introduction
-          (make-channel-introduction
-            "897c1a470da759236cc11798f4e0a5f7d4d59fbc"
-            (openpgp-fingerprint
-              "2A39 3FFF 68F4 EF7A 3D29  12AF 6F51 20A0 22FB B2D5"))))
+       (name 'nonguix)
+       (url "https://gitlab.com/nonguix/nonguix")
+       (branch "master")
+       (commit "e23700be901eceb5f3c88840dc342690f3606564")
+       (introduction
+        (make-channel-introduction
+         "897c1a470da759236cc11798f4e0a5f7d4d59fbc"
+         (openpgp-fingerprint
+          "2A39 3FFF 68F4 EF7A 3D29  12AF 6F51 20A0 22FB B2D5"))))
       (channel
-        (name 'sops-guix)
-        (url "https://github.com/fishinthecalculator/sops-guix.git")
-        (branch "main")
-        (commit
-          "c208d19921bd93cccf12f581a9297fad0929c013")
-        (introduction
-          (make-channel-introduction
-            "0bbaf1fdd25266c7df790f65640aaa01e6d2dbc9"
-            (openpgp-fingerprint
-              "8D10 60B9 6BB8 292E 829B  7249 AED4 1CC1 93B7 01E2"))))
+       (name 'sops-guix)
+       (url "https://github.com/fishinthecalculator/sops-guix.git")
+       (branch "main")
+       (commit "5a88726e1be11e2df0bb85b597a1f597e334e0b7")
+       (introduction
+        (make-channel-introduction
+         "0bbaf1fdd25266c7df790f65640aaa01e6d2dbc9"
+         (openpgp-fingerprint
+          "8D10 60B9 6BB8 292E 829B  7249 AED4 1CC1 93B7 01E2"))))
       (channel
-        (name 'personal)
-        (url "https://github.com/sarg/dotfiles")
-        (branch "master")
-        (commit
-          "966239cb9fce951992e51d2c3bb8d61d7a7a9c92")))
+       (name 'personal)
+       (url "https://github.com/sarg/dotfiles")
+       (branch "master")
+       (commit "8235935f0931398d63ba88ce744e9b63c27c3958")))

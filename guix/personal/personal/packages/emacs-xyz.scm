@@ -1603,37 +1603,6 @@ link 0.2.2 2022-09-27 update css class grab for entry title 0.2.1 2021-10-18
 update css class grab for entry title.")
     (license #f)))
 
-(define-public emacs-khalel
-  (package
-    (name "emacs-khalel")
-    (version "20250910.946")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-              (url "https://gitlab.com/hperrey/khalel")
-              (commit "f7cdb3246d193a518b3a4ca7381ffb6ed8087fcf")))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "06h5272kmg0ykf0zqdy2qwhlzszqsw176l1brk04bg8xyc3a4384"))))
-    (build-system emacs-build-system)
-    (arguments '(#:tests? #f))
-    (home-page "https://gitlab.com/hperrey/khalel")
-    (synopsis "Import, edit and create calendar events through khal")
-    (description
-     "Khalel provides helper routines to import current events from a local calendar
-through the command-line tool khal into an org-mode file.  Commands to edit and
-to capture new events allow modifications to the calendar.  Changes to the local
-calendar can be transfered to remote @code{CalDAV} servers using the
-command-line tool vdirsyncer which can be called from within khalel.  First
-steps/quick start: - install, configure and run vdirsyncer - install and
-configure khal - customize the values for capture file and import file for
-khalel - call `khalel-add-capture-template to set up a capture template - import
-events through `khalel-import-events', edit them through
-`khalel-edit-calendar-event or create new ones through `org-capture - consider
-adding the import org file to your org agenda to show current events there.")
-    (license #f)))
-
 (define-public emacs-embrace
   (package
     (name "emacs-embrace")
