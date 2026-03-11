@@ -25,10 +25,36 @@
 (define-syntax-rule (my-cargo-inputs name)
   (cargo-inputs name #:module '(personal packages rust-crates)))
 
+(define-public rust-emacs-0.20.0.34aaff9
+  (let ((commit "34aaff90d22d8f5f876023ab779fe12dfffdd518"))
+    (hidden-package
+     (package
+       (name "rust-emacs")
+       (version (git-version "0.20.0" "0" commit))
+       (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                 (url "https://github.com/ubolonton/emacs-module-rs")
+                 (commit commit)))
+          (file-name (git-file-name name version))
+          (sha256
+           (base32
+            "1f9rmx911ydqnvsjmm5f7y6amfaq6rr525a22a1a03w407jjyjd3"))))
+       (build-system cargo-build-system)
+       (arguments
+        (list #:skip-build? #t
+              #:cargo-package-crates ''("emacs-macros" "emacs_module" "emacs")))
+       (inputs (my-cargo-inputs 'rust-emacs))
+       (home-page #f)
+       (synopsis #f)
+       (description #f)
+       (license #f)))))
+
 (define-public emacs-ewm
   (package
     (name "emacs-ewm")
-    (properties '((commit . "2fc4c6e54fa359b58dd6613a1016e3dddaafd66a")))
+    (properties '((commit . "ce39d62123d062394682bb8fe3ae3682c9798f82")))
     (version (git-version "0.1.0" "4" (assoc-ref properties 'commit)))
     (source
      (origin
@@ -38,7 +64,7 @@
               (commit (assoc-ref properties 'commit))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0b007vwicvi0yk5bngmzdv1rd9byyk5l75cy48si24rb1awn76r9"))))
+        (base32 "02ssfpbm6lvmjw2d64ljhl9wxjdjl8yvgadf9g83l01lcckcw3qh"))))
     (build-system cargo-build-system)
     (arguments
      (list #:install-source? #f
@@ -95,7 +121,8 @@
              libxrandr
              libxi
              libdrm
-             (my-cargo-inputs 'ewm)))
+             rust-emacs-0.20.0.34aaff9
+             (my-cargo-inputs 'emacs-ewm)))
     (home-page "https://codeberg.org/ezemtsov/ewm")
     (synopsis "Emacs Wayland Manager")
     (description "Emacs Wayland Manager - Wayland compositor")

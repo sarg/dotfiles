@@ -186,14 +186,14 @@ failed operations.")
 (define-public github-cli
   (package
     (name "github-cli")
-    (version "2.87.3")
+    (version "2.88.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/cli/cli/releases/download/v" version
                            "/gh_" version "_linux_amd64.tar.gz"))
        (sha256
-        (base32 "1ckkhxd540x0j44c4b20x68v8ffia63ww1glgqkmz97w65v57rf6"))))
+        (base32 "05avw5if0p65yjknyxz7fwkndps7cm5sq4ihgs06m11imlh889jd"))))
     (properties '((upstream-name . "gh")))
     (build-system binary-build-system)
     (home-page "https://github.com/cli/cli")
@@ -550,3 +550,25 @@ modification with a unique cooperative gameplay.")
     (synopsis "Gemini AI agent")
     (description "Duh, it's an AI agent")
     (license license:asl2.0)))
+
+(define-public opencode
+  (package
+    (name "opencode")
+    (version "1.2.24")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/anomalyco/opencode/releases/download/v" version "/opencode-linux-x64.tar.gz"))
+       (sha256
+        (base32 "07l7g9w02vj74kxqqfwv85afiplwsk43389ykjsg0xarp3v4wr10"))))
+    (build-system binary-build-system)
+    (supported-systems '("x86_64-linux"))
+    (arguments
+     `(#:validate-runpath? #f
+       #:strip-binaries? #f
+       #:install-plan '(("opencode" "bin/"))
+       #:patchelf-plan '(("opencode"))))
+    (home-page "https://opencode.ai")
+    (synopsis "CLI AI coding agent")
+    (description "The open source coding agent.")
+    (license license:expat)))

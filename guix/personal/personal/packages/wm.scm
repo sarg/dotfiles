@@ -25,6 +25,7 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages hardware)
+  #:use-module (gnu packages polkit)
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages llvm)
@@ -35,10 +36,27 @@
   #:use-module (gnu packages wm)
   #:use-module (gnu packages xdisorg))
 
+(define-public noctalia-qs
+  (package
+    (inherit quickshell)
+    (name "noctalia-qs")
+    (version "0.0.8")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/noctalia-dev/noctalia-qs")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0pyakmaq2bwdhnnqnrsqm9g1mjf5spij6hsvmlw058kxj8xkbbd4"))))
+    (inputs (modify-inputs (package-inputs quickshell)
+              (append glib polkit)))))
+
 (define-public noctalia-shell
   (package
     (name "noctalia-shell")
-    (version "4.5.0")
+    (version "4.6.6")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -47,7 +65,7 @@
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1syqsml49jfjpngi7b099jcggp66lrls0ha6w5daqd5xhd2z94v3"))))
+                "132jkz4pfs7wkx26qvdshhxl0vd3bfpxnyd2qaf8gr84b1ma9jxd"))))
     (build-system copy-build-system)
     (arguments
      (list
@@ -141,7 +159,7 @@ exec ~a --config ~a/etc/xdg/quickshell/noctalia-shell \"$@\"~%"
            python-minimal
            qtbase
            qtwayland
-           quickshell
+           noctalia-qs
            which
            wl-clipboard
            wlsunset
