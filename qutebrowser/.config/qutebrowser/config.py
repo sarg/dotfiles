@@ -153,10 +153,3 @@ def command_close_tab(self) -> None:
 
 
 config.bind("d", "close-or-hide")
-subprocess.run(
-    [
-        "emacsclient",
-        "--eval",
-        '(progn (delete-file "/tmp/emacs-rpc") (qutebrowser-rpc-connect t))',
-    ]
-)

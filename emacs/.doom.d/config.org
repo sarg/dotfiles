@@ -258,9 +258,7 @@ dnsmasq_resolve=/etc/dnsmasq.resolve
 (service network-manager-service-type
          (network-manager-configuration
            (shepherd-requirement '(iwd))))
-(service iwd-service-type
-         (iwd-configuration
-          (shepherd-provision '(iwd wireless-daemon))))
+(service iwd-service-type)
 #+end_src
 #+begin_src scheme :noweb-ref guix-pin
 (pin "emacs-iwd-manager"
@@ -363,13 +361,29 @@ dnsmasq_resolve=/etc/dnsmasq.resolve
 #+begin_src scheme :noweb-ref system-pkg
 "bluez" "tlp" "libratbag"
 #+end_src
+#+name: kindle-udev-rule
+#+begin_src cfg :wrap "src scheme"
+SUBSYSTEM=="net", ACTION=="add", ENV{ID_VENDOR}=="Linux_3.0.35-lab126_with_fsl-usb2-udc", \
+  RUN+="🐜(pkg "iproute2")🐜/sbin/ip link set %k up", \
+  RUN+="🐜(pkg "iproute2")🐜/sbin/ip add add 192.168.15.243/24 dev %k"
+#+end_src
+
+#+RESULTS[0417f331ea1ec0c2a5b1619e91042ae35f3d3e90]: kindle-udev-rule
+#+begin_src scheme
+(mixed-text-file
+  "cfg-file"
+"SUBSYSTEM==\"net\", ACTION==\"add\", ENV{ID_VENDOR}==\"Linux_3.0.35-lab126_with_fsl-usb2-udc\", \\\n"
+"  RUN+=\""(pkg "iproute2")"/sbin/ip link set %k up\", \\\n"
+"  RUN+=\""(pkg "iproute2")"/sbin/ip add add 192.168.15.243/24 dev %k\"")
+#+end_src
+
 #+begin_src scheme :noweb-ref system-service
 (service fstrim-service-type)
 (service tlp-service-type
          (tlp-configuration
-          (usb-autosuspend? #f)
-          (cpu-boost-on-ac? #t)
-          (restore-device-state-on-startup? #t)))
+           (usb-autosuspend? #f)
+           (cpu-boost-on-ac? #t)
+           (restore-device-state-on-startup? #t)))
 
 (simple-service
  'setkeycodes activation-service-type
@@ -379,9 +393,9 @@ dnsmasq_resolve=/etc/dnsmasq.resolve
            "3a" "42"))      ; capslock->lshift
 
 (udev-rules-service 'qmk (pkg "qmk-udev-rules"))
-(udev-rules-service 'kindle kindle-usbnet-udev-rules)
-(udev-rules-service 'pixel pixel-usbnet-udev-rules)
-(udev-rules-service 'brightness (pkg "brightnessctl"))
+(udev-rules-service 'kindle (file->udev-rule "98-kindle-network.rules" <<kindle-udev-rule()>>))
+(udev-rules-service 'uaccess (udev-rule "50-uaccess.rules" "ACTION==\"add\", SUBSYSTEM==\"misc\", KERNEL==\"udmabuf\", TAG+=\"uaccess\""))
+
 (simple-service 'ratbagd dbus-root-service-type (list (pkg "libratbag")))
 
 (service sane-service-type
@@ -390,8 +404,8 @@ dnsmasq_resolve=/etc/dnsmasq.resolve
 
 (service cups-service-type
          (cups-configuration
-          (web-interface? #t)
-          (extensions (list (pkg "cups-filters")))))
+           (web-interface? #t)
+           (extensions (list (pkg "cups-filters")))))
 #+end_src
 ** desktop
 #+begin_src scheme :noweb-ref system-use
@@ -2172,10 +2186,6 @@ allow_anonymous true
 ** desktop
 #+begin_src scheme :noweb-ref guix-srv
 (service home-dbus-service-type)
-(service home-batsignal-service-type
-         (home-batsignal-configuration
-          (icon (file-append (pkg "adwaita-icon-theme")
-                             "/share/icons/Adwaita/symbolic/status/battery-caution-symbolic.svg"))))
 (service home-pipewire-service-type)
 #+end_src
 
@@ -2523,8 +2533,8 @@ home-emacs
 ** evil
 #+begin_src scheme :noweb-ref guix-pin
 (pin "emacs-evil-collection"
-     #:commit "d052ad2ec1f6a4b101f873f01517b295cd7dc4a9"
-     #:hash "1q9w1wwlfcvw9xhpcv56qx9y6g2wrfrl1mcs2gzbds9qb2nszf7y")
+     #:commit "0c63456ae73520839b66c3985de9bfabd38b835f"
+     #:hash "00jjs2py2836z3450nq1v2p6fv1i1dhalkd9yy2qg366jddc074r")
 (pin "emacs-evil-org"
      #:uri "https://github.com/doomelpa/evil-org-mode"
      #:commit "06518c65ff4f7aea2ea51149d701549dcbccce5d"
@@ -2989,14 +2999,13 @@ os.execlp('jaro', 'jaro',
    (t url)))
 
 (defun sarg/magit-clone-or-open (url)
-  (let ((target-dir
-         (expand-file-name (magit-clone--url-to-name url)
-                           magit-clone-default-directory)))
+  (let* ((clean-url (sarg/magit-clone-clean-url url))
+         (target-dir
+          (expand-file-name (magit-clone--url-to-name clean-url)
+                            magit-clone-default-directory)))
     (if (magit-git-repo-p target-dir)
         (magit-status target-dir)
-      (magit-clone-regular (sarg/magit-clone-clean-url url)
-                           magit-clone-default-directory nil))
-
+      (magit-clone-regular clean-url magit-clone-default-directory nil))
     t))
 
 (with-eval-after-load 'browse-at-remote
@@ -3411,9 +3420,7 @@ include theme
                #'sarg/magit-clone-or-open)
            url))
 
-(setq-default
- browse-url-browser-function 'browse-url-generic
- browse-url-generic-program "qutebrowser")
+(setq-default browse-url-browser-function #'qutebrowser-open-url)
 
 (def-modeline! :qutebrowser
                '("" evil-mode-line-tag "%b") `(""))
