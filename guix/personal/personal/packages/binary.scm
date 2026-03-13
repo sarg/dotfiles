@@ -15,11 +15,14 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages gtk)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages video)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages vulkan)
   #:use-module (gnu packages compression)
   #:use-module (nonguix build-system binary)
+  #:use-module (nongnu packages mozilla)
   #:use-module (guix build-system copy)
   #:use-module (guix build-system font)
   #:use-module (guix build-system gnu)
@@ -186,14 +189,14 @@ failed operations.")
 (define-public github-cli
   (package
     (name "github-cli")
-    (version "2.88.0")
+    (version "2.88.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/cli/cli/releases/download/v" version
                            "/gh_" version "_linux_amd64.tar.gz"))
        (sha256
-        (base32 "05avw5if0p65yjknyxz7fwkndps7cm5sq4ihgs06m11imlh889jd"))))
+        (base32 "00rq41i1k2p75c98wj0lr646vgbllsdpzf6djf3pbscp7fcjld9n"))))
     (properties '((upstream-name . "gh")))
     (build-system binary-build-system)
     (home-page "https://github.com/cli/cli")
@@ -207,22 +210,21 @@ working with git and your code.")
 (define-public atuin
   (package
    (name "atuin")
-   (version "18.12.1")
+   (version "18.13.2")
    (source
     (origin
      (method url-fetch)
      (uri (string-append "https://github.com/atuinsh/atuin/releases/download/v"
                          version
                          "/atuin-x86_64-unknown-linux-gnu.tar.gz"))
-     (sha256 (base32 "07rmls7czkqk8sp7py2x2p8jchxk241wkn9qcm68i9prh3dv7nnx"))))
+     (sha256 (base32 "14xssxf7rm55103qv3jvjq47khd18rbz0b172n37wzfhp61nr2xx"))))
    (supported-systems '("x86_64-linux"))
    (build-system binary-build-system)
-   (inputs `(("gcc:lib" ,gcc "lib")
-             ("glibc" ,glibc)))
+   (inputs `(("gcc:lib" ,gcc "lib")))
    (arguments
     `(#:strip-binaries? #f
       #:install-plan '(("atuin-x86_64-unknown-linux-gnu/atuin" "bin/"))
-      #:patchelf-plan '(("atuin-x86_64-unknown-linux-gnu/atuin" ("glibc" "gcc:lib")))
+      #:patchelf-plan '(("atuin-x86_64-unknown-linux-gnu/atuin" ("libc" "gcc:lib")))
       #:phases (modify-phases %standard-phases
                  (replace 'unpack
                    (lambda* (#:key inputs source #:allow-other-keys)
@@ -352,9 +354,8 @@ command-line programs gsutil and gcloud among others.")
     (supported-systems '("x86_64-linux"))
     (arguments
      `(#:install-plan '(("." "bin/"))
-       #:patchelf-plan '(("pulumi-watch" ("glibc" "gcc:lib")))))
-    (inputs `(("glibc" ,glibc)
-              ("gcc:lib" ,gcc "lib")))
+       #:patchelf-plan '(("pulumi-watch" ("libc" "gcc:lib")))))
+    (inputs `(("gcc:lib" ,gcc "lib")))
     (home-page "https://www.pulumi.com")
     (synopsis #f)
     (description #f)
@@ -373,8 +374,8 @@ command-line programs gsutil and gcloud among others.")
    (build-system binary-build-system)
    (arguments
     `(#:strip-binaries? #f
-      #:patchelf-plan `(("extension/adapter/codelldb" ("glibc" "gcc:lib"))
-                        ("extension/bin/codelldb-launch" ("glibc" "gcc:lib")))
+      #:patchelf-plan `(("extension/adapter/codelldb" ("libc" "gcc:lib"))
+                        ("extension/bin/codelldb-launch" ("libc" "gcc:lib")))
       #:phases (modify-phases %standard-phases
                  (replace 'unpack
                    (lambda* (#:key inputs source #:allow-other-keys)
@@ -383,8 +384,7 @@ command-line programs gsutil and gcloud among others.")
                         (lambda _
                           (delete-file-recursively "extension/lldb"))))))
    (native-inputs (list unzip))
-   (inputs `(("gcc:lib" ,gcc "lib")
-             ("glibc" ,glibc)))
+   (inputs `(("gcc:lib" ,gcc "lib")))
    (supported-systems '("x86_64-linux"))
    (home-page "https://github.com/vadimcn/codelldb")
    (synopsis "A VSCode debugger extension for native code, powered by LLDB.")
@@ -458,7 +458,7 @@ modification with a unique cooperative gameplay.")
 (define-public python-ty
   (package
     (name "python-ty")
-    (version "0.0.21")
+    (version "0.0.23")
     (source
      (origin
        (method url-fetch)
@@ -466,7 +466,7 @@ modification with a unique cooperative gameplay.")
              "https://github.com/astral-sh/ty/releases/download/" version
              "/ty-x86_64-unknown-linux-gnu.tar.gz"))
        (sha256
-        (base32 "0g6krfm75xxza48m4i9pmc8wdvrffpippp2x5kh6kxnr3ak8hw01"))))
+        (base32 "0xbrlcly7mfx71w4w0s811isbcadk99l29ddyhf6gxhy9lpndjz1"))))
     (properties '((upstream-name . "ty")))
     (build-system binary-build-system)
     (supported-systems '("x86_64-linux"))
@@ -496,10 +496,8 @@ modification with a unique cooperative gameplay.")
     (arguments
      `(#:validate-runpath? #f
        #:install-plan '(("goose" "bin/"))
-       #:patchelf-plan '(("goose" ("glibc" "gcc:lib" "libxcb")))))
-    (inputs `(("gcc:lib" ,gcc "lib")
-              ("glibc" ,glibc)
-              ("libxcb" ,libxcb)))
+       #:patchelf-plan '(("goose" ("libc" "gcc:lib" "libxcb")))))
+    (inputs `(("gcc:lib" ,gcc "lib") ("libxcb" ,libxcb)))
     (home-page "https://github.com/block/goose")
     (synopsis "CLI AI coding agent")
     (description "Goose is an extensible AI agent that goes beyond code suggestions - install, execute, edit, and test with any LLM")
@@ -528,13 +526,13 @@ modification with a unique cooperative gameplay.")
 (define-public google-gemini-cli
   (package
     (name "google-gemini-cli")
-    (version "0.32.1")
+    (version "0.33.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/google-gemini/gemini-cli/releases/download/v" version "/gemini.js"))
        (sha256
-        (base32 "0vv7xfpn150x82xpq6wyfm0pkz1scfnrq2ibhp1zpriylv776spl"))))
+        (base32 "1zyrhm612x67rb5nn6vf5cjyxsrvwikp56pan7l92xwzfdy1fsq1"))))
     (build-system binary-build-system)
     (arguments (list
                 #:install-plan
@@ -543,6 +541,9 @@ modification with a unique cooperative gameplay.")
                 #~(modify-phases %standard-phases
                     (add-before 'install 'chmod
                       (lambda _
+                        (substitute* "gemini.js"
+                          (("^#!/usr/bin/env -S node")
+                           (string-append "#!" (which "node"))))
                         (chmod "gemini.js" #o555))))))
     (properties '((upstream-name . "gemini")))
     (inputs (list node))
@@ -572,3 +573,40 @@ modification with a unique cooperative gameplay.")
     (synopsis "CLI AI coding agent")
     (description "The open source coding agent.")
     (license license:expat)))
+
+(define-public glide-browser
+  (package
+    (name "glide-browser")
+    (version "0.1.59a")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://github.com/glide-browser/glide/releases/download/" version "/glide.linux-x86_64.tar.xz"))
+       (sha256
+        (base32 "1yl1cn3qsan7wbv14giw32q4h3bvljbjy0rknfl3r3k579d94hch"))))
+    (build-system binary-build-system)
+    (supported-systems '("x86_64-linux"))
+    (arguments
+     (list #:validate-runpath? #f
+           #:install-plan ''(("." "share/glide"))
+           #:patchelf-plan ''(("glide" ("libc" "gcc:lib")))
+           #:phases
+           #~(modify-phases %standard-phases
+               (add-after 'install 'install-bin
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   (let* ((bin (string-append #$output "/bin"))
+                          (share (string-append #$output "/share/glide"))
+                          (exe (string-append bin "/glide")))
+                     (mkdir-p bin)
+                     (symlink (string-append share "/glide") exe)
+                     (wrap-program exe
+                       `("LD_LIBRARY_PATH" = (,share ,@(map (lambda (x) (string-append (cdr x) "/lib")) inputs))))))))))
+    (inputs (cons*
+             `("gcc:lib" ,gcc "lib")
+             `("alsa-lib" ,alsa-lib)
+             (package-inputs firefox)))
+    (home-page "https://glide-browser.app/")
+    (synopsis "An extensible and keyboard-focused web browser.")
+    (description "Firefox-based keyboard-focused web browser.")
+    (license license:mpl2.0)))

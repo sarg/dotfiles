@@ -1624,46 +1624,6 @@ update css class grab for entry title.")
     (description "TODO")
     (license #f)))
 
-(define-public emacs-expand-region
-  (package
-    (name "emacs-expand-region")
-    (version "20241217.1840")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-              (url "https://github.com/magnars/expand-region.el")
-              (commit "351279272330cae6cecea941b0033a8dd8bcc4e8")))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "1d6lvds7wfp9xsx5mh4x4sgync295r0bw0akmv136j5ks56xigf1"))))
-    (build-system emacs-build-system)
-    (arguments '(#:tests? #f))
-    (home-page "https://github.com/magnars/expand-region.el")
-    (synopsis "Increase selected region by semantic units")
-    (description "TODO")
-    (license #f)))
-
-(define-public emacs-epl
-  (package
-    (name "emacs-epl")
-    (version "20180205.2049")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-              (url "https://github.com/cask/epl")
-              (commit "78ab7a85c08222cd15582a298a364774e3282ce6")))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "0ksilx9gzdazngxfni5i632jpb1nprcxplsbhgqirs2xdl53q8v8"))))
-    (build-system emacs-build-system)
-    (arguments '(#:tests? #f))
-    (home-page "http://github.com/cask/epl")
-    (synopsis "Emacs Package Library")
-    (description "TODO")
-    (license #f)))
-
 (define-public emacs-load-env-vars
   (package
     (name "emacs-load-env-vars")
@@ -1686,29 +1646,6 @@ update css class grab for entry title.")
 style variable declarations.  Supported syntax: export KEY=VALUE KEY=VALUE
 KEY='VALUE KEY=\"VALUE\" # Comment lines are ignored KEY=VALUE # Inline comments
 are ignored KEY: VALUE.")
-    (license #f)))
-
-(define-public emacs-gntp
-  (package
-    (name "emacs-gntp")
-    (version "20141025.250")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-              (url "https://github.com/tekai/gntp.el")
-              (commit "767571135e2c0985944017dc59b0be79af222ef5")))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "1nvyjjjydrimpxy4cpg90si7sr8lmldbhlcm2mx8npklp9pn5y3a"))))
-    (build-system emacs-build-system)
-    (arguments '(#:tests? #f))
-    (home-page "https://github.com/tekai/gntp.el")
-    (synopsis "Growl Notification Protocol for Emacs")
-    (description
-     "This package implements the Growl Notification Protocol GNTP described at
-http://www.growlforwindows.com/gfw/help/gntp.aspx It is incomplete as it only
-lets you send but not receive notifications.")
     (license #f)))
 
 (define-public emacs-request-deferred
@@ -1840,55 +1777,6 @@ comes from \"buffer URL.\").")
     (description
      "This package provides a macro, `pretty-hydra-define', which defines a hydra with
 column for each group of heads.")
-    (license #f)))
-
-(define-public emacs-llama
-  (package
-    (name "emacs-llama")
-    (version "20260101.1830")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-              (url "https://github.com/tarsius/llama")
-              (commit "2a89ba755b0459914a44b1ffa793e57f759a5b85")))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "1fcribk74shqz757b8i4cybpia7j3x886lxfa5vlzxc3wwlf3x37"))))
-    (build-system emacs-build-system)
-    (propagated-inputs (list emacs-compat))
-    (arguments
-     '(#:tests? #f #:include '("^llama.el$" "^.dir-locals.el$")
-       #:exclude '()))
-    (home-page "https://github.com/tarsius/llama")
-    (synopsis "Compact syntax for short lambda")
-    (description
-     "This package implements a macro named `##', which provides a compact way to
-write short `lambda expressions.  The signature of the macro is (## FN &rest
-BODY) and it expands to a `lambda expression, which calls the function FN with
-the arguments BODY and returns the value of that.  The arguments of the `lambda
-expression are derived from symbols found in BODY. Each symbol from `%1 through
-`%9', which appears in an unquoted part of BODY, specifies a mandatory argument.
- Each symbol from `&1 through `&9', which appears in an unquoted part of BODY,
-specifies an optional argument.  The symbol `&* specifies extra (`&rest')
-arguments.  The shorter symbol `% can be used instead of `%1', but using both in
-the same expression is not allowed.  Likewise `& can be used instead of `&1'.
-These shorthands are not recognized in function position.  To support binding
-forms that use a vector as VARLIST (such as `-let from the `dash package),
-argument symbols are also detected inside of vectors.  The space between `## and
-FN can be omitted because `## is read-syntax for the symbol whose name is the
-empty string.  If you prefer you can place a space there anyway, and if you
-prefer to not use this somewhat magical symbol at all, you can instead use the
-alternative name `llama'.  Instead of: (lambda (a &optional _ c &rest d) (foo a
-(bar c) d)) you can use this macro and write: (##foo %1 (bar &3) &*) which
-expands to: (lambda (%1 &optional _&2 &3 &rest &*) (foo %1 (bar &3) &*)) Unused
-trailing arguments and mandatory unused arguments at the border between
-mandatory and optional arguments are also supported: (##list %1 _%3 &5 _&6)
-becomes: (lambda (%1 _%2 _%3 &optional _&4 &5 _&6) (list %1 &5)) Note how `_%3
-and `_&6 are removed from the body, because their names begin with an
-underscore.  Also note that `_&4 is optional, unlike the explicitly specified
-`_%3'.  Consider enabling `llama-fontify-mode to highlight `## and its special
-arguments.")
     (license #f)))
 
 (define-public emacs-org-project-capture
