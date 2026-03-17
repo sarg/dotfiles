@@ -25,32 +25,6 @@
 (define-syntax-rule (my-cargo-inputs name)
   (cargo-inputs name #:module '(personal packages rust-crates)))
 
-(define-public rust-emacs-0.20.0.34aaff9
-  (let ((commit "34aaff90d22d8f5f876023ab779fe12dfffdd518"))
-    (hidden-package
-     (package
-       (name "rust-emacs")
-       (version (git-version "0.20.0" "0" commit))
-       (source
-        (origin
-          (method git-fetch)
-          (uri (git-reference
-                 (url "https://github.com/ubolonton/emacs-module-rs")
-                 (commit commit)))
-          (file-name (git-file-name name version))
-          (sha256
-           (base32
-            "1f9rmx911ydqnvsjmm5f7y6amfaq6rr525a22a1a03w407jjyjd3"))))
-       (build-system cargo-build-system)
-       (arguments
-        (list #:skip-build? #t
-              #:cargo-package-crates ''("emacs-macros" "emacs_module" "emacs")))
-       (inputs (my-cargo-inputs 'rust-emacs))
-       (home-page #f)
-       (synopsis #f)
-       (description #f)
-       (license #f)))))
-
 (define-public emacs-ewm
   (package
     (name "emacs-ewm")
@@ -121,9 +95,64 @@
              libxrandr
              libxi
              libdrm
-             rust-emacs-0.20.0.34aaff9
              (my-cargo-inputs 'emacs-ewm)))
     (home-page "https://codeberg.org/ezemtsov/ewm")
+    (synopsis "Emacs Wayland Manager")
+    (description "Emacs Wayland Manager - Wayland compositor")
+    (license license:gpl3+)))
+
+(define-public emacs-reka
+  (package
+    (name "emacs-reka")
+    (properties '((commit . "a8730c31489f3ac30a428249a67233ae64515064")))
+    (version (git-version "0.1.0" "2" (assoc-ref properties 'commit)))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://codeberg.org/tazjin/reka")
+              (commit (assoc-ref properties 'commit))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "10na58mrp9w6mpzkwzsrbz4z1zqmzlyxk8irsx1ix2xsp5gbvbfl"))))
+    (build-system cargo-build-system)
+    (arguments
+     (list #:install-source? #f
+           #:modules '((guix build cargo-build-system)
+                       ((guix build emacs-build-system) #:prefix emacs:)
+                       (guix build emacs-utils)
+                       (guix build utils))
+           #:imported-modules `(,@%cargo-build-system-modules
+                                (guix build emacs-utils)
+                                (guix build emacs-build-system))
+           #:phases
+           #~(modify-phases %standard-phases
+               (add-after 'unpack 'build-lisp
+                 (lambda args
+                   (chdir "lisp")
+
+                   (substitute* "reka.el"
+                     (("require 'libreka")
+                      (string-append "module-load \"" #$output "/lib/libreka.so\"")))
+
+                   (for-each
+                    (lambda (phase)
+                      (apply (cdr phase) args))
+                    (modify-phases emacs:%standard-phases
+                      (delete 'unpack)))
+                   
+                   (chdir "..")))
+               
+               (replace 'install
+                 (lambda _
+                   (install-file "target/release/libreka.so"
+                                 (string-append #$output "/lib")))))))
+    (native-inputs (list emacs-minimal pkg-config))
+    (inputs (cons*
+             wayland
+             libxkbcommon
+             (my-cargo-inputs 'emacs-reka)))
+    (home-page "https://codeberg.org/tazjin/reka")
     (synopsis "Emacs Wayland Manager")
     (description "Emacs Wayland Manager - Wayland compositor")
     (license license:gpl3+)))
