@@ -59,13 +59,13 @@
 (define-public tinymediamanager
   (package
    (name "tinymediamanager")
-   (version "5.2.8")
+   (version "5.2.10")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://archive.tinymediamanager.org/v" version
                                 "/tinyMediaManager-" version "-linux-amd64.tar.xz"))
             (sha256
-             (base32 "015nmn78s14fb4xng7l396w6a8qxpmlcwx7dy8xap2l9cxkk3v51"))))
+             (base32 "024i07bwqsrnj94np5zdqhsmfp1bzcgac5nc5rsv2q5njzfmpcr5"))))
    (build-system binary-build-system)
    (inputs (list libmediainfo openjdk))
    (supported-systems '("x86_64-linux"))
@@ -210,14 +210,14 @@ working with git and your code.")
 (define-public atuin
   (package
    (name "atuin")
-   (version "18.13.2")
+   (version "18.13.3")
    (source
     (origin
      (method url-fetch)
      (uri (string-append "https://github.com/atuinsh/atuin/releases/download/v"
                          version
                          "/atuin-x86_64-unknown-linux-gnu.tar.gz"))
-     (sha256 (base32 "14xssxf7rm55103qv3jvjq47khd18rbz0b172n37wzfhp61nr2xx"))))
+     (sha256 (base32 "0cijyaals82rf05dpj02ad0nw8gxcwa2z4bxr2ciy8a9s5x597bi"))))
    (supported-systems '("x86_64-linux"))
    (build-system binary-build-system)
    (inputs `(("gcc:lib" ,gcc "lib")))
@@ -458,7 +458,7 @@ modification with a unique cooperative gameplay.")
 (define-public python-ty
   (package
     (name "python-ty")
-    (version "0.0.23")
+    (version "0.0.24")
     (source
      (origin
        (method url-fetch)
@@ -466,7 +466,7 @@ modification with a unique cooperative gameplay.")
              "https://github.com/astral-sh/ty/releases/download/" version
              "/ty-x86_64-unknown-linux-gnu.tar.gz"))
        (sha256
-        (base32 "0xbrlcly7mfx71w4w0s811isbcadk99l29ddyhf6gxhy9lpndjz1"))))
+        (base32 "0nfxcx1b5c1rk56nhawrg8r0l219yb3w85lgg4m0jhyi8sy1aw6c"))))
     (properties '((upstream-name . "ty")))
     (build-system binary-build-system)
     (supported-systems '("x86_64-linux"))
@@ -526,13 +526,13 @@ modification with a unique cooperative gameplay.")
 (define-public google-gemini-cli
   (package
     (name "google-gemini-cli")
-    (version "0.33.1")
+    (version "0.34.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/google-gemini/gemini-cli/releases/download/v" version "/gemini.js"))
        (sha256
-        (base32 "1zyrhm612x67rb5nn6vf5cjyxsrvwikp56pan7l92xwzfdy1fsq1"))))
+        (base32 "0y8c2lhlyn0fm8cd1v24lj7719fxlnm067w8fyx5538k63mjbyj1"))))
     (build-system binary-build-system)
     (arguments (list
                 #:install-plan
@@ -555,13 +555,13 @@ modification with a unique cooperative gameplay.")
 (define-public opencode
   (package
     (name "opencode")
-    (version "1.2.24")
+    (version "1.2.27")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/anomalyco/opencode/releases/download/v" version "/opencode-linux-x64.tar.gz"))
        (sha256
-        (base32 "07l7g9w02vj74kxqqfwv85afiplwsk43389ykjsg0xarp3v4wr10"))))
+        (base32 "1s39ks047pb8hi4z3pjqhb71zkvsic2jca3xa3zzfmsq2h5q5qvg"))))
     (build-system binary-build-system)
     (supported-systems '("x86_64-linux"))
     (arguments
