@@ -167,6 +167,51 @@
     (modify-services %base-services
       <<modify-system-service>>))))
 #+end_src
+** COMMENT greetd
+#+begin_src scheme :noweb-ref system-use
+(guix build-system trivial)
+#+end_src
+#+begin_src scheme :noweb-ref system-pkg
+(package
+  (name "emacs-ewm-desktop")
+  (version "0")
+  (source #f)
+  (build-system trivial-build-system)
+  (arguments
+   (list
+    #:builder
+    (with-imported-modules '((guix build utils))
+      #~(begin
+          (use-modules (guix build utils))
+          (make-desktop-entry-file
+           (string-append #$output "/share/wayland-sessions/ewm.desktop")
+           #:name "EWM"
+           #:type "Application"
+           #:exec "emacs --fg-daemon -f ewm-start-module"
+           #:comment
+           '((#f "Emacs Wayland Manager")))))))
+  (license #f) (home-page #f) (synopsis #f) (description #f))
+#+end_src
+#+begin_src scheme :noweb-ref modify-system-service
+(delete login-service-type)
+(delete mingetty-service-type)
+(delete console-font-service-type)
+#+end_src
+#+begin_src scheme :noweb-ref system-service
+(service greetd-service-type
+        (greetd-configuration
+         (greeter-supplementary-groups '("input"))
+         (terminals
+          (list (greetd-terminal-configuration
+                 (terminal-vt "1"))
+                (greetd-terminal-configuration
+                 (terminal-vt "2")
+                 (terminal-switch #t)
+                 (default-session-command
+                   (file-append (pkg "tuigreet") "/bin/tuigreet")))
+                (greetd-terminal-configuration
+                 (terminal-vt "3"))))))
+#+end_src
 ** base
 #+begin_src scheme :noweb-ref modify-system-service
 (mingetty-service-type
