@@ -58,7 +58,8 @@ with config.pattern("meet.google.com") as p:
 # bindings
 config.unbind("q", mode="normal")
 config.unbind("<Ctrl-p>", mode="command")
-config.unbind("<Ctrl-n>", mode="command")
+config.unbind("<Ctrl-n>")
+config.unbind("<Ctrl-Shift-n>")
 # config.unbind('xx', mode='normal')
 
 
