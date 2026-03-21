@@ -379,6 +379,7 @@ SUBSYSTEM=="net", ACTION=="add", ENV{ID_VENDOR}=="Linux_3.0.35-lab126_with_fsl-u
 
 #+begin_src scheme :noweb-ref system-service
 (service fstrim-service-type)
+(service power-profiles-daemon-service-type)
 (service tlp-service-type
          (tlp-configuration
            (usb-autosuspend? #f)
@@ -1835,6 +1836,17 @@ choose_entry() {
 * ewm
 #+begin_src scheme :noweb-ref guix-pkg
 "emacs-ewm" "noctalia-shell" "xwayland-satellite"
+#+end_src
+#+begin_src scheme :noweb-ref guix-srv
+(simple-service
+ 'emacs
+ home-shepherd-service-type
+ (list
+  (shepherd-service
+   (provision '(emacs))
+   (requirement '(dbus))
+   (start #~(make-forkexec-constructor (list "emacs" "--fg-daemon" "-f" "ewm-start-module")))
+   (stop #~(make-kill-destructor)))))
 #+end_src
 #+begin_src elisp
 (when (daemonp)
