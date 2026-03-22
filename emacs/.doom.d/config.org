@@ -2856,17 +2856,41 @@ gtk-font-name="Fira Code 12"
   (longitude 13.39)))
 #+end_src
 
+#+begin_src cfg :dest ".local/share/darkman/noctalia.sh" :chmod "u+x"
+#!/bin/sh
+export WAYLAND_DISPLAY=$(
+    cd $XDG_RUNTIME_DIR
+    ls -1 wayland-ewm-* | grep -v lock
+)
+noctalia-shell ipc call darkMode set$([ "$1" = "light" ] && echo Light || echo Dark)
+noctalia-shell ipc call wallpaper set ~/Pictures/Wallpapers/$1.jpg eDP-1
+#+end_src
+
+#+RESULTS[305bcc99468f8c46568ac6a43e4161d73672af2f]:
+#+begin_src text :noweb-ref guix-file
+(".local/share/darkman/noctalia.sh"
+,(chmod-computed-file (mixed-text-file
+  "cfg-noctalia.sh"
+"#!/bin/sh\n"
+"export WAYLAND_DISPLAY=$(\n"
+"    cd $XDG_RUNTIME_DIR\n"
+"    ls -1 wayland-ewm-* | grep -v lock\n"
+")\n"
+"noctalia-shell ipc call darkMode set$([ \"$1\" = \"light\" ] && echo Light || echo Dark)\n"
+"noctalia-shell ipc call wallpaper set ~/Pictures/Wallpapers/$1.jpg eDP-1") #o744))
+#+end_src
+
 #+begin_src elisp
 (use-package darkman
+  :hook (doom-init-ui . darkman-mode)
+
   :custom
   (darkman-themes `(:light ,doom-theme
                     :dark ,doom-theme-dark))
   :config
   (defadvice load-theme (before no-theme-stacking activate)
     "Disable the previous theme before loading a new one."
-    (mapc #'disable-theme custom-enabled-themes))
-
-  (add-hook! 'doom-init-ui-hook #'darkman-mode))
+    (mapc #'disable-theme custom-enabled-themes)))
 #+end_src
 ** COMMENT redshift
 #+begin_src scheme :noweb-ref guix-srv
@@ -3363,6 +3387,7 @@ install grammars as expected by clojure-ts-mode
 #+end_src
 #+begin_src elisp
 (use-package zathura-sync-theme
+  :disabled
   :config
   (zathura-sync-theme-mode))
 #+end_src
@@ -3488,16 +3513,17 @@ include theme
 
 (use-package qutebrowser
   :autoload qutebrowser-rpc-connect
-  :hook ((exwm-init . global-qutebrowser-exwm-mode)
+  :hook ((darkman-mode . qutebrowser-theme-export-mode)
+         (exwm-init . global-qutebrowser-exwm-mode)
          (exwm-init . qutebrowser-evil-state-mode)
-         (exwm-init . qutebrowser-theme-export-mode)
-         (exwm-init . qutebrowser-fileselect-mode))
+         (exwm-init . qutebrowser-theme-export-mode))
   :custom
   (qutebrowser-pass-username-function (fn! (auth-source-pass-get "login" %)))
   (qutebrowser-rpc-timeout 1.5)
   (qutebrowser-launcher-backend #'qutebrowser-consult-launcher)
 
   :config
+  (qutebrowser-fileselect-mode)
   (add-hook! 'qutebrowser-theme-export-functions
     (insert "c.colors.webpage.darkmode.enabled = "
             (if (string= (darkman-current-mode) "dark") "True" "False")
