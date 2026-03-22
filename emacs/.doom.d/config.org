@@ -2458,7 +2458,6 @@ home-emacs
 "emacs-orgit-forge"
 "emacs-overseer"
 "emacs-ox-clip"
-"emacs-ox-hugo"
 "emacs-ox-pandoc"
 "emacs-package-lint"
 "emacs-paredit"
@@ -2611,7 +2610,7 @@ home-emacs
               make tree-sitter lsp direnv llm debugger
  :checkers    syntax
  :lang        (clojure +tree-sitter) data emacs-lisp (javascript +tree-sitter +lsp) markdown
-              (org +dragndrop +pandoc +hugo +roam2 +pretty) beancount (go +lsp +tree-sitter) (rust +lsp +tree-sitter)
+              (org +dragndrop +pandoc +roam2 +pretty) beancount (go +lsp +tree-sitter) (rust +lsp +tree-sitter)
               (rest +jq) (sh +tree-sitter) plantuml (python +lsp +tree-sitter) (web +tree-sitter) yaml (json +tree-sitter)
  :app         telega (rss +org) torrent irc dash-menu
  :email       (mu4e +mbsync +gmail)
@@ -2943,6 +2942,7 @@ gtk-font-name="Fira Code 12"
 "emacs-org-tidy"
 "emacs-org-modern-indent"
 "emacs-corg"
+"emacs-ox-hugo"
 #+end_src
 #+begin_src elisp
 (setq
@@ -2955,6 +2955,8 @@ gtk-font-name="Fira Code 12"
  org-src-window-setup 'current-window
  org-fold-catch-invisible-edits 'show-and-error)
 
+(use-package ox-hugo
+  :after ox)
 (use-package org-checklist
   :after org)
 (use-package org-projectile
