@@ -83,8 +83,7 @@
         (base32 "0dgbs12bx0n85fi0rdm8v7wajl9cb1vgfgd21aglwq4zljiyf1qj"))))
     (build-system meson-build-system)
     (propagated-inputs
-     (modify-inputs (package-propagated-inputs xorg-server)
-       (append libxfont2)))
+     (modify-inputs propagated-inputs (append libxfont2)))
     (arguments
      (list
       ;; tests don't run in chroot because of Popen call (os/utils.c) which drops privileges
@@ -116,5 +115,4 @@
        (list (string-append "-Dsdkdir=" %output "/include/xorg")
              (string-append "-Dxorg-conf-dir=" %output "/share/X11/xorg.conf.d")
              (string-append "-Dxorg-module-dir=" %output "/lib/xorg/modules/input"))))
-    (inputs (modify-inputs (package-inputs xf86-input-libinput)
-              (replace "xorg-server" xlibre-server)))))
+    (inputs (modify-inputs inputs (replace "xorg-server" xlibre-server)))))

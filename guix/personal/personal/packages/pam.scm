@@ -71,8 +71,6 @@ password and fingerprint authentication.")
                    (lambda* (#:key inputs #:allow-other-keys)
                      (substitute* "fingerprint/meson.build"
                        (("/usr") (assoc-ref inputs "fprintd"))))))))
-      (native-inputs
-       (modify-inputs (package-native-inputs swaylock)
-         (append `(,glib "bin")))) ; for gdbus-codegen
-      (inputs (modify-inputs (package-inputs swaylock)
-                (append fprintd dbus))))))
+      (native-inputs (modify-inputs native-inputs
+                       (append `(,glib "bin")))) ; for gdbus-codegen
+      (inputs (modify-inputs inputs (append fprintd dbus))))))

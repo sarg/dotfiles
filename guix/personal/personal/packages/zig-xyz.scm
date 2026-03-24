@@ -58,8 +58,7 @@
               (sha256
                (base32
                 "1440s6w7m7xpxw44d3x9wyn5wy4wxdx33idvklxkhp9irnq32jy1"))))
-    (native-inputs (modify-inputs (package-native-inputs libxkbcommon)
-                     (append setxkbmap)))))
+    (native-inputs (modify-inputs native-inputs (append setxkbmap)))))
 
 (define-public river-next
   (package

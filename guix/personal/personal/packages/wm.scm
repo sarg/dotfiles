@@ -50,8 +50,7 @@
        (file-name (git-file-name name version))
        (sha256
         (base32 "1zs3z42znq3ns3hq864m8nqqxi0a6z7ya3bcb7aafd0vj3xv66m1"))))
-    (inputs (modify-inputs (package-inputs quickshell)
-              (append glib polkit)))))
+    (inputs (modify-inputs inputs (append glib polkit)))))
 
 (define-public noctalia-shell
   (package
