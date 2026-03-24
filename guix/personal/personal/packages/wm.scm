@@ -40,7 +40,7 @@
   (package
     (inherit quickshell)
     (name "noctalia-qs")
-    (version "0.0.9")
+    (version "0.0.10")
     (source
      (origin
        (method git-fetch)
@@ -49,13 +49,13 @@
               (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1zs3z42znq3ns3hq864m8nqqxi0a6z7ya3bcb7aafd0vj3xv66m1"))))
+        (base32 "1zly09mdpsqv220q5bi6vg70a6h2bpmd3f0badv2wzn1v1h19ixn"))))
     (inputs (modify-inputs inputs (append glib polkit)))))
 
 (define-public noctalia-shell
   (package
     (name "noctalia-shell")
-    (version "4.7.0")
+    (version "4.7.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -64,7 +64,7 @@
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0qylp37xrb71c3a5fr55a5zr7ibb4nd87jkdw01l54ij15jrdqxd"))))
+                "0q9p9jl0iixf20bgwlray59rywgw4c1xq1pkp57zbbg0d1acr647"))))
     (build-system copy-build-system)
     (arguments
      (list
