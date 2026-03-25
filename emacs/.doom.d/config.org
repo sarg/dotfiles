@@ -1925,7 +1925,11 @@ REVERSE? it when true. Returns the selected buffer."
 
 (use-package ewm
   :custom
-  (ewm-intercept-prefixes '("C-x" "M-x" "<menu>" "C-\\"))
+  (ewm-intercept-prefixes '("C-x" "M-x" "<menu>" "C-\\"
+                            ("s-f" :fullscreen)
+                            ("<MonBrightnessUp>" :fullscreen) ("<MonBrightnessDown>" :fullscreen)
+                            ("<AudioRaiseVolume>" :fullscreen) ("<AudioLowerVolume>" :fullscreen)
+                            ("<AudioMute>" :fullscreen) ("<AudioMicMute>" :fullscreen)))
   :config
   (add-to-list 'evil-emacs-state-modes 'ewm-surface-mode)
   (map! :map ewm-mode-map

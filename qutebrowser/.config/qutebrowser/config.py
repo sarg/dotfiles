@@ -59,11 +59,11 @@ with config.pattern("meet.google.com") as p:
 config.unbind("q", mode="normal")
 config.unbind("<Ctrl-p>", mode="command")
 config.unbind("<Ctrl-n>")
-config.unbind("<Ctrl-Shift-n>")
 # config.unbind('xx', mode='normal')
 
 
 config.bind("ym", "yank inline [[{url:yank}][{title}]]")
+config.bind("<Ctrl-Shift-n>", "emacs '(and (qutebrowser-launcher-private) t)'")
 config.bind("t", "emacs '(and (qutebrowser-launcher-window) t)'")
 config.bind("o", "emacs '(and (qutebrowser-launcher) t)'")
 config.bind("O", "emacs '(and (qutebrowser-launcher \"{url:pretty}\") t)'")
