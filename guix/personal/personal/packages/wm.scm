@@ -4,6 +4,7 @@
 (define-module (personal packages wm)
   ;; Utilities
   #:use-module (guix gexp)
+  #:use-module (guix utils)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   ;; Guix origin methods
@@ -40,7 +41,7 @@
   (package
     (inherit quickshell)
     (name "noctalia-qs")
-    (version "0.0.10")
+    (version "0.0.12")
     (source
      (origin
        (method git-fetch)
@@ -49,13 +50,20 @@
               (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1zly09mdpsqv220q5bi6vg70a6h2bpmd3f0badv2wzn1v1h19ixn"))))
+        (base32 "0zbqq9qgdsk5r2y4hag5p6276f67pq2w9imihdirvgnx0kclzlpg"))))
+    (arguments
+     (substitute-keyword-arguments arguments
+         ((#:configure-flags flags)
+          #~(cons*
+             "-DNIX_STORE_DIR_SKIP_WATCH=true"
+             (string-append "-DNIX_STORE_DIR=" (%store-directory))
+             #$flags))))
     (inputs (modify-inputs inputs (append glib polkit)))))
 
 (define-public noctalia-shell
   (package
     (name "noctalia-shell")
-    (version "4.7.1")
+    (version "4.7.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -64,7 +72,7 @@
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0q9p9jl0iixf20bgwlray59rywgw4c1xq1pkp57zbbg0d1acr647"))))
+                "0bg270m9611i8d1l2d1l9i0y7jidi06y5z41abximqr77dx3cbj6"))))
     (build-system copy-build-system)
     (arguments
      (list

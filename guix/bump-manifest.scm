@@ -15,6 +15,7 @@
        oama
        python-ty
        tinymediamanager
+       opencode
        noctalia-shell
        noctalia-qs
        github-cli

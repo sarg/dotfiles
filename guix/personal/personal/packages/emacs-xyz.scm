@@ -1509,16 +1509,16 @@ requires the `vterm package to be installed.")
 (define-public emacs-eshell-atuin
   (package
     (name "emacs-eshell-atuin")
-    (version "20250301.833")
+    (version "20260222.802")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
               (url "https://github.com/SqrtMinusOne/eshell-atuin")
-              (commit "1ac4895529546839985c7f57c9858644f7be1e6a")))
+              (commit "142536a01a9d6d92d802e41474c290e0ca655deb")))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0zf62qdmqw7y7s1dg3d35abr9jaymyqfbrv4bplkrry2wwk0m4gx"))))
+        (base32 "1g4v9l755gvclggv33mk13vn7vw8sxivi3xgcmbgav1svim01v6q"))))
     (build-system emacs-build-system)
     (propagated-inputs (list emacs-compat))
     (arguments '(#:tests? #f))
@@ -1532,7 +1532,7 @@ package provides functionality to store and browse eshell history in atuin.
 `eshell-atuin-mode and `eshell-atuin-history are the corresponding entrypoints.
 See also the package README at
 <https://github.com/@code{SqrtMinusOne/eshell-atuin>}.")
-    (license #f)))
+    (license license:gpl3)))
 
 (define-public emacs-aidermacs
   (package
@@ -2268,3 +2268,23 @@ Transient.  Currently supports Github, Gitlab, and Bitbucket Cloud.")
     (synopsis "Emacs opencode integration")
     (description "TODO")
     (license #f)))
+
+(define-public emacs-grip-mode
+  (package
+    (name "emacs-grip-mode")
+    (version "20260324.1109")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/seagle0128/grip-mode")
+             (commit "d2d27240d0150c00f0b9a5d7d840357e84d4728d")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1x0r8zcblbzzjx9w192mygndga6qp4baq4xkyvsny121vifdb9za"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/seagle0128/grip-mode")
+    (synopsis "Instant GitHub-flavored Markdown/Org preview")
+    (description "Instant GitHub-flavored Markdown/Org preview using
+@code{grip}, @code{mdopen} or @code{go-grip}.")
+    (license license:gpl3)))

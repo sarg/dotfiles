@@ -1,9 +1,8 @@
-; -*- mode: scheme -*-
 (list (channel
        (name 'guix)
        (url "https://git.guix.gnu.org/guix.git")
        (branch "master")
-       (commit "2d7ab35c1416dfafbd1cc961cbde9e7bd3670e7f")
+       (commit "c7efc967eb3e36b97f0fbed43eb238d6ce51d1b4")
        (introduction
         (make-channel-introduction
          "9edb3f66fd807b096b48283debdcddccfea34bad"
@@ -13,7 +12,7 @@
        (name 'nonguix)
        (url "https://gitlab.com/nonguix/nonguix")
        (branch "master")
-       (commit "7b33ad4f6854277480816dbf0f0734b74c83a127")
+       (commit "62ea83535efec8809187c8110b5583b79d053686")
        (introduction
         (make-channel-introduction
          "897c1a470da759236cc11798f4e0a5f7d4d59fbc"
@@ -23,7 +22,7 @@
        (name 'sops-guix)
        (url "https://github.com/fishinthecalculator/sops-guix.git")
        (branch "main")
-       (commit "5a88726e1be11e2df0bb85b597a1f597e334e0b7")
+       (commit "a3a890c82b5ff05cbe67636d5b8f7cf92a6f2f82")
        (introduction
         (make-channel-introduction
          "0bbaf1fdd25266c7df790f65640aaa01e6d2dbc9"
@@ -33,4 +32,4 @@
        (name 'personal)
        (url "https://github.com/sarg/dotfiles")
        (branch "master")
-       (commit "4d424bd24fa7e33f0918a16a6a30aa2b486fe624")))
+       (commit "67867ff09c999c1cb1f0fea970ce59cbf3e10971")))

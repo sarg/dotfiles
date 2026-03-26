@@ -189,14 +189,14 @@ failed operations.")
 (define-public github-cli
   (package
     (name "github-cli")
-    (version "2.88.1")
+    (version "2.89.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/cli/cli/releases/download/v" version
                            "/gh_" version "_linux_amd64.tar.gz"))
        (sha256
-        (base32 "00rq41i1k2p75c98wj0lr646vgbllsdpzf6djf3pbscp7fcjld9n"))))
+        (base32 "1n4h6jxgmmnp1bqpysrx43hsifmfgnj8sm8wdkkk01ajvsm2qhnh"))))
     (properties '((upstream-name . "gh")))
     (build-system binary-build-system)
     (home-page "https://github.com/cli/cli")
@@ -210,14 +210,14 @@ working with git and your code.")
 (define-public atuin
   (package
    (name "atuin")
-   (version "18.13.5")
+   (version "18.13.6")
    (source
     (origin
      (method url-fetch)
      (uri (string-append "https://github.com/atuinsh/atuin/releases/download/v"
                          version
                          "/atuin-x86_64-unknown-linux-gnu.tar.gz"))
-     (sha256 (base32 "1c88f4zd3m6gqwis64q5im12gqka30y3pj251h637k3qa3c7km52"))))
+     (sha256 (base32 "161rzj6b63cmlpf8i7hqvms049habhh7zwkciqwcfjfqd4mai3zg"))))
    (supported-systems '("x86_64-linux"))
    (build-system binary-build-system)
    (inputs `(("gcc:lib" ,gcc "lib")))
@@ -458,7 +458,7 @@ modification with a unique cooperative gameplay.")
 (define-public python-ty
   (package
     (name "python-ty")
-    (version "0.0.25")
+    (version "0.0.27")
     (source
      (origin
        (method url-fetch)
@@ -466,7 +466,7 @@ modification with a unique cooperative gameplay.")
              "https://github.com/astral-sh/ty/releases/download/" version
              "/ty-x86_64-unknown-linux-gnu.tar.gz"))
        (sha256
-        (base32 "0jbafglr8gl1cib23wrb5nw5kasf04i79lvb81zbq03baxpb15k7"))))
+        (base32 "1bx41hjkkyir8iy3ni046jd8qc8l9wcj11xx81vird019lv8d6cv"))))
     (properties '((upstream-name . "ty")))
     (build-system binary-build-system)
     (supported-systems '("x86_64-linux"))
@@ -526,26 +526,31 @@ modification with a unique cooperative gameplay.")
 (define-public google-gemini-cli
   (package
     (name "google-gemini-cli")
-    (version "0.35.0")
+    (version "0.36.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://github.com/google-gemini/gemini-cli/releases/download/v" version "/gemini.js"))
+       (uri (string-append "https://github.com/google-gemini/gemini-cli/releases/download/v" version "/gemini-cli-bundle.zip"))
        (sha256
-        (base32 "03iksgykddvvgd4p7fx2skywv8p0rb7vzyhsf53rrrps1i78ydab"))))
+        (base32 "1hszaaxm4kdkl16dm6b6ia7hi3ywwckfcnfnwkwwcd8mxbskgvhm"))))
     (build-system binary-build-system)
     (arguments (list
-                #:install-plan
-                #~(list '("gemini.js" "bin/gemini"))
+                #:install-plan ''(("." "share/"))
                 #:phases
                 #~(modify-phases %standard-phases
-                    (add-before 'install 'chmod
+                    (add-before 'install 'set-node
                       (lambda _
+                        (chdir "..")
                         (substitute* "gemini.js"
                           (("^#!/usr/bin/env -S node")
-                           (string-append "#!" (which "node"))))
-                        (chmod "gemini.js" #o555))))))
+                           (string-append "#!" (which "node"))))))
+                    (add-after 'install 'install-bin
+                      (lambda _
+                        (mkdir-p (string-append #$output "/bin"))
+                        (symlink (string-append #$output "/share/gemini.js")
+                                 (string-append #$output "/bin/gemini")))))))
     (properties '((upstream-name . "gemini")))
+    (native-inputs (list unzip))
     (inputs (list node))
     (home-page "https://geminicli.com/")
     (synopsis "Gemini AI agent")
@@ -555,13 +560,13 @@ modification with a unique cooperative gameplay.")
 (define-public opencode
   (package
     (name "opencode")
-    (version "1.3.2")
+    (version "1.3.13")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/anomalyco/opencode/releases/download/v" version "/opencode-linux-x64.tar.gz"))
        (sha256
-        (base32 "0w6zl8h0jcg8f3pxq5gfc57d94lnkn52m394svqih9kl2i7w4rkd"))))
+        (base32 "1ibs0snp939kcsxh5zm602xbqi7rqxjqdh3ypgjv0wghv28jmb08"))))
     (build-system binary-build-system)
     (supported-systems '("x86_64-linux"))
     (arguments
