@@ -44,22 +44,6 @@
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages zig))
 
-(define-public libxkbcommon-next
-  (package
-    (inherit libxkbcommon)
-    (name "libxkbcommon")
-    (version "1.13.1")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                     (url "https://github.com/xkbcommon/libxkbcommon")
-                     (commit (string-append "xkbcommon-" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1440s6w7m7xpxw44d3x9wyn5wy4wxdx33idvklxkhp9irnq32jy1"))))
-    (native-inputs (modify-inputs native-inputs (append setxkbmap)))))
-
 (define-public river-next
   (package
     (inherit river)
@@ -108,35 +92,11 @@
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1ij289nfivxha8va9hgamg4i82hlgaycwfz59d465317qd4cwll3"))))
-    (propagated-inputs
-     (modify-inputs (package-propagated-inputs zig-wlroots)
-       (replace "zig-xkbcommon" zig-xkbcommon-next)))))
-
-(define-public zig-xkbcommon-next
-  (package
-    (name "zig-xkbcommon")
-    (version "0.3.0")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://codeberg.org/ifreund/zig-xkbcommon")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "117nw4b5q14mb6j5yhvydlwllbd7gyxp176as4gj9qb5zh8wz5kv"))))
-    (build-system zig-build-system)
-    (arguments (list #:skip-build? #t))
-    (propagated-inputs (list libxkbcommon-next))
-    (synopsis "Zig bindings for libxkbcommon")
-    (description "This package provides Zig bindings for @code{libxkbcommon}.")
-    (home-page "https://codeberg.org/ifreund/zig-xkbcommon")
-    (license license:expat)))
+                "1ij289nfivxha8va9hgamg4i82hlgaycwfz59d465317qd4cwll3"))))))
 
 (define-public zig-xkbcommon-0.4.0
   (package
-    (inherit zig-xkbcommon-next)
+    (inherit zig-xkbcommon)
     (name "zig-xkbcommon")
     (version "0.4.0")
     (source (origin

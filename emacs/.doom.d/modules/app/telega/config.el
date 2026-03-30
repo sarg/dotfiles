@@ -49,10 +49,6 @@ MSG-PREDICATE is received."
     (when (-any (lambda (re) (string-match re text)) re-list)
       (kill-new (match-string 1 text)))))
 
-(defun sarg/telega-online-status ()
-  (derived-mode-p 'telega-root-mode 'telega-chat-mode
-                  'telega-image-mode 'telega-webpage-mode))
-
 (defun telega-restart ()
   "Restart telega."
   (interactive)
@@ -78,7 +74,7 @@ MSG-PREDICATE is received."
   (telega-cache-dir (expand-file-name "telega" (xdg-cache-home)))
   (telega-temp-dir (expand-file-name "telega" (temporary-file-directory)))
   (telega-server-logfile nil)
-  (telega-online-status-function #'sarg/telega-online-status)
+  (telega-online-status-function #'telega-buffer-p)
   (telega-chat-show-deleted-messages-for '(not saved-messages))
   (telega-root-show-avatars nil)
   (telega-root-default-view-function #'telega-view-compact)

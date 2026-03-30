@@ -34,7 +34,8 @@ pull *args='':
     guix $0 {{args}}
 
 update-channels:
-    guix describe --format=channels > channels.lock
+    echo "; -*- mode: scheme -*-" > channels.lock
+    guix describe --format=channels >> channels.lock
 
 system *args='':
     direnv exec . sudo -E {{ guix-lock }} system reconfigure system.scm {{args}}

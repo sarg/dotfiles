@@ -1,8 +1,9 @@
+; -*- mode: scheme -*-
 (list (channel
        (name 'guix)
        (url "https://git.guix.gnu.org/guix.git")
        (branch "master")
-       (commit "c7efc967eb3e36b97f0fbed43eb238d6ce51d1b4")
+       (commit "50fc44d7a968a3fd690d413fdddd87b0d7d3e7f9")
        (introduction
         (make-channel-introduction
          "9edb3f66fd807b096b48283debdcddccfea34bad"
@@ -32,4 +33,4 @@
        (name 'personal)
        (url "https://github.com/sarg/dotfiles")
        (branch "master")
-       (commit "67867ff09c999c1cb1f0fea970ce59cbf3e10971")))
+       (commit "8fe99902aa12a0e45d8d1fc6800ce88838f7fe34")))
