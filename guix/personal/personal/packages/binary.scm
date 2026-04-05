@@ -394,14 +394,14 @@ command-line programs gsutil and gcloud among others.")
 (define-public ddnet
   (package
     (name "ddnet")
-    (version "19.7")
+    (version "19.8")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "https://ddnet.org/downloads/DDNet-" version "-linux_x86_64.tar.xz"))
        (sha256
-        (base32 "1pan6hsigsapx5jhf9ljvk5rc58jhm2bgpgvix0x2m0nsq2n1a10"))))
+        (base32 "020kyr2x7531ifm9k7m6339dqkf1ji4yg1v23hbq4dcc6y6av9w4"))))
     (build-system binary-build-system)
     (arguments
      (list #:strip-binaries? #f
@@ -458,7 +458,7 @@ modification with a unique cooperative gameplay.")
 (define-public python-ty
   (package
     (name "python-ty")
-    (version "0.0.27")
+    (version "0.0.29")
     (source
      (origin
        (method url-fetch)
@@ -466,7 +466,7 @@ modification with a unique cooperative gameplay.")
              "https://github.com/astral-sh/ty/releases/download/" version
              "/ty-x86_64-unknown-linux-gnu.tar.gz"))
        (sha256
-        (base32 "1bx41hjkkyir8iy3ni046jd8qc8l9wcj11xx81vird019lv8d6cv"))))
+        (base32 "1jwfl9qzvjiqfbzsg80vmq19wxzr62vnxjkwqhniw1hliiz1fxxh"))))
     (properties '((upstream-name . "ty")))
     (build-system binary-build-system)
     (supported-systems '("x86_64-linux"))
@@ -526,13 +526,13 @@ modification with a unique cooperative gameplay.")
 (define-public google-gemini-cli
   (package
     (name "google-gemini-cli")
-    (version "0.36.0")
+    (version "0.37.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/google-gemini/gemini-cli/releases/download/v" version "/gemini-cli-bundle.zip"))
        (sha256
-        (base32 "1hszaaxm4kdkl16dm6b6ia7hi3ywwckfcnfnwkwwcd8mxbskgvhm"))))
+        (base32 "02n5ygm0w47g9hf171j4yyb8gsxgk971bsc2mqq4phwpbk7dmh5f"))))
     (build-system binary-build-system)
     (arguments (list
                 #:install-plan ''(("." "share/"))
@@ -560,13 +560,13 @@ modification with a unique cooperative gameplay.")
 (define-public opencode
   (package
     (name "opencode")
-    (version "1.3.13")
+    (version "1.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/anomalyco/opencode/releases/download/v" version "/opencode-linux-x64.tar.gz"))
        (sha256
-        (base32 "1ibs0snp939kcsxh5zm602xbqi7rqxjqdh3ypgjv0wghv28jmb08"))))
+        (base32 "1kzjxz237p4yhlc8abikp9wivg3y3k83ga4v2jq4jbalm84fn5si"))))
     (build-system binary-build-system)
     (supported-systems '("x86_64-linux"))
     (arguments

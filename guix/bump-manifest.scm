@@ -10,7 +10,6 @@
 
 (packages->manifest
  (list scrcpy scrcpy-server
-       xlibre-server
        atuin
        oama
        python-ty
