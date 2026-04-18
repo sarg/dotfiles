@@ -39,7 +39,8 @@
    (openpgp-fingerprint
     "2A39 3FFF 68F4 EF7A 3D29  12AF 6F51 20A0 22FB B2D5"))))
 #+end_src
-** sops
+** COMMENT sops
+I use only the sops package which is in main guix channel now.
 #+begin_src scheme :noweb-ref guix-channel
 (channel
  (name 'sops-guix)
