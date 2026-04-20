@@ -5,6 +5,8 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages elf)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages java)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages node)
@@ -189,14 +191,14 @@ failed operations.")
 (define-public github-cli
   (package
     (name "github-cli")
-    (version "2.90.0")
+    (version "2.91.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/cli/cli/releases/download/v" version
                            "/gh_" version "_linux_amd64.tar.gz"))
        (sha256
-        (base32 "0nhr4kvl4f5hkgf37b38hlbhlpcklxbjr8rpgzr9p2f67srggbmj"))))
+        (base32 "172zbfv8308r6apff5l7s8h99k9j597asaqr5xyq9a7lc0j0sjih"))))
     (properties '((upstream-name . "gh")))
     (build-system binary-build-system)
     (home-page "https://github.com/cli/cli")
@@ -458,7 +460,7 @@ modification with a unique cooperative gameplay.")
 (define-public python-ty
   (package
     (name "python-ty")
-    (version "0.0.31")
+    (version "0.0.32")
     (source
      (origin
        (method url-fetch)
@@ -466,7 +468,7 @@ modification with a unique cooperative gameplay.")
              "https://github.com/astral-sh/ty/releases/download/" version
              "/ty-x86_64-unknown-linux-gnu.tar.gz"))
        (sha256
-        (base32 "1pzdh9df9glyj00j3y7bmdgdr4072waqr98adawsvgna2viikra1"))))
+        (base32 "067hzs5sg3sn852z506wmc5k2mh18fbbiq6rk5rj5g9k45nbqb1q"))))
     (properties '((upstream-name . "ty")))
     (build-system binary-build-system)
     (supported-systems '("x86_64-linux"))
@@ -526,13 +528,13 @@ modification with a unique cooperative gameplay.")
 (define-public google-gemini-cli
   (package
     (name "google-gemini-cli")
-    (version "0.38.2")
+    (version "0.39.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/google-gemini/gemini-cli/releases/download/v" version "/gemini-cli-bundle.zip"))
        (sha256
-        (base32 "0mn9hysqpk1b9j51av64vgqil06n2hql6248h7iizj47f175ri0r"))))
+        (base32 "071j539w0kmkv4ikxysy187kc1ff993iwav19jhfd30hq0fsfsi5"))))
     (build-system binary-build-system)
     (arguments (list
                 #:install-plan ''(("." "share/"))
@@ -560,20 +562,49 @@ modification with a unique cooperative gameplay.")
 (define-public opencode
   (package
     (name "opencode")
-    (version "1.4.11")
+    (version "1.14.24")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/anomalyco/opencode/releases/download/v" version "/opencode-linux-x64.tar.gz"))
        (sha256
-        (base32 "137nv6dyzn47jkqxa4al9s60kaj64nprn0xz5fjznjixpsg85sm4"))))
+        (base32 "1lm6r07yw2cjbxw4n3qbibfnys6akvpkqxfrw55abjrymmxw3prf"))))
     (build-system binary-build-system)
     (supported-systems '("x86_64-linux"))
     (arguments
-     `(#:validate-runpath? #f
-       #:strip-binaries? #f
-       #:install-plan '(("opencode" "bin/"))
-       #:patchelf-plan '(("opencode"))))
+     (list
+      #:patchelf-plan #~'()
+      #:strip-binaries? #f
+      #:validate-runpath? #f
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'install 'patch-and-wrap
+            (lambda* (#:key inputs outputs #:allow-other-keys)
+              (let* ((out (assoc-ref outputs "out"))
+                     (bin (string-append out "/bin"))
+                     (orig (string-append out "/opencode"))
+                     (bash (search-input-file inputs "bin/bash"))
+                     (patchelf (search-input-file inputs "bin/patchelf"))
+                     (ld.so (search-input-file inputs "lib/ld-linux-x86-64.so.2"))
+                     (libpath (string-join
+                               (list (string-append (assoc-ref inputs "gcc") "/lib")
+                                     (string-append (assoc-ref inputs "glibc") "/lib")
+                                     (string-append (assoc-ref inputs "libx11") "/lib")
+                                     (string-append (assoc-ref inputs "mesa") "/lib"))
+                               ":")))
+                ;; Only patch interpreter; full patchelf corrupts this binary.
+                (invoke patchelf "--set-interpreter" ld.so orig)
+                (rename-file orig (string-append orig ".real"))
+                (mkdir-p bin)
+                (call-with-output-file (string-append bin "/opencode")
+                  (lambda (port)
+                    (format port "#!~a
+export LD_LIBRARY_PATH=~a${LD_LIBRARY_PATH:+:}$LD_LIBRARY_PATH
+exec ~a.real \"$@\"~%"
+                            bash libpath orig)))
+                (chmod (string-append bin "/opencode") #o755)))))))
+    (native-inputs (list patchelf))
+    (inputs (list bash-minimal `(,gcc "lib") libx11 glibc mesa))
     (home-page "https://opencode.ai")
     (synopsis "CLI AI coding agent")
     (description "The open source coding agent.")

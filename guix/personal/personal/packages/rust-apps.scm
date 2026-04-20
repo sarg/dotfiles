@@ -28,8 +28,8 @@
 (define-public emacs-ewm
   (package
     (name "emacs-ewm")
-    (properties '((commit . "5564f93578a830ba9316fdfc3ed1d288d41775d3")))
-    (version (git-version "0.1.0" "8" (assoc-ref properties 'commit)))
+    (properties '((commit . "8524705fdcd863d3272c0a89ab91f2664e452b0f")))
+    (version (git-version "0.1.0" "10" (assoc-ref properties 'commit)))
     (source
      (origin
        (method git-fetch)
@@ -38,7 +38,7 @@
               (commit (assoc-ref properties 'commit))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0k7f0xdxf0a5n470n9q1mw9xmliq4d3aacnbrxnq3wp277zl5d6x"))))
+        (base32 "14qyxibbxqxg0qal394q1as06aagmmvmm10fsyq009079bjj49hi"))))
     (build-system cargo-build-system)
     (arguments
      (list #:install-source? #f
