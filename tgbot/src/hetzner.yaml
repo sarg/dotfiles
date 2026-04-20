@@ -40,14 +40,13 @@ write_files:
     permissions: '0644'
   - content: |
       #!/usr/bin/env bash
-      CURL='curl -s -G --data-urlencode'
-      DEST="https://api.telegram.org/bot[secret:BOT_TOKEN]/sendMessage?chat_id=[input:CHAT_ID]"
+      DEST="[input:NOTIFY_URL]"
       if [ "$1" = '-l' ]; then
           while read line; do
-              $CURL "text=${line}" $DEST > /dev/null
+              curl -s -X POST -d "$line" "$DEST" > /dev/null
           done
       else
-          $CURL "text@-" $DEST > /dev/null
+          curl -s -X POST --data-binary @- "$DEST" > /dev/null
       fi
     owner: root:root
     path: /usr/bin/notify-tg

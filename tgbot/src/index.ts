@@ -95,13 +95,27 @@ async function stopSelectel(): Promise<boolean> {
 	return true;
 }
 
-function prepareUserData(chatId: number): string {
-	return userDataTmpl
-		.replace('[input:CHAT_ID]', chatId.toString())
-		.replaceAll(/\[secret:([^\]]+)\]/g, (_, s) => process.env[s]!);
+async function getOrCreateToken(chatId: number, renew?: boolean): Promise<string> {
+	const chat = chatId.toString();
+	let token = await env.NOTIFY_TOKENS.get(chat);
+	if (!token || renew) {
+		if (token) await env.NOTIFY_TOKENS.delete(token);
+		token = randomBytes(5).toString('hex');
+		await env.NOTIFY_TOKENS.put(token, chat);
+		await env.NOTIFY_TOKENS.put(chat, token);
+	}
+	return token;
 }
 
-async function vpnHandler(chatId: number, args: string[]) {
+async function prepareUserData(chatId: number, origin: string): Promise<string> {
+	const token = await getOrCreateToken(chatId);
+	const notifyUrl = `${origin}/notify/${token}`;
+	return userDataTmpl
+		.replace('[input:NOTIFY_URL]', notifyUrl)
+		.replaceAll(/\[secret:([^\]]+)\]/g, (_, s) => (env as any)[s]);
+}
+
+async function vpnHandler(chatId: number, origin: string, args: string[]) {
 	if (args.length === 0) {
 		await respond(
 			chatId,
@@ -123,7 +137,7 @@ async function vpnHandler(chatId: number, args: string[]) {
 
 	switch (args[0]) {
 		case 'de':
-			var response = await startHetzner(prepareUserData(chatId));
+			var response = await startHetzner(await prepareUserData(chatId, origin));
 			if (!response.ok) {
 				console.log({ response });
 				await respond(chatId, 'Error creating VPN');
@@ -132,7 +146,7 @@ async function vpnHandler(chatId: number, args: string[]) {
 			}
 			break;
 		case 'ru':
-			await startSelectel(prepareUserData(chatId));
+			await startSelectel(await prepareUserData(chatId, origin));
 			await respond(chatId, 'Starting selectel VPN');
 			break;
 		case 'stop':
@@ -151,15 +165,7 @@ async function vpnHandler(chatId: number, args: string[]) {
 }
 
 async function setupHandler(chatId: number, origin: string, args: string[]): Promise<Response> {
-	const chat = chatId.toString();
-	var token = await env.NOTIFY_TOKENS.get(chat);
-	if (!token || args[0] === 'renew') {
-		if (token) env.NOTIFY_TOKENS.delete(token);
-		token = randomBytes(5).toString('hex');
-		env.NOTIFY_TOKENS.put(token, chat);
-		env.NOTIFY_TOKENS.put(chat, token);
-	}
-
+	const token = await getOrCreateToken(chatId, args[0] === 'renew');
 	return respond(chatId, `${origin}/notify/${token}`);
 }
 
@@ -187,7 +193,7 @@ async function hook(request: Request): Promise<Response> {
 	const args = msg.text.split(' ', 2);
 	switch (args.shift()) {
 		case '/vpn':
-			await vpnHandler(chatId, args);
+			await vpnHandler(chatId, url.origin, args);
 			break;
 
 		case '/setup':
