@@ -7,7 +7,7 @@
     "secrets": "sops -d --output-type json ../secrets.yaml | quicktype -t Secrets --lang ts > secrets.ts"
   },
   "dependencies": {
-    "@pulumi/cloudflare": "6.2.1",
+    "@pulumi/cloudflare": "6.14.0",
     "@pulumi/gcp": "8.33.0",
     "@pulumi/gitea": "file:sdks/gitea",
     "@pulumi/github": "^6.7.2",
