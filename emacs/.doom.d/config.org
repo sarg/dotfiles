@@ -817,7 +817,7 @@ disable-ipv6=true
                   "L seek 60; script-binding uosc/flash-timeline")
                 "\n"))
    #:scripts (list
-              (file-append (pkg "mpv-mpris") "/lib/mpris.so")
+              (file-append (pkg "mpv-mpris") "/mpv-mpris/lib/mpris.so")
               (file-append (pkg "mpv-thumbfast") "/share/mpv/scripts/thumbfast.lua")
               (file-append (pkg "mpv-uosc") "/share/mpv/scripts/uosc")))))
 #+end_src
@@ -954,8 +954,6 @@ disable-ipv6=true
             (tab-bar-mode -1)
             
             (set-frame-parameter (selected-frame) 'alpha-background 80)
-            ; force noctalia to use labwc workspace service
-            (setenv "LABWC_PID" (format "%s" (emacs-pid)))
             (setenv "NOCTALIA_PAM_SERVICE" "fingerprint")
             (make-process :buffer " *noctalia*"
                           :name "noctalia"
@@ -1932,10 +1930,10 @@ REVERSE? it when true. Returns the selected buffer."
   :config
   (add-to-list 'evil-emacs-state-modes 'ewm-surface-mode)
   (map! :map ewm-mode-map
-        "s-h"     #'evil-window-left
+        "s-h"     #'ewm-windmove-left
         "s-j"     #'evil-window-down
         "s-k"     #'evil-window-up
-        "s-l"     #'evil-window-right
+        "s-l"     #'ewm-windmove-right
 
         "s-1" (cmd! (tab-bar-switch-to-tab "code"))
         "s-2" (cmd! (tab-bar-switch-to-tab "brow"))
@@ -3420,11 +3418,6 @@ include theme
 "include theme"))
 #+end_src
 ** calibre
-#+begin_src scheme :noweb-ref guix-pin
-(pin "emacs-calibredb"
-     #:commit "99a234167a092bc0017d11c814f0b8c0da53a107"
-     #:hash "0jkhaf5h2qcqz8nvw80wj0xjazdpm2l9n0d5a41p20gnz54rhkbd")
-#+end_src
 #+begin_src scheme :noweb-ref guix-pkg
 "emacs-calibredb" "sqlite" "calibre"
 #+end_src
