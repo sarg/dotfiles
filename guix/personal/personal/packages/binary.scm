@@ -191,14 +191,14 @@ failed operations.")
 (define-public github-cli
   (package
     (name "github-cli")
-    (version "2.91.0")
+    (version "2.92.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/cli/cli/releases/download/v" version
                            "/gh_" version "_linux_amd64.tar.gz"))
        (sha256
-        (base32 "172zbfv8308r6apff5l7s8h99k9j597asaqr5xyq9a7lc0j0sjih"))))
+        (base32 "1i1yjhla92bync888wifif2rk0bim98jl7sysff2436z3c9lhy5m"))))
     (properties '((upstream-name . "gh")))
     (build-system binary-build-system)
     (home-page "https://github.com/cli/cli")
@@ -212,14 +212,14 @@ working with git and your code.")
 (define-public atuin
   (package
    (name "atuin")
-   (version "18.15.2")
+   (version "18.16.0")
    (source
     (origin
      (method url-fetch)
      (uri (string-append "https://github.com/atuinsh/atuin/releases/download/v"
                          version
                          "/atuin-x86_64-unknown-linux-gnu.tar.gz"))
-     (sha256 (base32 "14avjapg3q3z9k9k2ldl43vfr00sfh0ywx919v3x535grq41jfcp"))))
+     (sha256 (base32 "0j7l4x0xxl6hrnc40lq9829zlghx8q18klhz2ald7s9amlh197cv"))))
    (supported-systems '("x86_64-linux"))
    (build-system binary-build-system)
    (inputs `(("gcc:lib" ,gcc "lib")))
@@ -460,7 +460,7 @@ modification with a unique cooperative gameplay.")
 (define-public python-ty
   (package
     (name "python-ty")
-    (version "0.0.32")
+    (version "0.0.34")
     (source
      (origin
        (method url-fetch)
@@ -468,7 +468,7 @@ modification with a unique cooperative gameplay.")
              "https://github.com/astral-sh/ty/releases/download/" version
              "/ty-x86_64-unknown-linux-gnu.tar.gz"))
        (sha256
-        (base32 "067hzs5sg3sn852z506wmc5k2mh18fbbiq6rk5rj5g9k45nbqb1q"))))
+        (base32 "1mwkz2hx6pylfs0gm61y42rid3rzcp0aqfw4vy2a1l56dvpibfk5"))))
     (properties '((upstream-name . "ty")))
     (build-system binary-build-system)
     (supported-systems '("x86_64-linux"))
@@ -528,13 +528,13 @@ modification with a unique cooperative gameplay.")
 (define-public google-gemini-cli
   (package
     (name "google-gemini-cli")
-    (version "0.39.1")
+    (version "0.40.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/google-gemini/gemini-cli/releases/download/v" version "/gemini-cli-bundle.zip"))
        (sha256
-        (base32 "071j539w0kmkv4ikxysy187kc1ff993iwav19jhfd30hq0fsfsi5"))))
+        (base32 "1l9dd4v4nwnrxjmd8xi0449sqjy5x9ag21da1yj3cxn5nvnb8fqw"))))
     (build-system binary-build-system)
     (arguments (list
                 #:install-plan ''(("." "share/"))
@@ -562,13 +562,13 @@ modification with a unique cooperative gameplay.")
 (define-public opencode
   (package
     (name "opencode")
-    (version "1.14.24")
+    (version "1.14.33")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/anomalyco/opencode/releases/download/v" version "/opencode-linux-x64.tar.gz"))
        (sha256
-        (base32 "1lm6r07yw2cjbxw4n3qbibfnys6akvpkqxfrw55abjrymmxw3prf"))))
+        (base32 "0448q9arzb3ivd9817fwh30zip4hrw8654blxhck8mv71baf6gdb"))))
     (build-system binary-build-system)
     (supported-systems '("x86_64-linux"))
     (arguments
