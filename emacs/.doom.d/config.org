@@ -310,7 +310,7 @@ dnsmasq_resolve=/etc/dnsmasq.resolve
 (pin "emacs-iwd-manager"
      #:commit "0bca13f9c5baa80f0ecced9ea943ebe99f4e6d17"
      #:hash "17i9yl6h87qvnwgckfqgjdhaq0j4rgk71bkkir3xjn1q98pls5zh")
-     #+end_src
+#+end_src
 #+begin_src scheme :noweb-ref guix-pkg
 "emacs-iwd-manager"
 #+end_src
@@ -643,7 +643,7 @@ polkit.addRule(function(action, subject) {
         (cons head out)))
   (fold-right flatten1 '() lst))
 
-(define home-emacs (pkg "emacs-pgtk"))
+(define home-emacs (pkg "emacs-next-pgtk"))
 
 (define (build-with-home-emacs p)
   (package/inherit p
@@ -2666,18 +2666,22 @@ home-emacs
 #+begin_src scheme :noweb-ref guix-pkg
 "emacs-catppuccin-theme"
 "emacs-greymatters-theme"
-(let ((base (pkg "emacs-doom-themes")))
-  (package
-   (inherit base)
-   (source
-    (origin
-     (inherit (package-source base))
-     (modules '((guix build utils)))
-     (snippet #~(substitute* "doom-themes-base.el"
-                  (("(tab-line.+)bg-alt\\)" _ prefix)
-                   (string-append prefix "fg-alt)"))))))))
+"emacs-doom-themes"
+#+end_src
+#+begin_src scheme :noweb-ref guix-pin
+(pin "emacs-doom-themes"
+     #:commit "53645a905dfb3055db52f5d418d5ef612027e062"
+     #:hash "1pqmk6mi1nk3axkb0zfcy7x8vqz5984km0vqp6mmh0sd2ysc4rdl")
 #+end_src
 #+begin_src elisp
+(use-package doom-themes
+  :defer t
+  :config
+  (setcdr (assoc 'tab-line doom-themes-base-faces)
+          '(:background bg-alt :foreground fg-alt))
+  
+  (setcdr (assoc 'gnus-group-news-low-empty doom-themes-base-faces)
+          '(:inherit 'gnus-group-mail-1-empty :weight 'normal)))
 (defvar doom-theme-dark 'doom-tomorrow-night)
 (setq doom-theme 'doom-gruvbox-light
       doom-font (font-spec :family "JetBrains Mono" :size 18)
