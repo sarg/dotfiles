@@ -1,0 +1,6 @@
+#+begin_src restclient
+POST http://localhost:8787/hook
+Content-Type: application/json
+
+{ "message": { "text": "/vpn de", "chat": {"id": "320948398"} } }
+#+end_src

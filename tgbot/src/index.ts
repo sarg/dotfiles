@@ -29,7 +29,7 @@ async function startHetzner(userData: string) {
 	return new Hetzner(env.HCLOUD_TOKEN).createServer({
 		name: 'vpn',
 		location: 'hel1',
-		server_type: 'cax11',
+		server_type: 'cx23',
 		start_after_create: true,
 		image: 'ubuntu-24.04',
 		ssh_keys: ['thinkpad'],
