@@ -13,9 +13,10 @@
        atuin
        oama
        python-ty
-       tinymediamanager
-       opencode
+       ;; tinymediamanager
+       ;; opencode
        noctalia-shell
        noctalia-qs
-       github-cli
-       google-gemini-cli))
+       ;; github-cli
+       ;; google-gemini-cli
+       ))
