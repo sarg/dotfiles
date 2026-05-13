@@ -212,14 +212,14 @@ working with git and your code.")
 (define-public atuin
   (package
    (name "atuin")
-   (version "18.16.0")
+   (version "18.16.1")
    (source
     (origin
      (method url-fetch)
      (uri (string-append "https://github.com/atuinsh/atuin/releases/download/v"
                          version
                          "/atuin-x86_64-unknown-linux-gnu.tar.gz"))
-     (sha256 (base32 "0j7l4x0xxl6hrnc40lq9829zlghx8q18klhz2ald7s9amlh197cv"))))
+     (sha256 (base32 "1gir7dcj4a8dmp566q2h71c8a1ssnndw2hps9gx89b1h046f4haw"))))
    (supported-systems '("x86_64-linux"))
    (build-system binary-build-system)
    (inputs `(("gcc:lib" ,gcc "lib")))
@@ -460,7 +460,7 @@ modification with a unique cooperative gameplay.")
 (define-public python-ty
   (package
     (name "python-ty")
-    (version "0.0.34")
+    (version "0.0.35")
     (source
      (origin
        (method url-fetch)
@@ -468,7 +468,7 @@ modification with a unique cooperative gameplay.")
              "https://github.com/astral-sh/ty/releases/download/" version
              "/ty-x86_64-unknown-linux-gnu.tar.gz"))
        (sha256
-        (base32 "1mwkz2hx6pylfs0gm61y42rid3rzcp0aqfw4vy2a1l56dvpibfk5"))))
+        (base32 "19w2512rp6km2id77yxf8w248x5b8vgdx1fpjgq8c0k5126hj3aa"))))
     (properties '((upstream-name . "ty")))
     (build-system binary-build-system)
     (supported-systems '("x86_64-linux"))

@@ -9,6 +9,7 @@
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages android)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages pkg-config)
   #:use-module (guix packages)
   #:use-module (guix build-system copy))
@@ -16,7 +17,7 @@
 (define-public scrcpy-server
   (package
    (name "scrcpy-server")
-   (version "3.3.4")
+   (version "4.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://github.com/Genymobile/scrcpy"
@@ -25,7 +26,7 @@
             (file-name "scrcpy-server.jar")
             (sha256
              (base32
-              "17h70cimwdhfpkhzdl5mp7zxjhamdmzfrdh655aal02ska627245"))))
+              "0fhg47rsyx4c998h5zzmj5zrfn40jqgm5ivjr24n1sx1ckalp4l4"))))
    (build-system copy-build-system)
    (home-page "https://github.com/Genymobile/scrcpy")
    (synopsis "Server component for scrcpy")
@@ -36,7 +37,7 @@ to communicate with Android devices.")
 (define-public scrcpy
   (package
    (name "scrcpy")
-   (version "3.3.4")
+   (version "4.0")
    (source (origin
             (method git-fetch)
             (uri (git-reference
@@ -44,10 +45,10 @@ to communicate with Android devices.")
                   (commit (string-append "v" version))))
             (file-name (git-file-name name version))
             (sha256
-             (base32 "1gn75sqqv0r0zh67rqfqmg5il7ac3lkd2wyy0ji9y7s9fmh7h9z7"))))
+             (base32 "0kbj8zazsc260n95qa6vivhmgylfplq0cdmrac5bzf8dbifxkj53"))))
    (build-system meson-build-system)
    (native-inputs (list pkg-config scrcpy-server))
-   (inputs (list ffmpeg sdl2 libusb adb))
+   (inputs (list ffmpeg sdl3 libusb libdecor adb))
    (arguments
     (list
      #:configure-flags #~(list "-Dcompile_server=false")

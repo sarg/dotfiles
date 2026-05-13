@@ -1,6 +1,7 @@
 (define-module (personal packages rust-apps)
   #:use-module (guix build-system cargo)
   #:use-module (guix download)
+  #:use-module (srfi srfi-26)
   #:use-module (guix gexp)
   #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
@@ -28,8 +29,8 @@
 (define-public emacs-ewm
   (package
     (name "emacs-ewm")
-    (properties '((commit . "dba66bbac725dc23c0c30bcecdee9fd1686db250")))
-    (version (git-version "0.1.0" "13" (assoc-ref properties 'commit)))
+    (properties '((commit . "1aa072a025d660cb9dec7a26fb19f754b4b8dfb2")))
+    (version (git-version "0.1.0" "14" (assoc-ref properties 'commit)))
     (source
      (origin
        (method git-fetch)
@@ -38,7 +39,7 @@
               (commit (assoc-ref properties 'commit))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0hpizr5gx7gpcnfp262vbhdmh1zirn9i7c38c7y46vacqqgl90hg"))))
+        (base32 "0xrhrfjnj3rsqvx1ra1vd3kq17p7ijwsim21fhz6zzahicy2b8cy"))))
     (build-system cargo-build-system)
     (arguments
      (list #:install-source? #f
