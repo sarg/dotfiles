@@ -55,3 +55,26 @@
     (description "Doom emacs sources")
     (synopsis "Doom emacs")
     (license license:expat)))
+
+
+(define-public doomemacs-module-meow
+  (package
+    (name "doomemacs-module-meow")
+    (properties '((commit . "df4c42ae4cfc83899cf98c867ca0df633e015be9")))
+    (version (git-version "0" "0" (assoc-ref properties 'commit)))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/meow-edit/doom-meow")
+              (commit (assoc-ref properties 'commit))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "15dxi3pdnvbzf4pn5pv6gfn7rawqs6pybsspjvhv1m4n0nwzk6rc"))))
+    (build-system copy-build-system)
+    (arguments '(#:install-plan '(("." "share/doomemacs/modules/editor/meow"))))
+    (propagated-inputs (list emacs-meow))
+    (home-page "https://github.com/meow-edit/doom-meow")
+    (description "Doom + Meow")
+    (synopsis "Doom Meow module")
+    (license license:gpl3)))
