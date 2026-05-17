@@ -330,16 +330,17 @@ dnsmasq_resolve=/etc/dnsmasq.resolve
   (iwd-manager-mode-line-formatter #'iwd-manager--format-mode-line-nerd-icons)
   :config
   (iwd-manager-register-agent)
-  (evil-collection-inhibit-insert-state 'iwd-manager-mode-map)
-  (evil-set-initial-state 'iwd-manager-mode-map 'normal)
-  (evil-collection-define-key 'normal 'iwd-manager-mode-map
-    "s" 'iwd-manager-scan
-    "r" 'revert-buffer
-    "p" 'iwd-manager-toggle-power
-    "c" 'iwd-manager-connect
-    "d" 'iwd-manager-disconnect
-    "D" 'iwd-manager-delete-network
-    (kbd "RET") 'iwd-manager-connect))
+  (when (modulep! :editor evil +everywhere)
+    (evil-collection-inhibit-insert-state 'iwd-manager-mode-map)
+    (evil-set-initial-state 'iwd-manager-mode-map 'normal)
+    (evil-collection-define-key 'normal 'iwd-manager-mode-map
+      "s" 'iwd-manager-scan
+      "r" 'revert-buffer
+      "p" 'iwd-manager-toggle-power
+      "c" 'iwd-manager-connect
+      "d" 'iwd-manager-disconnect
+      "D" 'iwd-manager-delete-network
+      (kbd "RET") 'iwd-manager-connect)))
 #+end_src
 
 ** vpn
@@ -1209,9 +1210,9 @@ These are bound only for X11 apps.
 
   (require 'elfeed-org)
   (rmh-elfeed-org-process-advice)
-  (evil-define-key 'normal elfeed-search-mode-map
-    (kbd "RET") #'elfeed-open-special
-    "q" #'elfeed-search-quit-window))
+  (map! :map elfeed-search-mode-map
+        :n (kbd "RET") #'elfeed-open-special
+        :n "q" #'elfeed-search-quit-window))
 #+end_src
 
 ** emms
@@ -1928,7 +1929,8 @@ REVERSE? it when true. Returns the selected buffer."
                             ("<AudioRaiseVolume>" :fullscreen) ("<AudioLowerVolume>" :fullscreen)
                             ("<AudioMute>" :fullscreen) ("<AudioMicMute>" :fullscreen)))
   :config
-  (add-to-list 'evil-emacs-state-modes 'ewm-surface-mode)
+  (when (modulep! :editor evil)
+    (add-to-list 'evil-emacs-state-modes 'ewm-surface-mode))
   (map! :map ewm-mode-map
         "s-h"     #'ewm-windmove-left
         "s-j"     #'evil-window-down
@@ -2927,10 +2929,11 @@ noctalia-shell ipc call wallpaper set ~/Pictures/Wallpapers/$1.jpg eDP-1
 (use-package discomfort
   :commands discomfort
   :config
-  (add-to-list 'evil-emacs-state-modes 'discomfort-mode)
-  (define-key! discomfort-mode-map
-    "j" #'next-line
-    "k" #'previous-line))
+  (when (modulep! :editor evil)
+    (add-to-list 'evil-emacs-state-modes 'discomfort-mode)
+    (define-key! discomfort-mode-map
+      "j" #'next-line
+      "k" #'previous-line)))
 #+end_src
 ** kdeconnect
 #+begin_src scheme :noweb-ref guix-pkg
@@ -3510,10 +3513,11 @@ include theme
 
 (setq-default browse-url-browser-function #'qutebrowser-open-url)
 
-(def-modeline! :qutebrowser
-               '("" evil-mode-line-tag "%b") `(""))
+(when (and (modulep! :app exwm) (modulep! :editor evil))
+  (def-modeline! :qutebrowser
+                 '("" evil-mode-line-tag "%b") `(""))
 
-(set-modeline-hook! 'qutebrowser-exwm-mode-hook :qutebrowser)
+  (set-modeline-hook! 'qutebrowser-exwm-mode-hook :qutebrowser))
 
 (use-package qutebrowser
   :autoload qutebrowser-rpc-connect
