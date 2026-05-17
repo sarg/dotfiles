@@ -10,7 +10,6 @@
 
 (packages->manifest
  (list scrcpy scrcpy-server
-       atuin
        oama
        python-ty
        ;; tinymediamanager

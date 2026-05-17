@@ -950,10 +950,6 @@ disable-ipv6=true
 #+begin_src elisp
 (add-hook 'doom-init-ui-hook
           (defun sarg/noctalia ()
-            (tab-rename "code" 1)
-            (progn (tab-new) (tab-rename "brow" 2))
-            (tab-bar-mode -1)
-            
             (set-frame-parameter (selected-frame) 'alpha-background 80)
             (setenv "NOCTALIA_PAM_SERVICE" "fingerprint")
             (make-process :buffer " *noctalia*"
@@ -1932,13 +1928,10 @@ REVERSE? it when true. Returns the selected buffer."
   (when (modulep! :editor evil)
     (add-to-list 'evil-emacs-state-modes 'ewm-surface-mode))
   (map! :map ewm-mode-map
-        "s-h"     #'ewm-windmove-left
-        "s-j"     #'evil-window-down
-        "s-k"     #'evil-window-up
-        "s-l"     #'ewm-windmove-right
-
-        "s-1" (cmd! (tab-bar-switch-to-tab "code"))
-        "s-2" (cmd! (tab-bar-switch-to-tab "brow"))
+        "s-h"     #'ewm-focus-left
+        "s-j"     #'ewm-focus-down
+        "s-k"     #'ewm-focus-up
+        "s-l"     #'ewm-focus-right
 
         "<menu>" (cmd! (unless (minibufferp) (dash-menu)))
         "s-<delete>" #'dash-menu/audio
@@ -1957,7 +1950,6 @@ REVERSE? it when true. Returns the selected buffer."
         "s-<f12>" (sh! "grim -g \"$(slurp -d)\" - | wl-copy -t image/png")
 
         "s-E"    (cmd!
-                  (tab-switch "brow")
                   (cond
                    ((string= "qutebrowser" exwm-class-name)
                     (ewm/switch-to-next-buffer "org.qutebrowser.qutebrowser" 'reverse))
@@ -1966,7 +1958,6 @@ REVERSE? it when true. Returns the selected buffer."
                     (start-process "qutebrowser" nil "setsid" "-w" "qutebrowser"))))
 
         "s-e"    (cmd!
-                  (tab-switch "brow")
                   (or (ewm/switch-to-next-buffer "org.qutebrowser.qutebrowser")
                       (start-process "qutebrowser" nil "setsid" "-w" "qutebrowser"))))
 

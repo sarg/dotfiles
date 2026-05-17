@@ -30,34 +30,6 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix packages))
 
-(define-public restic
-  (let* ((version "0.18.1")
-         (pkg (string-append "restic_" version "_linux_amd64")))
-    (package
-      (name "restic")
-      (version version)
-      (source (origin
-                (method url-fetch)
-                (uri (string-append
-                      "https://github.com/restic/restic/releases/download/v"
-                      version "/" pkg ".bz2"))
-                (sha256
-                 (base32 "0g9n3z28p4mss4z7hd8prwcjrwcavl65gq97lbdil5b7kpqkh238"))))
-      (build-system binary-build-system)
-      (supported-systems '("x86_64-linux"))
-      (arguments (list
-                  #:install-plan
-                  #~(list '(#$pkg "bin/restic"))
-                  #:phases
-                  #~(modify-phases %standard-phases
-                      (add-before 'install 'chmod
-                        (lambda _
-                          (chmod #$pkg #o555))))))
-      (home-page "https://restic.net")
-      (synopsis "backup software")
-      (description "backup software")
-      (license license:bsd-2))))
-
 (define-public tinymediamanager
   (package
    (name "tinymediamanager")
