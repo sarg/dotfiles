@@ -818,7 +818,7 @@ disable-ipv6=true
                   "L seek 60; script-binding uosc/flash-timeline")
                 "\n"))
    #:scripts (list
-              (file-append (pkg "mpv-mpris") "/mpv-mpris/lib/mpris.so")
+              (file-append (pkg "mpv-mpris") "/lib/mpv-mpris/mpris.so")
               (file-append (pkg "mpv-thumbfast") "/share/mpv/scripts/thumbfast.lua")
               (file-append (pkg "mpv-uosc") "/share/mpv/scripts/uosc")))))
 #+end_src
@@ -951,6 +951,7 @@ disable-ipv6=true
 (add-hook 'doom-init-ui-hook
           (defun sarg/noctalia ()
             (set-frame-parameter (selected-frame) 'alpha-background 80)
+            (add-to-list 'default-frame-alist '(alpha-background . 80))
             (setenv "NOCTALIA_PAM_SERVICE" "fingerprint")
             (make-process :buffer " *noctalia*"
                           :name "noctalia"
@@ -2420,6 +2421,7 @@ home-emacs
 "emacs-jq-mode"
 "emacs-json-mode"
 "emacs-json-snatcher"
+"emacs-let-completion"
 "emacs-ligature"
 "emacs-link-hint"
 "emacs-lispy"
