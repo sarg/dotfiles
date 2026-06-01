@@ -27,7 +27,7 @@
 (define-public doomemacs
   (package
     (name "doomemacs")
-    (version "2.1.0")
+    (version "2.1.1")
     (source
      (origin
        (method git-fetch)
@@ -36,7 +36,7 @@
               (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0zdg2dwxliialx87b8wkbhz57j4dqlvnpjcvmba0jyyk50dvpifa"))))
+        (base32 "0xai9555vsr3fkf6kb0k8m1fwb29yv6ss6phi5b63zf4ksd0sdax"))))
     (build-system copy-build-system)
     (arguments '(#:install-plan '(("." "share/doomemacs"))))
     (propagated-inputs (list

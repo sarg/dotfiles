@@ -2288,3 +2288,24 @@ Transient.  Currently supports Github, Gitlab, and Bitbucket Cloud.")
     (description "Instant GitHub-flavored Markdown/Org preview using
 @code{grip}, @code{mdopen} or @code{go-grip}.")
     (license license:gpl3)))
+
+(define-public emacs-let-completion
+  (package
+    (name "emacs-let-completion")
+    (version "20260407.1428")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/gggion/let-completion.el")
+              (commit "460cdd5a73d857d6d91469e28f84f02465db8dac")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1k5xh50frvsjrzqzckca877fj5j6s6nmnxnf2jc7mz5rc4xvw6bp"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/gggion/let-completion.el")
+    (synopsis "Show let-binding values in Elisp completion")
+    (description
+     "let-completion-mode makes Emacs Lisp in-buffer completion aware of
+lexically enclosing binding forms.")
+    (license license:gpl3)))
