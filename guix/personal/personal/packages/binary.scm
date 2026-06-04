@@ -181,34 +181,6 @@ issues, and other GitHub concepts to the terminal next to where you are already
 working with git and your code.")
     (license license:expat)))
 
-(define-public atuin
-  (package
-   (name "atuin")
-   (version "18.16.1")
-   (source
-    (origin
-     (method url-fetch)
-     (uri (string-append "https://github.com/atuinsh/atuin/releases/download/v"
-                         version
-                         "/atuin-x86_64-unknown-linux-gnu.tar.gz"))
-     (sha256 (base32 "1gir7dcj4a8dmp566q2h71c8a1ssnndw2hps9gx89b1h046f4haw"))))
-   (supported-systems '("x86_64-linux"))
-   (build-system binary-build-system)
-   (inputs `(("gcc:lib" ,gcc "lib")))
-   (arguments
-    `(#:strip-binaries? #f
-      #:install-plan '(("atuin-x86_64-unknown-linux-gnu/atuin" "bin/"))
-      #:patchelf-plan '(("atuin-x86_64-unknown-linux-gnu/atuin" ("libc" "gcc:lib")))
-      #:phases (modify-phases %standard-phases
-                 (replace 'unpack
-                   (lambda* (#:key inputs source #:allow-other-keys)
-                     (invoke "tar" "-zxf" source))))))
-   (home-page "https://atuin.sh/")
-   (synopsis "Sync, search and backup shell history")
-   (description "Atuin lets you sync, search and backup shell history. It stores your shell
-history in an SQLite database.")
-   (license license:expat)))
-
 (define-public terraform
   (package
    (name "terraform")
