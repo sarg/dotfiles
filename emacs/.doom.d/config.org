@@ -3832,7 +3832,7 @@ current buffer, killing it."
           (windmove-right)
           (async-start-process "gpxsee" "gpxsee" nil file))
   (setq gpx-show-map-function
-        (defun gpx-show-map-osm (file track segment) (osm-gpx-show file))))
+        (defun gpx-show-map-osm (file track segment) (osm-open file))))
 #+end_src
 ** emacs-dmenu
 #+begin_src elisp

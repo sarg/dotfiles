@@ -23,4 +23,4 @@
        (name 'personal)
        (url "https://github.com/sarg/dotfiles")
        (branch "master")
-       (commit "55fdb465b31d56d172aff17fe9a1f67d92f1340d")))
+       (commit "ff4cb2f85a94a8dbca257f962b1e72e60cd04ca9")))
