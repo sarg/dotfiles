@@ -56,6 +56,25 @@
     (synopsis "Doom emacs")
     (license license:expat)))
 
+(define-public doomemacs-modules
+  (package
+    (name "doomemacs-modules")
+    (version "26.06")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/doomemacs/modules")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1csb68yw5md94knrcm4h6nywa3a4lvny8y96by5grjpnbw8pww1g"))))
+    (build-system copy-build-system)
+    (arguments '(#:install-plan '(("modules" "share/doomemacs/modules"))))
+    (home-page "https://github.com/doomemacs/modules")
+    (description "Doom modules")
+    (synopsis "Doom modules")
+    (license license:expat)))
 
 (define-public doomemacs-module-meow
   (package
