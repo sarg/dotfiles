@@ -33,13 +33,13 @@
 (define-public tinymediamanager
   (package
    (name "tinymediamanager")
-   (version "5.2.10")
+   (version "5.2.12")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://archive.tinymediamanager.org/v" version
                                 "/tinyMediaManager-" version "-linux-amd64.tar.xz"))
             (sha256
-             (base32 "024i07bwqsrnj94np5zdqhsmfp1bzcgac5nc5rsv2q5njzfmpcr5"))))
+             (base32 "1wy4jkvgc3r6vkfcd5a88jdqxb49yji3s5adi219pn4q954p7znj"))))
    (build-system binary-build-system)
    (inputs (list libmediainfo openjdk))
    (supported-systems '("x86_64-linux"))
@@ -158,27 +158,6 @@ scalable applications without sacrificing productivity or reliability.  The
 Temporal server executes units of application logic called Workflows in a
 resilient manner that automatically handles intermittent failures, and retries
 failed operations.")
-    (license license:expat)))
-
-(define-public github-cli
-  (package
-    (name "github-cli")
-    (version "2.92.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/cli/cli/releases/download/v" version
-                           "/gh_" version "_linux_amd64.tar.gz"))
-       (sha256
-        (base32 "1i1yjhla92bync888wifif2rk0bim98jl7sysff2436z3c9lhy5m"))))
-    (properties '((upstream-name . "gh")))
-    (build-system binary-build-system)
-    (home-page "https://github.com/cli/cli")
-    (supported-systems '("x86_64-linux"))
-    (synopsis "GitHub's official command line tool")
-    (description "gh is GitHub on the command line. It brings pull requests,
-issues, and other GitHub concepts to the terminal next to where you are already
-working with git and your code.")
     (license license:expat)))
 
 (define-public terraform
@@ -404,7 +383,7 @@ modification with a unique cooperative gameplay.")
 (define-public python-ty
   (package
     (name "python-ty")
-    (version "0.0.40")
+    (version "0.0.48")
     (source
      (origin
        (method url-fetch)
@@ -412,7 +391,7 @@ modification with a unique cooperative gameplay.")
              "https://github.com/astral-sh/ty/releases/download/" version
              "/ty-x86_64-unknown-linux-gnu.tar.gz"))
        (sha256
-        (base32 "1g5cpffyin2qpww32vslrjkv9a7dxj01vjw99nq2srs75krbayja"))))
+        (base32 "0vyxpf8idgb3gypwfsrhxs7a8phagw7d75s4nkk18q77x9icyvq7"))))
     (properties '((upstream-name . "ty")))
     (build-system binary-build-system)
     (supported-systems '("x86_64-linux"))
