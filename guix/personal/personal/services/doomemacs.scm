@@ -53,7 +53,7 @@
                          (org-babel-tangle nil nil "elisp")))))
 
             (delete-file "config.org")
-            (substitute* "config.el"
+            (substitute* '("config.el" "init.el")
               (("\\(guix/pkg '([^ )]+)" all pkg)
                (format #f "(concat ~s"
                        (or (assoc-ref %build-inputs pkg)
@@ -83,7 +83,7 @@
               (setenv "DOOMLOCALDIR" ".")
               (setenv "DOOMDIR" #$config)
               (invoke "emacs" "-q" "--no-site-file" "--batch"
-                      "--load" (string-append (assoc-ref inputs "doomemacs") "/share/doomemacs/early-init")
+                      "--load" (search-input-file inputs "/share/doomemacs/early-init.el")
                       "--load" (assoc-ref inputs "source"))))
           (replace 'install
             (lambda* (#:key inputs outputs #:allow-other-keys)

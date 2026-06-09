@@ -2597,8 +2597,12 @@ home-emacs
      #:hash "11r3aim8qvyddp9d7sphcd0hl3vwxl81z83aifzgx89jb5ivfn6y")
 #+end_src
 ** init.el
+#+begin_src scheme :noweb-ref emacs-dep
+"doomemacs-modules"
+#+end_src
 #+begin_src elisp :tangle init.el
 ;; generated from config.org
+(add-to-list 'doom-module-load-path (guix/pkg 'doomemacs-modules "/share/doomemacs/modules"))
 (setq custom-file "~/devel/dotfiles/emacs/.doom.d/custom.el")
 (doom!
  :completion  (corfu +icons +orderless) (vertico +icons)
