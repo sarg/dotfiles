@@ -105,7 +105,7 @@ LD_LIBRARY_PATH=~a CLASSPATH=~a/* ~a/bin/java ~a org.tinymediamanager.TinyMediaM
 (define-public temporal-io-server
   (package
     (name "temporal-io-server")
-    (version "1.29.1")
+    (version "1.31.1")
     (source
      (origin
        (method url-fetch)
@@ -113,7 +113,7 @@ LD_LIBRARY_PATH=~a CLASSPATH=~a/* ~a/bin/java ~a org.tinymediamanager.TinyMediaM
              "https://github.com/temporalio/temporal/releases/download/v"
              version "/temporal_" version "_linux_amd64.tar.gz"))
        (sha256
-        (base32 "0y1yppr21wcdynx5ivkyj7522kv4j721rhn1pc5yam3h7300bpx5"))))
+        (base32 "0qxsyxkmpjrm9msfw0ahlv6jbhzpblv9hmsrivjc8iihg2lbws3d"))))
     (properties '((upstream-name . "temporal")))
     (build-system copy-build-system)
     (arguments
@@ -138,14 +138,14 @@ failed operations.")
 (define-public temporal-cli
   (package
     (name "temporal-cli")
-    (version "1.5.1")
+    (version "1.7.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "https://github.com/temporalio/cli/releases/download/v"
              version "/temporal_cli_" version "_linux_amd64.tar.gz"))
-       (sha256 "0bc5nic778yjdihlx0zqfpl2nzgbi3sa6cwpxbafyxmhn045xjfx")))
+       (sha256 "0nrpf83inr3mqgizv03avdyap8g6lihn9z153zbvf878hjplixg2")))
     (properties '((upstream-name . "temporal_cli")))
     (build-system copy-build-system)
     (arguments
@@ -289,13 +289,13 @@ command-line programs gsutil and gcloud among others.")
 (define-public codelldb
   (package
    (name "codelldb")
-   (version "1.12.0")
+   (version "1.12.2")
    (source (origin
             (method url-fetch)
             (uri (string-append
                   "https://github.com/vadimcn/codelldb/releases/download/v" version "/codelldb-linux-x64.vsix"))
             (sha256
-             (base32 "0w15rp0k3spxhjjw4bmzhbfjlbwmcn74h2mic5cwmbsvx8m6k5a7"))))
+             (base32 "0zb3gzrzgyj78q35jdf7ashg6f8wl6fnqz4jn0sxal80ayl4anxq"))))
    (build-system binary-build-system)
    (arguments
     `(#:strip-binaries? #f
@@ -319,14 +319,14 @@ command-line programs gsutil and gcloud among others.")
 (define-public ddnet
   (package
     (name "ddnet")
-    (version "19.8")
+    (version "19.8.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "https://ddnet.org/downloads/DDNet-" version "-linux_x86_64.tar.xz"))
        (sha256
-        (base32 "020kyr2x7531ifm9k7m6339dqkf1ji4yg1v23hbq4dcc6y6av9w4"))))
+        (base32 "01zv0sqwxqv4c6vnv06zc875hgqzs6np4nb82k29gl049awva320"))))
     (build-system binary-build-system)
     (arguments
      (list #:strip-binaries? #f
@@ -383,7 +383,7 @@ modification with a unique cooperative gameplay.")
 (define-public python-ty
   (package
     (name "python-ty")
-    (version "0.0.48")
+    (version "0.0.49")
     (source
      (origin
        (method url-fetch)
@@ -391,7 +391,7 @@ modification with a unique cooperative gameplay.")
              "https://github.com/astral-sh/ty/releases/download/" version
              "/ty-x86_64-unknown-linux-gnu.tar.gz"))
        (sha256
-        (base32 "0vyxpf8idgb3gypwfsrhxs7a8phagw7d75s4nkk18q77x9icyvq7"))))
+        (base32 "0kkhf9bq3n1z9zzy5sn4k2kcaaqlcd7fzmdh8x0n3igxyni59pgg"))))
     (properties '((upstream-name . "ty")))
     (build-system binary-build-system)
     (supported-systems '("x86_64-linux"))
