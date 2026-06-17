@@ -99,8 +99,16 @@ examples> directory of this package.")
     (build-system haskell-build-system)
     (properties '((upstream-name . "strings")))
     (arguments
-     `(#:cabal-revision ("1"
-                         "0jk1g71yzc5wpkr3vvhnxak61nqvisc5n90ggv6lmz4wqpqzdd0v")))
+     (list
+      #:cabal-revision '("1"
+                         "0jk1g71yzc5wpkr3vvhnxak61nqvisc5n90ggv6lmz4wqpqzdd0v")
+
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-before 'configure 'relax-depency-versions
+            (lambda _
+              (substitute* "strings.cabal"
+                (("bytestring [<>=0-9. &|]*") "bytestring")))))))
     (home-page "http://hub.darcs.net/scravy/strings")
     (synopsis
      "Functions for working with strings, including Text, ByteString, etc.")
@@ -121,14 +129,22 @@ correctly the empty list. . [@@v1.1@@] Added @code{@@strToUpper}@@,
 (define-public ghc-twain
   (package
     (name "ghc-twain")
-    (version "2.1.2.0")
+    (version "2.2.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (hackage-uri "twain" version))
        (sha256
-        (base32 "1hkzp2g671dagmv1qznkf3mw3l2mslckg7h0a8x8633h6i3j6br0"))))
+        (base32 "1ypx89sz9gswn3696y13l6yzvn6wf8rq8ybfcl51ls7773cdkqf3"))))
     (build-system haskell-build-system)
+    (arguments
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-before 'configure 'relax-depency-versions
+            (lambda _
+              (substitute* "twain.cabal"
+                (("bytestring [<>=0-9. &|]*") "bytestring")))))))
     (properties '((upstream-name . "twain")))
     (inputs (list ghc-aeson
                   ghc-case-insensitive
