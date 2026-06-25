@@ -451,13 +451,13 @@ modification with a unique cooperative gameplay.")
 (define-public google-gemini-cli
   (package
     (name "google-gemini-cli")
-    (version "0.40.1")
+    (version "0.47.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/google-gemini/gemini-cli/releases/download/v" version "/gemini-cli-bundle.zip"))
        (sha256
-        (base32 "1l9dd4v4nwnrxjmd8xi0449sqjy5x9ag21da1yj3cxn5nvnb8fqw"))))
+        (base32 "1qm3zmwf63xixs4s1z14pkzznpvz9cxin5xym4byw4d3pc0zsv4p"))))
     (build-system binary-build-system)
     (arguments (list
                 #:install-plan ''(("." "share/"))
@@ -467,7 +467,7 @@ modification with a unique cooperative gameplay.")
                       (lambda _
                         (chdir "..")
                         (substitute* "gemini.js"
-                          (("^#!/usr/bin/env -S node")
+                          (("^#!/usr/bin/env node")
                            (string-append "#!" (which "node"))))))
                     (add-after 'install 'install-bin
                       (lambda _
