@@ -1,69 +1,52 @@
-;;; SPDX-License-Identifier: GPL-3.0-or-later
-;;; Copyright © 2025 Hilton Chain <hako@ultrarare.space>
-
+;; see noctalia.scm at https://github.com/noctalia-dev/noctalia-shell
 (define-module (personal packages wm)
+
   ;; Utilities
   #:use-module (guix gexp)
-  #:use-module (guix utils)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
+  #:use-module (guix utils)
   ;; Guix origin methods
   #:use-module (guix git-download)
   ;; Guix build systems
-  #:use-module (guix build-system cargo)
-  #:use-module (guix build-system copy)
+  #:use-module (guix build-system meson)
   ;; Guix packages
-  #:use-module (gnu packages admin)
-  #:use-module (gnu packages audio)
-  #:use-module (gnu packages base)
-  #:use-module (gnu packages bash)
-  #:use-module (gnu packages calendar)
+  #:use-module (gnu packages curl)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
-  #:use-module (gnu packages guile)
-  #:use-module (gnu packages hardware)
-  #:use-module (gnu packages polkit)
-  #:use-module (gnu packages imagemagick)
+  #:use-module (gnu packages image)
+  #:use-module (gnu packages jemalloc)
   #:use-module (gnu packages linux)
-  #:use-module (gnu packages llvm)
+  #:use-module (gnu packages maths)
+  #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages python)
-  #:use-module (gnu packages qt)
-  #:use-module (gnu packages version-control)
-  #:use-module (gnu packages wm)
-  #:use-module (gnu packages xdisorg))
+  #:use-module (gnu packages polkit)
+  #:use-module (gnu packages xdisorg)
+  #:use-module (gnu packages xml))
 
-(define-public noctalia-qs
+(define wayland-protocols-1.48
   (package
-    (inherit quickshell)
-    (name "noctalia-qs")
-    (version "0.0.12")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-              (url "https://github.com/noctalia-dev/noctalia-qs")
-              (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "0zbqq9qgdsk5r2y4hag5p6276f67pq2w9imihdirvgnx0kclzlpg"))))
-    (arguments
-     (substitute-keyword-arguments arguments
-         ((#:configure-flags flags)
-          #~(cons*
-             "-DNIX_STORE_DIR_SKIP_WATCH=true"
-             (string-append "-DNIX_STORE_DIR=" (%store-directory))
-             #$flags))))
-    (inputs (modify-inputs inputs (append glib polkit)))))
+    (inherit wayland-protocols)
+    (name "wayland-protocols")
+    (version "1.48")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://gitlab.freedesktop.org/wayland/wayland-protocols")
+                     (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0zqnn7bwqzifchjhclrrcqnp39cpd3nnf6nbd9bav2hwhcx92mwy"))))))
 
 (define-public noctalia-shell
   (package
     (name "noctalia-shell")
-    (version "4.7.7")
+    (version "5.0.0-beta1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -72,110 +55,57 @@
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0pchvsd89js4q7k10q621w3jqndv6raw6zy0px2b43ygh2kcpk22"))))
-    (build-system copy-build-system)
+                "194fhlxn79d8hg0qgczk51jrbnifnvhgikz6npqirzb0kfifxyz9"))))
+    (build-system meson-build-system)
     (arguments
-     (list
-      #:install-plan
-      #~'(("." "etc/xdg/quickshell/noctalia-shell"))
-      #:imported-modules
-      `((guix build qt-utils)
-        ,@%copy-build-system-modules)
-      #:modules
-      '((srfi srfi-26)
-        (guix build copy-build-system)
-        (guix build qt-utils)
-        (guix build utils))
-      #:phases
-      #~(modify-phases %standard-phases
-          (add-after 'unpack 'patch-references
-            (lambda* (#:key inputs #:allow-other-keys)
-              (substitute* "Services/Power/IdleInhibitorService.qml"
-                (("systemd-inhibit")
-                 (search-input-file inputs "bin/elogind-inhibit")))))
-          (add-after 'unpack 'reduce-output-size
-            (lambda _
-              (delete-file-recursively "Assets/Screenshots")))
-          (add-after 'install 'make-wrapper
-            (lambda* (#:key inputs #:allow-other-keys)
-              (let ((script "noctalia-shell"))
-                (with-output-to-file script
-                  (lambda ()
-                    (format #t "~
-#!~a
-exec ~a --config ~a/etc/xdg/quickshell/noctalia-shell \"$@\"~%"
-                            (search-input-file inputs "bin/sh")
-                            (search-input-file inputs "bin/quickshell")
-                            #$output)))
-                (wrap-script script
-                  `("PATH"
-                    suffix
-                    ,(map (compose dirname
-                                   (cut search-input-file inputs <>))
-                          '("bin/bluetoothctl"
-                            "bin/brightnessctl"
-                            "bin/cava"
-                            "bin/cliphist"
-                            "bin/convert"
-                            "bin/ddcutil"
-                            "bin/fastfetch"
-                            "bin/fc-list"
-                            "bin/find"
-                            "bin/fprintd-verify"
-                            "bin/getent"
-                            "bin/git"
-                            "bin/qdbus"
-                            "bin/grep"
-                            "bin/khal"
-                            "bin/ls"
-                            "bin/nmcli"
-                            "bin/python3"
-                            "bin/sh"
-                            "bin/which"
-                            "bin/wl-paste"
-                            "bin/wlsunset"
-                            "bin/wtype"))))
-                (chmod script #o555)
-                (install-file script (in-vicinity #$output "bin")))))
-          (add-after 'make-wrapper 'qt-wrap
-            (lambda args
-              (apply wrap-all-qt-programs
-                     #:qtbase #$(this-package-input "qtbase")
-                     args))))))
+     (list #:build-type "release"
+           ;; FIXME: process_test fails with:
+           ;; --8<---------------cut here---------------start------------->8---
+           ;; stderr:
+           ;; process_test: completion-only async command exit code was wrong
+           ;; process_test: completion-only async command stdout was wrong
+           ;; --8<---------------cut here---------------end--------------->8---
+           #:tests? #f
+           #:phases
+           #~(modify-phases %standard-phases
+               (add-after 'unpack 'prepare-for-build
+                 (lambda _
+                   ;; For reproducibility.
+                   (substitute* "meson.build"
+                     (("'-march=native', '-mtune=native',") ""))
+                   ;; /bin/sh doesn't exist in the build environment.
+                   (substitute* "tests/process_test.cpp"
+                     (("/bin/(sh)" _ cmd)
+                      (which cmd))))))))
+    (native-inputs
+     (list pkg-config))
     (inputs
-     (list bash-minimal
-           bluez
-           qttools
-           brightnessctl
-           cava
-           cliphist
-           coreutils-minimal
-           ddcutil
-           elogind
-           fastfetch-minimal
-           fprintd
-           findutils
+     (list cairo
+           curl
            fontconfig
-           git-minimal
-           glibc
-           grep
-           guile-3.0
-           imagemagick
-           khal
-           network-manager
-           python-minimal
-           qtbase
-           qtwayland
-           noctalia-qs
-           which
-           wl-clipboard
-           wlsunset
-           wtype))
+           freetype
+           glib
+           gmp
+           mpfr
+           harfbuzz
+           jemalloc
+           (librsvg-for-system)
+           libqalculate
+           libwebp
+           libxkbcommon
+           libxml2
+           linux-pam
+           mesa
+           pango
+           pipewire
+           polkit
+           sdbus-c++
+           wayland
+           wayland-protocols-1.48
+           wireplumber))
     (home-page "https://noctalia.dev/")
-    (synopsis "Wayland desktop shell")
+    (synopsis "Wayland shell and bar")
     (description
-     "Noctalia is a minimal desktop shell designed for Wayland, built on the
-@code{quickshell} framework.  It offers a customizable and clean user interface,
-supporting various Wayland compositors like @code{niri}, @code{hyprland}, and
-@code{sway}.")
+     "Noctalia is a lightweight Wayland shell and bar built directly on
+Wayland and OpenGL ES, with no Qt or GTK dependency.")
     (license license:expat)))
