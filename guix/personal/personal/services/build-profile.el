@@ -5,11 +5,10 @@
 
   ;; this thing generates autoloads
   ;; in guix they're collected by site-start.el
-  (setq doom-profile-generators
-        (cl-delete "90-loaddefs-packages.auto.el"
-                   doom-profile-generators
-                   :key 'car :test 'string=))
-
+  (setq doom-profile-generate-functions
+        (cl-delete 'doom-profile--generate-loaddefs-packages
+                   doom-profile-generate-functions))
+  
   (doom-modules-initialize)
   (setq doom-packages (doom-package-list))
   (let ((missing-pkgs '()))
@@ -25,6 +24,6 @@
       (message "!!!!! MISSING PACKAGES !!!!!")
       (mapc 'message (sort missing-pkgs))
       (setq backtrace-on-error-noninteractive nil)
-      (error "Please add missing packages to inputs of doomemacs-configuration")))
+      (error "Please add missing packages to inputs of doomemacs-configuration %s" missing-pkgs)))
 
   (doom-profile-generate))

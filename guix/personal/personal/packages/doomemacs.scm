@@ -27,16 +27,17 @@
 (define-public doomemacs
   (package
     (name "doomemacs")
-    (version "2.2.0")
+    (properties '((commit . "bd083688541ffb402ffb0602f42099ca554eaaab")))
+    (version (git-version "2.2.0" "1" (assoc-ref properties 'commit)))
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
               (url "https://github.com/doomemacs/core")
-              (commit (string-append "v" version))))
+              (commit (assoc-ref properties 'commit))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0q6y1l2d12fgm82g9jgcplycw4qsvn0ghwgni29lqr80ng9k4cdr"))))
+        (base32 "0vfl65lhqh13scchjkdbr1hbwq2sqdk8g4ab95rp04q29z2zx8q0"))))
     (build-system copy-build-system)
     (arguments '(#:install-plan '(("." "share/doomemacs"))))
     (propagated-inputs (list
@@ -59,7 +60,7 @@
 (define-public doomemacs-modules
   (package
     (name "doomemacs-modules")
-    (version "26.06")
+    (version "26.07")
     (source
      (origin
        (method git-fetch)
@@ -68,7 +69,7 @@
               (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1csb68yw5md94knrcm4h6nywa3a4lvny8y96by5grjpnbw8pww1g"))))
+        (base32 "1r2dbx2ymp5q0zyfs7x7p9r0zpydmqws37ga1y35n4ap2vlvsc4g"))))
     (build-system copy-build-system)
     (arguments '(#:install-plan '(("modules" "share/doomemacs/modules"))))
     (home-page "https://github.com/doomemacs/modules")
