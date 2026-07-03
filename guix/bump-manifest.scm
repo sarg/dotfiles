@@ -16,6 +16,5 @@
        ;; tinymediamanager
        ;; opencode
        noctalia-shell
-       noctalia-qs
        ;; google-gemini-cli
        ))

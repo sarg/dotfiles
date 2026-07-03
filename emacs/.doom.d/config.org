@@ -952,10 +952,9 @@ disable-ipv6=true
           (defun sarg/noctalia ()
             (set-frame-parameter (selected-frame) 'alpha-background 80)
             (add-to-list 'default-frame-alist '(alpha-background . 80))
-            (setenv "NOCTALIA_PAM_SERVICE" "fingerprint")
             (make-process :buffer " *noctalia*"
                           :name "noctalia"
-                          :command '("noctalia-shell" "--no-color")
+                          :command '("noctalia")
                           :noquery t)))
 
 (custom-set-faces!
@@ -2401,6 +2400,7 @@ home-emacs
 "emacs-flycheck-plantuml"
 "emacs-flycheck-popup-tip"
 "emacs-general"
+"emacs-git-link"
 "emacs-git-modes"
 "emacs-git-timemachine"
 "emacs-go-gen-test"
@@ -2870,11 +2870,11 @@ export WAYLAND_DISPLAY=$(
     cd $XDG_RUNTIME_DIR
     ls -1 wayland-ewm-* | grep -v lock
 )
-noctalia-shell ipc call darkMode set$([ "$1" = "light" ] && echo Light || echo Dark)
-noctalia-shell ipc call wallpaper set ~/Pictures/Wallpapers/$1.jpg eDP-1
+noctalia msg theme-mode-set $([ "$1" = "light" ] && echo light || echo dark)
+noctalia msg wallpaper-set ~/Pictures/Wallpapers/$1.jpg
 #+end_src
 
-#+RESULTS[305bcc99468f8c46568ac6a43e4161d73672af2f]:
+#+RESULTS[f37ddc021d4e87ba0b0b8b132afe5555d65bdbb1]:
 #+begin_src text :noweb-ref guix-file
 (".local/share/darkman/noctalia.sh"
 ,(chmod-computed-file (mixed-text-file
@@ -2884,8 +2884,8 @@ noctalia-shell ipc call wallpaper set ~/Pictures/Wallpapers/$1.jpg eDP-1
 "    cd $XDG_RUNTIME_DIR\n"
 "    ls -1 wayland-ewm-* | grep -v lock\n"
 ")\n"
-"noctalia-shell ipc call darkMode set$([ \"$1\" = \"light\" ] && echo Light || echo Dark)\n"
-"noctalia-shell ipc call wallpaper set ~/Pictures/Wallpapers/$1.jpg eDP-1") #o744))
+"noctalia msg theme-mode-set $([ \"$1\" = \"light\" ] && echo light || echo dark)\n"
+"noctalia msg wallpaper-set ~/Pictures/Wallpapers/$1.jpg") #o744))
 #+end_src
 
 #+begin_src elisp
@@ -3923,7 +3923,7 @@ fi
 #+begin_src scheme :noweb-ref guix-pkg
 "emacs-reddigg"
 #+end_src
-** google calendar
+** COMMENT google calendar
 #+begin_src cfg :dest ".config/vdirsyncer/config"
 [general]
 status_path = "~/.local/state/vdirsyncer"
