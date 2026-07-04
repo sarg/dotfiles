@@ -301,10 +301,17 @@ dnsmasq_resolve=/etc/dnsmasq.resolve
 
 (service ntp-service-type)
 
-(service network-manager-service-type
-         (network-manager-configuration
-           (shepherd-requirement '(iwd))))
-(service iwd-service-type)
+(service iwd-service-type
+         (iwd-configuration
+          (shepherd-provision '(iwd networking wireless-daemon))
+          (config
+           (iwd-settings
+            (general
+             (iwd-general-settings
+              (enable-network-configuration? #t)))
+            (network
+             (iwd-network-settings
+              (name-resolving-service 'resolvconf)))))))
 #+end_src
 #+begin_src scheme :noweb-ref guix-pin
 (pin "emacs-iwd-manager"
