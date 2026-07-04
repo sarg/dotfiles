@@ -46,16 +46,17 @@
 (define-public noctalia-shell
   (package
     (name "noctalia-shell")
-    (version "5.0.0-beta1")
+    (properties '((commit . "e1e904c556efbc020d002af5f8a6b7620383f7ef")))
+    (version (git-version "5.0.0-beta1" "1" (assoc-ref properties 'commit)))
     (source (origin
               (method git-fetch)
               (uri (git-reference
                      (url "https://github.com/noctalia-dev/noctalia-shell")
-                     (commit (string-append "v" version))))
+                     (commit (assoc-ref properties 'commit))))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "194fhlxn79d8hg0qgczk51jrbnifnvhgikz6npqirzb0kfifxyz9"))))
+                "0yr3w3jmng4y4lf6f1r7nilqxiv4d2g9swia6vxn0dymp7aym31v"))))
     (build-system meson-build-system)
     (arguments
      (list #:build-type "release"
@@ -70,6 +71,9 @@
            #~(modify-phases %standard-phases
                (add-after 'unpack 'prepare-for-build
                  (lambda _
+                   ;; TODO: upstream? gcc version bug?
+                   (substitute* "src/dbus/network/iwd_service.cpp"
+                     (("std::tuple") "sdbus::Struct"))
                    ;; For reproducibility.
                    (substitute* "meson.build"
                      (("'-march=native', '-mtune=native',") ""))
