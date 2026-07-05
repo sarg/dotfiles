@@ -3,7 +3,7 @@
        (name 'guix)
        (url "https://git.guix.gnu.org/guix.git")
        (branch "master")
-       (commit "27d13fbe68807eb7306770ac26ac8b10655cb9fd")
+       (commit "74a5cdd8c506dfbb080253fbfb6f97afe3d5321a")
        (introduction
         (make-channel-introduction
          "9edb3f66fd807b096b48283debdcddccfea34bad"
@@ -13,7 +13,7 @@
        (name 'nonguix)
        (url "https://gitlab.com/nonguix/nonguix")
        (branch "master")
-       (commit "4bc86c61d5ab661614b099bfe524f7f5798988b3")
+       (commit "66ab7fff7a4ee0592c708651556ef3805c85068f")
        (introduction
         (make-channel-introduction
          "897c1a470da759236cc11798f4e0a5f7d4d59fbc"
@@ -23,4 +23,4 @@
        (name 'personal)
        (url "https://github.com/sarg/dotfiles")
        (branch "master")
-       (commit "21215e6e97c265cb7e5aa126bbae8de034e6da06")))
+       (commit "1c15bac7bd4494e1adaa654656c9b8253fa5fbf0")))
