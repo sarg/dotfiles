@@ -73,7 +73,7 @@ MSG-PREDICATE is received."
   (telega-directory (expand-file-name "telega" (xdg-state-home)))
   (telega-cache-dir (expand-file-name "telega" (xdg-cache-home)))
   (telega-temp-dir (expand-file-name "telega" (temporary-file-directory)))
-  (telega-server-logfile nil)
+  ;; (telega-server-logfile nil) ; causes !GARBAGE! in the telega-server buffer
   (telega-online-status-function #'telega-buffer-p)
   (telega-chat-show-deleted-messages-for '(not saved-messages))
   (telega-root-show-avatars nil)
@@ -129,9 +129,6 @@ MSG-PREDICATE is received."
   ;; XX message text                                                    08.04.20✓
 
   (advice-add #'telega-chatbuf--sponsored-messages-fetch :override #'ignore)
-
-  ;; silence the "TODO: telega--suggested-actions" message
-  (advice-add #'telega--on-updateSuggestedActions :override #'ignore)
 
   (advice-add
    'telega-logout

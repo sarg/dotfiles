@@ -1932,6 +1932,7 @@ REVERSE? it when true. Returns the selected buffer."
                             ("<AudioRaiseVolume>" :fullscreen) ("<AudioLowerVolume>" :fullscreen)
                             ("<AudioMute>" :fullscreen) ("<AudioMicMute>" :fullscreen)))
   :config
+  (add-to-list 'doom-real-buffer-modes 'ewm-surface-mode)
   (when (modulep! :editor evil)
     (add-to-list 'evil-emacs-state-modes 'ewm-surface-mode))
   (map! :map ewm-mode-map
@@ -1957,15 +1958,11 @@ REVERSE? it when true. Returns the selected buffer."
         "s-<f12>" (sh! "grim -g \"$(slurp -d)\" - | wl-copy -t image/png")
 
         "s-E"    (cmd!
-                  (cond
-                   ((string= "qutebrowser" exwm-class-name)
-                    (ewm/switch-to-next-buffer "org.qutebrowser.qutebrowser" 'reverse))
-
-                   ((not (get-process "qutebrowser"))
-                    (start-process "qutebrowser" nil "setsid" "-w" "qutebrowser"))))
+                  (or (ewm/switch-to-next-buffer "qutebrowser" 'reverse)
+                      (start-process "qutebrowser" nil "setsid" "-w" "qutebrowser")))
 
         "s-e"    (cmd!
-                  (or (ewm/switch-to-next-buffer "org.qutebrowser.qutebrowser")
+                  (or (ewm/switch-to-next-buffer "qutebrowser")
                       (start-process "qutebrowser" nil "setsid" "-w" "qutebrowser"))))
 
   (ewm--send-intercept-keys))
@@ -2322,6 +2319,12 @@ XDG_VIDEOS_DIR="$HOME/Movies"
      #:commit "1a108d1c5011f9ced58be2ca98bea1fbd4130a2f"
      #:hash "1rw7v8xks6rpjk10kw0lkb3f158jsqk6167f3dpmxm3q4000k8nz")
 #+end_src
+#+begin_src scheme :noweb-ref guix-pin
+(pin "emacs-dirvish"
+     #:uri "https://github.com/latiagertrutis/dirvish"
+     #:commit "300b6b2536006aaf5f803775ca93ca5f6ec35de1"
+     #:hash "11849fiaz9vg1dwvvfwz0c5rzh01wx11rqq2r2sg71mj00yfvkb5")
+#+end_src
 #+begin_src scheme :noweb-ref guix-pkg
 home-emacs
 
@@ -2355,7 +2358,6 @@ home-emacs
 "emacs-dape"
 "emacs-dash-docs"
 "emacs-diredfl"
-"emacs-dirvish"
 "emacs-doom-snippets"
 "emacs-dumb-jump"
 "emacs-edit-indirect"
