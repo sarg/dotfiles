@@ -2358,6 +2358,7 @@ home-emacs
 "emacs-dape"
 "emacs-dash-docs"
 "emacs-diredfl"
+"emacs-dirvish"
 "emacs-doom-snippets"
 "emacs-dumb-jump"
 "emacs-edit-indirect"
@@ -2387,6 +2388,7 @@ home-emacs
 "emacs-evil-escape"
 "emacs-evil-exchange"
 "emacs-evil-goggles"
+"emacs-evil-ghostel"
 "emacs-evil-indent-plus"
 "emacs-evil-lion"
 "emacs-evil-markdown"
@@ -2412,6 +2414,7 @@ home-emacs
 "emacs-git-link"
 "emacs-git-modes"
 "emacs-git-timemachine"
+"emacs-ghostel"
 "emacs-go-gen-test"
 "emacs-go-mode"
 "emacs-go-tag"
@@ -2503,7 +2506,6 @@ home-emacs
 "emacs-vertico"
 "emacs-vimish-fold"
 "emacs-visual-fill-column"
-"emacs-vterm"
 "emacs-vundo"
 "emacs-web-mode"
 "emacs-wgrep"
@@ -2618,7 +2620,7 @@ home-emacs
  :ui          nav-flash (modeline +light) ophints (popup +defaults) ligatures treemacs
  :editor      (evil +everywhere) fold lispy snippets (format +onsave) multiple-cursors word-wrap
  :emacs       (dired +dirvish +icons) electric vc ibuffer undo eww
- :term        eshell vterm
+ :term        eshell ghostel
  :tools       (eval +overlay) (lookup +docsets) (magit +forge) (pass +auth)
               make tree-sitter lsp direnv llm debugger
  :checkers    syntax
@@ -3829,7 +3831,7 @@ current buffer, killing it."
 #+end_src
 ** gpx-mode
 #+begin_src scheme :noweb-ref guix-pkg
-"emacs-gpx" "emacs-osm"
+"emacs-gpx" "emacs-osm" "gpxsee"
 #+end_src
 #+begin_src elisp
 (use-package osm
