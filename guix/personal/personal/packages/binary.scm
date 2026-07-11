@@ -569,3 +569,28 @@ exec ~a.real \"$@\"~%"
     (synopsis "An extensible and keyboard-focused web browser.")
     (description "Firefox-based keyboard-focused web browser.")
     (license license:mpl2.0)))
+
+(define-public workerd
+  (package
+   (name "workerd")
+   (version "1.20260711.1")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append
+                  "https://github.com/cloudflare/workerd/releases/download/v" version "/workerd-linux-64.gz"))
+            (sha256
+             (base32 "0lzbcw24w5h2hdz09as5iv6j36p35yw780mlis849ddm6azz5mf7"))))
+   (build-system binary-build-system)
+   (arguments
+    `(#:strip-binaries? #f
+      #:patchelf-plan '(("workerd-linux-64" ("libc" "gcc:lib")))
+      #:install-plan '(("workerd-linux-64" "bin/workerd"))
+      #:phases (modify-phases %standard-phases
+                 (add-after 'binary-unpack 'chmod
+                   (lambda _ (chmod "workerd-linux-64" #o755))))))
+   (inputs `(("gcc:lib" ,gcc "lib")))
+   (supported-systems '("x86_64-linux"))
+   (home-page "https://github.com/cloudflare/workerd")
+   (synopsis "The JavaScript / Wasm runtime that powers Cloudflare Workers")
+   (description "WASM runtime from Cloudflare")
+   (license license:asl2.0)))
