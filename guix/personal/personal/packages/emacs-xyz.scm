@@ -9,6 +9,8 @@
                 #:prefix license:)
 
   #:use-module (personal packages binary)
+  #:use-module (personal packages ghostty)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages emacs-xyz)
   #:use-module (gnu packages emacs-build)
@@ -2296,4 +2298,21 @@ Transient.  Currently supports Github, Gitlab, and Bitbucket Cloud.")
     (description
      "let-completion-mode makes Emacs Lisp in-buffer completion aware of
 lexically enclosing binding forms.")
+    (license license:gpl3)))
+
+(define-public emacs-evil-ghostel
+  (package
+    (inherit emacs-ghostel)
+    (name "emacs-evil-ghostel")
+    (propagated-inputs (list emacs-evil emacs-ghostel))
+    (native-inputs '())
+    (arguments
+     '(#:tests? #f
+       #:lisp-directory "extensions/evil-ghostel"
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'patch-el-files))))
+    (home-page "https://github.com/dakra/ghostel")
+    (synopsis "Evil-mode integration for ghostel")
+    (description "Evil-mode integration for the ghostel terminal emulator")
     (license license:gpl3)))
