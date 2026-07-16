@@ -1,7 +1,7 @@
 ;;; build-profile.el --- Generates doom's startup file. -*- lexical-binding: t; -*-
 (require 'doom-lib)
-(letf! (defun doom-initialize-core-packages (&optional force-p)
-         (message "Inhibiting core packages initialization"))
+(letf! (defun! doom-initialize-core-packages (&optional force-p)
+               (message "Inhibiting core packages initialization"))
 
   ;; this thing generates autoloads
   ;; in guix they're collected by site-start.el

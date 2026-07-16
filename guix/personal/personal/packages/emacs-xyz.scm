@@ -1454,24 +1454,24 @@ https://github.com/abo-abo/netherlands-holidays.")
 (define-public emacs-just-mode
   (package
     (name "emacs-just-mode")
-    (version "20251121.1826")
+    (version "0.1.9")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-              (url "https://github.com/leon-barrett/just-mode.el")
-              (commit "b6173c7bf4d8d28e0dbd80fa41b9c75626885b4e")))
+             (url "https://github.com/leon-barrett/just-mode.el")
+             (commit version)))
        (file-name (git-file-name name version))
        (sha256
         (base32 "1czf779akdcx72ma7x9v70kjbic73312fi1czbzvlvxr01pjpyj0"))))
     (build-system emacs-build-system)
-    (arguments '(#:tests? #f))
+    (arguments (list #:tests? #f)) ; no tests
     (home-page "https://github.com/leon-barrett/just-mode.el")
     (synopsis "Justfile editing mode")
     (description
      "This package provides a major mode for editing justfiles, as defined by the tool
-\"just\": https://github.com/casey/just.")
-    (license #f)))
+\"just\" (@url{https://github.com/casey/just}).")
+    (license license:gpl3+)))
 
 (define-public emacs-justl
   (package
@@ -2315,4 +2315,30 @@ lexically enclosing binding forms.")
     (home-page "https://github.com/dakra/ghostel")
     (synopsis "Evil-mode integration for ghostel")
     (description "Evil-mode integration for the ghostel terminal emulator")
+    (license license:gpl3)))
+
+(define-public emacs-clutch
+  (package
+    (name "emacs-clutch")
+    (version "0.2.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/LuciusChen/clutch")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1cyjawbrfphdqcrwg10nrhcvmr45hlhjr3v1g8k0ypcgmfa7cmjs"))))
+    (build-system emacs-build-system)
+    (propagated-inputs (list emacs-transient))
+    (home-page "https://github.com/LuciusChen/clutch")
+    (synopsis "Interactive database client")
+    (description
+     "Interactive database client with native and JDBC backends.  Provides: -
+`clutch-mode': SQL editing major mode (derived from `sql-mode') - `clutch-repl':
+REPL via `comint-mode - Query execution with horizontally scrollable result
+tables - Object discovery and completion Entry points: M-x clutch-mode — open a
+SQL editing buffer M-x clutch-repl — open a REPL Open a .mysql file — activates
+clutch-mode automatically.")
     (license license:gpl3)))

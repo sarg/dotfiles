@@ -9,7 +9,7 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages cmake)
   #:use-module (gnu packages samba)
-  #:use-module (gnu packages wm)
+  #:use-module (gnu packages window-management)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages polkit)

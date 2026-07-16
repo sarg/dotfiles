@@ -33,9 +33,9 @@
 ;;;
 
 (define-public emacs-ghostel
-  (let* ((version "0.22.1")
+  (let* ((version "0.44.0")
          (ghostty-version "1.3.2-dev")
-         (ghostty-commit "01825411ab2720e47e6902e9464e805bc6a062a1")
+         (ghostty-commit "11b9a6ef17e21b89e2ef14dd786992cc5577b69b")
          (uucode-version "0.2.0")
          (ghostty-source
           (origin
@@ -46,7 +46,7 @@
             (file-name (git-file-name "ghostty" ghostty-commit))
             (sha256
              (base32
-              "1vciyvbszkhrcdn72vx9c1m1dqlc8fid3cv8gb6zfa2xnc0qhcyc"))))
+              "08wyr3anhfqha64wbg63b1rhy6mwn8k96h4p9azjh0h3bg95s42p"))))
          (uucode-source
           (origin
             (method git-fetch)
@@ -69,7 +69,7 @@
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1z8rgp3l7x1v7jpkzx0gqhyydd0isjssa89xapwxs8md22da4iq4"))))
+           "1fyqpbpv62hs3hqai1j04x30miwdqkkpqfxdh4vbxc331fhrj4dx"))))
       (build-system emacs-build-system)
       (arguments
        (list
@@ -91,7 +91,10 @@
                             (find-files deps #:directories? #t)))))
             (add-after 'unpack-zig-dependencies 'patch-zig-dependencies
               (lambda _
+                (substitute* "ghostel-debug.el"
+                  (("\\\\\"/bin/sh\\\\\"") "\\\"sh\\\""))
                 (substitute* "ghostel.el"
+                  (("\\\\\"/bin/zsh\\\\\"") "\\\"zsh\\\"")
                   (("\\\\\"/bin/bash\\\\\"") "\\\"bash\\\""))
                 (let ((root (dirname (getcwd))))
                   (with-directory-excursion root
@@ -286,7 +289,7 @@ pub fn addStepDependencies(
                        (elpa-dir (elpa-directory out)))
                   (copy-recursively (string-append root "/etc")
                                     (string-append elpa-dir "/etc"))
-                  (install-file (string-append root "/ghostel-module.so")
+                  (install-file (string-append root "/zig-out/ghostel-module.so")
                                 elpa-dir)))))))
       (native-inputs (list zig-0.15))
       (home-page "https://github.com/dakra/ghostel")
