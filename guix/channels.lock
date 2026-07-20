@@ -3,7 +3,7 @@
        (name 'guix)
        (url "https://git.guix.gnu.org/guix.git")
        (branch "master")
-       (commit "a79a3d9d2fcb7f25f828aef6f6742659852a47d0")
+       (commit "aa7a1c8289c1b8e638cde55dc4217ac0199155c7")
        (introduction
         (make-channel-introduction
          "9edb3f66fd807b096b48283debdcddccfea34bad"
@@ -23,4 +23,9 @@
        (name 'personal)
        (url "https://github.com/sarg/dotfiles")
        (branch "master")
-       (commit "51e15676dd91a63c97211c6f40fc3dd6627ff5de")))
+       (commit "18f5dd1f55f83e241e7b1c6f1d357b2251ba92e5"))
+      (channel
+       (name 'noctalia)
+       (url "https://github.com/noctalia-dev/noctalia")
+       (branch "main")
+       (commit "0e36c582e8c445999770340869416a59d081cc05")))

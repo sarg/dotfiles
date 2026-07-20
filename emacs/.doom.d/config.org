@@ -52,6 +52,13 @@ I use only the sops package which is in main guix channel now.
    (openpgp-fingerprint
     "8D10 60B9 6BB8 292E 829B  7249 AED4 1CC1 93B7 01E2"))))
 #+end_src
+** noctalia
+#+begin_src scheme :noweb-ref guix-channel
+(channel
+  (name 'noctalia)
+  (url "https://github.com/noctalia-dev/noctalia")
+  (branch "main"))
+#+end_src
 ** personal
 #+begin_src scheme :noweb-ref guix-channel
 (channel
@@ -1881,7 +1888,7 @@ choose_entry() {
 
 * ewm
 #+begin_src scheme :noweb-ref guix-pkg
-"emacs-ewm" "noctalia-shell" "xwayland-satellite"
+"emacs-ewm" "noctalia-git" "xwayland-satellite"
 #+end_src
 #+begin_src scheme :noweb-ref guix-srv
 (simple-service
@@ -2609,7 +2616,9 @@ home-emacs
 #+end_src
 ** init.el
 #+begin_src scheme :noweb-ref emacs-dep
-"doomemacs-modules"
+(cdr (pin "doomemacs-modules"
+          #:commit "28f09d8afe81fa47ab83020b072f0dfa2f79dbdb"
+          #:hash "1904hwpa7i8qp799csgs2a5awm7i4d8h1rvkqw6r35ys2lsf1sb7"))
 #+end_src
 #+begin_src elisp :tangle init.el
 ;; generated from config.org
@@ -4007,6 +4016,10 @@ token_file = "~/.local/state/vdirsyncer/token"
 "emacs-tmr"
 #+end_src
 ** collectd
+** clutch
+#+begin_src scheme :noweb-ref guix-pkg
+"emacs-clutch"
+#+end_src
 * COMMENT archive
 ** emacs-one-frame
 #+begin_src sh :shebang #!/bin/bash
