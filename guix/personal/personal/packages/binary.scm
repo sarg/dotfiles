@@ -383,7 +383,7 @@ modification with a unique cooperative gameplay.")
 (define-public python-ty
   (package
     (name "python-ty")
-    (version "0.0.61")
+    (version "0.0.63")
     (source
      (origin
        (method url-fetch)
@@ -391,7 +391,7 @@ modification with a unique cooperative gameplay.")
              "https://github.com/astral-sh/ty/releases/download/" version
              "/ty-x86_64-unknown-linux-gnu.tar.gz"))
        (sha256
-        (base32 "1gqr7alnf1mnj12wirkk4ysng2zsi99s0wx6a85jnis7ppmbvy2g"))))
+        (base32 "0v7m8s6bqsdblghwjgnrjq3pwi6rxx85hfz74m7lvkha24y6m4g8"))))
     (properties '((upstream-name . "ty")))
     (build-system binary-build-system)
     (supported-systems '("x86_64-linux"))
