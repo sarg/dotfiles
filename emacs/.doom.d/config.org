@@ -52,13 +52,6 @@ I use only the sops package which is in main guix channel now.
    (openpgp-fingerprint
     "8D10 60B9 6BB8 292E 829B  7249 AED4 1CC1 93B7 01E2"))))
 #+end_src
-** noctalia
-#+begin_src scheme :noweb-ref guix-channel
-(channel
-  (name 'noctalia)
-  (url "https://github.com/noctalia-dev/noctalia")
-  (branch "main"))
-#+end_src
 ** personal
 #+begin_src scheme :noweb-ref guix-channel
 (channel
@@ -658,7 +651,7 @@ polkit.addRule(function(action, subject) {
         (cons head out)))
   (fold-right flatten1 '() lst))
 
-(define home-emacs (pkg "emacs-next-pgtk"))
+(define home-emacs (pkg "emacs-pgtk"))
 
 (define (build-with-home-emacs p)
   (package/inherit p
@@ -1888,7 +1881,7 @@ choose_entry() {
 
 * ewm
 #+begin_src scheme :noweb-ref guix-pkg
-"emacs-ewm" "noctalia-git" "xwayland-satellite"
+"emacs-ewm" "noctalia-shell" "xwayland-satellite"
 #+end_src
 #+begin_src scheme :noweb-ref guix-srv
 (simple-service
@@ -3403,6 +3396,7 @@ install grammars as expected by clojure-ts-mode
 #+end_src
 #+begin_src elisp
 (use-package tramp-hlo
+  :disabled
   :config (tramp-hlo-setup))
 #+end_src
 #+begin_src elisp
@@ -3774,10 +3768,6 @@ eval "$(atuin init bash)"
 ** agent-shell
 #+begin_src scheme :noweb-ref guix-pkg
 "emacs-agent-shell"
-#+end_src
-** gemini
-#+begin_src scheme :noweb-ref guix-pkg
-"google-gemini-cli"
 #+end_src
 ** opencode
 #+begin_src scheme :noweb-ref guix-pkg
