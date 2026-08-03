@@ -10,6 +10,7 @@
   ;; Guix build systems
   #:use-module (guix build-system meson)
   ;; Guix packages
+  #:use-module (gnu packages calendar)
   #:use-module (gnu packages cpp)
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages curl)
@@ -27,6 +28,7 @@
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages polkit)
+  #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages stb)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xml))
@@ -49,7 +51,7 @@
 (define-public noctalia-shell
   (package
     (name "noctalia-shell")
-    (version "5.0.0-beta.6")
+    (version "5.0.0-beta.7")
     (source
      (origin
        (method git-fetch)
@@ -59,7 +61,7 @@
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "191vz4gswrnpp6p38ybms4fw128gd3rphfzrnw727as2miwym5al"))))
+         "06knh7g9vzp65dz80x7pb9rwgih6hh0vyxi0ymk5a35nihs4j6gm"))))
     (build-system meson-build-system)
     (arguments
      (list #:build-type "release"
@@ -88,8 +90,10 @@
            mpfr
            (librsvg-for-system)
            libqalculate
+           libical
            libjxl
            libwebp
+           libsndfile
            libxkbcommon
            libxml2
            libsecret

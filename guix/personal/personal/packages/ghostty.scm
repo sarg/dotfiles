@@ -33,10 +33,10 @@
 ;;;
 
 (define-public emacs-ghostel
-  (let* ((version "0.45.0")
+  (let* ((version "0.49.0")
          (ghostty-version "1.3.2-dev")
-         (ghostty-commit "11b9a6ef17e21b89e2ef14dd786992cc5577b69b")
-         (uucode-version "0.2.0")
+         (ghostty-commit "ab0b9da9e88fcb4b0533a1854e84628f663930af")
+         (uucode-commit "2826a37a4562284fdacd8fa029d49509cc9bffcd")
          (ghostty-source
           (origin
             (method git-fetch)
@@ -46,17 +46,17 @@
             (file-name (git-file-name "ghostty" ghostty-commit))
             (sha256
              (base32
-              "08wyr3anhfqha64wbg63b1rhy6mwn8k96h4p9azjh0h3bg95s42p"))))
+              "0g9aid4wfv9sr6x6iqk0kysw18ly8yrr77w5x7khgzvp1ca896rd"))))
          (uucode-source
           (origin
             (method git-fetch)
             (uri (git-reference
                   (url "https://github.com/jacobsandlund/uucode")
-                  (commit (string-append "v" uucode-version))))
-            (file-name (git-file-name "uucode" uucode-version))
+                  (commit uucode-commit)))
+            (file-name (git-file-name "uucode" uucode-commit))
             (sha256
              (base32
-              "1a3lrmbpc4ifdj1z6ra2b3xnfwh784q2bx835pz58hwpc2pf3flc")))))
+              "0vbg7rhyvg7yxn3sbcx7xih0x5kp2vmdp1ckwkma08ankddmg527")))))
     (package
       (name "emacs-ghostel")
       (version version)
@@ -69,7 +69,7 @@
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "143f59m2vmb15gr6m0dzixwmpdadz80vy0jqyvw571man8bjv3s9"))))
+           "0mpkjshh2mk5kz1bpq8bszib5n153cvmwv0wc74a3xp58cy6jwld"))))
       (build-system emacs-build-system)
       (arguments
        (list
@@ -120,7 +120,7 @@
     .version = \"~a\",
     .paths = .{\"\"},
     .fingerprint = 0x64407a2a0b4147e5,
-    .minimum_zig_version = \"0.15.2\",
+    .minimum_zig_version = \"0.16.0\",
     .dependencies = .{
         .android_ndk = .{ .path = \"./pkg/android-ndk\" },
         .apple_sdk = .{ .path = \"./pkg/apple-sdk\" },
@@ -136,8 +136,7 @@
                     ;; dependency graph local and small by replacing non-VT
                     ;; helpers with inert stubs and using path dependencies.
                     (substitute* "build.zig"
-                      (("\\.@\"emit-lib-vt\" = true,")
-                       ".@\"emit-lib-vt\" = true,\n        .simd = false,"))
+                      (("ghostty_simd = .*") "ghostty_simd = false;"))
                     (let ((ghostty-exe-pattern
                            (string-append
                             "    if \\(!cfg\\.emit_lib_vt\\) _ = try "
@@ -291,7 +290,7 @@ pub fn addStepDependencies(
                                     (string-append elpa-dir "/etc"))
                   (install-file (string-append root "/zig-out/ghostel-module.so")
                                 elpa-dir)))))))
-      (native-inputs (list zig-0.15))
+      (native-inputs (list zig-0.16))
       (home-page "https://github.com/dakra/ghostel")
       (synopsis "Terminal emulator powered by libghostty")
       (description
