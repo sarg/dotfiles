@@ -672,7 +672,9 @@ polkit.addRule(function(action, subject) {
     (cons base
           (package
             (inherit base)
-            (version (string-append "pin." (string-take commit 7)))
+            (version (string-append "pin." (if (> (string-length commit) 7)
+                                               (string-take commit 7)
+                                               commit)))
             (source
              (origin
                (inherit (package-source base))
@@ -955,7 +957,7 @@ disable-ipv6=true
 #+end_src
 ** workspaces
 #+begin_src elisp
-(add-hook 'doom-init-ui-hook
+(add-hook 'ewm-mode-hook
           (defun sarg/noctalia ()
             (set-frame-parameter (selected-frame) 'alpha-background 80)
             (add-to-list 'default-frame-alist '(alpha-background . 80))
@@ -1221,18 +1223,6 @@ These are bound only for X11 apps.
 ** emms
 *** package
 #+begin_src elisp
-(defun dont-kill-buffer--hook ()
-  (bury-buffer)
-  (user-error "Don' kill me."))
-
-(define-minor-mode dont-kill-buffer-mode
-  "Don't kill buffer, just bury it."
-  :global nil
-
-  (if dont-kill-buffer-mode
-      (add-hook 'kill-buffer-hook #'dont-kill-buffer--hook 0 t)
-    (remove-hook 'kill-buffer-hook #'dont-kill-buffer--hook t)))
-
 (defun =emms ()
   (interactive)
   (require 'emms)
@@ -2363,7 +2353,6 @@ home-emacs
 "emacs-dumb-jump"
 "emacs-edit-indirect"
 "emacs-elfeed"
-"emacs-elfeed-goodies"
 "emacs-elfeed-org"
 "emacs-elisp-def"
 "emacs-elisp-demos"
@@ -2600,8 +2589,8 @@ home-emacs
 ** evil
 #+begin_src scheme :noweb-ref guix-pin
 (pin "emacs-evil-collection"
-     #:commit "0c63456ae73520839b66c3985de9bfabd38b835f"
-     #:hash "00jjs2py2836z3450nq1v2p6fv1i1dhalkd9yy2qg366jddc074r")
+     #:commit "3.0.1"
+     #:hash "07rqmz87159z0gq75i036v079fdws6x726na6sw37amd4lhqf87p")
 (pin "emacs-evil-org"
      #:uri "https://github.com/doomelpa/evil-org-mode"
      #:commit "06518c65ff4f7aea2ea51149d701549dcbccce5d"
@@ -2609,9 +2598,7 @@ home-emacs
 #+end_src
 ** init.el
 #+begin_src scheme :noweb-ref emacs-dep
-(cdr (pin "doomemacs-modules"
-          #:commit "28f09d8afe81fa47ab83020b072f0dfa2f79dbdb"
-          #:hash "1904hwpa7i8qp799csgs2a5awm7i4d8h1rvkqw6r35ys2lsf1sb7"))
+"doomemacs-modules"
 #+end_src
 #+begin_src elisp :tangle init.el
 ;; generated from config.org
