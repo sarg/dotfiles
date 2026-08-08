@@ -53,7 +53,7 @@ write_files:
     permissions: '0744'
   - content: |
       #!/usr/bin/env bash
-      echo "VPN started at $(curl -s -4 ip.me)" | notify-tg
+      echo "VPN started at $(curl -s -4 -H 'Accept: text/plain' dyndns.sarg.org.ru)" | notify-tg
       while true; do
         start=$(date +%s)
         while sleep 60; do

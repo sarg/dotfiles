@@ -62,7 +62,10 @@ export default {
 		const url = new URL(request.url);
 		const ip = request.headers.get('CF-Connecting-IP')!;
 		const m = url.pathname.match(/^\/(\w+)$/);
-		if (!m) return new Response(JSON.stringify({ origin: ip }), { status: 200 });
+		if (!m)
+			return request.headers.get('Accept') == 'text/plain'
+				? new Response(ip)
+				: Response.json({ origin: ip });
 
 		const [_, token] = m;
 
@@ -77,11 +80,11 @@ export default {
 				);
 				if (ipList.length == 0) ipList.push(ip);
 				await new Dyndns(env.DOMAIN).setIp(name, ipList);
-				return new Response(`${name} ip set to: ${ipList}`, { status: 200 });
+				return new Response(`${name} ip set to: ${ipList}`);
 
 			case 'DELETE':
 				const removed = await new Dyndns(env.DOMAIN).clean(name);
-				return new Response(`removed ${removed} for ${name}`, { status: 200 });
+				return new Response(`removed ${removed} for ${name}`);
 		}
 
 		return new Response(`${request.method} not supported`, { status: 500 });
