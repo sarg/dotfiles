@@ -267,14 +267,14 @@ command-line programs gsutil and gcloud among others.")
 (define-public pulumi
   (package
     (name "pulumi")
-    (version "3.220.0")
+    (version "3.256.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "https://get.pulumi.com/releases/sdk/pulumi-v" version "-linux-x64.tar.gz"))
        (sha256
-        (base32 "1zs5mpy4rcgv0fadbb6pv95kq75152rpngch676j2n63w2awa03g"))))
+        (base32 "1snaj7x6qbpf02nn3viiigx1xyvqmx686s0jjq3gxxs8v96gsjpy"))))
     (build-system binary-build-system)
     (supported-systems '("x86_64-linux"))
     (arguments
