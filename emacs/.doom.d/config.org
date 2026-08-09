@@ -2158,7 +2158,7 @@ done
                #:log-file (string-append %user-log-dir "/minidlnad.log")))
      (stop #~(make-kill-destructor))))))
 #+end_src
-** changelogs
+** COMMENT changelogs
 #+begin_src scheme :noweb-ref guix-srv
 (let* ((git2rss (load "../git2rss/guix.scm"))
        (changelog-task
@@ -2363,6 +2363,7 @@ home-emacs
 "emacs-csv-mode"
 "emacs-dape"
 "emacs-dash-docs"
+"emacs-diff-hl"
 "emacs-diredfl"
 "emacs-dirvish"
 "emacs-doom-snippets"
@@ -2622,7 +2623,7 @@ home-emacs
 (setq custom-file "~/devel/dotfiles/emacs/.doom.d/custom.el")
 (doom!
  :completion  (corfu +icons +orderless) (vertico +icons)
- :ui          nav-flash (modeline +light) ophints (popup +defaults) ligatures treemacs
+ :ui          nav-flash (modeline +light) ophints (popup +defaults) ligatures treemacs vc-gutter
  :editor      (evil +everywhere) fold lispy snippets (format +onsave) multiple-cursors word-wrap
  :emacs       (dired +dirvish +icons) electric vc ibuffer undo eww
  :term        eshell ghostel
