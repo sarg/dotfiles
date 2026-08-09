@@ -147,6 +147,10 @@
   (crate-source "bytemuck_derive" "1.10.2"
                 "1zvmjmw1sdmx9znzm4dpbb2yvz9vyim8w6gp4z256l46qqdvvazr"))
 
+(define rust-bytes-1.11.1
+  (crate-source "bytes" "1.11.1"
+                "0czwlhbq8z29wq0ia87yass2mzy1y0jcasjb8ghriiybnwrqfx0y"))
+
 (define rust-calloop-0.14.3
   (crate-source "calloop" "0.14.3"
                 "17ih3c840cqksv9ms7i2ynnkiabpvqvpxakbr3922imxd09nx7yb"))
@@ -301,6 +305,10 @@
   (crate-source "env_filter" "1.0.0"
                 "13rhwy5arjn626a0z3hvvkpf9w9pnll14c35vscyqx3jwp43q73s"))
 
+(define rust-env-logger-0.10.2
+  (crate-source "env_logger" "0.10.2"
+                "1005v71kay9kbz1d5907l0y7vh9qn2fqsp2yfgb8bjvin6m0bm2c"))
+
 (define rust-env-logger-0.11.9
   (crate-source "env_logger" "0.11.9"
                 "13913sqpnhv741z5ixmcy5j3nnml53gmsllnhajjkx2ili7fxnmj"))
@@ -356,6 +364,10 @@
 (define rust-futures-macro-0.3.31
   (crate-source "futures-macro" "0.3.31"
                 "0l1n7kqzwwmgiznn0ywdc5i24z72zvh9q1dwps54mimppi7f6bhn"))
+
+(define rust-futures-sink-0.3.31
+  (crate-source "futures-sink" "0.3.31"
+                "1xyly6naq6aqm52d5rh236snm08kw8zadydwqz8bip70s6vzlxg5"))
 
 (define rust-futures-task-0.3.32
   (crate-source "futures-task" "0.3.32"
@@ -441,6 +453,10 @@
   (crate-source "hex" "0.4.3"
                 "0w1a4davm1lgzpamwnba907aysmlrnygbqmfis2mqjx5m552a93z"))
 
+(define rust-humantime-2.3.0
+  (crate-source "humantime" "2.3.0"
+                "092lpipp32ayz4kyyn4k3vz59j9blng36wprm5by0g2ykqr14nqk"))
+
 (define rust-ident-case-1.0.1
   (crate-source "ident_case" "1.0.1"
                 "0fac21q6pwns8gh1hz3nbq15j8fi441ncl6w4vlnd1cmc55kiq5r"))
@@ -465,6 +481,10 @@
 (define rust-io-lifetimes-1.0.11
   (crate-source "io-lifetimes" "1.0.11"
                 "1hph5lz4wd3drnn6saakwxr497liznpfnv70via6s0v8x6pbkrza"))
+
+(define rust-is-terminal-0.4.17
+  (crate-source "is-terminal" "0.4.17"
+                "0ilfr9n31m0k6fsm3gvfrqaa62kbzkjqpwcd9mc46klfig1w2h1n"))
 
 (define rust-is-terminal-polyfill-1.70.2
   (crate-source "is_terminal_polyfill" "1.70.2"
@@ -593,6 +613,10 @@
 (define rust-minimal-lexical-0.2.1
   (crate-source "minimal-lexical" "0.2.1"
                 "16ppc5g84aijpri4jzv14rvcnslvlpphbszc7zzp6vfkddf4qdb8"))
+
+(define rust-mio-1.1.1
+  (crate-source "mio" "1.1.1"
+                "1z2phpalqbdgihrcjp8y09l3kgq6309jnhnr6h11l9s7mnqcm6x6"))
 
 (define rust-nix-0.30.1
   (crate-source "nix" "0.30.1"
@@ -879,6 +903,10 @@
   (crate-source "tempfile" "3.24.0"
                 "171fz3h6rj676miq15fyv1hnv69p426mlp8489bwa1b3xg3sjpb5"))
 
+(define rust-termcolor-1.4.1
+  (crate-source "termcolor" "1.4.1"
+                "0mappjh3fj3p2nmrg4y7qv94rchwi9mzmgmfflr8p2awdj7lyy86"))
+
 (define rust-thiserror-1.0.69
   (crate-source "thiserror" "1.0.69"
                 "0lizjay08agcr5hs9yfzzj6axs53a2rgx070a1dsi3jpkcrzbamn"))
@@ -898,6 +926,18 @@
 (define rust-thread-local-1.1.9
   (crate-source "thread_local" "1.1.9"
                 "1191jvl8d63agnq06pcnarivf63qzgpws5xa33hgc92gjjj4c0pn"))
+
+(define rust-tokio-1.49.0
+  (crate-source "tokio" "1.49.0"
+                "11ix3pl03s0bp71q3wddrbf8xr0cpn47d7fzr6m42r3kswy918kj"))
+
+(define rust-tokio-macros-2.6.0
+  (crate-source "tokio-macros" "2.6.0"
+                "19czvgliginbzyhhfbmj77wazqn2y8g27y2nirfajdlm41bphh5g"))
+
+(define rust-tokio-util-0.7.18
+  (crate-source "tokio-util" "0.7.18"
+                "1600rd47pylwn7cap1k7s5nvdaa9j7w8kqigzp1qy7mh0p4cxscs"))
 
 (define rust-toml-0.9.11+spec-1.1.0
   (crate-source "toml" "0.9.11+spec-1.1.0"
@@ -1008,6 +1048,10 @@
   (crate-source "wait-timeout" "0.2.1"
                 "04azqv9mnfxgvnc8j2wp362xraybakh2dy1nj22gj51rdl93pb09"))
 
+(define rust-wasi-0.11.1+wasi-snapshot-preview1
+  (crate-source "wasi" "0.11.1+wasi-snapshot-preview1"
+                "0jx49r7nbkbhyfrfyhz0bm4817yrnxgd3jiwwwfv0zl439jyrwyc"))
+
 (define rust-wasip2-1.0.2+wasi-0.2.9
   (crate-source "wasip2" "1.0.2+wasi-0.2.9"
                 "1xdw7v08jpfjdg94sp4lbdgzwa587m5ifpz6fpdnkh02kwizj5wm"))
@@ -1085,6 +1129,10 @@
 (define rust-winapi-i686-pc-windows-gnu-0.4.0
   (crate-source "winapi-i686-pc-windows-gnu" "0.4.0"
                 "1dmpa6mvcvzz16zg6d5vrfy4bxgg541wxrcip7cnshi06v38ffxc"))
+
+(define rust-winapi-util-0.1.11
+  (crate-source "winapi-util" "0.1.11"
+                "08hdl7mkll7pz8whg869h58c1r9y7in0w0pk8fm24qc77k0b39y2"))
 
 (define rust-winapi-x86-64-pc-windows-gnu-0.4.0
   (crate-source "winapi-x86_64-pc-windows-gnu" "0.4.0"
@@ -1589,4 +1637,41 @@
                                        rust-windows-link-0.2.1
                                        rust-windows-sys-0.61.2
                                        rust-xkbcommon-0.9.0
-                                       rust-xkeysym-0.2.1)))
+                                       rust-xkeysym-0.2.1))
+                     (podman-healthcheckd =>
+                                          (list rust-aho-corasick-1.1.4
+                                           rust-bytes-1.11.1
+                                           rust-env-logger-0.10.2
+                                           rust-errno-0.3.14
+                                           rust-futures-core-0.3.31
+                                           rust-futures-sink-0.3.31
+                                           rust-hermit-abi-0.5.2
+                                           rust-humantime-2.3.0
+                                           rust-is-terminal-0.4.17
+                                           rust-itoa-1.0.17
+                                           rust-libc-0.2.180
+                                           rust-log-0.4.29
+                                           rust-memchr-2.7.6
+                                           rust-mio-1.1.1
+                                           rust-pin-project-lite-0.2.16
+                                           rust-proc-macro2-1.0.106
+                                           rust-quote-1.0.44
+                                           rust-regex-1.12.3
+                                           rust-regex-automata-0.4.14
+                                           rust-regex-syntax-0.8.9
+                                           rust-serde-1.0.228
+                                           rust-serde-core-1.0.228
+                                           rust-serde-derive-1.0.228
+                                           rust-serde-json-1.0.149
+                                           rust-signal-hook-registry-1.4.8
+                                           rust-syn-2.0.114
+                                           rust-termcolor-1.4.1
+                                           rust-tokio-1.49.0
+                                           rust-tokio-macros-2.6.0
+                                           rust-tokio-util-0.7.18
+                                           rust-unicode-ident-1.0.22
+                                           rust-wasi-0.11.1+wasi-snapshot-preview1
+                                           rust-winapi-util-0.1.11
+                                           rust-windows-link-0.2.1
+                                           rust-windows-sys-0.61.2
+                                           rust-zmij-1.0.19)))

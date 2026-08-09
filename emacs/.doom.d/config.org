@@ -541,11 +541,27 @@ polkit.addRule(function(action, subject) {
 #+end_src
 ** COMMENT docker
 #+begin_src scheme :noweb-ref system-use
-(gnu service containers)
+(gnu services containers)
 (gnu system accounts)
 #+end_src
 #+begin_src scheme :noweb-ref user-group
 "cgroup"
+#+end_src
+#+begin_src scheme :noweb-ref guix-pkg
+"podman-compose" "podman-healthcheckd"
+#+end_src
+#+begin_src scheme :noweb-ref guix-srv
+(simple-service
+ 'podman-healthcheck
+ home-shepherd-service-type
+ (let ((command #~(list #$(file-append (pkg "podman-healthcheckd") "/bin/podman-healthcheckd")))
+       (log-file #~(string-append %user-log-dir "/podman-healthcheckd.log")))
+   (list (shepherd-service
+           (documentation "Run podman-healthcheckd daemon.")
+           (provision '(podman-healthcheckd))
+           (modules '((shepherd support)))
+           (start #~(make-forkexec-constructor #$command #:log-file #$log-file))
+           (stop #~(make-kill-destructor))))))
 #+end_src
 #+begin_src scheme :noweb-ref system-service
 (service iptables-service-type)
