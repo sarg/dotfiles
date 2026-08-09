@@ -16,16 +16,16 @@ export class Selectel extends pulumi.ComponentResource {
       { name: 'nat' },
       { parent: this },
     );
-    const externalNetwork = openstack.networking.getNetworkOutput({ external: true }, opts);
+    // const externalNetwork = openstack.networking.getNetworkOutput({ external: true }, opts);
 
-    const router = new openstack.networking.Router(
-      'router',
-      {
-        name: 'router-nat',
-        externalNetworkId: externalNetwork.apply((n) => n.id),
-      },
-      { parent: this },
-    );
+    // const router = new openstack.networking.Router(
+    //   'router',
+    //   {
+    //     name: 'router-nat',
+    //     externalNetworkId: externalNetwork.apply((n) => n.id),
+    //   },
+    //   { parent: this },
+    // );
 
     const privateSubnet = new openstack.networking.Subnet(
       'private',
@@ -38,11 +38,11 @@ export class Selectel extends pulumi.ComponentResource {
       { parent: natNetwork },
     );
 
-    new openstack.networking.RouterInterface(
-      'interface',
-      { routerId: router.id, subnetId: privateSubnet.id },
-      { parent: router },
-    );
+    // new openstack.networking.RouterInterface(
+    //   'interface',
+    //   { routerId: router.id, subnetId: privateSubnet.id },
+    //   { parent: router },
+    // );
 
     new openstack.networking.Port(
       'vpn',

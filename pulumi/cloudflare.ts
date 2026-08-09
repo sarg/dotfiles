@@ -25,6 +25,10 @@ function secret(s: string, v: pulumi.Input<string>) {
   return { type: 'secret_text', name: s, text: v };
 }
 
+function text(s: string, v: pulumi.Input<string>) {
+  return { type: 'plain_text', name: s, text: v };
+}
+
 export class Cloudflare extends pulumi.ComponentResource {
   accountId: string;
   private kvNamespace(name: string, opts?: pulumi.CustomResourceOptions) {
@@ -41,14 +45,18 @@ export class Cloudflare extends pulumi.ComponentResource {
         accountId: this.accountId,
         scriptName: name,
         observability: { enabled: true },
-        content: `// stub export default {async fetch(request, env, ctx) {return new Response('Hello World!');},};`,
+        content: `export default {async fetch(request, env, ctx) {return new Response('Hello World!');},};`,
         mainModule: 'index.js',
         ...args,
       },
       { parent: this, ignoreChanges: ['content'] },
     );
   }
-  constructor(name: string, args: { secrets: Secrets }, opts?: pulumi.ComponentResourceOptions) {
+  constructor(
+    name: string,
+    args: { secrets: Secrets; hetznerIpv6: pulumi.Input<string> },
+    opts?: pulumi.ComponentResourceOptions,
+  ) {
     super('components:index:Cloudflare', name, args, opts);
     this.accountId = args.secrets.cloudflare.ACCOUNT_ID;
     const zone = new cloudflare.Zone(
@@ -82,15 +90,18 @@ export class Cloudflare extends pulumi.ComponentResource {
     });
     this.worker('blog');
     this.worker('dyndns', {
-      bindings: [secret('CLOUDFLARE_ACCOUNT_ID', args.secrets.cloudflare.ACCOUNT_ID)],
+      bindings: [
+        secret('CLOUDFLARE_API_TOKEN', args.secrets.cloudflare.API_TOKEN),
+        text('DOMAIN', zone.name),
+      ],
     });
     const tgbot = this.worker('tgbot', {
       bindings: [
         secret('BOT_TOKEN', args.secrets.telegram.BOT_TOKEN),
-        secret('HETZNER_IPV6_ID', args.secrets.hetzner.PRIMARY_IPV6_ID),
+        text('HETZNER_IPV6_ID', args.hetznerIpv6),
         secret('HCLOUD_TOKEN', args.secrets.hetzner.API_TOKEN),
         secret('SELECTEL_PASS', args.secrets.selectel.PASS),
-        secret('SELECTEL_ORG_ID', args.secrets.selectel.ORG_ID),
+        text('SELECTEL_ORG_ID', args.secrets.selectel.ORG_ID),
         secret('WG_PRIVATE', args.secrets.vpn.WG_PRIVATE),
         secret('WG_PSK', args.secrets.vpn.WG_PSK),
         secret('DYNDNS_TOKEN', args.secrets.dyndns.find((t) => t.name === 'vpn')!.token),

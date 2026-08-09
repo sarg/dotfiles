@@ -10,7 +10,8 @@
 		"pretty": true,
 		"noFallthroughCasesInSwitch": true,
 		"noImplicitReturns": true,
-		"forceConsistentCasingInFileNames": true
+		"forceConsistentCasingInFileNames": true,
+		"ignoreDeprecations": "6.0"
 	},
-	"files": ["*.ts"]
+	"include": ["*.ts"]
 }

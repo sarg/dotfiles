@@ -34,8 +34,7 @@ export interface Google {
 }
 
 export interface Hetzner {
-    API_TOKEN:       string;
-    PRIMARY_IPV6_ID: string;
+    API_TOKEN: string;
 }
 
 export interface Pulumi {
@@ -248,7 +247,6 @@ const typeMap: any = {
     ], false),
     "Hetzner": o([
         { json: "API_TOKEN", js: "API_TOKEN", typ: "" },
-        { json: "PRIMARY_IPV6_ID", js: "PRIMARY_IPV6_ID", typ: "" },
     ], false),
     "Pulumi": o([
         { json: "PULUMI_CONFIG_PASSPHRASE", js: "PULUMI_CONFIG_PASSPHRASE", typ: "" },

@@ -58,8 +58,12 @@ const gpgKey = {
 };
 const google = new Google('google', { orgId: secrets.google.ORG_ID }, { provider: googleProvider });
 new Selectel('selectel', { sshKey }, { provider: selectelProvider });
-new Hetzner('hetzner', { sshKey }, { provider: hetznerProvider });
-new Cloudflare('cloudflare', { secrets }, { provider: cloudflareProvider });
+const hetzner = new Hetzner('hetzner', { sshKey }, { provider: hetznerProvider });
+new Cloudflare(
+  'cloudflare',
+  { secrets, hetznerIpv6: hetzner.ipv6Ip.id },
+  { provider: cloudflareProvider },
+);
 new Telegram('telegram', {}, { provider: telegramProvider });
 new Forges(
   'forges',

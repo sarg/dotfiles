@@ -3,14 +3,15 @@ import * as hcloud from '@pulumi/hcloud';
 import { PublicKey } from '.';
 
 export class Hetzner extends pulumi.ComponentResource {
+  ipv6Ip: hcloud.PrimaryIp;
+
   constructor(name: string, args: { sshKey: PublicKey }, opts?: pulumi.ComponentResourceOptions) {
     super('components:index:Hetzner', name, args, opts);
-    new hcloud.PrimaryIp(
+    this.ipv6Ip = new hcloud.PrimaryIp(
       `vpn_ipv6`,
       {
         name: 'vpn_ipv6',
-        datacenter: 'hel1-dc2',
-        assigneeType: 'server',
+        location: 'hel1',
         autoDelete: false,
         type: 'ipv6',
       },
