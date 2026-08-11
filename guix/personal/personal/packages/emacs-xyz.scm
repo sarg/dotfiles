@@ -2027,16 +2027,16 @@ the face of the symbol drawn in the fringe.  By default the symbol is a tilde
 (define-public emacs-reddigg
   (package
     (name "emacs-reddigg")
-    (version "20240730.2339")
+    (version "20260818")
     (source
       (origin
         (method git-fetch)
         (uri (git-reference
                (url "https://github.com/thanhvg/emacs-reddigg.git")
-               (commit "4d22e06a6e2523fe6d83c0280847d3bde19fabb5")))
+               (commit "307b95026da1cb2450d153e0b77eb26d0d5a0980")))
         (sha256
           (base32
-            "05i5nh2hr4janlhj4vqjnkabfq2y6py1vs5s1x9wpb8aaknhiww6"))))
+            "034gihaxr9i856gwl8mx347apv66ayvqqidx73dfvncmqy66dby6"))))
     (build-system emacs-build-system)
     (arguments '(#:tests? #f))
     (propagated-inputs (list emacs-promise emacs-ht))
@@ -2048,16 +2048,16 @@ the face of the symbol drawn in the fringe.  By default the symbol is a tilde
 (define-public emacs-kdeconnect
   (package
     (name "emacs-kdeconnect")
-    (version "20231029.2250")
+    (version "1.4.0")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/carldotac/kdeconnect.el")
-             (commit "2548bae3b79df23d3fb765391399410e2b935eb9")))
+             (commit "daee28249b852cc52f4f32d35704a97af5cc4b7d")))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1qfy9hav2gzp4p1ahf0lvxig047wk9z9jnnka198w8ii78il1r8l"))))
+        (base32 "1bavmbjj06ymw54459gpf5zglk3n9g71nngw5bpx18dhkr0n6gb8"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/carldotac/kdeconnect.el")
     (synopsis "An interface for KDE Connect")
@@ -2319,4 +2319,27 @@ REPL via `comint-mode - Query execution with horizontally scrollable result
 tables - Object discovery and completion Entry points: M-x clutch-mode — open a
 SQL editing buffer M-x clutch-repl — open a REPL Open a .mysql file — activates
 clutch-mode automatically.")
+    (license license:gpl3)))
+
+(define-public emacs-browsel
+  (package
+    (name "emacs-browsel")
+    (version "20260726.1635")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/dmgerman/browsel")
+             (commit "d65e53c7f88ab24bc405ec7752afb82f803cd9ac")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1w91kxvjs3q1wn4xhgfidpmazwb9mr2cjf92r555snyxk80rr170"))))
+    (arguments (list #:tests? #f))                      ;no tests
+    (build-system emacs-build-system)
+    (propagated-inputs (list emacs-websocket emacs-org emacs-vertico))
+    (home-page "https://github.com/dmgerman/browsel")
+    (synopsis "WebSocket bridge to a Chrome/Firefox extension")
+    (description
+     "This package provides a local @code{WebSocket} server that exchanges JSON frames
+with a Chrome (MV3) extension.")
     (license license:gpl3)))

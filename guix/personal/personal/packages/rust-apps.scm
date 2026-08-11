@@ -14,7 +14,7 @@
   #:use-module (gnu packages package-management)
   #:use-module (gnu packages build-tools)
 
-  #:use-module (gnu packages wm)
+  #:use-module (gnu packages window-management)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages xdisorg)
@@ -29,8 +29,8 @@
 (define-public emacs-ewm
   (package
     (name "emacs-ewm")
-    (properties '((commit . "dc5eb71642a9def5f2ac19005d3209ae092f45d9")))
-    (version (git-version "0.1.0" "20" (assoc-ref properties 'commit)))
+    (properties '((commit . "9a0adec176ef2169568893caad131d74630fd46f")))
+    (version (git-version "0.1.0" "21" (assoc-ref properties 'commit)))
     (source
      (origin
        (method git-fetch)
@@ -39,7 +39,7 @@
               (commit (assoc-ref properties 'commit))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1ix0ifaas0pvkm60ivyikxw3p1vv37g2jqy4i2nl9i74vjcwn21c"))))
+        (base32 "1zpiv062v63fb49z06b8bncbagvrmadxar3636w1gvmplspsx8d7"))))
     (build-system cargo-build-system)
     (arguments
      (list #:install-source? #f
