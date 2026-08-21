@@ -8,5 +8,5 @@
 "emacs-$1"
 #+end_src
 #+begin_src elisp
-(use-package! $1)
+(use-package $1)
 #+end_src
