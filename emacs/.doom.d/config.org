@@ -626,6 +626,7 @@ polkit.addRule(function(action, subject) {
  (gnu home services sound)
  (gnu home services shells)
  (gnu home services ssh)
+ (gnu home services mail)
  (gnu home services mpv)
  (gnu home services guix)
  (gnu system shadow)
@@ -1596,21 +1597,28 @@ services:
 (".config/isyncrc" ,(local-file "../email/.config/isyncrc"))
 #+end_src
 *** notification
-#+begin_src scheme :noweb-ref emacs-dep
-"goimapnotify"
-#+end_src
-#+begin_src scheme :noweb-ref guix-file
-(".config/goimapnotify/goimapnotify.yaml"
- ,(local-file "../email/.config/goimapnotify/goimapnotify.yaml"))
-#+end_src
-#+begin_src elisp
-(add-hook 'doom-init-ui-hook
-          (defun sarg/goimapnotify ()
-            (interactive)
-            (make-process :buffer " *goimapnotify*"
-                          :name "goimapnotify"
-                          :command (list (guix/pkg 'goimapnotify "/bin/goimapnotify"))
-                          :noquery t)))
+#+begin_src scheme :noweb-ref guix-srv
+(online-service
+ home-goimapnotify-service-type
+ (home-goimapnotify-configuration
+  (configurations
+   (list (goimapnotify-configuration
+          (host "imap.gmail.com")
+          (port 993)
+          (tls? #t)
+          (tls-options (goimapnotify-tls-options-configuration))
+          (user-name "sarg@sarg.org.ru")
+          (password-command "oama access sarg@sarg.org.ru")
+          (xo-auth2? #t)
+          (boxes
+           (list (goimapnotify-box-configuration
+                  (mailbox "INBOX")
+                  (on-new-mail "emacsclient -e \"(sarg/update-email)\"")
+                  (on-new-mail-post "SKIP")
+                  (on-changed-mail "emacsclient -e \"(sarg/update-email)\"")
+                  (on-changed-mail-post "SKIP")
+                  (on-deleted-mail "emacsclient -e \"(sarg/update-email)\"")
+                  (on-deleted-mail-post "SKIP")))))))))
 #+end_src
 *** client
 #+begin_src scheme :noweb-ref guix-pkg
