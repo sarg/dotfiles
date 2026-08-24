@@ -24,7 +24,9 @@
   (computed-file "doom-config"
     (with-imported-modules (source-module-closure
                             '((guix build utils)
-                              (guix build emacs-build-system)))
+                              (guix build emacs-build-system)
+                              (ice-9 rdelim)
+                              (srfi srfi-1)))
 
       (with-build-variables
           (map (match-lambda
@@ -35,7 +37,9 @@
 
         #~(begin
             (use-modules (guix build utils)
-                         (guix build emacs-build-system))
+                         (guix build emacs-build-system)
+                         (ice-9 rdelim)
+                         (srfi srfi-1))
 
             (copy-recursively #$src %output)
             (chdir %output)
@@ -53,11 +57,30 @@
                          (org-babel-tangle nil nil "elisp")))))
 
             (delete-file "config.org")
+
+            ;; Prepend inputs providing share/doomemacs/modules
+            ;; to doom-module-load-path.
+            (let ((module-dirs
+                   (filter-map (lambda (input)
+                                 (let ((modules (string-append (cdr input) "/share/doomemacs/modules")))
+                                   (and (directory-exists? modules)
+                                          modules)))
+                               %build-inputs)))
+              (when (pair? module-dirs)
+                (let ((init (with-input-from-file "init.el" read-string)))
+                  (with-output-to-file "init.el"
+                    (lambda _
+                      (display "\n;; Modules added by Guix\n")
+                      (display "(setq doom-module-load-path\n")
+                      (format #t "      (append '(~{~s~^ ~})\n" module-dirs)
+                      (display "              doom-module-load-path))\n")
+                      (display init)))))
+              
             (substitute* '("config.el" "init.el")
               (("\\(guix/pkg '([^ )]+)" all pkg)
                (format #f "(concat ~s"
                        (or (assoc-ref %build-inputs pkg)
-                           (error (format #f "~a is required for emacs config but not present in inputs" pkg)))))))))))
+                           (error (format #f "~a is required for emacs config but not present in inputs" pkg))))))))))))
 
 (define-public (doomemacs-profile emacs doom config inputs)
   (package
