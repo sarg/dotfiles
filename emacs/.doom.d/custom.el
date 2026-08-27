@@ -7,13 +7,10 @@
  ;; If there is more than one, they won't work right.
  '(bmkp-last-as-first-bookmark-file "/storage/data/emacs/bookmarks")
  '(custom-safe-themes t)
- '(cyclekey-languages '("German"))
  '(safe-local-variable-directories
-   '("/storage/devel/ext/rde/" "/home/sarg/.local/doom/straight/repos/magit/"
-     "/storage/devel/ext/nonguix/" "/storage/devel/ext/guix/"
-     "/storage/devel/dotfiles/guix/" "/storage/Resources/fitboard/"
-     "/storage/devel/ext/sops-guix/" "/home/sarg/devel/dotfiles/emacs/.doom.d/"
-     "/gnu/store/4d2xd3rkl06lrqf58qgs479gn5sljkrc-doomemacs-3.0.0-20250331.67933f9/"))
+   '("/storage/devel/ext/nonguix/" "/storage/devel/ext/guix/"
+     "/storage/devel/dotfiles/guix/"
+     "/home/sarg/devel/dotfiles/emacs/.doom.d/"))
  '(safe-local-variable-values
    '((buffer-read-only . 1) (eval sarg/eval-org-src-block "api"))))
 (custom-set-faces

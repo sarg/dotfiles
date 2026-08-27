@@ -2610,9 +2610,6 @@ home-emacs
 #+end_src
 ** evil
 #+begin_src scheme :noweb-ref guix-pin
-(pin "emacs-evil-collection"
-     #:commit "3.0.1"
-     #:hash "07rqmz87159z0gq75i036v079fdws6x726na6sw37amd4lhqf87p")
 (pin "emacs-evil-org"
      #:uri "https://github.com/doomelpa/evil-org-mode"
      #:commit "06518c65ff4f7aea2ea51149d701549dcbccce5d"
@@ -2626,7 +2623,6 @@ home-emacs
 #+end_src
 #+begin_src elisp :tangle init.el
 ;; generated from config.org
-(add-to-list 'doom-module-load-path (guix/pkg 'doomemacs-modules "/share/doomemacs/modules"))
 (setq custom-file "~/devel/dotfiles/emacs/.doom.d/custom.el")
 (doom!
  :completion  (corfu +icons +orderless) (vertico +icons)
@@ -3210,13 +3206,16 @@ mod? dotfiles '~/devel/dotfiles/guix/Justfile'
 
 [github]
     user = sarg
+
+[alias]
+    serve = daemon --verbose --export-all --base-path=.git --reuseaddr --strict-paths .git/
 #+end_src
 
-#+RESULTS[4174896d10de9e6caad4ca208dfe152c38b3e59e]:
+#+RESULTS[4abbf0219506add0d6dd52908c37ac75836e1b24]:
 #+begin_src text :noweb-ref guix-file
 (".config/git/config"
 ,(mixed-text-file
-  "cfg-file"
+  "cfg-config"
 "[user]\n"
 "    name = "(global 'name)"\n"
 "    email = "(global 'email)"\n"
@@ -3237,7 +3236,10 @@ mod? dotfiles '~/devel/dotfiles/guix/Justfile'
 "    helper = oauth\n"
 "\n"
 "[github]\n"
-"    user = sarg"))
+"    user = sarg\n"
+"\n"
+"[alias]\n"
+"    serve = daemon --verbose --export-all --base-path=.git --reuseaddr --strict-paths .git/"))
 #+end_src
 
 #+begin_src cfg :dest ".config/git/ignore"
@@ -3851,6 +3853,7 @@ eval "$(atuin init bash)"
 (use-package cyclekey
   :defer-incrementally t
   :bind ("M-o" . cyclekey-cycle)
+  :custom (cyclekey-save-languages nil)
 
   :config
   (cyclekey-add-language "German")
