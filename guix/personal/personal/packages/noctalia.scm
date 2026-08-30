@@ -51,7 +51,7 @@
 (define-public noctalia-shell
   (package
     (name "noctalia-shell")
-    (version "5.0.0-beta.9")
+    (version "5.0.0-beta.10")
     (source
      (origin
        (method git-fetch)
@@ -61,7 +61,7 @@
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0biah8xpnxnbv4pwy8yjn44ii789shgr6x7z2gbrz0bfmhgfskiv"))))
+         "03s76i5gl62lnzawk8ld4ld74n8vn35crgzp7g6cb3bghfwc8a2s"))))
     (build-system meson-build-system)
     (arguments
      (list #:build-type "release"

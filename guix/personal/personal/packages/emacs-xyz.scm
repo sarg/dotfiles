@@ -1179,7 +1179,7 @@ client.")
 (define-public emacs-iwd-manager
   (package
     (name "emacs-iwd-manager")
-    (version "0.2")
+    (version "0.3")
     (source
      (origin
        (method git-fetch)
@@ -1188,7 +1188,7 @@ client.")
               (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1kfcxbjx1xgqbxx3s921nbkk1fqhndr91cckps5wk12d3mh98lqw"))))
+        (base32 "110p1hbpzzi0fimkibw4ac8vxxim2piaa1063badxkcnkwr5zs8l"))))
     (build-system emacs-build-system)
     (arguments
      '(#:tests? #f

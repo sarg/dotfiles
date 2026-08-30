@@ -33,7 +33,7 @@
 ;;;
 
 (define-public emacs-ghostel
-  (let* ((version "0.51.0")
+  (let* ((version "0.52.0")
          (ghostty-version "1.3.2-dev")
          (ghostty-commit "ab0b9da9e88fcb4b0533a1854e84628f663930af")
          (uucode-commit "2826a37a4562284fdacd8fa029d49509cc9bffcd")
@@ -69,7 +69,7 @@
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "06mk8005dm9amjcw487xbxqs3gxdy12fk6hf90p15n58ikkrhm3b"))))
+           "0sd5xmb7341x2sjpcqvk7wfdykc8w06wb150shqr7p4xzlbhzqv7"))))
       (build-system emacs-build-system)
       (arguments
        (list
@@ -93,7 +93,7 @@
               (lambda _
                 (substitute* "ghostel-debug.el"
                   (("\\\\\"/bin/sh\\\\\"") "\\\"sh\\\""))
-                (substitute* "ghostel.el"
+                (substitute* '("ghostel-shell.el" "ghostel.el")
                   (("\\\\\"/bin/zsh\\\\\"") "\\\"zsh\\\"")
                   (("\\\\\"/bin/bash\\\\\"") "\\\"bash\\\""))
                 (let ((root (dirname (getcwd))))
