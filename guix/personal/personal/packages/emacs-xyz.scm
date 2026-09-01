@@ -5,12 +5,12 @@
   #:use-module (guix git-download)
   #:use-module (guix download)
   #:use-module (guix build-system emacs)
-  #:use-module ((guix licenses)
-                #:prefix license:)
-
+  #:use-module (guix build-system copy)
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (personal packages binary)
   #:use-module (personal packages ghostty)
   #:use-module (gnu packages bash)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages emacs-xyz)
   #:use-module (gnu packages emacs-build)
@@ -2343,3 +2343,33 @@ clutch-mode automatically.")
      "This package provides a local @code{WebSocket} server that exchanges JSON frames
 with a Chrome (MV3) extension.")
     (license license:gpl3)))
+
+(define-public mxp
+  (package
+    (name "mxp")
+    (version "0.7.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/agzam/mxp")
+              (commit "c4b0ecb48ef52a3f1839580bbe9654f72bcb402b")))
+       (sha256
+        (base32 "0bp0afs7gwz5wn8fixik9gznfs91my2aybbgml88qbdy1pk62ngz"))))
+    (build-system copy-build-system)
+    (arguments
+     (list #:install-plan #~`(("mxp" "bin/"))
+           #:phases #~(modify-phases %standard-phases
+                        (add-after 'install 'wrap-binary
+                          (lambda* (#:key inputs outputs #:allow-other-keys)
+                            (wrap-program (string-append (assoc-ref outputs "out")
+                                                         "/bin/mxp")
+                              `("PATH" ":" prefix
+                                (,(dirname (search-input-file inputs "bin/base64"))
+                                 ,(dirname (search-input-file inputs "bin/grep"))
+                                 ,(dirname (search-input-file inputs "bin/sed"))))))))))
+    (inputs (list coreutils grep sed))
+    (home-page "https://github.com/agzam/mxp")
+    (synopsis "Pipe content between your terminal and Emacs buffers")
+    (description "mxp (Emacs Piper) is a shell script that acts as a bridge between Unix pipes and Emacs buffers.")
+    (license license:unlicense)))
