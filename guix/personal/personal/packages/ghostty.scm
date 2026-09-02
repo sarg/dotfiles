@@ -33,7 +33,7 @@
 ;;;
 
 (define-public emacs-ghostel
-  (let* ((version "0.52.0")
+  (let* ((version "0.53.0")
          (ghostty-version "1.3.2-dev")
          (ghostty-commit "ab0b9da9e88fcb4b0533a1854e84628f663930af")
          (uucode-commit "2826a37a4562284fdacd8fa029d49509cc9bffcd")
@@ -69,7 +69,7 @@
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "0sd5xmb7341x2sjpcqvk7wfdykc8w06wb150shqr7p4xzlbhzqv7"))))
+           "0ph1gjl3915wgf7qz2c389gnm64yn07q9jb69dyqy6r8fkzmyd37"))))
       (build-system emacs-build-system)
       (arguments
        (list
