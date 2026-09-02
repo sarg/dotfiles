@@ -482,57 +482,6 @@ modification with a unique cooperative gameplay.")
     (description "Duh, it's an AI agent")
     (license license:asl2.0)))
 
-(define-public opencode
-  (package
-    (name "opencode")
-    (version "1.14.33")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/anomalyco/opencode/releases/download/v" version "/opencode-linux-x64.tar.gz"))
-       (sha256
-        (base32 "0448q9arzb3ivd9817fwh30zip4hrw8654blxhck8mv71baf6gdb"))))
-    (build-system binary-build-system)
-    (supported-systems '("x86_64-linux"))
-    (arguments
-     (list
-      #:patchelf-plan #~'()
-      #:strip-binaries? #f
-      #:validate-runpath? #f
-      #:phases
-      #~(modify-phases %standard-phases
-          (add-after 'install 'patch-and-wrap
-            (lambda* (#:key inputs outputs #:allow-other-keys)
-              (let* ((out (assoc-ref outputs "out"))
-                     (bin (string-append out "/bin"))
-                     (orig (string-append out "/opencode"))
-                     (bash (search-input-file inputs "bin/bash"))
-                     (patchelf (search-input-file inputs "bin/patchelf"))
-                     (ld.so (search-input-file inputs "lib/ld-linux-x86-64.so.2"))
-                     (libpath (string-join
-                               (list (string-append (assoc-ref inputs "gcc") "/lib")
-                                     (string-append (assoc-ref inputs "glibc") "/lib")
-                                     (string-append (assoc-ref inputs "libx11") "/lib")
-                                     (string-append (assoc-ref inputs "mesa") "/lib"))
-                               ":")))
-                ;; Only patch interpreter; full patchelf corrupts this binary.
-                (invoke patchelf "--set-interpreter" ld.so orig)
-                (rename-file orig (string-append orig ".real"))
-                (mkdir-p bin)
-                (call-with-output-file (string-append bin "/opencode")
-                  (lambda (port)
-                    (format port "#!~a
-export LD_LIBRARY_PATH=~a${LD_LIBRARY_PATH:+:}$LD_LIBRARY_PATH
-exec ~a.real \"$@\"~%"
-                            bash libpath orig)))
-                (chmod (string-append bin "/opencode") #o755)))))))
-    (native-inputs (list patchelf))
-    (inputs (list bash-minimal `(,gcc "lib") libx11 glibc mesa))
-    (home-page "https://opencode.ai")
-    (synopsis "CLI AI coding agent")
-    (description "The open source coding agent.")
-    (license license:expat)))
-
 (define-public glide-browser
   (package
     (name "glide-browser")

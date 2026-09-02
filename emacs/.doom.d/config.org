@@ -314,11 +314,6 @@ dnsmasq_resolve=/etc/dnsmasq.resolve
              (iwd-network-settings
               (name-resolving-service 'resolvconf)))))))
 #+end_src
-#+begin_src scheme :noweb-ref guix-pin
-(pin "emacs-iwd-manager"
-     #:commit "0bca13f9c5baa80f0ecced9ea943ebe99f4e6d17"
-     #:hash "17i9yl6h87qvnwgckfqgjdhaq0j4rgk71bkkir3xjn1q98pls5zh")
-#+end_src
 #+begin_src scheme :noweb-ref guix-pkg
 "emacs-iwd-manager"
 #+end_src
@@ -3024,6 +3019,9 @@ noctalia msg wallpaper-set ~/Pictures/Wallpapers/$1.jpg
 "emacs-corg"
 "emacs-ox-hugo"
 #+end_src
+#+begin_src elisp :tangle packages.el
+(package! toc-org :disable t) ; hangs blog.org
+#+end_src
 #+begin_src elisp
 (setq
  org-directory (expand-file-name "~/Sync/org/")
@@ -3618,7 +3616,7 @@ include theme
 #+end_src
 * shell
 #+begin_src scheme :noweb-ref guix-pkg
-"emacs-eat" "emacs-detached" "direnv" "atuin" "emacs-eshell-atuin"
+"emacs-eat" "emacs-detached" "direnv" "atuin" "emacs-eshell-atuin" "mxp"
 #+end_src
 
 #+begin_src cfg :dest .config/atuin/config.toml
@@ -3809,14 +3807,18 @@ eval "$(atuin init bash)"
 #+begin_src scheme :noweb-ref guix-pkg
 "emacs-agent-shell"
 #+end_src
+#+begin_src scheme :noweb-ref emacs-dep
+"pi-acp" "pi-coding-agent"
+#+end_src
 #+begin_src elisp
 (use-package agent-shell
   :commands agent-shell
-  :custom (agent-shell-preferred-agent-config '(preselect . pi)))
-#+end_src
-** opencode
-#+begin_src scheme :noweb-ref guix-pkg
-"emacs-opencode"
+  :config
+  (setq agent-shell-preferred-agent-config '(preselect . pi)
+        agent-shell-pi-acp-command (list (guix/pkg 'pi-acp "/bin/pi-acp"))
+        agent-shell-pi-environment
+        (agent-shell-make-environment-variables
+         "PI_ACP_PI_COMMAND" (guix/pkg 'pi-coding-agent "/bin/pi"))))
 #+end_src
 * COMMENT emacs screencast recording
 #+begin_src elisp :tangle packages.el

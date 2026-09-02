@@ -2207,36 +2207,6 @@ general usage.")
 Transient.  Currently supports Github, Gitlab, and Bitbucket Cloud.")
     (license license:gpl3)))
 
-(define-public emacs-opencode
-  (package
-    (name "emacs-opencode")
-    (properties '((commit . "a788d81ecb4574ed289e997f9554ed7abea01303")))
-    (version (git-version "0.0.1" "0" (assoc-ref properties 'commit)))
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-              (url "https://codeberg.org/sczi/opencode.el")
-              (commit (assoc-ref properties 'commit))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "111mzpag6l9mvsd8pzhmzyc4n9q2gyyzvf9nxxs3sxskadqznklb"))))
-    (build-system emacs-build-system)
-    (arguments (list
-                #:tests? #f
-                #:phases
-                #~(modify-phases %standard-phases
-                    (add-after 'unpack 'set-path
-                      (lambda* (#:key inputs #:allow-other-keys)
-                        (emacs-substitute-variables "opencode.el"
-                          ("opencode-command" (search-input-file inputs "/bin/opencode"))))))))
-    (home-page "https://codeberg.org/sczi/opencode.el")
-    (propagated-inputs (list emacs-magit emacs-plz emacs-plz-media-type emacs-plz-event-source emacs-markdown-mode
-                             opencode))
-    (synopsis "Emacs opencode integration")
-    (description "TODO")
-    (license #f)))
-
 (define-public emacs-grip-mode
   (package
     (name "emacs-grip-mode")
