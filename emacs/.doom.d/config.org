@@ -627,7 +627,7 @@ polkit.addRule(function(action, subject) {
  (gnu system shadow)
  (gnu services shepherd)
  (gnu services xorg)
- (personal services doomemacs)
+ (doomemacs services doomemacs)
  (personal services symlinks)
  (personal services owntracks)
  (personal services screen-locker)
@@ -2319,22 +2319,23 @@ XDG_VIDEOS_DIR="$HOME/Movies"
                'append))
 #+end_src
 * doom
+** channel
+#+begin_src scheme :noweb-ref guix-channel
+(channel
+  (name 'doomemacs)
+  (url "https://github.com/sarg/guix-doomemacs")
+  (branch "master")
+  (introduction
+   (make-channel-introduction
+    "c5c9f26a9cf037979ee58e68ddd83742903d28b1"
+    (openpgp-fingerprint
+     "09F6 8FC8 0BA0 DC12 5CA7  C490 3ADB 423B 40A2 0785"))))
+#+end_src
 ** base packages
-#+begin_src scheme :noweb-ref guix-pin
-;; https://codeberg.org/guix/guix/pulls/5492
-(pin "emacs-elisp-demos"
-     #:commit "1a108d1c5011f9ced58be2ca98bea1fbd4130a2f"
-     #:hash "1rw7v8xks6rpjk10kw0lkb3f158jsqk6167f3dpmxm3q4000k8nz")
-#+end_src
-#+begin_src scheme :noweb-ref guix-pin
-(pin "emacs-dirvish"
-     #:uri "https://github.com/latiagertrutis/dirvish"
-     #:commit "300b6b2536006aaf5f803775ca93ca5f6ec35de1"
-     #:hash "11849fiaz9vg1dwvvfwz0c5rzh01wx11rqq2r2sg71mj00yfvkb5")
-#+end_src
 #+begin_src scheme :noweb-ref guix-pkg
 home-emacs
 
+"doomemacs-modules"
 "emacs-adaptive-wrap"
 "emacs-anzu"
 "emacs-apheleia"
@@ -2342,7 +2343,6 @@ home-emacs
 "emacs-avy"
 "emacs-bash-completion"
 "emacs-beancount"
-"emacs-bind-key"
 "emacs-browse-at-remote"
 "emacs-buttercup"
 "emacs-cape"
@@ -2352,6 +2352,7 @@ home-emacs
 "emacs-clj-refactor"
 "emacs-clojure-mode"
 "emacs-clojure-ts-mode"
+"emacs-closql"
 "emacs-code-review"
 "emacs-cond-let"
 "emacs-consult"
@@ -2373,7 +2374,7 @@ home-emacs
 "emacs-elfeed"
 "emacs-elfeed-org"
 "emacs-elisp-def"
-"emacs-elisp-demos"
+"emacs-helpful"
 "emacs-embark"
 "emacs-embark-consult"
 "emacs-emmet-mode"
@@ -2393,8 +2394,8 @@ home-emacs
 "emacs-evil-embrace"
 "emacs-evil-escape"
 "emacs-evil-exchange"
-"emacs-evil-goggles"
 "emacs-evil-ghostel"
+"emacs-evil-goggles"
 "emacs-evil-indent-plus"
 "emacs-evil-lion"
 "emacs-evil-markdown"
@@ -2403,8 +2404,8 @@ home-emacs
 "emacs-evil-nerd-commenter"
 "emacs-evil-numbers"
 "emacs-evil-org"
-"emacs-evil-smartparens"
 "emacs-evil-snipe"
+"emacs-evil-surround"
 "emacs-evil-textobj-anyblock"
 "emacs-evil-traces"
 "emacs-evil-vimish-fold"
@@ -2416,11 +2417,12 @@ home-emacs
 "emacs-flycheck-package"
 "emacs-flycheck-plantuml"
 "emacs-flycheck-popup-tip"
-"emacs-general"
+"emacs-forge"
+"emacs-ghostel"
+"emacs-ghub"
 "emacs-git-link"
 "emacs-git-modes"
 "emacs-git-timemachine"
-"emacs-ghostel"
 "emacs-go-gen-test"
 "emacs-go-mode"
 "emacs-go-tag"
@@ -2453,7 +2455,6 @@ home-emacs
 "emacs-markdown-mode"
 "emacs-markdown-toc"
 "emacs-nav-flash"
-"emacs-nerd-icons"
 "emacs-nerd-icons-completion"
 "emacs-nerd-icons-corfu"
 "emacs-nodejs-repl"
@@ -2569,15 +2570,20 @@ home-emacs
 #+end_src
 #+begin_src scheme :noweb-ref guix-srv
 (service
- doomemacs-service-type
+ home-doomemacs-service-type
  (doomemacs-configuration
   (emacs home-emacs)
   (doomemacs (pinned (pkg "doomemacs")))
-  (config (doomemacs-config
-           #:src (local-file (relative-file "../emacs/.doom.d") "src"
-                             #:recursive? #t
-                             #:select? (git-predicate (relative-file "../emacs/.doom.d")))
-           #:inputs (map pkg (list <<emacs-dep>>))))
+  (config
+   (directory-union "config"
+                    (list
+                     (local-file (relative-file "../emacs/.doom.d") "src"
+                                 #:recursive? #t
+                                 #:select? (git-predicate (relative-file "../emacs/.doom.d")))
+
+                     (doomemacs-org-config
+                      #:src (local-file (relative-file "../emacs/.doom.d/config.org"))
+                      #:inputs (map pkg (list <<emacs-dep>>))))))
   (inputs all-packages)))
 #+end_src
 ** guix tweaks
@@ -2585,7 +2591,7 @@ home-emacs
 (defadvice! +set-snippet-dir (fun &rest args)
   "Use writeable snippets dir."
   :around '(+snippets/new +snippets/find-private +snippets/find +snippets/new-alias)
-  (let ((+snippets-dir (expand-file-name "~/devel/otfiles/emacs/.doom.d/snippets")))
+  (let ((+snippets-dir (expand-file-name "~/devel/dotfiles/emacs/.doom.d/snippets")))
     (apply fun args)))
 #+end_src
 ** my lisp code
@@ -2603,18 +2609,11 @@ home-emacs
   (description #f)
   (license #f))
 #+end_src
-** evil
-#+begin_src scheme :noweb-ref guix-pin
-(pin "emacs-evil-org"
-     #:uri "https://github.com/doomelpa/evil-org-mode"
-     #:commit "06518c65ff4f7aea2ea51149d701549dcbccce5d"
-     #:hash "11r3aim8qvyddp9d7sphcd0hl3vwxl81z83aifzgx89jb5ivfn6y")
-#+end_src
 ** init.el
-#+begin_src scheme :noweb-ref emacs-dep
-(cdr (pin "doomemacs-modules"
-     #:commit "b9391c34dbb26df79d804444def3371c1ca8c342"
-     #:hash "1ia8hs9ma88hkbnrwx1qcynw0bhzqg36mp3c0a29if3rlkrl7vjx"))
+#+begin_src scheme :noweb-ref guix-pin
+;; (pin "doomemacs-modules"
+;;      #:commit "b9391c34dbb26df79d804444def3371c1ca8c342"
+;;      #:hash "1ia8hs9ma88hkbnrwx1qcynw0bhzqg36mp3c0a29if3rlkrl7vjx")
 #+end_src
 #+begin_src elisp :tangle init.el
 ;; generated from config.org
@@ -3012,7 +3011,6 @@ noctalia msg wallpaper-set ~/Pictures/Wallpapers/$1.jpg
 * org mode
 #+begin_src scheme :noweb-ref guix-pkg
 "font-iosevka-curly" ; for org-modern bullets
-"emacs-ob-cfg"
 "emacs-org-projectile"
 "emacs-org-tidy"
 "emacs-org-modern-indent"
