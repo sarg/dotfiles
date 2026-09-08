@@ -33,13 +33,13 @@
 (define-public tinymediamanager
   (package
    (name "tinymediamanager")
-   (version "5.2.12")
+   (version "5.3.2")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://archive.tinymediamanager.org/v" version
                                 "/tinyMediaManager-" version "-linux-amd64.tar.xz"))
             (sha256
-             (base32 "1wy4jkvgc3r6vkfcd5a88jdqxb49yji3s5adi219pn4q954p7znj"))))
+             (base32 "12pzkc66b9g0xfq1r5l5ikq7z4vp3cxccqafg73z7nq81wlwz1ik"))))
    (build-system binary-build-system)
    (inputs (list libmediainfo openjdk))
    (supported-systems '("x86_64-linux"))
@@ -383,7 +383,7 @@ modification with a unique cooperative gameplay.")
 (define-public python-ty
   (package
     (name "python-ty")
-    (version "0.0.78")
+    (version "0.0.80")
     (source
      (origin
        (method url-fetch)
@@ -391,7 +391,7 @@ modification with a unique cooperative gameplay.")
              "https://github.com/astral-sh/ty/releases/download/" version
              "/ty-x86_64-unknown-linux-gnu.tar.gz"))
        (sha256
-        (base32 "15azqw2av2c1mq4jimb9jkxjn1f6jiqv5s2n87zqsw8pqfkcmycy"))))
+        (base32 "0jrhr70nydg71k6v8brwh40jrskf2891b833r4x9mwwpc6244hbc"))))
     (properties '((upstream-name . "ty")))
     (build-system binary-build-system)
     (supported-systems '("x86_64-linux"))

@@ -411,6 +411,10 @@
   (crate-source "gl_generator" "0.14.0"
                 "0k8j1hmfnff312gy7x1aqjzcm8zxid7ij7dlb8prljib7b1dz58s"))
 
+(define rust-glam-0.32.1
+  (crate-source "glam" "0.32.1"
+                "186cjxn5qknagm31vmxvxk1kwwrfvv6cqj99nvvcngh6bdllj1zp"))
+
 (define rust-glib-0.20.12
   (crate-source "glib" "0.20.12"
                 "10ynn8aiabbzrsgdswmqpr47sapfkbfn5rfxsy26swflabivdi7z"))
@@ -1378,6 +1382,7 @@
                                       rust-gio-0.20.12
                                       rust-gio-sys-0.20.10
                                       rust-gl-generator-0.14.0
+                                      rust-glam-0.32.1
                                       rust-glib-0.20.12
                                       rust-glib-macros-0.20.12
                                       rust-glib-sys-0.20.10

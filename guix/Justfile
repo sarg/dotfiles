@@ -7,7 +7,7 @@ default:
     @just --list
 
 l *args:
-    @just -f {{source_file()}} {{args}} -L ~/devel/dotfiles/guix/personal
+    @just -f {{source_file()}} {{args}} -L ~/devel/dotfiles/guix/personal -L ~/devel/guix-doomemacs/src
 
 bump *args='':
     guix refresh -m bump-manifest.scm -L ~/devel/dotfiles/guix/personal {{args}}
