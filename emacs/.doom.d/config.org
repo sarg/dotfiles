@@ -2609,6 +2609,19 @@ home-emacs
   (description #f)
   (license #f))
 #+end_src
+** my modules
+#+begin_src scheme :noweb-ref guix-pkg
+(package
+  (name "emacs-sarg-doom-modules")
+  (version "0")
+  (source (local-file "../emacs/doommodules" #:recursive? #t))
+  (build-system (@ (guix build-system copy) copy-build-system))
+  (arguments '(#:install-plan '(("." "share/doomemacs/modules"))))
+  (synopsis "My doom modules")
+  (home-page #f)
+  (description #f)
+  (license #f))
+#+end_src
 ** init.el
 #+begin_src scheme :noweb-ref guix-pin
 ;; (pin "doomemacs-modules"
@@ -2636,7 +2649,12 @@ home-emacs
 #+end_src
 ** dashboard
 #+begin_src scheme :noweb-ref emacs-dep
-(list "guix-artwork" (@ (gnu artwork) %artwork-repository))
+(package
+  (name "guix-artwork")
+  (version "0")
+  (source (@ (gnu artwork) %artwork-repository))
+  (build-system copy-build-system)
+  (license #f) (home-page #f) (synopsis #f) (description #f))
 #+end_src
 #+begin_src elisp
 (setq fancy-splash-image (guix/pkg 'guix-artwork "/logo/head-only/Guix-head-stencil.svg"))
