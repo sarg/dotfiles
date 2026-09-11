@@ -740,10 +740,33 @@ keys.  The package can be used also non-interactively in Elisp programs.  See
 pipewire-lib.el source file for available functions.")
     (license #f)))
 
+(define-public emacs-pgsql
+  (package
+    (name "emacs-pgsql")
+    (version "20260817.136")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/LuciusChen/pgsql.el")
+             (commit "165636b76fa63232a2d560ff04013aae0ff9e8a9")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1pfb681wm7g5fzg3bxa1zf8j7mqp4qimrlxyv1hzvcakb4h2909a"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/LuciusChen/pgsql.el")
+    (synopsis "Native PostgreSQL protocol client")
+    (description
+     "pgsql.el is a synchronous @code{PostgreSQL} protocol 3.0 client.  It keeps
+framing, authentication, request synchronization, type conversion, and
+cancellation behind a small public API. A request returns or signals only after
+its @code{ReadyForQuery} message has been consumed.")
+    (license license:gpl3+)))
+
 (define-public emacs-clutch
   (package
     (name "emacs-clutch")
-    (version "0.2.4")
+    (version "0.5.0")
     (source
      (origin
        (method git-fetch)
@@ -752,7 +775,7 @@ pipewire-lib.el source file for available functions.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1cyjawbrfphdqcrwg10nrhcvmr45hlhjr3v1g8k0ypcgmfa7cmjs"))))
+        (base32 "0bvypfw4nc4b5j813lv8xmjp4n93dylspb0hs10fs7dpwx4d5h33"))))
     (build-system emacs-build-system)
     (propagated-inputs (list emacs-transient))
     (home-page "https://github.com/LuciusChen/clutch")

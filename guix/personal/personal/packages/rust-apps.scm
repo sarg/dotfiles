@@ -29,8 +29,8 @@
 (define-public emacs-ewm
   (package
     (name "emacs-ewm")
-    (properties '((commit . "f9273e8163fe4b37e1cfbc9f52dcab997305db61")))
-    (version (git-version "0.1.0" "23" (assoc-ref properties 'commit)))
+    (properties '((commit . "b8373fe55b914cad99914b65d6b8829fe44b6af6")))
+    (version (git-version "0.1.0" "24" (assoc-ref properties 'commit)))
     (source
      (origin
        (method git-fetch)
@@ -39,7 +39,7 @@
               (commit (assoc-ref properties 'commit))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1hnm3b11ahkhf6kv84qj3j8m3i2sdr6lw004fqyl1d2yszpbcdw0"))))
+        (base32 "0fgj5lrpd2igjl3rz8x4zxyrqc0zm879bhhm1xz9lax0mrrpcxk2"))))
     (build-system cargo-build-system)
     (arguments
      (list #:install-source? #f
@@ -54,20 +54,17 @@
            #~(modify-phases %standard-phases
                (add-after 'unpack 'build-lisp
                  (lambda args
-                   (chdir "lisp")
+                   (with-directory-excursion "lisp"
+                     (substitute* "ewm.el"
+                       (("\\(getenv \"EWM_MODULE_PATH\"\\)")
+                        (string-append "\"" #$output "/lib/libewm_core.so\"")))
 
-                   (substitute* "ewm.el"
-                     (("\\(getenv \"EWM_MODULE_PATH\"\\)")
-                      (string-append "\"" #$output "/lib/libewm_core.so\"")))
-
-                   (for-each
-                    (lambda (phase)
-                      (apply (cdr phase) args))
-                    (modify-phases emacs:%standard-phases
-                      (delete 'unpack)))
-                   
-                   (chdir "..")))
-
+                     (for-each
+                      (lambda (phase)
+                        (apply (cdr phase) args))
+                      (modify-phases emacs:%standard-phases
+                        (delete 'unpack))))))
+               
                (add-after 'build-lisp 'fix-deps
                  (lambda _
                    (chdir "compositor")
