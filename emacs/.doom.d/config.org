@@ -2414,6 +2414,7 @@ home-emacs
 "emacs-flycheck"
 "emacs-flycheck-clj-kondo"
 "emacs-flycheck-golangci-lint"
+"emacs-flycheck-guile"
 "emacs-flycheck-package"
 "emacs-flycheck-plantuml"
 "emacs-flycheck-popup-tip"
@@ -2449,6 +2450,7 @@ home-emacs
 "emacs-lsp-mode"
 "emacs-lsp-ui"
 "emacs-macrostep"
+"emacs-macrostep-geiser"
 "emacs-magit"
 "emacs-makefile-executor"
 "emacs-marginalia"
@@ -2640,7 +2642,7 @@ home-emacs
  :tools       (eval +overlay) (lookup +docsets) (magit +forge) (pass +auth)
               make tree-sitter lsp llm debugger
  :checkers    syntax
- :lang        (clojure +tree-sitter) data emacs-lisp (javascript +tree-sitter +lsp) (markdown +grip)
+ :lang        (clojure +tree-sitter) data emacs-lisp (javascript +tree-sitter +lsp) (markdown +grip) (scheme +guile)
               (org +dragndrop +pandoc +roam2 +pretty) beancount (go +lsp +tree-sitter) (rust +lsp +tree-sitter)
               (rest +jq) (sh +tree-sitter) plantuml (python +lsp +tree-sitter) (web +tree-sitter) yaml (json +tree-sitter)
  :app         telega (rss +org) torrent irc dash-menu
@@ -4072,7 +4074,7 @@ token_file = "~/.local/state/vdirsyncer/token"
 ** collectd
 ** clutch
 #+begin_src scheme :noweb-ref guix-pkg
-"emacs-clutch"
+"emacs-clutch" "emacs-pgsql"
 #+end_src
 * COMMENT archive
 ** emacs-one-frame
