@@ -1940,6 +1940,7 @@ REVERSE? it when true. Returns the selected buffer."
                             ("<AudioMute>" :fullscreen) ("<AudioMicMute>" :fullscreen)))
   :config
   (add-to-list 'doom-real-buffer-modes 'ewm-surface-mode)
+  (put 'ewm-surface-mode 'mode-class 'special)
   (when (modulep! :editor evil)
     (add-to-list 'evil-emacs-state-modes 'ewm-surface-mode))
   (map! :map ewm-mode-map
@@ -1971,6 +1972,20 @@ REVERSE? it when true. Returns the selected buffer."
         "s-e"    (cmd!
                   (or (ewm/switch-to-next-buffer "qutebrowser")
                       (start-process "qutebrowser" nil "setsid" "-w" "qutebrowser"))))
+
+  ;; Floats: no echo area at creation.
+  (add-to-list 'display-buffer-alist
+               '((major-mode . ewm-surface-mode) nil
+                 (pop-up-frame-parameters . ((minibuffer . nil)
+                                             (left-fringe . 0) (right-fringe . 0)))))
+
+  (add-hook 'after-make-frame-functions
+            (defun +ewm-hide-float-modeline-h (frame)
+              (when (frame-parameter frame 'ewm-floating)
+                (let ((win (frame-root-window frame)))
+                  (set-window-parameter win 'mode-line-format 'none)
+                  (set-window-fringes win 0 0 nil t)
+                  (set-window-margins win 0 0)))))
 
   (ewm--send-intercept-keys))
 #+end_src
@@ -4075,6 +4090,29 @@ token_file = "~/.local/state/vdirsyncer/token"
 ** clutch
 #+begin_src scheme :noweb-ref guix-pkg
 "emacs-clutch" "emacs-pgsql"
+#+end_src
+** COMMENT cuirass
+#+begin_src scheme :noweb-ref system-use
+(gnu services databases)
+(gnu services cuirass)
+(gnu packages databases)
+#+end_src
+#+begin_src scheme :noweb-ref system-service
+(service postgresql-service-type
+         (postgresql-configuration
+           (postgresql postgresql-17)))
+
+(service cuirass-service-type
+         (cuirass-configuration
+           (specifications
+            #~(list (specification
+                     (name 'guix-doomemacs)
+                     (build '(channels guix-doomemacs))
+                     (channels
+                      (cons (channel
+                              (name 'guix-doomemacs)
+                              (url "https://github.com/sarg/guix-doomemacs"))
+                            %default-channels)))))))
 #+end_src
 * COMMENT archive
 ** emacs-one-frame
