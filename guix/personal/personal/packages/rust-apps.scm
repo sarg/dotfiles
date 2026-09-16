@@ -29,8 +29,8 @@
 (define-public emacs-ewm
   (package
     (name "emacs-ewm")
-    (properties '((commit . "b8373fe55b914cad99914b65d6b8829fe44b6af6")))
-    (version (git-version "0.1.0" "24" (assoc-ref properties 'commit)))
+    (properties '((commit . "6797f260ee59f4e9ad8a74dfd66f8eb49ca8e26c")))
+    (version (git-version "0.1.0" "25" (assoc-ref properties 'commit)))
     (source
      (origin
        (method git-fetch)
@@ -39,7 +39,7 @@
               (commit (assoc-ref properties 'commit))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0fgj5lrpd2igjl3rz8x4zxyrqc0zm879bhhm1xz9lax0mrrpcxk2"))))
+        (base32 "1zi52ddmfnm8wi35crq97pkddx4r485qhrhj4incmbngqs7gxa14"))))
     (build-system cargo-build-system)
     (arguments
      (list #:install-source? #f
@@ -70,6 +70,8 @@
                    (chdir "compositor")
                    (delete-file "Cargo.lock")
                    (substitute* "Cargo.toml"
+                     (("^elisp =.*") "elisp = { version = \"*\", features = [\"serde\"]}\n")
+                     (("^elisp-emacs =.*") "elisp-emacs = { version = \"*\" }\n")
                      (("^rev =.*") "version = \"*\"\n")
                      (("^git = .*") ""))))
 
@@ -80,6 +82,7 @@
     (native-inputs (list emacs-minimal pkg-config))
     (inputs (cons*
              dbus
+             rust-elisp
              libdisplay-info
              libinput-minimal
              libseat
@@ -98,6 +101,30 @@
     (synopsis "Emacs Wayland Manager")
     (description "Emacs Wayland Manager - Wayland compositor")
     (license license:gpl3+)))
+
+(define-public rust-elisp
+  (package
+    (name "rust-elisp")
+    (properties '((commit . "44f20d3ae754bbefdbeec184c5490a99935166a0")))
+    (version (git-version "0.0.1" "1" (assoc-ref properties 'commit)))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://codeberg.org/ezemtsov/elisp")
+              (commit (assoc-ref properties 'commit))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "187p9xq4213p09qjarhzgynpf0lf35i4c644isbd2mk8bdrc0nkg"))))
+    (build-system cargo-build-system)
+    (arguments
+     (list #:skip-build? #t
+           #:cargo-package-crates ''("elisp" "elisp-emacs")))
+    (inputs (my-cargo-inputs 'elisp))
+    (home-page "https://codeberg.org/ezemtsov/elisp")
+    (synopsis #f)
+    (description #f)
+    (license license:expat)))
 
 (define-public emacs-reka
   (package
@@ -163,8 +190,8 @@
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/franzos/podman-healthcheckd")
-             (commit (string-append "v" version))))
+              (url "https://github.com/franzos/podman-healthcheckd")
+              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
         (base32 "0q6nrp1r0b7y3amv631l473814rcfn8f8lswf5sncshqh9ss248h"))))
