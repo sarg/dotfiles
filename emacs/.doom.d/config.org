@@ -664,7 +664,7 @@ polkit.addRule(function(action, subject) {
         (cons head out)))
   (fold-right flatten1 '() lst))
 
-(define home-emacs (pkg "emacs-pgtk"))
+(define home-emacs (pkg "emacs-next-pgtk"))
 
 (define (build-with-home-emacs p)
   (package/inherit p
