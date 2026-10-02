@@ -11,7 +11,7 @@
 (define-public pi-coding-agent
   (package
     (name "pi-coding-agent")
-    (version "0.84.4")
+    (version "0.87.0")
     (source
      (origin
        (method url-fetch)
@@ -19,7 +19,7 @@
              "https://github.com/earendil-works/pi/releases/download/v"
              version "/pi-linux-x64.tar.gz"))
        (sha256
-        (base32 "0wir88dywhsclvia8hnhqfbj69qk220shg6caivdh2w5l7kc7wy2"))))
+        (base32 "0ippx16w03qkrv4ivddbh9rhhypr7v4j70nvwqi3zkbm45jh4pgm"))))
     (build-system binary-build-system)
     (arguments
      (list
@@ -62,26 +62,26 @@ session management, conversation forking, and an extension system.")
       #:tests? #f
       #:phases
       #~(modify-phases %standard-phases
-           (add-after 'patch-dependencies 'delete-dev-dependencies
-             (lambda _
-               (modify-json (delete-dev-dependencies))))
-           (add-after 'delete-dev-dependencies 'delete-build-scripts
-             (lambda _
-               (with-atomic-json-file-replacement
-                 (lambda (pkg)
-                   (map (lambda (kv)
-                          (if (equal? (car kv) "scripts")
-                              (cons "scripts"
-                                    (filter
-                                     (lambda (s)
-                                       (not
-                                        (member (car s)
-                                                '("build" "prepare"
-                                                  "prepack" "postinstall"))))
-                                     (cdr kv)))
-                              kv))
-                        pkg)))))
-           (delete 'build))))
+          (add-after 'patch-dependencies 'delete-dev-dependencies
+            (lambda _
+              (modify-json (delete-dev-dependencies))))
+          (add-after 'delete-dev-dependencies 'delete-build-scripts
+            (lambda _
+              (with-atomic-json-file-replacement
+               (lambda (pkg)
+                 (map (lambda (kv)
+                        (if (equal? (car kv) "scripts")
+                            (cons "scripts"
+                                  (filter
+                                   (lambda (s)
+                                     (not
+                                      (member (car s)
+                                              '("build" "prepare"
+                                                "prepack" "postinstall"))))
+                                   (cdr kv)))
+                            kv))
+                      pkg)))))
+          (delete 'build))))
     (native-inputs
      (list))
     (home-page "https://www.npmjs.com/package/zod")
@@ -108,26 +108,26 @@ inference.")
       #:tests? #f
       #:phases
       #~(modify-phases %standard-phases
-           (add-after 'patch-dependencies 'delete-dev-dependencies
-             (lambda _
-               (modify-json (delete-dev-dependencies))))
-           (add-after 'delete-dev-dependencies 'delete-build-scripts
-             (lambda _
-               (with-atomic-json-file-replacement
-                 (lambda (pkg)
-                   (map (lambda (kv)
-                          (if (equal? (car kv) "scripts")
-                              (cons "scripts"
-                                    (filter
-                                     (lambda (s)
-                                       (not
-                                        (member (car s)
-                                                '("build" "prepare"
-                                                  "prepack" "postinstall"))))
-                                     (cdr kv)))
-                              kv))
-                        pkg)))))
-           (delete 'build))))
+          (add-after 'patch-dependencies 'delete-dev-dependencies
+            (lambda _
+              (modify-json (delete-dev-dependencies))))
+          (add-after 'delete-dev-dependencies 'delete-build-scripts
+            (lambda _
+              (with-atomic-json-file-replacement
+               (lambda (pkg)
+                 (map (lambda (kv)
+                        (if (equal? (car kv) "scripts")
+                            (cons "scripts"
+                                  (filter
+                                   (lambda (s)
+                                     (not
+                                      (member (car s)
+                                              '("build" "prepare"
+                                                "prepack" "postinstall"))))
+                                   (cdr kv)))
+                            kv))
+                      pkg)))))
+          (delete 'build))))
     (native-inputs
      (list))
     (inputs
@@ -157,10 +157,10 @@ standardizes communication between code editors and AI coding agents.")
       #:tests? #f
       #:phases
       #~(modify-phases %standard-phases
-           (add-after 'patch-dependencies 'delete-dev-dependencies
-             (lambda _
-               (modify-json (delete-dev-dependencies))))
-           (delete 'build))))
+          (add-after 'patch-dependencies 'delete-dev-dependencies
+            (lambda _
+              (modify-json (delete-dev-dependencies))))
+          (delete 'build))))
     (inputs
      (list
       node-agentclientprotocol-sdk

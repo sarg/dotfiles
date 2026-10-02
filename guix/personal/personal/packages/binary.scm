@@ -32,75 +32,75 @@
 
 (define-public tinymediamanager
   (package
-   (name "tinymediamanager")
-   (version "5.3.2")
-   (source (origin
-            (method url-fetch)
-            (uri (string-append "https://archive.tinymediamanager.org/v" version
-                                "/tinyMediaManager-" version "-linux-amd64.tar.xz"))
-            (sha256
-             (base32 "12pzkc66b9g0xfq1r5l5ikq7z4vp3cxccqafg73z7nq81wlwz1ik"))))
-   (build-system binary-build-system)
-   (inputs (list libmediainfo openjdk))
-   (supported-systems '("x86_64-linux"))
-   (properties `((release-monitoring-url . "https://archive.tinymediamanager.org/")
-                 (release-file-regexp . "v([0-9.]*)/$")))
-   (arguments
-    (list
-     #:phases
-     #~(modify-phases %standard-phases
-         (add-after 'install 'create-runner
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let* ((bin (string-append #$output "/bin"))
-                    (lib (string-append #$output "/lib/tinyMediaManager"))
-                    (tmm (string-append bin "/tinyMediaManager")))
-               (mkdir-p bin)
-               (call-with-output-file tmm
-                 (lambda (out)
-                   (format out "#!/bin/sh
+    (name "tinymediamanager")
+    (version "5.3.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://archive.tinymediamanager.org/v" version
+                                  "/tinyMediaManager-" version "-linux-amd64.tar.xz"))
+              (sha256
+               (base32 "1w8z3f8v55975msm8h37l27n2c20ayx9lphwg564jzch2zb1138p"))))
+    (build-system binary-build-system)
+    (inputs (list libmediainfo openjdk))
+    (supported-systems '("x86_64-linux"))
+    (properties `((release-monitoring-url . "https://archive.tinymediamanager.org/")
+                  (release-file-regexp . "v([0-9.]*)/$")))
+    (arguments
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'install 'create-runner
+            (lambda* (#:key inputs outputs #:allow-other-keys)
+              (let* ((bin (string-append #$output "/bin"))
+                     (lib (string-append #$output "/lib/tinyMediaManager"))
+                     (tmm (string-append bin "/tinyMediaManager")))
+                (mkdir-p bin)
+                (call-with-output-file tmm
+                  (lambda (out)
+                    (format out "#!/bin/sh
 LD_LIBRARY_PATH=~a CLASSPATH=~a/* ~a/bin/java ~a org.tinymediamanager.TinyMediaManager"
-                           (string-join
-                            (list
-                             (string-append (assoc-ref inputs "libmediainfo") "/lib")
-                             (string-append (assoc-ref inputs "libzen") "/lib"))
-                            ":")
-                           lib
-                           (assoc-ref inputs "openjdk")
-                           (string-join
-                            '("-Xms64m"
-                              "-Xmx512m"
-                              "-Xss512k"
-                              "-Dsun.java2d.renderer=sun.java2d.marlin.MarlinRenderingEngine"
-                              "-Djava.net.preferIPv4Stack=true"
-                              "-Dfile.encoding=UTF-8"
-                              "-Dsun.jnu.encoding=UTF-8"
-                              "-Dtmm.consoleloglevel=NONE"
-                              "-Dawt.useSystemAAFontSettings=on"
-                              "-Dswing.aatext=true"
-                              "-Dtmm.contentfolder=$XDG_DATA_HOME/tinyMediaManager"
-                              "-Dtmm.noupdate=true")
-                            " "))))
-               (chmod tmm #o555))
+                            (string-join
+                             (list
+                              (string-append (assoc-ref inputs "libmediainfo") "/lib")
+                              (string-append (assoc-ref inputs "libzen") "/lib"))
+                             ":")
+                            lib
+                            (assoc-ref inputs "openjdk")
+                            (string-join
+                             '("-Xms64m"
+                               "-Xmx512m"
+                               "-Xss512k"
+                               "-Dsun.java2d.renderer=sun.java2d.marlin.MarlinRenderingEngine"
+                               "-Djava.net.preferIPv4Stack=true"
+                               "-Dfile.encoding=UTF-8"
+                               "-Dsun.jnu.encoding=UTF-8"
+                               "-Dtmm.consoleloglevel=NONE"
+                               "-Dawt.useSystemAAFontSettings=on"
+                               "-Dswing.aatext=true"
+                               "-Dtmm.contentfolder=$XDG_DATA_HOME/tinyMediaManager"
+                               "-Dtmm.noupdate=true")
+                             " "))))
+                (chmod tmm #o555))
 
-             (make-desktop-entry-file
-              (string-append #$output "/share/applications/tinymediamanager.desktop")
-              #:name "Tiny Media Manager"
-              #:type "Application"
-              #:exec (string-append #$output "/bin/tinyMediaManager")
-              #:icon "tmm"
-              #:categories '("Video" "Database")
-              #:terminal #f
-              #:comment
-              '(("en" "Media collection manager")
-                (#f "Media collection manager"))))))
-     #:validate-runpath? #f
-     #:install-plan #~'(("tmm.png" "share/icons/hicolor/128x128/apps/")
-                        ("lib" "lib/tinyMediaManager")
-                        ("tmm.jar" "lib/tinyMediaManager/"))))
-   (home-page "https://tinymediamanager.org")
-   (synopsis "Media library manager")
-   (description "Media library manager")
-   (license license:asl1.1)))
+              (make-desktop-entry-file
+               (string-append #$output "/share/applications/tinymediamanager.desktop")
+               #:name "Tiny Media Manager"
+               #:type "Application"
+               #:exec (string-append #$output "/bin/tinyMediaManager")
+               #:icon "tmm"
+               #:categories '("Video" "Database")
+               #:terminal #f
+               #:comment
+               '(("en" "Media collection manager")
+                 (#f "Media collection manager"))))))
+      #:validate-runpath? #f
+      #:install-plan #~'(("tmm.png" "share/icons/hicolor/128x128/apps/")
+                         ("lib" "lib/tinyMediaManager")
+                         ("tmm.jar" "lib/tinyMediaManager/"))))
+    (home-page "https://tinymediamanager.org")
+    (synopsis "Media library manager")
+    (description "Media library manager")
+    (license license:asl1.1)))
 
 (define-public temporal-io-server
   (package
@@ -162,38 +162,38 @@ failed operations.")
 
 (define-public terraform
   (package
-   (name "terraform")
-   (version "1.6.1")
-   (source (origin
-            (method url-fetch)
-            (uri (string-append "https://releases.hashicorp.com/terraform/"
-                                version "/terraform_" version "_linux_amd64.zip"))
-            (sha256
-             (base32 "19p2jbfg76663q4vanr02f97l6zaf7s2g59c65496kf41j2pi9yi"))))
-   (build-system copy-build-system)
-   (supported-systems '("x86_64-linux" "i686-linux"))
-   (arguments
-    `(#:install-plan '(("terraform" "bin/"))))
-   (native-inputs (list unzip))
-   (synopsis "Terraform is a tool for building, changing, and versioning infrastructure safely and efficiently.")
-   (description "Terraform enables you to safely and predictably create, change, and improve infrastructure. It is an open source tool that codifies APIs into declarative configuration files that can be shared amongst team members, treated as code, edited, reviewed, and versioned.")
-   (home-page "https://www.terraform.io/")
-   (license #f)))
+    (name "terraform")
+    (version "1.6.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://releases.hashicorp.com/terraform/"
+                                  version "/terraform_" version "_linux_amd64.zip"))
+              (sha256
+               (base32 "19p2jbfg76663q4vanr02f97l6zaf7s2g59c65496kf41j2pi9yi"))))
+    (build-system copy-build-system)
+    (supported-systems '("x86_64-linux" "i686-linux"))
+    (arguments
+     `(#:install-plan '(("terraform" "bin/"))))
+    (native-inputs (list unzip))
+    (synopsis "Terraform is a tool for building, changing, and versioning infrastructure safely and efficiently.")
+    (description "Terraform enables you to safely and predictably create, change, and improve infrastructure. It is an open source tool that codifies APIs into declarative configuration files that can be shared amongst team members, treated as code, edited, reviewed, and versioned.")
+    (home-page "https://www.terraform.io/")
+    (license #f)))
 
 (define-public google-cloud-sdk
   (package
     (name "google-cloud-sdk")
     (version "465.0.0")
     (source (origin
-             (method url-fetch)
-             ;; A starting point for a proper package is here:
-             ;; https://storage.googleapis.com/cloud-sdk-release/for_packagers
-             ;; /linux/google-cloud-sdk_337.0.0.orig.tar.gz
-             (uri (string-append
-                   "https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/"
-                   "google-cloud-sdk-" version "-linux-x86_64.tar.gz"))
-             (sha256
-              (base32 "0mp71q62yj6xmf1n94myq6dzvpjmxc5fikd9gkvh28hwx7q8w2by"))))
+              (method url-fetch)
+              ;; A starting point for a proper package is here:
+              ;; https://storage.googleapis.com/cloud-sdk-release/for_packagers
+              ;; /linux/google-cloud-sdk_337.0.0.orig.tar.gz
+              (uri (string-append
+                    "https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/"
+                    "google-cloud-sdk-" version "-linux-x86_64.tar.gz"))
+              (sha256
+               (base32 "0mp71q62yj6xmf1n94myq6dzvpjmxc5fikd9gkvh28hwx7q8w2by"))))
     ;; We use the GNU build system mainly for its patch-shebang phases.
     (build-system gnu-build-system)
     (arguments
@@ -288,45 +288,45 @@ command-line programs gsutil and gcloud among others.")
 
 (define-public codelldb
   (package
-   (name "codelldb")
-   (version "1.12.2")
-   (source (origin
-            (method url-fetch)
-            (uri (string-append
-                  "https://github.com/vadimcn/codelldb/releases/download/v" version "/codelldb-linux-x64.vsix"))
-            (sha256
-             (base32 "0zb3gzrzgyj78q35jdf7ashg6f8wl6fnqz4jn0sxal80ayl4anxq"))))
-   (build-system binary-build-system)
-   (arguments
-    `(#:strip-binaries? #f
-      #:patchelf-plan `(("extension/adapter/codelldb" ("libc" "gcc:lib"))
-                        ("extension/bin/codelldb-launch" ("libc" "gcc:lib")))
-      #:phases (modify-phases %standard-phases
-                 (replace 'unpack
-                   (lambda* (#:key inputs source #:allow-other-keys)
-                     (invoke "unzip" source)))
-                 (add-after 'unpack 'clean
-                        (lambda _
-                          (delete-file-recursively "extension/lldb"))))))
-   (native-inputs (list unzip))
-   (inputs `(("gcc:lib" ,gcc "lib")))
-   (supported-systems '("x86_64-linux"))
-   (home-page "https://github.com/vadimcn/codelldb")
-   (synopsis "A VSCode debugger extension for native code, powered by LLDB.")
-   (description "VSCode extension for debugging")
-   (license license:expat)))
+    (name "codelldb")
+    (version "1.12.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/vadimcn/codelldb/releases/download/v" version "/codelldb-linux-x64.vsix"))
+              (sha256
+               (base32 "0zb3gzrzgyj78q35jdf7ashg6f8wl6fnqz4jn0sxal80ayl4anxq"))))
+    (build-system binary-build-system)
+    (arguments
+     `(#:strip-binaries? #f
+       #:patchelf-plan `(("extension/adapter/codelldb" ("libc" "gcc:lib"))
+                         ("extension/bin/codelldb-launch" ("libc" "gcc:lib")))
+       #:phases (modify-phases %standard-phases
+                  (replace 'unpack
+                    (lambda* (#:key inputs source #:allow-other-keys)
+                      (invoke "unzip" source)))
+                  (add-after 'unpack 'clean
+                    (lambda _
+                      (delete-file-recursively "extension/lldb"))))))
+    (native-inputs (list unzip))
+    (inputs `(("gcc:lib" ,gcc "lib")))
+    (supported-systems '("x86_64-linux"))
+    (home-page "https://github.com/vadimcn/codelldb")
+    (synopsis "A VSCode debugger extension for native code, powered by LLDB.")
+    (description "VSCode extension for debugging")
+    (license license:expat)))
 
 (define-public ddnet
   (package
     (name "ddnet")
-    (version "19.8.2")
+    (version "20.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "https://ddnet.org/downloads/DDNet-" version "-linux_x86_64.tar.xz"))
        (sha256
-        (base32 "01zv0sqwxqv4c6vnv06zc875hgqzs6np4nb82k29gl049awva320"))))
+        (base32 "1wqir0skif6fhqapq1a4n17sp00nbaf4nvnp0axv5ss533r5mrqk"))))
     (build-system binary-build-system)
     (arguments
      (list #:strip-binaries? #f
@@ -367,10 +367,10 @@ command-line programs gsutil and gcloud among others.")
         (method git-fetch)
         (uri (git-reference
                (url "https://github.com/ddnet/ddnet-maps")
-               (commit "48e8ae016b1892f771819368e31b94d68aaadce3")))
+               (commit "4ed1efaab485974ea906c58bd6c615e36ffc8fee")))
         (file-name "ddnet-maps")
         (sha256
-         (base32 "132vq839ajb0pcnaqrg9djvcynkd8iab93fa88irkq4l7j0s22c2")))))
+         (base32 "16ccfyh0fcv7xw3az3qjfnny9p7kbp0zaz6m9pmjnjmg887gax67")))))
     (inputs (list vulkan-loader libnotify mesa freetype curl glib sdl2))
     (supported-systems '("x86_64-linux"))
     (properties '((release-monitoring-url . "https://ddnet.org/downloads/")))
@@ -521,25 +521,25 @@ modification with a unique cooperative gameplay.")
 
 (define-public workerd
   (package
-   (name "workerd")
-   (version "1.20260711.1")
-   (source (origin
-            (method url-fetch)
-            (uri (string-append
-                  "https://github.com/cloudflare/workerd/releases/download/v" version "/workerd-linux-64.gz"))
-            (sha256
-             (base32 "0lzbcw24w5h2hdz09as5iv6j36p35yw780mlis849ddm6azz5mf7"))))
-   (build-system binary-build-system)
-   (arguments
-    `(#:strip-binaries? #f
-      #:patchelf-plan '(("workerd-linux-64" ("libc" "gcc:lib")))
-      #:install-plan '(("workerd-linux-64" "bin/workerd"))
-      #:phases (modify-phases %standard-phases
-                 (add-after 'binary-unpack 'chmod
-                   (lambda _ (chmod "workerd-linux-64" #o755))))))
-   (inputs `(("gcc:lib" ,gcc "lib")))
-   (supported-systems '("x86_64-linux"))
-   (home-page "https://github.com/cloudflare/workerd")
-   (synopsis "The JavaScript / Wasm runtime that powers Cloudflare Workers")
-   (description "WASM runtime from Cloudflare")
-   (license license:asl2.0)))
+    (name "workerd")
+    (version "1.20260711.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/cloudflare/workerd/releases/download/v" version "/workerd-linux-64.gz"))
+              (sha256
+               (base32 "0lzbcw24w5h2hdz09as5iv6j36p35yw780mlis849ddm6azz5mf7"))))
+    (build-system binary-build-system)
+    (arguments
+     `(#:strip-binaries? #f
+       #:patchelf-plan '(("workerd-linux-64" ("libc" "gcc:lib")))
+       #:install-plan '(("workerd-linux-64" "bin/workerd"))
+       #:phases (modify-phases %standard-phases
+                  (add-after 'binary-unpack 'chmod
+                    (lambda _ (chmod "workerd-linux-64" #o755))))))
+    (inputs `(("gcc:lib" ,gcc "lib")))
+    (supported-systems '("x86_64-linux"))
+    (home-page "https://github.com/cloudflare/workerd")
+    (synopsis "The JavaScript / Wasm runtime that powers Cloudflare Workers")
+    (description "WASM runtime from Cloudflare")
+    (license license:asl2.0)))
