@@ -20,8 +20,8 @@
   #:use-module (gnu packages xorg)
   #:use-module ((guix licenses) #:prefix license:))
 
-(define rust-smithay-0.7.0.79bbed5
-  (let ((commit "79bbed5e1199090d787115614847a79c76607181"))
+(define rust-smithay-0.7.0.904d3bd
+  (let ((commit "904d3bdaf3664cb1ffe12ce7db849c47187727f6"))
     (hidden-package
      (package
        (name "rust-smithay")
@@ -35,7 +35,7 @@
           (file-name (git-file-name name version))
           (sha256
            (base32
-            "0dlmm40f34s0fn471fvishhc3c5viilnhmc604v3pr6daj4rqi0d"))))
+            "1s96q1k08hasmh9s72xgmcgpshdrs4pf0rpff3wgj99gmy23kq2j"))))
        (build-system cargo-build-system)
        (arguments
         (list #:skip-build? #t
@@ -80,8 +80,8 @@ extensions, such as @code{wlr-protocols} and @code{plasma-wayland-protocols}.")
 (define-public emacs-ewm
   (package
     (name "emacs-ewm")
-    (properties '((commit . "3de61c40d6f2af06ea4443cad0ee033ba9800005")))
-    (version (git-version "0.1.0" "27" (assoc-ref properties 'commit)))
+    (properties '((commit . "dedcd884d3d3b83843663cd32dd86045cb6ca25a")))
+    (version (git-version "0.1.0" "28" (assoc-ref properties 'commit)))
     (source
      (origin
        (method git-fetch)
@@ -90,7 +90,7 @@ extensions, such as @code{wlr-protocols} and @code{plasma-wayland-protocols}.")
               (commit (assoc-ref properties 'commit))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "08ny8xilg8ipxz5bij8aivzaprkp012wkbnpk84sz1i9v7gd3v5c"))))
+        (base32 "1r2nlpqanhl8qnmdv0pqm9nr5s5d8s5b8y7w21fwx6vif3909l8s"))))
     (build-system cargo-build-system)
     (arguments
      (list #:install-source? #f
@@ -130,7 +130,9 @@ extensions, such as @code{wlr-protocols} and @code{plasma-wayland-protocols}.")
                  (lambda _
                    (install-file "target/release/libewm_core.so"
                                  (string-append #$output "/lib")))))))
-    (native-inputs (list emacs-minimal pkg-config))
+    (native-inputs (list
+                    emacs               ; some tests fail on emacs-minimal
+                    pkg-config))
     (inputs (cons*
              dbus
              libdisplay-info
@@ -2726,7 +2728,7 @@ extensions, such as @code{wlr-protocols} and @code{plasma-wayland-protocols}.")
                    rust-siphasher-1.0.4
                    rust-slab-0.4.12
                    rust-smallvec-1.15.1
-                   rust-smithay-0.7.0.79bbed5
+                   rust-smithay-0.7.0.904d3bd
                    rust-strsim-0.9.3
                    rust-syn-1.0.109
                    rust-syn-2.0.114

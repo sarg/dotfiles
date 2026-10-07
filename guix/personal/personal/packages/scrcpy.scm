@@ -17,7 +17,7 @@
 (define-public scrcpy-server
   (package
    (name "scrcpy-server")
-   (version "4.1")
+   (version "5.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://github.com/Genymobile/scrcpy"
@@ -26,7 +26,7 @@
             (file-name "scrcpy-server.jar")
             (sha256
              (base32
-              "1bhchnwdazq4x4bn4mni63mn0hbvwh3pkp7zc18p2295xn8vkb6y"))))
+              "1alx4a683gqxmfs7933mz30ha9j68gxz9gjm4hlc5mnf1anwkjr6"))))
    (build-system copy-build-system)
    (home-page "https://github.com/Genymobile/scrcpy")
    (synopsis "Server component for scrcpy")
@@ -37,7 +37,7 @@ to communicate with Android devices.")
 (define-public scrcpy
   (package
    (name "scrcpy")
-   (version "4.1")
+   (version "5.0")
    (source (origin
             (method git-fetch)
             (uri (git-reference
@@ -45,7 +45,7 @@ to communicate with Android devices.")
                   (commit (string-append "v" version))))
             (file-name (git-file-name name version))
             (sha256
-             (base32 "1gm1jz428lkfw96fs1gxsa8fy3lrwi7v02v67s17b2vm2hvh5cn7"))))
+             (base32 "1yznqrcyfz1g3dy4zbwdaywgpyfcghl5r1kwi2c16x6lry5dspsi"))))
    (build-system meson-build-system)
    (native-inputs (list pkg-config scrcpy-server))
    (inputs (list ffmpeg sdl3 libusb libdecor adb))

@@ -11,6 +11,10 @@
   #:use-module (personal packages ghostty)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages gtk)
+  #:use-module (gnu packages gnome)
+  #:use-module (gnu packages image)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages emacs-xyz)
   #:use-module (gnu packages emacs-build)
@@ -23,8 +27,8 @@
 (define-public emacs-reader
   (package
     (name "emacs-reader")
-    (properties '((commit . "a0e3615adbf520a5743bbbfd7da6d2bb8478b30b")))
-    (version (git-version "0.3.2" "9" (assoc-ref properties 'commit)))
+    (properties '((commit . "c7b768341dd52746870c8aae7b74a82fd046b999")))
+    (version (git-version "0.3.2" "10" (assoc-ref properties 'commit)))
     (source
      (origin
        (method git-fetch)
@@ -33,7 +37,7 @@
               (commit (assoc-ref properties 'commit))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "012i36l5wgzw4mbxr2knb96f7x95qfg0pqa7dfam23fmsfw57fy0"))))
+        (base32 "0hwbixyaj1gc68w284qhx3h539xkr7bpjwnmix896yxnwdgw9sna"))))
     (build-system emacs-build-system)
     (arguments
      (list
@@ -45,11 +49,8 @@
               (invoke "make" "USE_PKGCONFIG=no}"))) ; We don't need pkg-config
           (add-after 'install 'install-module
             (lambda* (#:key outputs #:allow-other-keys)
-              (let* ((out (assoc-ref outputs "out"))
-                     (target-dir (string-append out
-                                                "/share/emacs/site-lisp/" #$name "-" #$version)))
-                (install-file "render-core.so" target-dir)))))))
-
+              (install-file "render-core.so"
+                            (elpa-directory (assoc-ref outputs "out"))))))))
     (native-inputs (list mupdf gcc))
     (home-page "https://codeberg.org/divyaranjan/emacs-reader")
     (synopsis
@@ -766,7 +767,7 @@ its @code{ReadyForQuery} message has been consumed.")
 (define-public emacs-clutch
   (package
     (name "emacs-clutch")
-    (version "0.5.0")
+    (version "0.6.0")
     (source
      (origin
        (method git-fetch)
@@ -775,7 +776,7 @@ its @code{ReadyForQuery} message has been consumed.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0bvypfw4nc4b5j813lv8xmjp4n93dylspb0hs10fs7dpwx4d5h33"))))
+        (base32 "1ygdjfx9shklan2sx3zhkpn24f0pqmcrhr0zlca2b5k95v5s0qsi"))))
     (build-system emacs-build-system)
     (propagated-inputs (list emacs-transient))
     (home-page "https://github.com/LuciusChen/clutch")
@@ -857,4 +858,73 @@ with a Chrome (MV3) extension.")
     (home-page "https://github.com/dakra/ghostel")
     (synopsis "Evil-mode integration for ghostel")
     (description "Evil-mode integration for the ghostel terminal emulator")
+    (license license:gpl3)))
+
+(define-public emacs-excali-mode
+  (package
+    (name "emacs-excali-mode")
+    (version "0.3.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/yibie/excali-mode")
+              (commit (string-append "v" version))))
+       (sha256
+        (base32 "1bbv1m7fi2kcyv3jfnsf002xxyzdd4f3a3gp2y0yydypzj23x5mh"))))
+    (build-system emacs-build-system)
+    (arguments
+     (list
+      #:tests? #f
+      #:emacs emacs-next-minimal
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'build-so-module
+            (lambda* (#:key inputs outputs #:allow-other-keys)
+              (invoke "make" (string-append "CC=" #$(cc-for-target)) "module")
+              (install-file
+               "excali-module.so" (elpa-directory (assoc-ref outputs "out"))))))))
+    (inputs (list gnu-make pkg-config gcc cairo zlib gtk librsvg libwebp))
+    (home-page "https://github.com/yibie/excali-mode")
+    (synopsis "excalidraw files editor")
+    (description "excali-mode provides support for excalidraw diagrams")
+    (license license:gpl3)))
+
+(define-public emacs-markdown-table-wrap
+  (package
+    (name "emacs-markdown-table-wrap")
+    (properties '((commit . "f846b77d13f34fba57c80214c1a61e00c94048a3")))
+    (version (git-version "0.2.0" "0" (assoc-ref properties 'commit)))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/dnouri/markdown-table-wrap")
+              (commit (assoc-ref properties 'commit))))
+       (sha256
+        (base32 "1km84gasd0rl8lfz7y33jn757pdgb1a32g3b28dyd27922rznhrh"))))
+    (build-system emacs-build-system)
+    (arguments (list #:tests? #f))
+    (home-page "https://github.com/dnouri/markdown-table-wrap")
+    (synopsis "Word-wrap GFM (GitHub Flavored Markdown) pipe tables to fit a given character width.")
+    (description "")
+    (license license:gpl3)))
+
+(define-public emacs-markdown-ts-appear
+  (package
+    (name "emacs-markdown-ts-appear")
+    (version "0.2.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/Thysrael/markdown-ts-appear")
+              (commit (string-append "v" version))))
+       (sha256
+        (base32 "1py863b0h54lpklska9d8j2yhipk1bqx9601ayxxq3yx8bcw3mw0"))))
+    (build-system emacs-build-system)
+    (propagated-inputs (list emacs-markdown-table-wrap))
+    (home-page "https://github.com/Thysrael/markdown-ts-appear")
+    (synopsis "Word-wrap GFM (GitHub Flavored Markdown) pipe tables to fit a given character width.")
+    (description "")
     (license license:gpl3)))
