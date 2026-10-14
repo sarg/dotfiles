@@ -94,7 +94,8 @@
 
    ["Sys"
     ("ew" "wifi" iwd-manager)
-    ("eb" "blue" bluetooth-list-devices)]
+    ("eb" "blue" bluetooth-list-devices)
+    ("ed" "disk" discomfort)]
 
    ["Quick"
     ("<menu>" "consult" consult-buffer)]])
