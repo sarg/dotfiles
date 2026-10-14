@@ -4104,6 +4104,22 @@ token_file = "~/.local/state/vdirsyncer/token"
 "emacs-tmr"
 #+end_src
 ** collectd
+** excali-mode
+#+begin_src scheme :noweb-ref guix-pkg
+"emacs-excali-mode"
+#+end_src
+#+begin_src elisp
+(use-package excali-mode
+  :mode ("\\.excalidsl\\'" . excali-dsl-mode)
+  :config
+  (add-to-list 'doom-real-buffer-modes 'excali-mode)
+  (add-hook 'excali-mode-hook
+            (lambda ()
+              (when (fboundp 'evil-local-mode)
+                (evil-local-mode -1))
+              (when (fboundp 'which-key-mode)
+                (which-key-mode -1)))))
+#+end_src
 ** clutch
 #+begin_src scheme :noweb-ref guix-pkg
 "emacs-clutch" "emacs-pgsql"
