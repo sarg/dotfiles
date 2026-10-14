@@ -2652,7 +2652,7 @@ home-emacs
  :tools       (eval +overlay) (lookup +docsets) (magit +forge) (pass +auth)
               make tree-sitter lsp llm debugger
  :checkers    syntax
- :lang        (clojure +tree-sitter) data emacs-lisp (javascript +tree-sitter +lsp) (markdown +grip) (scheme +guile)
+ :lang        (clojure +tree-sitter) data emacs-lisp (javascript +tree-sitter +lsp) (markdown +grip +tree-sitter) (scheme +guile)
               (org +dragndrop +pandoc +roam2 +pretty) beancount (go +lsp +tree-sitter) (rust +lsp +tree-sitter)
               (rest +jq) (sh +tree-sitter) plantuml (python +lsp +tree-sitter) (web +tree-sitter) yaml (json +tree-sitter)
  :app         telega (rss +org) torrent irc dash-menu
@@ -3038,6 +3038,27 @@ noctalia msg wallpaper-set ~/Pictures/Wallpapers/$1.jpg
   :override +modeline-format-icon
   (propertize (format "X %s" label) 'face face))
 #+end_src
+** Markdown
+#+begin_src scheme :noweb-ref guix-pkg
+"emacs-markdown-ts-appear"
+#+end_src
+#+begin_src elisp
+(use-package markdown-ts-appear
+  :hook (markdown-ts-mode . markdown-ts-appear-mode)
+  :config
+  (defun my/markdown-appear-evil ()
+    "Reveal Markdown source only in Evil insert state."
+    (if markdown-ts-appear-mode
+        (progn
+          (add-hook 'evil-insert-state-entry-hook #'markdown-ts-appear-start nil t)
+          (add-hook 'evil-insert-state-exit-hook #'markdown-ts-appear-stop nil t)
+          (unless (eq (bound-and-true-p evil-state) 'insert)
+            (markdown-ts-appear-stop)))
+      (remove-hook 'evil-insert-state-entry-hook #'markdown-ts-appear-start t)
+      (remove-hook 'evil-insert-state-exit-hook #'markdown-ts-appear-stop t)))
+
+  (add-hook 'markdown-ts-appear-mode-hook #'my/markdown-appear-evil))
+#+end_src
 * org mode
 #+begin_src scheme :noweb-ref guix-pkg
 "font-iosevka-curly" ; for org-modern bullets
@@ -3046,6 +3067,7 @@ noctalia msg wallpaper-set ~/Pictures/Wallpapers/$1.jpg
 "emacs-org-modern-indent"
 "emacs-corg"
 "emacs-ox-hugo"
+"emacs-markdown-ts-appear"
 #+end_src
 #+begin_src elisp :tangle packages.el
 (package! toc-org :disable t) ; hangs blog.org
