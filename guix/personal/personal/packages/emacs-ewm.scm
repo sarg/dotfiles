@@ -121,10 +121,8 @@ extensions, such as @code{wlr-protocols} and @code{plasma-wayland-protocols}.")
                    (chdir "compositor")
                    (delete-file "Cargo.lock")
                    (substitute* "Cargo.toml"
-                     (("^elisp =.*") "elisp = { version = \"*\", features = [\"serde\"]}\n")
-                     (("^elisp-emacs =.*") "elisp-emacs = { version = \"*\" }\n")
-                     (("^rev =.*") "version = \"*\"\n")
-                     (("^git = .*") ""))))
+                     (("rev = \"[^\"]+\"") "version = \"*\"")
+                     (("git = \"[^\"]+\",?") ""))))
 
                (replace 'install
                  (lambda _
