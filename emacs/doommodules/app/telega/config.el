@@ -107,6 +107,7 @@ MSG-PREDICATE is received."
 
   ;; disable not used minor modes
   (global-telega-url-shorten-mode 1)
+  (telega-proxy-status-mode -1)
   (telega-patrons-mode -1)
   (telega-active-locations-mode -1)
   (telega-active-video-chats-mode -1)
