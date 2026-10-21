@@ -80,8 +80,8 @@ extensions, such as @code{wlr-protocols} and @code{plasma-wayland-protocols}.")
 (define-public emacs-ewm
   (package
     (name "emacs-ewm")
-    (properties '((commit . "dedcd884d3d3b83843663cd32dd86045cb6ca25a")))
-    (version (git-version "0.1.0" "28" (assoc-ref properties 'commit)))
+    (properties '((commit . "f3841cc5c168cae5759992366f62a1bd308cf184")))
+    (version (git-version "0.1.0" "29" (assoc-ref properties 'commit)))
     (source
      (origin
        (method git-fetch)
@@ -90,7 +90,7 @@ extensions, such as @code{wlr-protocols} and @code{plasma-wayland-protocols}.")
               (commit (assoc-ref properties 'commit))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1r2nlpqanhl8qnmdv0pqm9nr5s5d8s5b8y7w21fwx6vif3909l8s"))))
+        (base32 "1hcv04pi832alb7j97wbc6j68dx6hd1mi766rr2nhawpv9h0q1qy"))))
     (build-system cargo-build-system)
     (arguments
      (list #:install-source? #f

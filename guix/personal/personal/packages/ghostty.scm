@@ -20,6 +20,7 @@
 ;;; along with rde.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (personal packages ghostty)
+  #:use-module (gnu packages image)
   #:use-module (gnu packages zig)
   #:use-module (guix build-system emacs)
   #:use-module (guix git-download)
@@ -33,10 +34,12 @@
 ;;;
 
 (define-public emacs-ghostel
-  (let* ((version "0.53.0")
+  (let* ((version "0.59.0")
          (ghostty-version "1.3.2-dev")
-         (ghostty-commit "ab0b9da9e88fcb4b0533a1854e84628f663930af")
-         (uucode-commit "2826a37a4562284fdacd8fa029d49509cc9bffcd")
+         (ghostty-commit "a2e440396403385680008e456a741a7776091412")
+         (uucode-commit "9d55524551411b493cca41ca06363625d90aff1e")
+         (translate-c-commit "4e879eb8aba615de112eabd1231ea6e01920cead")
+         (aro-commit "f97cdfc3779aec4b242299e2fc9a1c828c3547c6")
          (ghostty-source
           (origin
             (method git-fetch)
@@ -46,7 +49,7 @@
             (file-name (git-file-name "ghostty" ghostty-commit))
             (sha256
              (base32
-              "0g9aid4wfv9sr6x6iqk0kysw18ly8yrr77w5x7khgzvp1ca896rd"))))
+              "0isp6f6s4xnjs6h3lx11r17x31cm6q8iv30snp2s3hfsxb4bjcx9"))))
          (uucode-source
           (origin
             (method git-fetch)
@@ -56,7 +59,27 @@
             (file-name (git-file-name "uucode" uucode-commit))
             (sha256
              (base32
-              "0vbg7rhyvg7yxn3sbcx7xih0x5kp2vmdp1ckwkma08ankddmg527")))))
+              "1z32b8yqvhggi7rkp5926491dghzjy9zad8kfx0ww9b58zzyk5i9"))))
+         (translate-c-source
+          (origin
+            (method git-fetch)
+            (uri (git-reference
+                  (url "https://codeberg.org/vancluever/translate-c")
+                  (commit translate-c-commit)))
+            (file-name (git-file-name "translate-c" translate-c-commit))
+            (sha256
+             (base32
+              "0vq2nmmbilyzzpjfacilyk6rcf4hzyb84hd1qmsyvy59q9dzpi7y"))))
+         (aro-source
+          (origin
+            (method git-fetch)
+            (uri (git-reference
+                  (url "https://github.com/vancluever/arocc")
+                  (commit aro-commit)))
+            (file-name (git-file-name "arocc" aro-commit))
+            (sha256
+             (base32
+              "1yxzhbwdyazzg6xk75ql21ifk340cafqlyrdfy5r916a9s14vwqv")))))
     (package
       (name "emacs-ghostel")
       (version version)
@@ -69,7 +92,7 @@
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "0ph1gjl3915wgf7qz2c389gnm64yn07q9jb69dyqy6r8fkzmyd37"))))
+           "1rfs5jd2xgpilh9xv9mpjpqn7b71iixkgbnpmqi3nwzb8dz0rqnm"))))
       (build-system emacs-build-system)
       (arguments
        (list
@@ -78,7 +101,7 @@
         #:phases
         #~(modify-phases %standard-phases
             (add-after 'unpack 'unpack-zig-dependencies
-              (lambda _
+              (lambda* (#:key inputs #:allow-other-keys)
                 (let ((deps (string-append (dirname (getcwd)) "/deps")))
                   (mkdir-p deps)
                   (copy-recursively #$ghostty-source
@@ -87,6 +110,15 @@
                   (copy-recursively #$uucode-source
                                     (string-append deps "/uucode")
                                     #:log (%make-void-port "w"))
+                  (copy-recursively #$translate-c-source
+                                    (string-append deps "/translate-c")
+                                    #:log (%make-void-port "w"))
+                  (copy-recursively #$aro-source
+                                    (string-append deps "/aro")
+                                    #:log (%make-void-port "w"))
+                  (install-file (search-input-file inputs
+                                                   "include/wuffs-v0.4.c")
+                                (string-append deps "/wuffs/release/c"))
                   (for-each make-file-writable
                             (find-files deps #:directories? #t)))))
             (add-after 'unpack-zig-dependencies 'patch-zig-dependencies
@@ -124,11 +156,38 @@
     .dependencies = .{
         .android_ndk = .{ .path = \"./pkg/android-ndk\" },
         .apple_sdk = .{ .path = \"./pkg/apple-sdk\" },
+        .translate_c = .{ .path = \"./pkg/translate-c\" },
         .uucode = .{ .path = \"../uucode\" },
+        .wuffs = .{ .path = \"./pkg/wuffs\" },
     },
 }
 "
                                 #$ghostty-version)))
+                    (substitute* "deps/ghostty/pkg/translate-c/build.zig.zon"
+                      (("\\.url = .*")
+                       ".path = \"../../../translate-c\",\n")
+                      (("\\.hash = .*") ""))
+                    (substitute* "deps/translate-c/build.zig.zon"
+                      (("\\.url = .*") ".path = \"../aro\",\n")
+                      (("\\.hash = .*") ""))
+                    (with-output-to-file "deps/ghostty/pkg/wuffs/build.zig.zon"
+                      (lambda ()
+                        (display "\
+.{
+    .name = .wuffs,
+    .version = \"0.0.0\",
+    .fingerprint = 0x67c0c059de921c4f,
+    .dependencies = .{
+        .translate_c = .{ .path = \"../translate-c\" },
+        .wuffs = .{ .path = \"../../../wuffs\" },
+    },
+    .paths = .{\"\"},
+}
+")))
+                    ;; The pixels dependency only provides unit test fixtures.
+                    (substitute* "deps/ghostty/pkg/wuffs/build.zig"
+                      (("b\\.lazyDependency\\(\"pixels\", \\.\\{\\}\\)")
+                       "@as(?*std.Build.Dependency, null)"))
 
                     ;; Ghostel only needs libghostty-vt.  Ghostty's normal
                     ;; build graph still mentions UI resources, benchmarks,
@@ -290,7 +349,7 @@ pub fn addStepDependencies(
                                     (string-append elpa-dir "/etc"))
                   (install-file (string-append root "/zig-out/ghostel-module.so")
                                 elpa-dir)))))))
-      (native-inputs (list zig-0.16))
+      (native-inputs (list wuffs zig-0.16))
       (home-page "https://github.com/dakra/ghostel")
       (synopsis "Terminal emulator powered by libghostty")
       (description
