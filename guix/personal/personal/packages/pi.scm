@@ -11,7 +11,7 @@
 (define-public pi-coding-agent
   (package
     (name "pi-coding-agent")
-    (version "0.87.0")
+    (version "1.1.0")
     (source
      (origin
        (method url-fetch)
@@ -19,7 +19,7 @@
              "https://github.com/earendil-works/pi/releases/download/v"
              version "/pi-linux-x64.tar.gz"))
        (sha256
-        (base32 "0ippx16w03qkrv4ivddbh9rhhypr7v4j70nvwqi3zkbm45jh4pgm"))))
+        (base32 "12g221p8cc3yr0hg954vgaq720kx814zf3rjmwvrv16kdik99aiz"))))
     (build-system binary-build-system)
     (arguments
      (list
