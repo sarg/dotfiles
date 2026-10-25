@@ -1927,12 +1927,6 @@ REVERSE? it when true. Returns the selected buffer."
         (switch-to-buffer (or next first) t t))))
 
 (use-package ewm
-  :custom
-  (ewm-intercept-prefixes '("C-x" "M-x" "<menu>" "C-\\"
-                            ("s-f" :fullscreen)
-                            ("<MonBrightnessUp>" :fullscreen) ("<MonBrightnessDown>" :fullscreen)
-                            ("<AudioRaiseVolume>" :fullscreen) ("<AudioLowerVolume>" :fullscreen)
-                            ("<AudioMute>" :fullscreen) ("<AudioMicMute>" :fullscreen)))
   :config
   (add-to-list 'doom-real-buffer-modes 'ewm-surface-mode)
   (put 'ewm-surface-mode 'mode-class 'special)
@@ -1944,19 +1938,20 @@ REVERSE? it when true. Returns the selected buffer."
         "s-k"     #'ewm-focus-up
         "s-l"     #'ewm-focus-right
 
-        "<menu>" (cmd! (unless (minibufferp) (dash-menu)))
+        "C-\\" (ewm-key :intercept)
+        "<menu>" (ewm-key (cmd! (unless (minibufferp) (dash-menu))))
         "s-<delete>" #'dash-menu/audio
 
         "<AudioPlay>" #'emms-play-dwim
         "<AudioPause>" #'emms-stop
         "<AudioPrev>" #'emms-previous
         "<AudioNext>" (cmd! (funcall emms-player-next-function))
-        "<AudioRaiseVolume>" (cmd! (my-vol-change 1))
-        "<AudioLowerVolume>" (cmd! (my-vol-change -1))
-        "<AudioMute>" (sh! "pactl set-sink-mute @DEFAULT_SINK@ toggle")
-        "<AudioMicMute>" (sh! "pactl set-source-mute @DEFAULT_SOURCE@ toggle")
-        "<MonBrightnessUp>" (sh! "brightnessctl -e set 10%+")
-        "<MonBrightnessDown>" (sh! "brightnessctl -e set 10%-")
+        "<AudioRaiseVolume>" (ewm-key (cmd! (my-vol-change 1)) :fullscreen :repeat)
+        "<AudioLowerVolume>" (ewm-key (cmd! (my-vol-change -1)) :fullscreen :repeat)
+        "<AudioMute>" (ewm-key (sh! "pactl set-sink-mute @DEFAULT_SINK@ toggle") :fullscreen)
+        "<AudioMicMute>" (ewm-key (sh! "pactl set-source-mute @DEFAULT_SOURCE@ toggle") :fullscreen)
+        "<MonBrightnessUp>" (ewm-key (sh! "brightnessctl -e set 10%+") :fullscreen)
+        "<MonBrightnessDown>" (ewm-key (sh! "brightnessctl -e set 10%-") :fullscreen)
         "<ScreenSaver>" (sh! "xset s activate")
         "s-<f12>" (sh! "grim -g \"$(slurp -d)\" - | wl-copy -t image/png")
 
@@ -1980,9 +1975,7 @@ REVERSE? it when true. Returns the selected buffer."
                 (let ((win (frame-root-window frame)))
                   (set-window-parameter win 'mode-line-format 'none)
                   (set-window-fringes win 0 0 nil t)
-                  (set-window-margins win 0 0)))))
-
-  (ewm--send-intercept-keys))
+                  (set-window-margins win 0 0))))))
 #+end_src
 #+begin_src scheme :noweb-ref guix-env-var
 ("QT_PLUGIN_PATH" . ,(file-append (pkg "qtwayland") "/lib/qt6/plugins"))
