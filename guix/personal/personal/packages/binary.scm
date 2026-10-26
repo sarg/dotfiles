@@ -319,14 +319,14 @@ command-line programs gsutil and gcloud among others.")
 (define-public ddnet
   (package
     (name "ddnet")
-    (version "20.1.1")
+    (version "20.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "https://ddnet.org/downloads/DDNet-" version "-linux_x86_64.tar.xz"))
        (sha256
-        (base32 "1wqir0skif6fhqapq1a4n17sp00nbaf4nvnp0axv5ss533r5mrqk"))))
+        (base32 "15zwrav7qggwrxmjabksk3bkmc5zbpc1pj7frlpiac0ghll96h1n"))))
     (build-system binary-build-system)
     (arguments
      (list #:strip-binaries? #f
@@ -383,7 +383,7 @@ modification with a unique cooperative gameplay.")
 (define-public python-ty
   (package
     (name "python-ty")
-    (version "0.0.91")
+    (version "0.0.94")
     (source
      (origin
        (method url-fetch)
@@ -391,7 +391,7 @@ modification with a unique cooperative gameplay.")
              "https://github.com/astral-sh/ty/releases/download/" version
              "/ty-x86_64-unknown-linux-gnu.tar.gz"))
        (sha256
-        (base32 "021cid3z63dwaq8yjxh4gpjj4rmy9d3al1mcid6ym5iddpprrazr"))))
+        (base32 "1rpd644cy0sb8qkqnfwin45j1xcnvkksz9r8cj3daplqyxn0j4s2"))))
     (properties '((upstream-name . "ty")))
     (build-system binary-build-system)
     (supported-systems '("x86_64-linux"))
