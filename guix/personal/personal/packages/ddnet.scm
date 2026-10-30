@@ -10,6 +10,7 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
+  #:use-module (gnu packages fonts)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages gnome)
@@ -40,9 +41,13 @@
         (base32 "1yxrxmibzm63mqyv5sbsbmxpdwcihnf9n1ckpq5z81hskzwxs0yb"))
        (modules '((guix build utils)))
        (snippet
-        ;; Remove bundled libs.
+        ;; Remove bundled libs and fonts.  Font Awesome 6 is kept, as Guix
+        ;; only has version 4: <https://bugs.gnu.org/32916>.
         '(for-each delete-file-recursively
-                   '("ddnet-libs" "src/engine/external")))))
+                   '("ddnet-libs" "src/engine/external"
+                     "data/fonts/DejaVuSans.ttf"
+                     "data/fonts/GlowSansJ-Compressed-Book.otf"
+                     "data/fonts/SourceHanSans.ttc")))))
     (build-system cmake-build-system)
     (arguments
      (list
@@ -89,6 +94,26 @@
               (substitute* (find-files "src" "\\.(cpp|h)$")
                 (("<engine/external/json-parser/json\\.h>")
                  "<json-parser/json.h>"))))
+          (add-after 'unpack 'unbundle-fonts
+            (lambda* (#:key inputs #:allow-other-keys)
+              (symlink (search-input-file
+                        inputs "share/fonts/truetype/DejaVuSans.ttf")
+                       "data/fonts/DejaVuSans.ttf")
+              ;; Use Noto Sans Mono CJK instead of Glow Sans and Source Han
+              ;; Sans, as its variable font defaults to the regular weight.
+              ;; Latin glyphs are taken from DejaVu Sans anyway.
+              (symlink (search-input-file
+                        inputs "share/fonts/truetype/NotoSansMonoCJK-VF.otf.ttc")
+                       "data/fonts/NotoSansMonoCJK-VF.otf.ttc")
+              (substitute* '("CMakeLists.txt" "data/fonts/index.json")
+                (("^.*GlowSansJ-Compressed-Book\\.otf.*\n") "")
+                (("SourceHanSans\\.ttc") "NotoSansMonoCJK-VF.otf.ttc"))
+              (substitute* "data/fonts/index.json"
+                (("\"(Glow Sans J Compressed Book|Source Han Sans)\"")
+                 "\"Noto Sans Mono CJK JP\"")
+                (("\"Source Han Sans K\"") "\"Noto Sans Mono CJK KR\"")
+                (("\"Source Han Sans (SC|TC)\"" _ region)
+                 (string-append "\"Noto Sans Mono CJK " region "\"")))))
           (add-after 'unpack 'patch-data-dir
             (lambda _
               (substitute* "src/engine/shared/storage.cpp"
@@ -109,6 +134,8 @@
     (inputs
      (cons* curl
             ffmpeg
+            font-dejavu
+            font-google-noto-sans-cjk
             freetype
             glew
             json-parser
@@ -131,7 +158,11 @@
     (synopsis "DDraceNetwork (DDNet), a cooperative platformer game")
     (description "DDraceNetwork (DDNet) is an actively maintained version of DDRace, a Teeworlds
 modification with a unique cooperative gameplay.")
-    (license license:zlib)))
+    (license (list license:zlib          ;code, some skins
+                   license:cc-by-sa3.0   ;data, maps, languages, skins
+                   license:cc-by3.0      ;some skins
+                   license:cc0           ;some skins
+                   license:silofl1.1)))) ;fonts
 
 ;; RUST CRATES
 

@@ -21,12 +21,55 @@
 
 (define-module (personal packages ghostty)
   #:use-module (gnu packages image)
-  #:use-module (gnu packages zig)
+  #:use-module (guix build-system copy)
   #:use-module (guix build-system emacs)
+  #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix gexp)
   #:use-module (guix packages)
+  #:use-module (guix utils)
   #:use-module ((guix licenses) #:prefix license:))
+
+
+;;;
+;;; Zig.
+;;;
+
+;; Guix only packages Zig up to 0.16, but ghostel requires exactly 0.17.0.
+;; Use the official statically linked release binaries until Guix catches up.
+(define-public zig-0.17-bin
+  (package
+    (name "zig-bin")
+    (version "0.17.0")
+    (source
+     (let ((arch (if (target-aarch64?) "aarch64" "x86_64")))
+       (origin
+         (method url-fetch)
+         (uri (string-append "https://ziglang.org/download/" version
+                             "/zig-" arch "-linux-" version ".tar.xz"))
+         (sha256
+          (base32
+           (if (string=? arch "aarch64")
+               "1y2g4djkyl6dbimf362pvqfibb933rw34f1af1bvvqsa3mk133cy"
+               "09i09s6hhzqxj3g67i7ikvvlwh1sf2v47jnb9k8phsvyybwrvghw"))))))
+    (build-system copy-build-system)
+    (arguments
+     (list
+      #:install-plan
+      #~'(("zig" "bin/")
+          ("lib" "lib/zig")
+          ("LICENSE" "share/doc/zig/"))
+      #:phases
+      #~(modify-phases %standard-phases
+          (delete 'strip)
+          (delete 'validate-runpath))))
+    (supported-systems '("aarch64-linux" "x86_64-linux"))
+    (home-page "https://ziglang.org/")
+    (synopsis "General purpose programming language and toolchain (binary)")
+    (description
+     "This package provides the official prebuilt release of the Zig
+compiler and toolchain.")
+    (license license:expat)))
 
 
 ;;;
@@ -34,12 +77,12 @@
 ;;;
 
 (define-public emacs-ghostel
-  (let* ((version "0.59.0")
-         (ghostty-version "1.3.2-dev")
-         (ghostty-commit "a2e440396403385680008e456a741a7776091412")
-         (uucode-commit "9d55524551411b493cca41ca06363625d90aff1e")
-         (translate-c-commit "4e879eb8aba615de112eabd1231ea6e01920cead")
-         (aro-commit "f97cdfc3779aec4b242299e2fc9a1c828c3547c6")
+  (let* ((version "0.60.0")
+         (ghostty-version "1.4.1-dev")
+         (ghostty-commit "b2c78c9bd9bc88a16d9c3769b0fb17ddde1b78b1")
+         (uucode-commit "ea62149739404a73c202b48a33bf6dd2af4bd9b0")
+         (translate-c-commit "02ff0c523fb92a38939b04d0145c4a9602a74d56")
+         (aro-commit "d0c8c4d9c55daa7ef6e40cf0f630a5b5e900989b")
          (ghostty-source
           (origin
             (method git-fetch)
@@ -49,7 +92,7 @@
             (file-name (git-file-name "ghostty" ghostty-commit))
             (sha256
              (base32
-              "0isp6f6s4xnjs6h3lx11r17x31cm6q8iv30snp2s3hfsxb4bjcx9"))))
+              "0dczw3ms81aic6kx37pyxvp902g7vmb837i4znifr8jxrm5hpsqr"))))
          (uucode-source
           (origin
             (method git-fetch)
@@ -59,27 +102,27 @@
             (file-name (git-file-name "uucode" uucode-commit))
             (sha256
              (base32
-              "1z32b8yqvhggi7rkp5926491dghzjy9zad8kfx0ww9b58zzyk5i9"))))
+              "03qmrv9045vx7c0cnhjlmhh9klb9fr0s8flrpyfn912k24kd3akl"))))
          (translate-c-source
           (origin
             (method git-fetch)
             (uri (git-reference
-                  (url "https://codeberg.org/vancluever/translate-c")
+                  (url "https://codeberg.org/ziglang/translate-c")
                   (commit translate-c-commit)))
             (file-name (git-file-name "translate-c" translate-c-commit))
             (sha256
              (base32
-              "0vq2nmmbilyzzpjfacilyk6rcf4hzyb84hd1qmsyvy59q9dzpi7y"))))
+              "1vbmblhk77y35x6w1b6hn0i5vdf2ray2kh2yhhbi916lcp4qyy6p"))))
          (aro-source
           (origin
             (method git-fetch)
             (uri (git-reference
-                  (url "https://github.com/vancluever/arocc")
+                  (url "https://codeberg.org/ziglang/arocc")
                   (commit aro-commit)))
             (file-name (git-file-name "arocc" aro-commit))
             (sha256
              (base32
-              "1yxzhbwdyazzg6xk75ql21ifk340cafqlyrdfy5r916a9s14vwqv")))))
+              "0wwwfdvyc9ssq885xjc08xs0kgdls48cqlrsw0g2d74sv68i6wkm")))))
     (package
       (name "emacs-ghostel")
       (version version)
@@ -92,7 +135,7 @@
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1rfs5jd2xgpilh9xv9mpjpqn7b71iixkgbnpmqi3nwzb8dz0rqnm"))))
+           "0w8787fwfcarcwby1n4b686v53h5hcl2ldc24v7nna07lb6jfpck"))))
       (build-system emacs-build-system)
       (arguments
        (list
@@ -136,6 +179,7 @@
 .{
     .name = .ghostel,
     .version = \"~a\",
+    .minimum_zig_version = \"0.17.0\",
     .paths = .{\"\"},
     .fingerprint = 0x5a44bdd1198a0f4b,
     .dependencies = .{
@@ -152,7 +196,7 @@
     .version = \"~a\",
     .paths = .{\"\"},
     .fingerprint = 0x64407a2a0b4147e5,
-    .minimum_zig_version = \"0.16.0\",
+    .minimum_zig_version = \"0.17.0\",
     .dependencies = .{
         .android_ndk = .{ .path = \"./pkg/android-ndk\" },
         .apple_sdk = .{ .path = \"./pkg/apple-sdk\" },
@@ -316,9 +360,10 @@ pub fn addStepDependencies(
               (lambda _
                 ;; Keep local /bin/sh references patched to the store, but
                 ;; do not leak store paths into remote TRAMP and Docker hosts.
-                (substitute* "ghostel.el"
+                (substitute* "ghostel-shell.el"
                   (("\\(\"docker\" \"[^\"]*/bin/sh\"\\)")
-                   "(\"docker\" \"/bin/sh\")")
+                   "(\"docker\" \"/bin/sh\")"))
+                (substitute* "ghostel.el"
                   (("\\(list \"([^\"]*/bin/sh)\" \"-c\"" _ shell)
                    (string-append
                     "(list (if remote-p \"/bin/sh\" \""
@@ -337,8 +382,14 @@ pub fn addStepDependencies(
                             (string-append root "/zig-cache/global"))
                     (setenv "ZIG_LOCAL_CACHE_DIR"
                             (string-append root "/zig-cache/local"))
+                    ;; An explicit target makes Zig use its bundled glibc
+                    ;; headers instead of probing for native system ones.
                     (invoke "zig" "build"
                             "-Doptimize=ReleaseFast"
+                            (string-append
+                             "-Dtarget="
+                             (car (string-split %host-type #\-))
+                             "-linux-gnu")
                             "-Dcpu=baseline")))))
             (add-after 'install 'install-resources
               (lambda* (#:key outputs #:allow-other-keys)
@@ -347,9 +398,11 @@ pub fn addStepDependencies(
                        (elpa-dir (elpa-directory out)))
                   (copy-recursively (string-append root "/etc")
                                     (string-append elpa-dir "/etc"))
-                  (install-file (string-append root "/zig-out/ghostel-module.so")
-                                elpa-dir)))))))
-      (native-inputs (list wuffs zig-0.16))
+                  (for-each (lambda (file)
+                              (install-file (string-append root "/zig-out/" file)
+                                            elpa-dir))
+                            '("ghostel-module.so" "ghostel-module.version"))))))))
+      (native-inputs (list wuffs zig-0.17-bin))
       (home-page "https://github.com/dakra/ghostel")
       (synopsis "Terminal emulator powered by libghostty")
       (description
