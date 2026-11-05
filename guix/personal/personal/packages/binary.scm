@@ -319,7 +319,7 @@ command-line programs gsutil and gcloud among others.")
 (define-public python-ty
   (package
     (name "python-ty")
-    (version "0.0.95")
+    (version "0.0.98")
     (source
      (origin
        (method url-fetch)
@@ -327,7 +327,7 @@ command-line programs gsutil and gcloud among others.")
              "https://github.com/astral-sh/ty/releases/download/" version
              "/ty-x86_64-unknown-linux-gnu.tar.gz"))
        (sha256
-        (base32 "05sf1gj6grqc8cc6vrna5vghvh625840cjknp0yi2d223rfa201z"))))
+        (base32 "1sbqdj8c47fg3yy0dfp50j0gr53g8x9v3q0l6hgx8dpmlh6jzxg5"))))
     (properties '((upstream-name . "ty")))
     (build-system binary-build-system)
     (supported-systems '("x86_64-linux"))
@@ -458,13 +458,13 @@ command-line programs gsutil and gcloud among others.")
 (define-public workerd
   (package
     (name "workerd")
-    (version "1.20260711.1")
+    (version "1.20261108.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://github.com/cloudflare/workerd/releases/download/v" version "/workerd-linux-64.gz"))
               (sha256
-               (base32 "0lzbcw24w5h2hdz09as5iv6j36p35yw780mlis849ddm6azz5mf7"))))
+               (base32 "0fbs0hj8xdgpmnk52kqffpxzx6mqjfckzcdgjnb245hcprldfkqb"))))
     (build-system binary-build-system)
     (arguments
      `(#:strip-binaries? #f

@@ -77,38 +77,38 @@ compiler and toolchain.")
 ;;;
 
 (define-public emacs-ghostel
-  (let* ((version "0.60.0")
+  (let* ((version "0.62.0")
          (ghostty-version "1.4.1-dev")
-         (ghostty-commit "b2c78c9bd9bc88a16d9c3769b0fb17ddde1b78b1")
-         (uucode-commit "ea62149739404a73c202b48a33bf6dd2af4bd9b0")
+         (libghostty-vt-version "1.0.0")
+         (uucode-commit "1fb73433bba5d93366c57f23ff2e9d7939746500")
          (translate-c-commit "02ff0c523fb92a38939b04d0145c4a9602a74d56")
          (aro-commit "d0c8c4d9c55daa7ef6e40cf0f630a5b5e900989b")
          (ghostty-source
           (origin
-            (method git-fetch)
-            (uri (git-reference
-                  (url "https://github.com/ghostty-org/ghostty")
-                  (commit ghostty-commit)))
-            (file-name (git-file-name "ghostty" ghostty-commit))
+            (method url-fetch)
+            (uri (string-append
+                  "https://release.files.ghostty.org/libghostty-vt/"
+                  libghostty-vt-version "/libghostty-vt-"
+                  libghostty-vt-version ".tar.gz"))
             (sha256
              (base32
-              "0dczw3ms81aic6kx37pyxvp902g7vmb837i4znifr8jxrm5hpsqr"))))
+              "0xinfmx83a031ih3jnpvsf6jvjfw8fs82ywyjvhj66bjprcgfvja"))))
          (uucode-source
           (origin
             (method git-fetch)
             (uri (git-reference
-                  (url "https://github.com/jacobsandlund/uucode")
-                  (commit uucode-commit)))
+                   (url "https://github.com/jacobsandlund/uucode")
+                   (commit uucode-commit)))
             (file-name (git-file-name "uucode" uucode-commit))
             (sha256
              (base32
-              "03qmrv9045vx7c0cnhjlmhh9klb9fr0s8flrpyfn912k24kd3akl"))))
+              "0rl2jmpdd1mf0ij3mddq388flcli9kddxgiws48msdvladadi53x"))))
          (translate-c-source
           (origin
             (method git-fetch)
             (uri (git-reference
-                  (url "https://codeberg.org/ziglang/translate-c")
-                  (commit translate-c-commit)))
+                   (url "https://codeberg.org/ziglang/translate-c")
+                   (commit translate-c-commit)))
             (file-name (git-file-name "translate-c" translate-c-commit))
             (sha256
              (base32
@@ -117,8 +117,8 @@ compiler and toolchain.")
           (origin
             (method git-fetch)
             (uri (git-reference
-                  (url "https://codeberg.org/ziglang/arocc")
-                  (commit aro-commit)))
+                   (url "https://codeberg.org/ziglang/arocc")
+                   (commit aro-commit)))
             (file-name (git-file-name "arocc" aro-commit))
             (sha256
              (base32
@@ -130,12 +130,12 @@ compiler and toolchain.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/dakra/ghostel")
-               (commit (string-append "v" version))))
+                (url "https://github.com/dakra/ghostel")
+                (commit (string-append "v" version))))
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "0w8787fwfcarcwby1n4b686v53h5hcl2ldc24v7nna07lb6jfpck"))))
+           "0kxdr1za6qvww8rba0pyxvc6mvcr2v2h0qmlff0ji49phxmmlyn0"))))
       (build-system emacs-build-system)
       (arguments
        (list
@@ -147,9 +147,10 @@ compiler and toolchain.")
               (lambda* (#:key inputs #:allow-other-keys)
                 (let ((deps (string-append (dirname (getcwd)) "/deps")))
                   (mkdir-p deps)
-                  (copy-recursively #$ghostty-source
-                                    (string-append deps "/ghostty")
-                                    #:log (%make-void-port "w"))
+                  (mkdir-p (string-append deps "/ghostty"))
+                  (invoke "tar" "xf" #$ghostty-source
+                          "-C" (string-append deps "/ghostty")
+                          "--strip-components=1")
                   (copy-recursively #$uucode-source
                                     (string-append deps "/uucode")
                                     #:log (%make-void-port "w"))

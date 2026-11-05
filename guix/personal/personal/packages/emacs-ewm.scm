@@ -80,8 +80,8 @@ extensions, such as @code{wlr-protocols} and @code{plasma-wayland-protocols}.")
 (define-public emacs-ewm
   (package
     (name "emacs-ewm")
-    (properties '((commit . "4c7dcb79d7c5bcb9feb24128bd0c1aec3d74fa64")))
-    (version (git-version "0.1.0" "32" (assoc-ref properties 'commit)))
+    (properties '((commit . "1760c18c9f50fe5c8d69ec46b8bc789b84461a2a")))
+    (version (git-version "0.1.0" "34" (assoc-ref properties 'commit)))
     (source
      (origin
        (method git-fetch)
@@ -90,7 +90,7 @@ extensions, such as @code{wlr-protocols} and @code{plasma-wayland-protocols}.")
               (commit (assoc-ref properties 'commit))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1dkjk90rcrm3ld0j4ym204c1c3vmmbyp495azcmpg16h8d66mchx"))))
+        (base32 "04v81v38xncar3bwjy932cn6v3nxviy6kv7q0swl8km1cnyqxfqa"))))
     (build-system cargo-build-system)
     (arguments
      (list #:install-source? #f
@@ -103,9 +103,22 @@ extensions, such as @code{wlr-protocols} and @code{plasma-wayland-protocols}.")
                                 (guix build emacs-build-system))
            #:phases
            #~(modify-phases %standard-phases
-               (add-after 'unpack 'build-lisp
+               (add-after 'unpack 'fix-cargo-deps
+                 (lambda _
+                   (chdir "compositor")
+                   (delete-file "Cargo.lock")
+                   (substitute* "Cargo.toml"
+                     (("rev = \"[^\"]+\"") "version = \"*\"")
+                     (("git = \"[^\"]+\",?") ""))))
+               
+               (replace 'install
+                 (lambda _
+                   (install-file "target/release/libewm_core.so"
+                                 (string-append #$output "/lib"))))
+
+               (add-after 'install 'build-lisp
                  (lambda args
-                   (with-directory-excursion "lisp"
+                   (with-directory-excursion "../lisp"
                      (substitute* "ewm.el"
                        (("\\(getenv \"EWM_MODULE_PATH\"\\)")
                         (string-append "\"" #$output "/lib/libewm_core.so\"")))
@@ -114,20 +127,7 @@ extensions, such as @code{wlr-protocols} and @code{plasma-wayland-protocols}.")
                       (lambda (phase)
                         (apply (cdr phase) args))
                       (modify-phases emacs:%standard-phases
-                        (delete 'unpack))))))
-               
-               (add-after 'build-lisp 'fix-deps
-                 (lambda _
-                   (chdir "compositor")
-                   (delete-file "Cargo.lock")
-                   (substitute* "Cargo.toml"
-                     (("rev = \"[^\"]+\"") "version = \"*\"")
-                     (("git = \"[^\"]+\",?") ""))))
-
-               (replace 'install
-                 (lambda _
-                   (install-file "target/release/libewm_core.so"
-                                 (string-append #$output "/lib")))))))
+                        (delete 'unpack)))))))))
     (native-inputs (list
                     emacs               ; some tests fail on emacs-minimal
                     pkg-config))
