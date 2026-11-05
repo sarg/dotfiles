@@ -146,6 +146,7 @@ Pass OPTS directly to (request)."
     (read-only-mode -1)
     (erase-buffer)
     (insert "#+STARTUP: overview indent\n")
+    (insert "#+TODO: UNHIDE(H) SAVE(s) UNSAVE(S) | HIDE(h)\n")
     (insert "Feed: " frf-feed)
     (cl-loop
      with users = (alist-get 'users data)
@@ -159,7 +160,7 @@ Pass OPTS directly to (request)."
                  (title (nth 0 (s-lines body)))
                  (bodyRest (s-trim (substring body (length title)))))
             (insert (format "\n* %s%s {%s} [💕%d/✍%d] :%s:\n"
-                            (if .isHidden "DONE " "")
+                            (if .isHidden "HIDE " "")
                             (if (string-empty-p body) "Media" title)
                             (frf--age .createdAt now)
                             (+ (length .likes) .omittedLikes)
@@ -217,8 +218,7 @@ Pass OPTS directly to (request)."
     (org-mode)
     (add-hook 'org-after-todo-state-change-hook
               (lambda ()
-                (when (equal org-state "DONE")
-                  (frf-hide (org-entry-get nil "postId"))))
+                (frf-cmd (org-entry-get nil "postId") org-state))
               nil t)
     (add-to-list 'browse-url-handlers
                  (cons "media.freefeed.net/attachments/" #'eww-browse-url))
@@ -253,12 +253,14 @@ Pass OPTS directly to (request)."
        (lambda (reason)
          (message "catch error in promise timeline: %s" reason))))))
 
-(defun frf-hide (id)
+(defun frf-cmd (id cmd)
   "Hide post with ID from the timeline."
   (let ((buf (current-buffer)))
     (promise-chain
-        (frf--promise-json (format "/posts/%s/hide" id) :type "POST")
-      (then (lambda (_) (message "post hidden")))
+        (frf--promise-json
+         (format "/posts/%s/%s" id (if (string= "UNSAVE" cmd) "save" (downcase cmd)))
+         :type (if (string= "UNSAVE" cmd) "DELETE" "POST"))
+      (then (lambda (_) (message "%s post" cmd)))
       (promise-catch
        (lambda (reason)
          (with-current-buffer buf
@@ -267,7 +269,7 @@ Pass OPTS directly to (request)."
              (when (search-forward id nil t)
                (org-todo ""))))
 
-         (message "hide failed: %s" reason))))))
+         (message "%s failed: %s" cmd reason))))))
 
 (provide 'frf)
 ;;; frf.el ends here
