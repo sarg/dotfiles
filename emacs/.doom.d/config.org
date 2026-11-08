@@ -2754,6 +2754,11 @@ Note: use =consult-theme= to quickly preview themes.
 
 (add-hook 'doom-init-ui-hook #'sarg/autostart-apps)
 #+end_src
+** misc
+#+begin_src scheme :noweb-ref guix-pkg
+"emacs-qrencode"
+"emacs-clutch" "emacs-pgsql"
+#+end_src
 * flatpaks
 #+begin_src scheme :noweb-ref guix-env-var
 ("XDG_DATA_DIRS" . "$XDG_DATA_DIRS:$HOME/.local/share/flatpak/exports/share")
@@ -4112,10 +4117,6 @@ token_file = "~/.local/state/vdirsyncer/token"
                 (evil-local-mode -1))
               (when (fboundp 'which-key-mode)
                 (which-key-mode -1)))))
-#+end_src
-** clutch
-#+begin_src scheme :noweb-ref guix-pkg
-"emacs-clutch" "emacs-pgsql"
 #+end_src
 ** COMMENT cuirass
 #+begin_src scheme :noweb-ref system-use
