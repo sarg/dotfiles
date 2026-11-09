@@ -98,10 +98,10 @@ export class Cloudflare extends pulumi.ComponentResource {
     const tgbot = this.worker('tgbot', {
       bindings: [
         secret('BOT_TOKEN', args.secrets.telegram.BOT_TOKEN),
-        text('HETZNER_IPV6_ID', args.hetznerIpv6),
+        secret('HETZNER_IPV6_ID', args.hetznerIpv6),
         secret('HCLOUD_TOKEN', args.secrets.hetzner.API_TOKEN),
         secret('SELECTEL_PASS', args.secrets.selectel.PASS),
-        text('SELECTEL_ORG_ID', args.secrets.selectel.ORG_ID),
+        secret('SELECTEL_ORG_ID', args.secrets.selectel.ORG_ID),
         secret('WG_PRIVATE', args.secrets.vpn.WG_PRIVATE),
         secret('WG_PSK', args.secrets.vpn.WG_PSK),
         secret('DYNDNS_TOKEN', args.secrets.dyndns.find((t) => t.name === 'vpn')!.token),

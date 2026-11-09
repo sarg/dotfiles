@@ -2,8 +2,14 @@ interface StringId {
 	id: string;
 }
 
+export interface PublicPort extends StringId {
+	network_id: string;
+	ip_address: string;
+}
+
 type Config = {
 	region: string;
+	projectId: string;
 	user: {
 		name: string;
 		domain: { name: string };
@@ -13,11 +19,61 @@ type Config = {
 
 export class Openstack {
 	private baseUri: string;
+	private publicNetworkUri: string;
+	private projectId: string;
 	private authToken: Promise<string>;
 
 	constructor(cfg: Config) {
 		this.baseUri = `https://${cfg.region}.cloud.api.selcloud.ru`;
+		this.publicNetworkUri = `https://${cfg.region}.cloud.api.selcloud.ru/public-network`;
+		this.projectId = cfg.projectId;
 		this.authToken = this.auth(cfg.user);
+	}
+
+	async networkCreatePublicPort(description: string): Promise<PublicPort> {
+		const response = await fetch(`${this.publicNetworkUri}/v1/public_ports`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'X-Auth-Token': await this.authToken,
+			},
+			body: JSON.stringify({ project_id: this.projectId, description }),
+		});
+
+		if (!response.ok) {
+			throw new Error(`Failed to create public port: ${response.status} ${await response.text()}`);
+		}
+
+		const json = (await response.json()) as { port: PublicPort };
+		return json.port;
+	}
+
+	async networkFindPublicPorts(description: string): Promise<PublicPort[]> {
+		const response = await fetch(
+			`${this.publicNetworkUri}/v1/public_ports?description=${encodeURIComponent(description)}`,
+			{
+				headers: {
+					'X-Auth-Token': await this.authToken,
+				},
+			},
+		);
+
+		if (!response.ok) {
+			throw new Error(`Failed to list public ports: ${response.status} ${await response.text()}`);
+		}
+
+		const json = (await response.json()) as { ports: PublicPort[] };
+		return json.ports;
+	}
+
+	async networkDeletePublicPort(id: string, force = false): Promise<Response> {
+		const query = force ? '?force=true' : '';
+		return fetch(`${this.publicNetworkUri}/v1/public_ports/${id}${query}`, {
+			method: 'DELETE',
+			headers: {
+				'X-Auth-Token': await this.authToken,
+			},
+		});
 	}
 
 	async networkFindPort(name: string): Promise<StringId> {
@@ -72,17 +128,25 @@ export class Openstack {
 	}
 
 	async imageFindImage(name: string): Promise<StringId> {
-		return fetch(`${this.baseUri}/image/v2/images?name=${name}`, {
+		const response = await fetch(`${this.baseUri}/image/v2/images?name=${encodeURIComponent(name)}`, {
 			headers: {
 				'X-Auth-Token': await this.authToken,
 			},
-		})
-			.then((response) => response.json() as Promise<{ images: StringId[] }>)
-			.then((json) => json.images[0]);
+		});
+
+		if (!response.ok) {
+			throw new Error(`Failed to find image "${name}": ${response.status} ${await response.text()}`);
+		}
+
+		const json = (await response.json()) as { images: StringId[] };
+		const image = json.images[0];
+		if (!image) throw new Error(`Image "${name}" not found`);
+
+		return image;
 	}
 
 	private async auth(user: object): Promise<string> {
-		return await fetch('https://cloud.api.selcloud.ru/identity/v3/auth/tokens', {
+		const response = await fetch('https://cloud.api.selcloud.ru/identity/v3/auth/tokens', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
@@ -97,27 +161,39 @@ export class Openstack {
 					},
 					scope: {
 						project: {
-							id: 'd7baf8ca4fe34f0a804f001f04a7e902',
+							id: this.projectId,
 						},
 					},
 				},
 			}),
-		}).then((response) => response.headers.get('X-Subject-Token')!);
+		});
+
+		const token = response.headers.get('X-Subject-Token');
+		if (!response.ok || !token) {
+			throw new Error(`Selectel authentication failed: ${response.status} ${await response.text()}`);
+		}
+
+		return token;
 	}
 
 	async computeFindServer(name: string): Promise<StringId | undefined> {
-		return fetch(`${this.baseUri}/compute/v2.1/servers?name=${name}`, {
+		const response = await fetch(`${this.baseUri}/compute/v2.1/servers?name=${encodeURIComponent(name)}`, {
 			headers: {
 				'Content-Type': 'application/json',
 				'X-Auth-Token': await this.authToken,
 			},
-		})
-			.then((response) => response.json() as Promise<{ servers: StringId[] }>)
-			.then((json) => json.servers.at(0));
+		});
+
+		if (!response.ok) {
+			throw new Error(`Failed to find server "${name}": ${response.status} ${await response.text()}`);
+		}
+
+		const json = (await response.json()) as { servers: StringId[] };
+		return json.servers.at(0);
 	}
 
-	async computeCreateServer(server: object): Promise<void> {
-		fetch(`${this.baseUri}/compute/v2.1/servers`, {
+	async computeCreateServer(server: object): Promise<Response> {
+		return fetch(`${this.baseUri}/compute/v2.1/servers`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
@@ -128,8 +204,8 @@ export class Openstack {
 		});
 	}
 
-	async computeDeleteServer(id: string): Promise<void> {
-		fetch(`${this.baseUri}/compute/v2.1/servers/${id}`, {
+	async computeDeleteServer(id: string): Promise<Response> {
+		return fetch(`${this.baseUri}/compute/v2.1/servers/${id}`, {
 			method: 'DELETE',
 			headers: {
 				'Content-Type': 'application/json',

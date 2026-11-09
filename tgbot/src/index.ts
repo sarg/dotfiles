@@ -8,7 +8,8 @@ interface Payload {
 	message?: { chat: { id: number }; text?: string };
 }
 const openstackConfig = {
-	region: 'ru-9',
+	region: 'ru-7',
+	projectId: 'd7baf8ca4fe34f0a804f001f04a7e902',
 	user: {
 		name: 'openstack',
 		domain: { name: env.SELECTEL_ORG_ID },
@@ -51,27 +52,39 @@ async function stopHetzner() {
 	return servers[0] && hetzner.deleteServer(servers[0].id).then((r) => r.ok);
 }
 
+async function deleteSelectelPublicPort(openstack: Openstack, id: string): Promise<void> {
+	const response = await openstack.networkDeletePublicPort(id, true);
+	if (response.ok || response.status === 404) return;
+
+	throw new Error(`Failed to delete public port ${id}: ${response.status} ${await response.text()}`);
+}
+
 async function startSelectel(userData: string): Promise<void> {
 	const openstack = new Openstack(openstackConfig);
-	const [port, externalNetwork, image] = await Promise.all([
-		openstack.networkFindPort('vpn'),
-		openstack.networkFindNetwork('external-network'),
+	const [publicPort, image] = await Promise.all([
+		openstack.networkCreatePublicPort('vpn'),
 		openstack.imageFindImage('Ubuntu 24.04 LTS 64-bit'),
 	]);
 
-	openstack.computeCreateServer({
+	const response = await openstack.computeCreateServer({
 		name: 'vpn',
 		flavorRef: '9011',
-		networks: [{ port: port.id }],
+		networks: [
+			{
+				port: publicPort.id,
+				uuid: publicPort.network_id,
+			},
+		],
 		key_name: 'thinkpad',
-		availability_zone: 'ru-9a',
+		availability_zone: 'ru-7a',
+		tags: ['preemptible'],
 		user_data: btoa(userData),
 		block_device_mapping_v2: [
 			{
 				uuid: image.id,
 				boot_index: 0,
 				source_type: 'image',
-				volume_type: 'basic.ru-9a',
+				volume_type: 'basic.ru-7a',
 				destination_type: 'volume',
 				volume_size: 5,
 				delete_on_termination: true,
@@ -79,19 +92,20 @@ async function startSelectel(userData: string): Promise<void> {
 		],
 	});
 
-	await openstack.networkCreateIp({
-		floating_network_id: externalNetwork.id,
-		port_id: port.id,
-	});
+	if (!response.ok) {
+		await deleteSelectelPublicPort(openstack, publicPort.id);
+		throw new Error(`Failed to create selectel server: ${response.status} ${await response.text()}`);
+	}
 }
 
 async function stopSelectel(): Promise<boolean> {
 	const openstack = new Openstack(openstackConfig);
 	const server = await openstack.computeFindServer('vpn');
-	if (!server) return false;
-	openstack.computeDeleteServer(server.id);
-	const floatingIp = await openstack.networkFindFloatingIp();
-	await openstack.networkDeleteFloatingIp(floatingIp.id);
+	const ports = await openstack.networkFindPublicPorts('vpn');
+	if (!server && ports.length === 0) return false;
+
+	if (server) await openstack.computeDeleteServer(server.id);
+	await Promise.all(ports.map((port) => deleteSelectelPublicPort(openstack, port.id)));
 	return true;
 }
 
