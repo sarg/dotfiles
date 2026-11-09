@@ -3858,6 +3858,36 @@ eval "$(atuin init bash)"
 #+begin_src scheme :noweb-ref emacs-dep
 "pi-acp" "pi-coding-agent"
 #+end_src
+#+begin_src cfg :dest ".pi/agent/auth.json"
+{
+  "openrouter": {
+    "type": "api_key",
+    "key": "!pass show Api/openrouter.ai"
+  },
+  "opencode-go": {
+    "type": "api_key",
+    "key": "!pass show Api/opencode.ai"
+  }
+}
+#+end_src
+
+#+RESULTS[04d37c93b443cbe8ba4235bf304304ed03ac794d]:
+#+begin_src text :noweb-ref guix-file
+(".pi/agent/auth.json"
+,(mixed-text-file
+  "cfg-auth.json"
+"{\n"
+"  \"openrouter\": {\n"
+"    \"type\": \"api_key\",\n"
+"    \"key\": \"!pass show Api/openrouter.ai\"\n"
+"  },\n"
+"  \"opencode-go\": {\n"
+"    \"type\": \"api_key\",\n"
+"    \"key\": \"!pass show Api/opencode.ai\"\n"
+"  }\n"
+"}"))
+#+end_src
+
 #+begin_src elisp
 (use-package agent-shell
   :commands agent-shell
