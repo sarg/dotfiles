@@ -190,18 +190,24 @@ async function hook(request: Request): Promise<Response> {
 	}
 
 	const chatId = msg.chat.id;
-	const args = msg.text.split(' ', 2);
-	switch (args.shift()) {
-		case '/vpn':
-			await vpnHandler(chatId, url.origin, args);
-			break;
+	try {
+		const args = msg.text.split(' ', 2);
+		switch (args.shift()) {
+			case '/vpn':
+				await vpnHandler(chatId, url.origin, args);
+				break;
 
-		case '/setup':
-			await setupHandler(chatId, url.origin, args);
-			break;
+			case '/setup':
+				await setupHandler(chatId, url.origin, args);
+				break;
 
-		default:
-			await respond(chatId, 'Try /vpn or /setup');
+			default:
+				await respond(chatId, 'Try /vpn or /setup');
+		}
+	} catch (e) {
+		console.error(e);
+		const error = e instanceof Error ? `${e.name}: ${e.message}` : String(e);
+		await respond(chatId, `Error processing command:\n${error}`.slice(0, 4096)).catch(console.error);
 	}
 
 	return accepted();
