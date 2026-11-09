@@ -6,6 +6,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module ((guix build-system node) #:select (node-build-system))
   #:use-module ((nonguix build-system binary) #:select (binary-build-system))
+  #:use-module ((gnu packages node-xyz) #:select (node-isexe))
   #:use-module (guix utils))
 
 (define-public pi-coding-agent
@@ -139,10 +140,155 @@ inference.")
 standardizes communication between code editors and AI coding agents.")
     (license license:asl2.0)))
 
+(define-public node-path-key
+  (package
+    (name "node-path-key")
+    (version "3.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://registry.npmjs.org/path-key/-/path-key-"
+             version ".tgz"))
+       (sha256
+        (base32 "14kvp849wnkg6f3dqgmcb73nnb5k6b3gxf65sgf0x0qlp6n9k2ab"))))
+    (build-system node-build-system)
+    (arguments
+     (list
+      #:tests? #f
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'patch-dependencies 'delete-dev-dependencies
+            (lambda _
+              (modify-json (delete-dev-dependencies)))))))
+    (home-page "https://github.com/sindresorhus/path-key")
+    (synopsis "Cross-platform utility to compute the PATH environment variable key")
+    (description "This package provides an implementation to compute the particular
+cross-platform spellings of the PATH environment variable key.")
+    (license license:expat)))
+
+(define-public node-shebang-regex
+  (package
+    (name "node-shebang-regex")
+    (version "3.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://registry.npmjs.org/shebang-regex/-/shebang-regex-"
+             version ".tgz"))
+       (sha256
+        (base32 "13wmb23w5srjpn9xx1c85yk5jbc5z9ypg0iz33h6nv5jdnmapnzy"))))
+    (build-system node-build-system)
+    (arguments
+     (list
+      #:tests? #f
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'patch-dependencies 'delete-dev-dependencies
+            (lambda _
+              (modify-json (delete-dev-dependencies)))))))
+    (home-page "https://github.com/sindresorhus/shebang-regex")
+    (synopsis "Regular expression for matching shebangs")
+    (description "This package provides a regular expression for matching a
+shebang line.")
+    (license license:expat)))
+
+(define-public node-shebang-command
+  (package
+    (name "node-shebang-command")
+    (version "2.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://registry.npmjs.org/shebang-command/-/shebang-command-"
+             version ".tgz"))
+       (sha256
+        (base32 "0vjmdpwcz23glkhlmxny8hc3x01zyr6hwf4qb3grq7m532ysbjws"))))
+    (build-system node-build-system)
+    (arguments
+     (list
+      #:tests? #f
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'patch-dependencies 'delete-dev-dependencies
+            (lambda _
+              (modify-json (delete-dev-dependencies)))))))
+    (inputs
+     (list
+      node-shebang-regex))
+    (home-page "https://github.com/kevva/shebang-command")
+    (synopsis "Get the command from a shebang")
+    (description "This package extracts the command from a shebang line.")
+    (license license:expat)))
+
+(define-public node-which
+  (package
+    (name "node-which")
+    (version "2.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://registry.npmjs.org/which/-/which-"
+             version ".tgz"))
+       (sha256
+        (base32 "1p2fkm4lr36s85gdjxmyr6wh86dizf0iwmffxmarcxpbvmgxyfm1"))))
+    (build-system node-build-system)
+    (arguments
+     (list
+      #:tests? #f
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'patch-dependencies 'delete-dev-dependencies
+            (lambda _
+              (modify-json (delete-dev-dependencies)))))))
+    (inputs
+     (list
+      node-isexe))
+    (home-page "https://github.com/npm/node-which")
+    (synopsis "Find the first instance of an executable in PATH")
+    (description "Like the which(1) Unix command, find the first instance of an
+executable in the PATH.")
+    (license license:isc)))
+
+(define-public node-cross-spawn
+  (package
+    (name "node-cross-spawn")
+    (version "7.0.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://registry.npmjs.org/cross-spawn/-/cross-spawn-"
+             version ".tgz"))
+       (sha256
+        (base32 "1siqxlydjwpihy7klgd15cah56vsmxrdm3q90gndyfj1vh63530q"))))
+    (build-system node-build-system)
+    (arguments
+     (list
+      #:tests? #f
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'patch-dependencies 'delete-dev-dependencies
+            (lambda _
+              (modify-json (delete-dev-dependencies)))))))
+    (inputs
+     (list
+      node-path-key
+      node-shebang-command
+      node-which))
+    (home-page "https://github.com/moxystudio/node-cross-spawn")
+    (synopsis "Cross-platform child_process.spawn")
+    (description "This package provides a cross-platform implementation of
+child_process.spawn and child_process.spawnSync.")
+    (license license:expat)))
+
 (define-public pi-acp
   (package
     (name "pi-acp")
-    (version "0.0.33")
+    (version "0.0.34")
     (source
      (origin
        (method url-fetch)
@@ -150,7 +296,7 @@ standardizes communication between code editors and AI coding agents.")
              "https://registry.npmjs.org/pi-acp/-/pi-acp-"
              version ".tgz"))
        (sha256
-        (base32 "0jyy62bdsf9kgxsmgaz111rh0wj411cz6hkjq0r6n18cg2kbiplz"))))
+        (base32 "0l16ixhg3r0765cxlh0p8y784r740qczmz6p7psbglmyf6ygcfsb"))))
     (build-system node-build-system)
     (arguments
      (list
@@ -164,6 +310,7 @@ standardizes communication between code editors and AI coding agents.")
     (inputs
      (list
       node-agentclientprotocol-sdk
+      node-cross-spawn
       node-zod))
     (home-page "https://github.com/svkozak/pi-acp")
     (synopsis "ACP adapter for pi coding agent")
