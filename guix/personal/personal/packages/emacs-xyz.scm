@@ -23,44 +23,6 @@
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages pdf))
 
-;;; https://codeberg.org/divyaranjan/divya-lambda/src/branch/master/divya-lambda/packages/emacs-xyz.scm
-(define-public emacs-reader
-  (package
-    (name "emacs-reader")
-    (properties '((commit . "c7b768341dd52746870c8aae7b74a82fd046b999")))
-    (version (git-version "0.3.2" "10" (assoc-ref properties 'commit)))
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-              (url "https://codeberg.org/divyaranjan/emacs-reader")
-              (commit (assoc-ref properties 'commit))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "0hwbixyaj1gc68w284qhx3h539xkr7bpjwnmix896yxnwdgw9sna"))))
-    (build-system emacs-build-system)
-    (arguments
-     (list
-      #:tests? #f                      ;no tests
-      #:phases
-      #~(modify-phases %standard-phases
-          (add-after 'expand-load-path 'build-module
-            (lambda* (#:key inputs #:allow-other-keys)
-              (invoke "make" "USE_PKGCONFIG=no}"))) ; We don't need pkg-config
-          (add-after 'install 'install-module
-            (lambda* (#:key outputs #:allow-other-keys)
-              (install-file "render-core.so"
-                            (elpa-directory (assoc-ref outputs "out"))))))))
-    (native-inputs (list mupdf gcc))
-    (home-page "https://codeberg.org/divyaranjan/emacs-reader")
-    (synopsis
-     "An all-in-one document reader for all formats in Emacs, backed by MuPDF.")
-    (description
-     "An all-in-one document reader for GNU Emacs, supporting all major document formats.
-This package intends to take from doc-view, nov.el, and pdf-tools and make them better.
-And as such, it is effectively a drop-in replacement for them.")
-    (license license:gpl3+)))
-
 (define-public emacs-torrent-mode
   (package
     (name "emacs-torrent-mode")
@@ -674,14 +636,14 @@ Org-mode source block and dynamic block headers.")
     (name "emacs-reddigg")
     (version "20260818")
     (source
-      (origin
-        (method git-fetch)
-        (uri (git-reference
-               (url "https://github.com/thanhvg/emacs-reddigg.git")
-               (commit "307b95026da1cb2450d153e0b77eb26d0d5a0980")))
-        (sha256
-          (base32
-            "034gihaxr9i856gwl8mx347apv66ayvqqidx73dfvncmqy66dby6"))))
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/thanhvg/emacs-reddigg.git")
+              (commit "307b95026da1cb2450d153e0b77eb26d0d5a0980")))
+       (sha256
+        (base32
+         "034gihaxr9i856gwl8mx347apv66ayvqqidx73dfvncmqy66dby6"))))
     (build-system emacs-build-system)
     (arguments '(#:tests? #f))
     (propagated-inputs (list emacs-promise emacs-ht))
@@ -698,8 +660,8 @@ Org-mode source block and dynamic block headers.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/carldotac/kdeconnect.el")
-             (commit "daee28249b852cc52f4f32d35704a97af5cc4b7d")))
+              (url "https://github.com/carldotac/kdeconnect.el")
+              (commit "daee28249b852cc52f4f32d35704a97af5cc4b7d")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "1bavmbjj06ymw54459gpf5zglk3n9g71nngw5bpx18dhkr0n6gb8"))))
@@ -722,8 +684,8 @@ require KDE.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://git.zamazal.org/pdm/pipewire-0")
-             (commit "ae7a95230f102e7430a80acb02850bc24430c3b2")))
+              (url "https://git.zamazal.org/pdm/pipewire-0")
+              (commit "ae7a95230f102e7430a80acb02850bc24430c3b2")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "1f4hbjh5jb1skk104s52brq9mgsl275g1l631x07yffdps310axr"))))
@@ -749,8 +711,8 @@ pipewire-lib.el source file for available functions.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/LuciusChen/pgsql.el")
-             (commit "165636b76fa63232a2d560ff04013aae0ff9e8a9")))
+              (url "https://github.com/LuciusChen/pgsql.el")
+              (commit "165636b76fa63232a2d560ff04013aae0ff9e8a9")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "1pfb681wm7g5fzg3bxa1zf8j7mqp4qimrlxyv1hzvcakb4h2909a"))))
@@ -772,8 +734,8 @@ its @code{ReadyForQuery} message has been consumed.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/LuciusChen/clutch")
-             (commit (string-append "v" version))))
+              (url "https://github.com/LuciusChen/clutch")
+              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
         (base32 "1ygdjfx9shklan2sx3zhkpn24f0pqmcrhr0zlca2b5k95v5s0qsi"))))
@@ -798,8 +760,8 @@ clutch-mode automatically.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/dmgerman/browsel")
-             (commit "d65e53c7f88ab24bc405ec7752afb82f803cd9ac")))
+              (url "https://github.com/dmgerman/browsel")
+              (commit "d65e53c7f88ab24bc405ec7752afb82f803cd9ac")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "1w91kxvjs3q1wn4xhgfidpmazwb9mr2cjf92r555snyxk80rr170"))))

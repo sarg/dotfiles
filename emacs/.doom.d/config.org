@@ -3546,9 +3546,9 @@ include theme
   :config
   (defalias 'calibredb-open-with-default-tool #'find-file))
 #+end_src
-** emacs-reader
+** emacs-emureader
 #+begin_src scheme :noweb-ref guix-pkg
-"emacs-reader"
+"emacs-emureader"
 #+end_src
 * browsing
 ** qutebrowser
