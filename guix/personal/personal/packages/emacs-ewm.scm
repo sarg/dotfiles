@@ -80,8 +80,8 @@ extensions, such as @code{wlr-protocols} and @code{plasma-wayland-protocols}.")
 (define-public emacs-ewm
   (package
     (name "emacs-ewm")
-    (properties '((commit . "1760c18c9f50fe5c8d69ec46b8bc789b84461a2a")))
-    (version (git-version "0.1.0" "34" (assoc-ref properties 'commit)))
+    (properties '((commit . "57394a20ed40ca1767880baa2bfd4aac53934e76")))
+    (version (git-version "0.1.0" "35" (assoc-ref properties 'commit)))
     (source
      (origin
        (method git-fetch)
@@ -90,7 +90,7 @@ extensions, such as @code{wlr-protocols} and @code{plasma-wayland-protocols}.")
               (commit (assoc-ref properties 'commit))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "04v81v38xncar3bwjy932cn6v3nxviy6kv7q0swl8km1cnyqxfqa"))))
+        (base32 "02dpqf04qbm1bsihx45ihkw2dl4hkmn18sqk7gsgk7fycjfind1a"))))
     (build-system cargo-build-system)
     (arguments
      (list #:install-source? #f
@@ -103,7 +103,15 @@ extensions, such as @code{wlr-protocols} and @code{plasma-wayland-protocols}.")
                                 (guix build emacs-build-system))
            #:phases
            #~(modify-phases %standard-phases
-               (add-after 'unpack 'fix-cargo-deps
+               (add-after 'unpack 'patch-executables
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   (substitute* "compositor/src/xwayland/satellite.rs"
+                     (("(const XWAYLAND_SATELLITE: &str = ).*" _ prefix)
+                      (string-append prefix "\""
+                                     (search-input-file inputs "/bin/xwayland-satellite")
+                                     "\";")))))
+
+               (add-after 'patch-executables 'fix-cargo-deps
                  (lambda _
                    (chdir "compositor")
                    (delete-file "Cargo.lock")
@@ -133,19 +141,20 @@ extensions, such as @code{wlr-protocols} and @code{plasma-wayland-protocols}.")
                     pkg-config))
     (inputs (cons*
              dbus
+             glib
              libdisplay-info
+             libdrm
              libinput-minimal
              libseat
+             libx11
+             libxcursor
+             libxi
              libxkbcommon
+             libxrandr
              mesa
              pipewire
              wayland
-             glib
-             libx11
-             libxcursor
-             libxrandr
-             libxi
-             libdrm
+             xwayland-satellite
              (lookup-cargo-inputs 'emacs-ewm)))
     (home-page "https://codeberg.org/ezemtsov/ewm")
     (synopsis "Emacs Wayland Manager")
