@@ -1588,9 +1588,10 @@ services:
 #+end_src
 *** notification
 #+begin_src scheme :noweb-ref guix-srv
-(online-service
+(service
  home-goimapnotify-service-type
  (home-goimapnotify-configuration
+  (shepherd-requirement '(online gpg-agent))
   (configurations
    (list (goimapnotify-configuration
           (host "imap.gmail.com")
@@ -1846,14 +1847,15 @@ choose_entry() {
           (dir "/storage/data/secretsd")))
 (service home-gpg-agent-service-type
  (home-gpg-agent-configuration
-  (pinentry-program
-   (file-append pinentry-emacs "/bin/pinentry-emacs"))
-  (ssh-support? #t)
-  (default-cache-ttl 86400)
-  (max-cache-ttl 86400)
-  (default-cache-ttl-ssh 86400)
-  (max-cache-ttl-ssh 86400)
-  (extra-content "disable-scdaemon")))
+   (shepherd-requirement '(wayland-display))
+   (pinentry-program
+    (file-append pinentry-qt "/bin/pinentry-qt"))
+   (ssh-support? #t)
+   (default-cache-ttl 86400)
+   (max-cache-ttl 86400)
+   (default-cache-ttl-ssh 86400)
+   (max-cache-ttl-ssh 86400)
+   (extra-content "disable-scdaemon")))
 #+end_src
 #+begin_src elisp
 (use-package pinentry
@@ -1883,7 +1885,7 @@ choose_entry() {
 
 * ewm
 #+begin_src scheme :noweb-ref guix-pkg
-"emacs-ewm" "noctalia-shell" "xwayland-satellite"
+"emacs-ewm" "noctalia-shell"
 #+end_src
 #+begin_src scheme :noweb-ref guix-srv
 (simple-service
@@ -1891,10 +1893,25 @@ choose_entry() {
  home-shepherd-service-type
  (list
   (shepherd-service
-   (provision '(emacs))
-   (requirement '(dbus))
-   (start #~(make-forkexec-constructor (list "emacs" "--fg-daemon" "-f" "ewm-start-module")))
-   (stop #~(make-kill-destructor)))))
+    (provision '(emacs))
+    (requirement '(dbus))
+    (start #~(make-forkexec-constructor (list "emacs" "--fg-daemon" "-f" "ewm-start-module")))
+    (stop #~(make-kill-destructor)))
+
+  (shepherd-service
+    (provision '(wayland-display))
+    (requirement '(emacs))
+    (modules '((ice-9 popen)))
+    (start
+     #~(lambda _
+         (sleep 10)
+         (let* ((port (open-pipe* OPEN_READ "emacsclient" "--eval" "(getenv \"WAYLAND_DISPLAY\")"))
+                (value (read port))
+                (status (close-pipe port)))
+           (unless (zero? status)
+             (error "emacsclient failed" status))
+           (setenv "WAYLAND_DISPLAY" value))))
+    (stop #~(lambda _ (unsetenv "WAYLAND_DISPLAY"))))))
 #+end_src
 #+begin_src elisp
 (when (daemonp)
@@ -1964,10 +1981,11 @@ REVERSE? it when true. Returns the selected buffer."
                       (start-process "qutebrowser" nil "setsid" "-w" "qutebrowser"))))
 
   ;; Floats: no echo area at creation.
-  (add-to-list 'display-buffer-alist
-               '((major-mode . ewm-surface-mode) nil
-                 (pop-up-frame-parameters . ((minibuffer . nil)
-                                             (left-fringe . 0) (right-fringe . 0)))))
+  (push 
+   '((major-mode . ewm-surface-mode) nil
+     (pop-up-frame-parameters . ((minibuffer . nil)
+                                 (left-fringe . 0) (right-fringe . 0))))
+   +popup--display-buffer-alist)
 
   (add-hook 'after-make-frame-functions
             (defun +ewm-hide-float-modeline-h (frame)
@@ -3835,6 +3853,21 @@ eval "$(atuin init bash)"
 ** gptel
 #+begin_src elisp
 (with-eval-after-load 'gptel
+  (defvar-local my-opencode-session-id nil)
+
+  (defun my-opencode-session-header (info)
+    (with-current-buffer (plist-get info :buffer)
+      (unless my-opencode-session-id
+        (setq my-opencode-session-id
+              (format "gptel-%s"
+                      (md5 (format "%s-%s"
+                                   (buffer-name)
+                                   (float-time))))))
+      `(("Authorization"
+         . ,(concat "Bearer " (gptel--get-api-key)))
+        ("x-opencode-session"
+         . ,my-opencode-session-id))))
+
   (let ((openrouter
          (gptel-make-openai "OpenRouter"
            :host "openrouter.ai"
@@ -3842,23 +3875,44 @@ eval "$(atuin init bash)"
            :stream t
            :key (lambda (&rest args) (gptel-api-key-from-auth-source "Api" "openrouter.ai"))
            :models '(stealth/ox-alpha)))
+        (opencode-go
+         (gptel-make-openai "OpenCode Go"
+           :host "opencode.ai"
+           :endpoint "/zen/go/v1/chat/completions"
+           :header #'my-opencode-session-header
+           :stream t
+           :key (lambda (&rest args) (gptel-api-key-from-auth-source "Api" "opencode.ai"))
+           :models '(glm-5.3-flash glm-5.3 glm-5.2
+                     kimi-k3 kimi-k2.7-code kimi-k2.6
+                     longcat-2.0 longcat-2.5-preview-free
+                     deepseek-v4.1-flash deepseek-v4-pro deepseek-v4-flash
+                     deepseek-v4-flash-vision-exp
+                     mimo-v2.6-flash mimo-v2.6-pro
+                     mimo-v2.5 mimo-v2.5-pro
+                     hy4-preview hy3
+                     space-bunny-free)))
         (gemini
          (gptel-make-gemini "Gemini"
            :key (lambda (&rest args)
                   (gptel-api-key-from-auth-source "google.com" "gemini"))
            :stream t)))
 
-    (setq gptel-model 'stealth/ox-alpha
-          gptel-backend openrouter)))
+    (setq gptel-model 'deepseek-v4.1-flash
+          gptel-backend opencode-go)))
 #+end_src
 ** agent-shell
+#+begin_src scheme :noweb-ref guix-pin
+(pin "emacs-agent-shell"
+     #:commit "v0.95.3"
+     #:hash "0qwbfwmadv7j3zdlibl5iym2n4pdwjaxwd5hzfyy2jssrdyq2pck")
+#+end_src
 #+begin_src scheme :noweb-ref guix-pkg
 "emacs-agent-shell"
 #+end_src
 #+begin_src scheme :noweb-ref emacs-dep
 "pi-acp" "pi-coding-agent"
 #+end_src
-#+begin_src cfg :dest ".pi/agent/auth.json"
+#+begin_src json :tangle ~/.pi/agent/auth.json
 {
   "openrouter": {
     "type": "api_key",
