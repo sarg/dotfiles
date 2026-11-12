@@ -392,16 +392,16 @@ Originally forked from Kang Tu <tninja@@gmail.com>'s Aider.el.")
 (define-public emacs-hnreader
   (package
     (name "emacs-hnreader")
-    (version "20250703.328")
+    (version "20261109.27")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
               (url "https://github.com/thanhvg/emacs-hnreader")
-              (commit "a56f67a99a855ca656da1c1985e09f44509e4bbb")))
+              (commit "79c29e6b5a46c9cfb899f80ebc272f7e552adbc5")))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1abqjrzq75ijhn3sfmy0wy6acp8x7nj5gihqy34mickz4v5wqbil"))))
+        (base32 "12wbpj5ipynx9rwwvscl9s812yymihsila95s6z1h7bhd609ijw7"))))
     (build-system emacs-build-system)
     (propagated-inputs (list emacs-promise emacs-request emacs-org))
     (arguments '(#:tests? #f))

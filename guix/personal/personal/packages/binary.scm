@@ -319,7 +319,7 @@ command-line programs gsutil and gcloud among others.")
 (define-public python-ty
   (package
     (name "python-ty")
-    (version "0.0.98")
+    (version "0.0.101")
     (source
      (origin
        (method url-fetch)
@@ -327,7 +327,7 @@ command-line programs gsutil and gcloud among others.")
              "https://github.com/astral-sh/ty/releases/download/" version
              "/ty-x86_64-unknown-linux-gnu.tar.gz"))
        (sha256
-        (base32 "1sbqdj8c47fg3yy0dfp50j0gr53g8x9v3q0l6hgx8dpmlh6jzxg5"))))
+        (base32 "12z69cqwa1kmr5lwg6qfs6sryqavajisszmkkbg6fprn1ldb4vn9"))))
     (properties '((upstream-name . "ty")))
     (build-system binary-build-system)
     (supported-systems '("x86_64-linux"))

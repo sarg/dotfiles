@@ -77,8 +77,7 @@ compiler and toolchain.")
 ;;;
 
 (define-public emacs-ghostel
-  (let* ((version "0.62.0")
-         (ghostty-version "1.4.1-dev")
+  (let* ((ghostty-version "1.4.1-dev")
          (libghostty-vt-version "1.0.0")
          (uucode-commit "1fb73433bba5d93366c57f23ff2e9d7939746500")
          (translate-c-commit "02ff0c523fb92a38939b04d0145c4a9602a74d56")
@@ -125,7 +124,7 @@ compiler and toolchain.")
               "0wwwfdvyc9ssq885xjc08xs0kgdls48cqlrsw0g2d74sv68i6wkm")))))
     (package
       (name "emacs-ghostel")
-      (version version)
+      (version "0.63.0")
       (source
        (origin
          (method git-fetch)
@@ -135,7 +134,7 @@ compiler and toolchain.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "0kxdr1za6qvww8rba0pyxvc6mvcr2v2h0qmlff0ji49phxmmlyn0"))))
+           "19qrjxsdx5ac9mpvzkidfq4vszlq4y6kafnl0cicpacvqm87mj6w"))))
       (build-system emacs-build-system)
       (arguments
        (list
