@@ -1,0 +1,34 @@
+--- a/src/image.c
++++ b/src/image.c
+@@ -6023,6 +6023,31 @@
+   for (int y = 0; y < height; ++y)
+     for (int x = 0; x < width; ++x)
+       PUT_PIXEL (img->pixmap, x, y, src[y * width + x]);
++#elif defined (USE_SKIA)
++  /* Skia (pwayl): the renderer samples img->skia_data, never
++     img->pixmap, so refilling the pixmap alone is not enough.  Refill
++     the pixmap from the canvas buffer, rebuild the Skia image from it
++     (skia_put_image_to_skia_data takes ownership of the pixmap data),
++     and drop cached GPU textures keyed on the old image.  */
++  FRAME_TERMINAL (f)->free_pixmap (f, img->pixmap);
++  img->pixmap = NO_PIXMAP;
++  Emacs_Pix_Container ximg;
++  if (image_create_x_image_and_pixmap (f, img, width, height, 0, &ximg, 0))
++    {
++      for (int y = 0; y < height; ++y)
++        for (int x = 0; x < width; ++x)
++          PUT_PIXEL (ximg, x, y, src[y * width + x]);
++      image_put_x_image (f, img, ximg, 0);
++    }
++  if (img->skia_data)
++    {
++      if (FRAME_TERMINAL (f)->clear_image_resources_hook)
++	FRAME_TERMINAL (f)->clear_image_resources_hook (f, img);
++      skia_image_destroy (img->skia_data);
++      img->skia_data = NULL;
++    }
++  if (img->pixmap && img->pixmap->data)
++    skia_put_image_to_skia_data (img);
+ #else
+   /* Platform independent canvas reloading.  Less efficient, since it
+      recreates images and pixmaps.  */

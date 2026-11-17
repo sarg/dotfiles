@@ -1,0 +1,51 @@
+From: Nicolas Graves <ngraves@ngraves.fr>
+Subject: [PATCH] Guard GIF decoder tests with SK_CODEC_DECODES_GIF.
+
+SkGifDecoder::Decode is implemented in SkWuffsCodec.cpp, which is only
+compiled when skia_use_wuffs=true (the optional("wuffs") block in
+BUILD.gn also sets SK_CODEC_DECODES_GIF when enabled).  CodecTest.cpp
+and SkottieGM.cpp call SkGifDecoder::Decode unconditionally, causing
+linker failures when wuffs is disabled.
+
+---
+ modules/skottie/gm/SkottieGM.cpp |  4 ++++
+ tests/CodecTest.cpp               |  3 +++
+ 2 files changed, 7 insertions(+)
+
+diff --git a/modules/skottie/gm/SkottieGM.cpp b/modules/skottie/gm/SkottieGM.cpp
+--- a/modules/skottie/gm/SkottieGM.cpp
++++ b/modules/skottie/gm/SkottieGM.cpp
+@@ -224,11 +224,15 @@
+     public:
+         sk_sp<skresources::ImageAsset> loadImageAsset(const char[], const char[],
+                                                       const char[]) const override {
++#ifdef SK_CODEC_DECODES_GIF
+             sk_sp<SkData> data = GetResourceAsData("images/flightAnim.gif");
+             SkASSERT(data);
+             std::unique_ptr<SkCodec> codec = SkGifDecoder::Decode(data, nullptr);
+             SkASSERT(codec);
+             return skresources::MultiFrameImageAsset::Make(std::move(codec));
++#else
++            return nullptr;
++#endif
+         }
+     };
+
+diff --git a/tests/CodecTest.cpp b/tests/CodecTest.cpp
+--- a/tests/CodecTest.cpp
++++ b/tests/CodecTest.cpp
+@@ -2130,5 +2130,6 @@
+ }
+
++#ifdef SK_CODEC_DECODES_GIF
+ DEF_TEST(Codec_gif_null_param, r) {
+     constexpr char path[] = "images/flightAnim.gif";
+     sk_sp<SkData> data(GetResourceAsData(path));
+@@ -2183,6 +2184,7 @@
+     REPORTER_ASSERT(r, encodedData->size() == data->size());
+     REPORTER_ASSERT(r, encodedData->bytes() == data->bytes());
+ }
++#endif  // SK_CODEC_DECODES_GIF
+
+ DEF_TEST(Codec_jpeg_can_return_data_from_original_stream, r) {
+     constexpr char path[] = "images/dog.jpg";
