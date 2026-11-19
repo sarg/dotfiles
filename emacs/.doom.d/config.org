@@ -664,7 +664,7 @@ polkit.addRule(function(action, subject) {
         (cons head out)))
   (fold-right flatten1 '() lst))
 
-(define home-emacs (pkg "emacs-next-pgtk"))
+(define home-emacs (pkg "emacs-next-pwayl"))
 
 (define (build-with-home-emacs p)
   (package/inherit p
@@ -758,10 +758,10 @@ polkit.addRule(function(action, subject) {
 (".q3a" ,(symlink-to "/storage/data/quake3"))
 (".local/share/ddnet" ,(symlink-to "/storage/data/ddnet"))
 #+end_src
-** media
+** misc
 #+begin_src scheme :noweb-ref guix-pkg
 ;; "zeal" "qalculate-gtk" "simplescreenrecorder"
-"libreoffice" "qview" "gimp"
+"libreoffice" "qview" "gimp" "ausweisapp"
 "nomacs" "tinymediamanager" "simple-scan"
 #+end_src
 #+begin_src scheme :noweb-ref guix-file
@@ -2647,9 +2647,9 @@ home-emacs
 #+end_src
 ** init.el
 #+begin_src scheme :noweb-ref guix-pin
-;; (pin "doomemacs-modules"
-;;      #:commit "b9391c34dbb26df79d804444def3371c1ca8c342"
-;;      #:hash "1ia8hs9ma88hkbnrwx1qcynw0bhzqg36mp3c0a29if3rlkrl7vjx")
+(pin "doomemacs-modules"
+     #:commit "1fdcee0dbf43e9e3ff299549aead79e4f2c15489"
+     #:hash "0n7midx95nlyxpb3xqp6fvjb0danfhdfn7j7w1yi40ymibd3mwym")
 #+end_src
 #+begin_src elisp :tangle init.el
 ;; generated from config.org
